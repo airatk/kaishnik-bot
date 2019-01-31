@@ -1,2 +1,4 @@
 **/.DS_Store
+bot/__pycache__/
+bot/secrets.py
 
