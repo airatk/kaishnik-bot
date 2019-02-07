@@ -1,27 +1,29 @@
+from telebot.types import InlineKeyboardMarkup
+from telebot.types import InlineKeyboardButton
 from telebot.types import ReplyKeyboardMarkup
 from telebot.types import KeyboardButton
 from telebot.types import ReplyKeyboardRemove
-from telebot.types import InlineKeyboardMarkup
-from telebot.types import InlineKeyboardButton
 
-def remove_keyboard():
-    return ReplyKeyboardRemove()
+def schedule_type():
+    schedule_type_keyboard = InlineKeyboardMarkup()
 
-def settings_entry():
-    settings_entry_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    
-    settings_entry_keyboard.row(KeyboardButton(text="/settings"))
-    
-    return settings_entry_keyboard
+    schedule_type_keyboard.row(
+        InlineKeyboardButton(text="сегодня", callback_data="today's"),
+        InlineKeyboardButton(text="завтра", callback_data="tomorrow's")
+    )
+    schedule_type_keyboard.row(InlineKeyboardButton(text="текущую неделю", callback_data="weekly current"))
+    schedule_type_keyboard.row(InlineKeyboardButton(text="следующую неделю", callback_data="weekly next"))
+
+    return schedule_type_keyboard
 
 def choose_location_type():
-    locations_types_keyboard = InlineKeyboardMarkup()
+    location_type_keyboard = InlineKeyboardMarkup()
 
-    locations_types_keyboard.row(InlineKeyboardButton(text="Учебные здания и СК", callback_data="buildings"))
-    locations_types_keyboard.row(InlineKeyboardButton(text="Библиотеки", callback_data="libraries"))
-    locations_types_keyboard.row(InlineKeyboardButton(text="Общежития", callback_data="dorms"))
+    location_type_keyboard.row(InlineKeyboardButton(text="Учебные здания и СК", callback_data="buildings"))
+    location_type_keyboard.row(InlineKeyboardButton(text="Библиотеки", callback_data="libraries"))
+    location_type_keyboard.row(InlineKeyboardButton(text="Общежития", callback_data="dorms"))
 
-    return locations_types_keyboard
+    return location_type_keyboard
 
 def buildings_dailer():
     buildings_dailer_keyboard = InlineKeyboardMarkup()
@@ -75,3 +77,13 @@ def dorms_dailer():
     )
 
     return dorms_dailer_keyboard
+
+def settings_entry():
+    settings_entry_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    
+    settings_entry_keyboard.row(KeyboardButton(text="/settings"))
+    
+    return settings_entry_keyboard
+
+def remove_keyboard():
+    return ReplyKeyboardRemove()

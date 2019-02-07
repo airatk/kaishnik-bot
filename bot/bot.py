@@ -3,6 +3,9 @@ import secrets
 import constants
 import keyboards
 import helpers
+import student
+
+import re
 import random
 
 telebot.apihelper.proxy = secrets.PROXY
@@ -18,12 +21,7 @@ def start(message):
     )
     bot.send_message(
         chat_id=message.chat.id,
-        text=constants.replies_to_unknown_command[0], # Coincidencially this string is on replies_to_unknown_command list :)
-        parse_mode="Markdown"
-    )
-    bot.send_message(
-        chat_id=message.chat.id,
-        text="Но прежде настрой меня на общение с тобой" + constants.emoji["smirking"],
+        text="Для начала настрой меня на общение с тобой" + constants.emoji["smirking"],
         reply_markup=keyboards.settings_entry()
     )
 
@@ -31,13 +29,63 @@ def start(message):
 def classes(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    pass
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Тебе нужно расписание на",
+        reply_markup=keyboards.schedule_type()
+    )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        callback.data == "today's" or callback.data == "tomorrow's"
+)
+def daily_schedule(callback):
+    bot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text=helpers.get_schedule(
+            type="classes",
+            kind=callback.data,
+            group_number=student.student.get_group_number()
+        ),
+        parse_mode="Markdown"
+    )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        "weekly" in callback.data
+)
+def weekly_schedule(callback):
+    bot.delete_message(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id
+    )
+    
+    for weekday in range(1, 7):
+        bot.send_message(
+            chat_id=callback.message.chat.id,
+            text=helpers.get_schedule(
+                type="classes",
+                kind=weekday,
+                group_number=student.student.get_group_number(),
+                next="next" in callback.data
+            ),
+            parse_mode="Markdown"
+        )
 
 @bot.message_handler(commands=["exams"])
 def exams(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    pass
+    bot.send_message(
+        chat_id=message.chat.id,
+        text=helpers.get_schedule(
+            type="exams",
+            kind=None,
+            group_number=student.student.get_group_number()
+        ),
+        parse_mode="Markdown"
+    )
 
 @bot.message_handler(commands=["week"])
 def week(message):
@@ -45,7 +93,7 @@ def week(message):
 
     bot.send_message(
         chat_id=message.chat.id,
-        text=helpers.get_week(is_reverse=True)
+        text=helpers.get_week()
     )
 
 @bot.message_handler(commands=["score"])
@@ -64,7 +112,10 @@ def locations(message):
         reply_markup=keyboards.choose_location_type()
     )
 
-@bot.callback_query_handler(func=lambda callback: callback.data == "buildings")
+@bot.callback_query_handler(
+    func=lambda callback:
+        callback.data == "buildings"
+)
 def b_s(callback):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -73,8 +124,13 @@ def b_s(callback):
         reply_markup=keyboards.buildings_dailer()
     )
 
-@bot.callback_query_handler(func=lambda callback: True if "b_s" in callback.data else False)
+@bot.callback_query_handler(
+    func=lambda callback:
+        "b_s" in callback.data
+)
 def send_building(callback):
+    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+
     if "first" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
@@ -82,7 +138,9 @@ def send_building(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Первый дом*\n\nБлижайшая остановка: КАИ.\nЕсть буфет и читальный зал №1.",
+            text="*Первый дом*\n\n"
+                 "Ближайшая остановка: КАИ.\n"
+                 "Есть буфет и читальный зал №1.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -97,7 +155,9 @@ def send_building(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*2ка*\n\nБлижайшие остановки: Четаева, Чистопольская, Амирхана, СК Олимп.\nЕсть буфет.",
+            text="*2ка*\n\n"
+                 "Ближайшие остановки: Четаева, Чистопольская, Амирхана, СК Олимп.\n"
+                 "Есть буфет.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -112,7 +172,9 @@ def send_building(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*3ка*\n\nБлижайшие остановки: Толстого и Гоголя.\nЕсть буфет и читальный зал №3.",
+            text="*3ка*\n\n"
+                 "Ближайшие остановки: Толстого и Гоголя.\n"
+                 "Есть буфет и читальный зал №3.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -127,7 +189,9 @@ def send_building(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*4ка*\n\nБлижайшие остановки: Толстого и Гоголя.\nНи буфета, ни читального зала - грустно!",
+            text="*4ка*\n\n"
+                 "Ближайшие остановки: Толстого и Гоголя.\n"
+                 "Ни буфета, ни читального зала - грустно!",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -142,7 +206,9 @@ def send_building(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*5ка*\n\nБлижайшая остановка: Площадь Свободы.\nЕсть столовая и читальный зал №2.",
+            text="*5ка*\n\n"
+                 "Ближайшая остановка: Площадь Свободы.\n"
+                 "Есть столовая и читальный зал №2.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -157,7 +223,9 @@ def send_building(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*6ка*\n\nБлижайшие остановки: Институт, Кошевого, КМПО.\nЕсть буфет.",
+            text="*6ка*\n\n"
+                 "Ближайшие остановки: Институт, Кошевого, КМПО.\n"
+                 "Есть буфет.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -172,7 +240,9 @@ def send_building(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*7ка*\n\nБлижайшие остановки: Гоголя и Толстого.\nЕсть буфет и читальный зал №9.",
+            text="*7ка*\n\n"
+                 "Ближайшие остановки: Гоголя и Толстого.\n"
+                 "Есть буфет и читальный зал №9.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -187,7 +257,9 @@ def send_building(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*8ка*\n\nБлижайшие остановки: Чистопольская, Четаева, СК Олимп, Амирхана.\nЕсть буфет и научно-техническая библиотека.",
+            text="*8ка*\n\n"
+                 "Ближайшие остановки: Чистопольская, Четаева, СК Олимп, Амирхана.\n"
+                 "Есть буфет и научно-техническая библиотека.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -202,7 +274,9 @@ def send_building(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*СК Олимп*\n\nБлижайшие остановки: СК Олимп, Чистопольская, Четаева, Амирхана.\nНа самом деле, у Олимпа два здания: основное и здание бассейна, а ещё есть стадион.",
+            text="*СК Олимп*\n\n"
+                 "Ближайшие остановки: СК Олимп, Чистопольская, Четаева, Амирхана.\n"
+                 "На самом деле, у Олимпа два здания: основное и здание бассейна, а ещё есть стадион.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -211,7 +285,10 @@ def send_building(callback):
             longitude=constants.buildings["olymp"]["longitude"]
         )
 
-@bot.callback_query_handler(func=lambda callback: callback.data == "libraries")
+@bot.callback_query_handler(
+    func=lambda callback:
+        callback.data == "libraries"
+)
 def b_s(callback):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -220,8 +297,13 @@ def b_s(callback):
         reply_markup=keyboards.libraries_dailer()
     )
 
-@bot.callback_query_handler(func=lambda callback: True if "l_s" in callback.data else False)
+@bot.callback_query_handler(
+    func=lambda callback:
+        "l_s" in callback.data
+)
 def send_library(callback):
+    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+
     if "first" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
@@ -229,7 +311,9 @@ def send_library(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Читальный зал №1*\n\nБлижайшая остановка: КАИ.\nВ первом доме.",
+            text="*Читальный зал №1*\n\n"
+                 "Ближайшая остановка: КАИ.\n"
+                 "В первом доме.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -244,7 +328,9 @@ def send_library(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Читальный зал №2*\n\nБлижайшая остановка: Площадь Свободы.\nВ 5ке.",
+            text="*Читальный зал №2*\n\n"
+                 "Ближайшая остановка: Площадь Свободы.\n"
+                 "В 5ке.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -259,7 +345,9 @@ def send_library(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Читальный зал №3*\n\nБлижайшие остановки: Толстого и Гоголя.\nВ 3ке.",
+            text="*Читальный зал №3*\n\n"
+                 "Ближайшие остановки: Толстого и Гоголя.\n"
+                 "В 3ке.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -274,7 +362,9 @@ def send_library(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Читальный зал №9*\n\nБлижайшие остановки: Гоголя и Толстого.\nВ 7ке.",
+            text="*Читальный зал №9*\n\n"
+                 "Ближайшие остановки: Гоголя и Толстого.\n"
+                 "В 7ке.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -289,7 +379,9 @@ def send_library(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Научно-техническая библиотека*\n\nБлижайшие остановки: Чистопольская, Четаева, СК Олимп, Амирхана.\nВ 8ке.",
+            text="*Научно-техническая библиотека*\n\n"
+                 "Ближайшие остановки: Чистопольская, Четаева, СК Олимп, Амирхана.\n"
+                 "В 8ке.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -298,7 +390,10 @@ def send_library(callback):
             longitude=constants.buildings["eighth"]["longitude"]
         )
 
-@bot.callback_query_handler(func=lambda callback: callback.data == "dorms")
+@bot.callback_query_handler(
+    func=lambda callback:
+        callback.data == "dorms"
+)
 def d_s(callback):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -307,8 +402,13 @@ def d_s(callback):
         reply_markup=keyboards.dorms_dailer()
     )
 
-@bot.callback_query_handler(func=lambda callback: True if "d_s" in callback.data else False)
+@bot.callback_query_handler(
+    func=lambda callback:
+        "d_s" in callback.data
+)
 def send_dorm(callback):
+    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+
     if "first" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
@@ -316,7 +416,8 @@ def send_dorm(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Первое общежитие*\n\nБлижайшая остановка: КАИ.",
+            text="*Первое общежитие*\n\n"
+                 "Ближайшая остановка: КАИ.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -331,7 +432,9 @@ def send_dorm(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Второе общежитие*\n\nБлижайшая остановка: КАИ.\nЕсть столовая.",
+            text="*Второе общежитие*\n\n"
+                 "Ближайшая остановка: КАИ.\n"
+                 "Есть столовая.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -346,7 +449,9 @@ def send_dorm(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Третье общежитие*\n\nБлижайшие остановки: Попова, Пионерская, Губкина, ТД Риф Эль.\nЕсть столовая.",
+            text="*Третье общежитие*\n\n"
+                 "Ближайшие остановки: Попова, Пионерская, Губкина, ТД Риф Эль.\n"
+                 "Есть столовая.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -361,7 +466,8 @@ def send_dorm(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Четвёртое общежитие*\n\nБлижайшие остановки: Солнышко, Короленко, Октябрьская, Голубятникова.",
+            text="*Четвёртое общежитие*\n\n"
+                 "Ближайшие остановки: Солнышко, Короленко, Октябрьская, Голубятникова.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -376,7 +482,9 @@ def send_dorm(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Пятое общежитие*\n\nБлижайшие остановки: Абжалилова, Кооперативный институт, Патриса Лумумбы, парк Горького.\nЕсть столовая.",
+            text="*Пятое общежитие*\n\n"
+                 "Ближайшие остановки: Абжалилова, Кооперативный институт, Патриса Лумумбы, парк Горького.\n"
+                 "Есть столовая.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -391,7 +499,8 @@ def send_dorm(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Шестое общежитие*\n\nБлижайшие остановки: Вишневского, Товарищеская, Достоевского, Калинина.",
+            text="*Шестое общежитие*\n\n"
+                 "Ближайшие остановки: Вишневского, Товарищеская, Достоевского, Калинина.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -406,7 +515,8 @@ def send_dorm(callback):
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Седьмое общежитие*\n\nБлижайшие остановки: Вишневского, Товарищеская, Достоевского, Калинина.",
+            text="*Седьмое общежитие*\n\n"
+                 "Ближайшие остановки: Вишневского, Товарищеская, Достоевского, Калинина.",
             parse_mode="Markdown"
         )
         bot.send_location(
@@ -419,9 +529,75 @@ def send_dorm(callback):
 def settings(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    pass
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Отправь номер своей группы в формате: 1234",
+        reply_markup=keyboards.remove_keyboard()
+    )
 
-@bot.message_handler(func=lambda m: m.text[0] == "/")
+@bot.message_handler(
+    func=lambda m:
+        True if re.fullmatch("[1-59][1-6][0-9][0-9]", m.text) else False
+)
+def remember_group_number(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    student.student.set_group_number(message.text)
+    
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Отправь номер своей зачётки в формате: 123456",
+        reply_markup=keyboards.remove_keyboard()
+    )
+
+@bot.message_handler(
+    func=lambda m:
+        True if re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9]", m.text) else False
+)
+def remember_student_card_number(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    student.student.set_student_card_number(message.text)
+    
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Запомнено!",
+    )
+    bot.send_message(
+        chat_id=message.chat.id,
+        text=constants.replies_to_unknown_command[0], # Coincidencially this string is on replies_to_unknown_command list :)
+        parse_mode="Markdown"
+    )
+
+@bot.message_handler(
+    func=lambda m:
+        m.chat.id == secrets.CREATOR and m.text == "What can I do?"
+)
+def reverseweek(message):
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="*You can:*\n"
+             "/reverseweek - to show whether week is even or odd correctly",
+        parse_mode="Markdown"
+    )
+
+@bot.message_handler(
+    func=lambda m:
+        m.chat.id == secrets.CREATOR,
+    commands=["reverseweek"]
+)
+def reverseweek(message):
+    helpers.reverse_week_in_file()
+    
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Reversed."
+    )
+
+@bot.message_handler(
+    func=lambda m:
+        m.text[0] == "/"
+)
 def unknown_command(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
@@ -438,7 +614,7 @@ def unknown_message(message):
 
     bot.send_message(
         chat_id=message.chat.id,
-        text=random.choice(constants.replies_to_unknown_command + constants.replies_to_unknown_message),
+        text=random.choice(constants.replies_to_unknown_message),
         parse_mode="Markdown"
     )
 
