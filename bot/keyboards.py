@@ -4,6 +4,11 @@ from telebot.types import ReplyKeyboardMarkup
 from telebot.types import KeyboardButton
 from telebot.types import ReplyKeyboardRemove
 
+from constants import buildings
+from constants import libraries
+from constants import dorms
+
+# /classes
 def schedule_type():
     schedule_type_keyboard = InlineKeyboardMarkup()
 
@@ -16,6 +21,7 @@ def schedule_type():
 
     return schedule_type_keyboard
 
+# /locations
 def choose_location_type():
     location_type_keyboard = InlineKeyboardMarkup()
 
@@ -26,64 +32,36 @@ def choose_location_type():
     return location_type_keyboard
 
 def buildings_dailer():
-    buildings_dailer_keyboard = InlineKeyboardMarkup()
+    buildings_dailer_keyboard = InlineKeyboardMarkup(row_width=4)
     
-    buildings_dailer_keyboard.row(
-        InlineKeyboardButton(text="1", callback_data="b_s first"),
-        InlineKeyboardButton(text="2", callback_data="b_s second"),
-        InlineKeyboardButton(text="3", callback_data="b_s third"),
-        InlineKeyboardButton(text="4", callback_data="b_s fourth")
-    )
-    buildings_dailer_keyboard.row(
-        InlineKeyboardButton(text="5", callback_data="b_s fifth"),
-        InlineKeyboardButton(text="6", callback_data="b_s sixth"),
-        InlineKeyboardButton(text="7", callback_data="b_s seventh"),
-        InlineKeyboardButton(text="8", callback_data="b_s eighth")
-    )
-    buildings_dailer_keyboard.row(
-        InlineKeyboardButton(text="СК Олимп", callback_data="b_s olymp")
-    )
+    buildings_dailer_keyboard.add(*[
+        InlineKeyboardButton(text="{b_}".format(b_=b_), callback_data="b_s {b_}".format(b_=b_)) for b_ in buildings.keys()
+    ])
 
     return buildings_dailer_keyboard
 
 def libraries_dailer():
-    libraries_dailer_keyboard = InlineKeyboardMarkup()
+    libraries_dailer_keyboard = InlineKeyboardMarkup(row_width=4)
     
-    libraries_dailer_keyboard.row(
-        InlineKeyboardButton(text="1", callback_data="l_s first"),
-        InlineKeyboardButton(text="2", callback_data="l_s second"),
-        InlineKeyboardButton(text="3", callback_data="l_s third"),
-        InlineKeyboardButton(text="9", callback_data="l_s ninth")
-    )
-    libraries_dailer_keyboard.row(
-        InlineKeyboardButton(text="научно-техническая", callback_data="l_s sci-tech")
-    )
+    libraries_dailer_keyboard.add(*[
+        InlineKeyboardButton(text="{l_}".format(l_=l_), callback_data="l_s {l_}".format(l_=l_)) for l_ in libraries.keys()
+    ])
 
     return libraries_dailer_keyboard
 
 def dorms_dailer():
-    dorms_dailer_keyboard = InlineKeyboardMarkup()
+    dorms_dailer_keyboard = InlineKeyboardMarkup(row_width=4)
     
-    dorms_dailer_keyboard.row(
-        InlineKeyboardButton(text="1", callback_data="d_s first"),
-        InlineKeyboardButton(text="2", callback_data="d_s second"),
-        InlineKeyboardButton(text="3", callback_data="d_s third"),
-        InlineKeyboardButton(text="4", callback_data="d_s fourth")
-    )
-    dorms_dailer_keyboard.row(
-        InlineKeyboardButton(text="5", callback_data="d_s fifth"),
-        InlineKeyboardButton(text="6", callback_data="d_s sixth"),
-        InlineKeyboardButton(text="7", callback_data="d_s seventh")
-    )
+    dorms_dailer_keyboard.add(*[
+        InlineKeyboardButton(text="{d_}".format(d_=d_), callback_data="d_s {d_}".format(d_=d_)) for d_ in dorms.keys()
+    ])
 
     return dorms_dailer_keyboard
 
+# /settings
 def settings_entry():
-    settings_entry_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    
-    settings_entry_keyboard.row(KeyboardButton(text="/settings"))
-    
-    return settings_entry_keyboard
+    return ReplyKeyboardMarkup(resize_keyboard=True).row(KeyboardButton(text="/settings"))
 
+# Remove keyboard
 def remove_keyboard():
     return ReplyKeyboardRemove()

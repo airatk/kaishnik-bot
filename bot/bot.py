@@ -1,4 +1,5 @@
 import telebot
+
 import secrets
 import constants
 import keyboards
@@ -31,7 +32,7 @@ def classes(message):
 
     bot.send_message(
         chat_id=message.chat.id,
-        text="Тебе нужно расписание на",
+        text="Тебе нужно расписание на:",
         reply_markup=keyboards.schedule_type()
     )
 
@@ -61,7 +62,7 @@ def weekly_schedule(callback):
         message_id=callback.message.message_id
     )
     
-    for weekday in range(1, 7):
+    for weekday in constants.week.keys():
         bot.send_message(
             chat_id=callback.message.chat.id,
             text=helpers.get_schedule(
@@ -131,158 +132,140 @@ def b_s(callback):
 def send_building(callback):
     bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
 
-    if "first" in callback.data:
+    if "1" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Первый дом*\n\n"
-                 "Ближайшая остановка: КАИ.\n"
-                 "Есть буфет и читальный зал №1.",
+            text=constants.buildings["1"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.buildings["first"]["latitude"],
-            longitude=constants.buildings["first"]["longitude"]
+            latitude=constants.buildings["1"]["latitude"],
+            longitude=constants.buildings["1"]["longitude"]
         )
-    elif "second" in callback.data:
+    elif "2" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*2ка*\n\n"
-                 "Ближайшие остановки: Четаева, Чистопольская, Амирхана, СК Олимп.\n"
-                 "Есть буфет.",
+            text=constants.buildings["2"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.buildings["second"]["latitude"],
-            longitude=constants.buildings["second"]["longitude"]
+            latitude=constants.buildings["2"]["latitude"],
+            longitude=constants.buildings["2"]["longitude"]
         )
-    elif "third" in callback.data:
+    elif "3" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*3ка*\n\n"
-                 "Ближайшие остановки: Толстого и Гоголя.\n"
-                 "Есть буфет и читальный зал №3.",
+            text=constants.buildings["3"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.buildings["third"]["latitude"],
-            longitude=constants.buildings["third"]["longitude"]
+            latitude=constants.buildings["3"]["latitude"],
+            longitude=constants.buildings["3"]["longitude"]
         )
-    elif "fourth" in callback.data:
+    elif "4" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*4ка*\n\n"
-                 "Ближайшие остановки: Толстого и Гоголя.\n"
-                 "Ни буфета, ни читального зала - грустно!",
+            text=constants.buildings["4"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.buildings["fourth"]["latitude"],
-            longitude=constants.buildings["fourth"]["longitude"]
+            latitude=constants.buildings["4"]["latitude"],
+            longitude=constants.buildings["4"]["longitude"]
         )
-    elif "fifth" in callback.data:
+    elif "5" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*5ка*\n\n"
-                 "Ближайшая остановка: Площадь Свободы.\n"
-                 "Есть столовая и читальный зал №2.",
+            text=constants.buildings["5"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.buildings["fifth"]["latitude"],
-            longitude=constants.buildings["fifth"]["longitude"]
+            latitude=constants.buildings["5"]["latitude"],
+            longitude=constants.buildings["5"]["longitude"]
         )
-    elif "sixth" in callback.data:
+    elif "6" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*6ка*\n\n"
-                 "Ближайшие остановки: Институт, Кошевого, КМПО.\n"
-                 "Есть буфет.",
+            text=constants.buildings["6"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.buildings["sixth"]["latitude"],
-            longitude=constants.buildings["sixth"]["longitude"]
+            latitude=constants.buildings["6"]["latitude"],
+            longitude=constants.buildings["6"]["longitude"]
         )
-    elif "seventh" in callback.data:
+    elif "7" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*7ка*\n\n"
-                 "Ближайшие остановки: Гоголя и Толстого.\n"
-                 "Есть буфет и читальный зал №9.",
+            text=constants.buildings["7"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.buildings["seventh"]["latitude"],
-            longitude=constants.buildings["seventh"]["longitude"]
+            latitude=constants.buildings["7"]["latitude"],
+            longitude=constants.buildings["7"]["longitude"]
         )
-    elif "eighth" in callback.data:
+    elif "8" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*8ка*\n\n"
-                 "Ближайшие остановки: Чистопольская, Четаева, СК Олимп, Амирхана.\n"
-                 "Есть буфет и научно-техническая библиотека.",
+            text=constants.buildings["8"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.buildings["eighth"]["latitude"],
-            longitude=constants.buildings["eighth"]["longitude"]
+            latitude=constants.buildings["8"]["latitude"],
+            longitude=constants.buildings["8"]["longitude"]
         )
-    elif "olymp" in callback.data:
+    elif "СК Олимп" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*СК Олимп*\n\n"
-                 "Ближайшие остановки: СК Олимп, Чистопольская, Четаева, Амирхана.\n"
-                 "На самом деле, у Олимпа два здания: основное и здание бассейна, а ещё есть стадион.",
+            text=constants.buildings["СК Олимп"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.buildings["olymp"]["latitude"],
-            longitude=constants.buildings["olymp"]["longitude"]
+            latitude=constants.buildings["СК Олимп"]["latitude"],
+            longitude=constants.buildings["СК Олимп"]["longitude"]
         )
 
 @bot.callback_query_handler(
@@ -304,90 +287,80 @@ def b_s(callback):
 def send_library(callback):
     bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
 
-    if "first" in callback.data:
+    if "1" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Читальный зал №1*\n\n"
-                 "Ближайшая остановка: КАИ.\n"
-                 "В первом доме.",
+            text=constants.libraries["1"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.buildings["first"]["latitude"],
-            longitude=constants.buildings["first"]["longitude"]
+            latitude=constants.buildings["1"]["latitude"],
+            longitude=constants.buildings["1"]["longitude"]
         )
-    elif "second" in callback.data:
+    elif "2" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Читальный зал №2*\n\n"
-                 "Ближайшая остановка: Площадь Свободы.\n"
-                 "В 5ке.",
+            text=constants.libraries["2"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.buildings["fifth"]["latitude"],
-            longitude=constants.buildings["fifth"]["longitude"]
+            latitude=constants.buildings["5"]["latitude"],
+            longitude=constants.buildings["5"]["longitude"]
         )
-    elif "third" in callback.data:
+    elif "3" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Читальный зал №3*\n\n"
-                 "Ближайшие остановки: Толстого и Гоголя.\n"
-                 "В 3ке.",
+            text=constants.libraries["3"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.buildings["third"]["latitude"],
-            longitude=constants.buildings["third"]["longitude"]
+            latitude=constants.buildings["3"]["latitude"],
+            longitude=constants.buildings["3"]["longitude"]
         )
-    elif "ninth" in callback.data:
+    elif "9" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Читальный зал №9*\n\n"
-                 "Ближайшие остановки: Гоголя и Толстого.\n"
-                 "В 7ке.",
+            text=constants.libraries["9"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.buildings["seventh"]["latitude"],
-            longitude=constants.buildings["seventh"]["longitude"]
+            latitude=constants.buildings["7"]["latitude"],
+            longitude=constants.buildings["7"]["longitude"]
         )
-    elif "sci-tech" in callback.data:
+    elif "научно-техническая" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Научно-техническая библиотека*\n\n"
-                 "Ближайшие остановки: Чистопольская, Четаева, СК Олимп, Амирхана.\n"
-                 "В 8ке.",
+            text=constants.libraries["научно-техническая"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.buildings["eighth"]["latitude"],
-            longitude=constants.buildings["eighth"]["longitude"]
+            latitude=constants.buildings["8"]["latitude"],
+            longitude=constants.buildings["8"]["longitude"]
         )
 
 @bot.callback_query_handler(
@@ -409,120 +382,110 @@ def d_s(callback):
 def send_dorm(callback):
     bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
 
-    if "first" in callback.data:
+    if "1" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Первое общежитие*\n\n"
-                 "Ближайшая остановка: КАИ.",
+            text=constants.dorms["1"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.dorms["first"]["latitude"],
-            longitude=constants.dorms["first"]["longitude"]
+            latitude=constants.dorms["1"]["latitude"],
+            longitude=constants.dorms["1"]["longitude"]
         )
-    elif "second" in callback.data:
+    elif "2" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Второе общежитие*\n\n"
-                 "Ближайшая остановка: КАИ.\n"
-                 "Есть столовая.",
+            text=constants.dorms["2"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.dorms["second"]["latitude"],
-            longitude=constants.dorms["second"]["longitude"]
+            latitude=constants.dorms["2"]["latitude"],
+            longitude=constants.dorms["2"]["longitude"]
         )
-    elif "third" in callback.data:
+    elif "3" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Третье общежитие*\n\n"
-                 "Ближайшие остановки: Попова, Пионерская, Губкина, ТД Риф Эль.\n"
-                 "Есть столовая.",
+            text=constants.dorms["3"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.dorms["third"]["latitude"],
-            longitude=constants.dorms["third"]["longitude"]
+            latitude=constants.dorms["3"]["latitude"],
+            longitude=constants.dorms["3"]["longitude"]
         )
-    elif "fourth" in callback.data:
+    elif "4" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Четвёртое общежитие*\n\n"
-                 "Ближайшие остановки: Солнышко, Короленко, Октябрьская, Голубятникова.",
+            text=constants.dorms["4"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.dorms["fourth"]["latitude"],
-            longitude=constants.dorms["fourth"]["longitude"]
+            latitude=constants.dorms["4"]["latitude"],
+            longitude=constants.dorms["4"]["longitude"]
         )
-    elif "fifth" in callback.data:
+    elif "5" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Пятое общежитие*\n\n"
-                 "Ближайшие остановки: Абжалилова, Кооперативный институт, Патриса Лумумбы, парк Горького.\n"
-                 "Есть столовая.",
+            text=constants.dorms["5"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.dorms["fifth"]["latitude"],
-            longitude=constants.dorms["fifth"]["longitude"]
+            latitude=constants.dorms["5"]["latitude"],
+            longitude=constants.dorms["5"]["longitude"]
         )
-    elif "sixth" in callback.data:
+    elif "6" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Шестое общежитие*\n\n"
-                 "Ближайшие остановки: Вишневского, Товарищеская, Достоевского, Калинина.",
+            text=constants.dorms["6"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.dorms["sixth"]["latitude"],
-            longitude=constants.dorms["sixth"]["longitude"]
+            latitude=constants.dorms["6"]["latitude"],
+            longitude=constants.dorms["6"]["longitude"]
         )
-    elif "seventh" in callback.data:
+    elif "7" in callback.data:
         bot.delete_message(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id
         )
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text="*Седьмое общежитие*\n\n"
-                 "Ближайшие остановки: Вишневского, Товарищеская, Достоевского, Калинина.",
+            text=constants.dorms["7"]["description"],
             parse_mode="Markdown"
         )
         bot.send_location(
             chat_id=callback.message.chat.id,
-            latitude=constants.dorms["seventh"]["latitude"],
-            longitude=constants.dorms["seventh"]["longitude"]
+            latitude=constants.dorms["7"]["latitude"],
+            longitude=constants.dorms["7"]["longitude"]
         )
 
 @bot.message_handler(commands=["settings"])
@@ -576,8 +539,7 @@ def remember_student_card_number(message):
 def reverseweek(message):
     bot.send_message(
         chat_id=message.chat.id,
-        text="*You can:*\n"
-             "/reverseweek - to show whether week is even or odd correctly",
+        text=constants.YOU_CAN,
         parse_mode="Markdown"
     )
 
@@ -618,5 +580,4 @@ def unknown_message(message):
         parse_mode="Markdown"
     )
 
-print("Bot was launched!")
 bot.polling()

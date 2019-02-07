@@ -1,3 +1,4 @@
+from constants import SCHEDULE_URL
 from constants import emoji
 from constants import week
 
@@ -23,51 +24,68 @@ def is_week_reversed():
         return True if week_file.read() == "True" else False
 
 def reverse_week_in_file():
-    is_true = is_week_reversed()
-
     with open("is_week_reversed", "w") as week_file:
-        week_file.write("False") if is_true else week_file.write("True")
+        week_file.write("False") if is_week_reversed() else week_file.write("True")
 
 # /classes & /exams
 def get_schedule(type, kind, group_number, next=False):
-    def get_group_id(group_number):
-        params = (
-            ('p_p_id', 'pubStudentSchedule_WAR_publicStudentSchedule10'),
-            ('p_p_lifecycle', '2'),
-            ('p_p_resource_id', 'getGroupsURL'),
-            ('query', group_number)
+    TODAYS_WEEKDAY = datetime.today().isoweekday()
+
+    # Helper for GET & POST
+    def get_params(resource_id):
+        return (
+            ("p_p_id", "pubStudentSchedule_WAR_publicStudentSchedule10"),
+            ("p_p_lifecycle", "2"),
+            ("p_p_resource_id", resource_id)
         )
-        return get('https://kai.ru/raspisanie', params=params).json()[0]["id"]
     
-    params = (
-        ('p_p_id', 'pubStudentSchedule_WAR_publicStudentSchedule10'),
-        ('p_p_lifecycle', '2'),
-        ('p_p_resource_id', "schedule" if type == "classes" else "examSchedule"),
-    )
-    data = {
-        'groupId': get_group_id(group_number),
-    }
-    response = post('https://kai.ru/raspisanie', params=params, data=data).json()
+    # GET group_id
+    def get_group_id(group_number):
+        return get(
+            url=SCHEDULE_URL,
+            params=get_params("getGroupsURL") + tuple([("query", group_number)])
+        ).json()[0]["id"]
+    
+    # POST schedule or examSchedule
+    response = post(
+        url=SCHEDULE_URL,
+        params=get_params("schedule" if type == "classes" else "examSchedule"),
+        data={ "groupId": get_group_id(group_number) }
+    ).json()
+
+    if not response:
+        if kind == "today's":
+            weekday = TODAYS_WEEKDAY
+        elif kind == "tomorrow's":
+            weekday = TODAYS_WEEKDAY + 1
+        else:
+            weekday = kind
+    
+        return "".join([
+            "*{weekday}*\n\n".format(weekday=week[weekday]) if weekday else "",
+            "Нет данных"
+        ])
 
     if type == "classes":
         if kind == "today's":
-            todays_weekday = datetime.today().isoweekday()
             schedule = beautify_classes(
-                json_response=response["{todays_weekday}".format(todays_weekday=todays_weekday)],
-                weekday=todays_weekday
+                json_response=response[str(TODAYS_WEEKDAY)],
+                weekday=TODAYS_WEEKDAY
             )
         elif kind == "tomorrow's":
-            tomorrows_weekday = datetime.today().isoweekday() + 1
             schedule = beautify_classes(
-                json_response=response["{tomorrows_weekday}".format(tomorrows_weekday=tomorrows_weekday)],
-                weekday=tomorrows_weekday
+                json_response=response[str(TODAYS_WEEKDAY + 1)],
+                weekday=TODAYS_WEEKDAY + 1
             )
         else:
-            schedule = beautify_classes(
-                json_response=response["{weekday}".format(weekday=kind)],
-                weekday=kind,
-                next=next
-            )
+            if str(kind) in response.keys():
+                schedule = beautify_classes(
+                    json_response=response[str(kind)],
+                    weekday=kind,
+                    next=next
+                )
+            else:
+                return "*{weekday}*\n\nВыходной".format(weekday=week[kind])
     else:
         schedule = beautify_exams(response)
 
@@ -75,18 +93,24 @@ def get_schedule(type, kind, group_number, next=False):
 
 def beautify_classes(json_response, weekday, next=False):
     schedule = ""
+    is_day_off = False
     
     for subject in json_response:
+        # No subjects - no schedule. For day-offs
+        is_day_off = "День консультаций" in subject["disciplName"] or "Военная подготовка" in subject["disciplName"]
+        if is_day_off:
+            break
+    
         # Removing extraspaces
         for property in subject:
             subject[property] = " ".join(subject[property].split())
     
         # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
         if not next:
-            if not is_even() and "чет" == subject["dayDate"] or is_even() and "неч" == subject["dayDate"]:
+            if not is_even() and "чет" in subject["dayDate"] or is_even() and "неч" in subject["dayDate"]:
                 continue
         else:
-            if is_even() and "чет" == subject["dayDate"] or not is_even() and "неч" == subject["dayDate"]:
+            if is_even() and "чет" in subject["dayDate"] or not is_even() and "неч" in subject["dayDate"]:
                 continue
     
         # Make buildings look beautiful
@@ -95,7 +119,7 @@ def beautify_classes(json_response, weekday, next=False):
         elif subject["buildNum"] == "1":
             building = "1ый дом"
         else:
-            building = ''.join([subject["buildNum"], "ка"])
+            building = "".join([subject["buildNum"], "ка"])
     
         time_place = "\n\n*[ {time} ][ {building} ][ {auditorium} ]*".format(
             time=subject["dayTime"],
@@ -123,16 +147,16 @@ def beautify_classes(json_response, weekday, next=False):
         department = "\n§  {department}".format(department=subject["orgUnitName"]) if subject["orgUnitName"] else ""
     
         # Concatenate all the stuff above
-        schedule = ''.join([schedule, time_place, date, subject_name, subject_type, teacher, department])
-
-    return ''.join([
+        schedule = "".join([schedule, time_place, date, subject_name, subject_type, teacher, department])
+    
+    return "".join([
         "*{weekday}*".format(weekday=week[weekday]),
-        schedule if schedule and not "День консультаций" in subject["disciplName"] else "\n\nВыходной"
+        schedule if schedule and not is_day_off else "\n\nВыходной"
     ])
 
 def beautify_exams(json_response):
     schedule = ""
 
-    # Have no data to parse exams json response
+    # Have no data to parse exams-json-response
 
     return schedule
