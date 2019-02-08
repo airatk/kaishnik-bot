@@ -26,220 +26,6 @@ def start(message):
         reply_markup=keyboards.settings_entry()
     )
 
-@bot.message_handler(commands=["classes"])
-def classes(message):
-    bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
-    bot.send_message(
-        chat_id=message.chat.id,
-        text="Тебе нужно расписание на:",
-        reply_markup=keyboards.schedule_type()
-    )
-
-@bot.callback_query_handler(
-    func=lambda callback:
-        callback.data == "today's" or callback.data == "tomorrow's"
-)
-def one_day_schedule(callback):
-    bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        text=helpers.get_schedule(
-            type="classes",
-            kind=callback.data
-        ),
-        parse_mode="Markdown"
-    )
-
-@bot.callback_query_handler(
-    func=lambda callback:
-        "weekly" in callback.data
-)
-def weekly_schedule(callback):
-    bot.delete_message(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id
-    )
-    
-    for weekday in constants.week:
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=helpers.get_schedule(
-                type="classes",
-                kind=weekday,
-                next="next" in callback.data
-            ),
-            parse_mode="Markdown"
-        )
-
-@bot.message_handler(commands=["exams"])
-def exams(message):
-    bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
-    bot.send_message(
-        chat_id=message.chat.id,
-        text=helpers.get_schedule(
-            type="exams",
-            kind=None,
-            group_number=student.student.get_group_number()
-        ),
-        parse_mode="Markdown"
-    )
-
-@bot.message_handler(commands=["week"])
-def week(message):
-    bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
-    bot.send_message(
-        chat_id=message.chat.id,
-        text=helpers.get_week()
-    )
-
-@bot.message_handler(commands=["score"])
-def score(message):
-    bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
-    bot.send_message(
-        chat_id=message.chat.id,
-        text="Выбери номер семестра:",
-        reply_markup=keyboards.semester_dailer()
-    )
-
-@bot.callback_query_handler(
-    func=lambda callback:
-        "s_r" in callback.data
-)
-def s_r(callback):
-    bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        text="Выбери предмет:" #if is_semester else "Этот семестр пока не доступен.",
-        # TODO: implement the thing below
-        # reply_markup=keyboards.subject_chooser()
-    )
-
-@bot.message_handler(commands=["locations"])
-def locations(message):
-    bot.send_chat_action(chat_id=message.chat.id, action="find_location")
-
-    bot.send_message(
-        chat_id=message.chat.id,
-        text="Аж три варианта на выбор:",
-        reply_markup=keyboards.choose_location_type()
-    )
-
-@bot.callback_query_handler(
-    func=lambda callback:
-        callback.data == "buildings"
-)
-def b_s(callback):
-    bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        text="У родного КАИ 8 учебных зданий и 1 спортивный комплекс:",
-        reply_markup=keyboards.buildings_dailer()
-    )
-
-@bot.callback_query_handler(
-    func=lambda callback:
-        "b_s" in callback.data
-)
-def send_building(callback):
-    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-
-    bot.delete_message(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id
-    )
-    
-    number = callback.data[4:]
-
-    bot.send_message(
-        chat_id=callback.message.chat.id,
-        text=constants.buildings[number]["description"],
-        parse_mode="Markdown"
-    )
-    bot.send_location(
-        chat_id=callback.message.chat.id,
-        latitude=constants.buildings[number]["latitude"],
-        longitude=constants.buildings[number]["longitude"]
-    )
-
-@bot.callback_query_handler(
-    func=lambda callback:
-        callback.data == "libraries"
-)
-def l_s(callback):
-    bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        text="У родного КАИ 5 библиотек:",
-        reply_markup=keyboards.libraries_dailer()
-    )
-
-@bot.callback_query_handler(
-    func=lambda callback:
-        "l_s" in callback.data
-)
-def send_library(callback):
-    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-
-    bot.delete_message(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id
-    )
-    
-    number = callback.data[4:]
-    building = constants.libraries[number]["building"]
-    
-    bot.send_message(
-        chat_id=callback.message.chat.id,
-        text=constants.libraries[number]["description"],
-        parse_mode="Markdown"
-    )
-    bot.send_location(
-        chat_id=callback.message.chat.id,
-        latitude=constants.buildings[building]["latitude"],
-        longitude=constants.buildings[building]["longitude"]
-    )
-
-@bot.callback_query_handler(
-    func=lambda callback:
-        callback.data == "dorms"
-)
-def d_s(callback):
-    bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        text="У родного КАИ 7 общежитий:",
-        reply_markup=keyboards.dorms_dailer()
-    )
-
-@bot.callback_query_handler(
-    func=lambda callback:
-        "d_s" in callback.data
-)
-def send_dorm(callback):
-    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-
-    bot.delete_message(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id
-    )
-
-    number = callback.data[4:]
-
-    bot.send_message(
-        chat_id=callback.message.chat.id,
-        text=constants.dorms[number]["description"],
-        parse_mode="Markdown"
-    )
-    bot.send_location(
-        chat_id=callback.message.chat.id,
-        latitude=constants.dorms[number]["latitude"],
-        longitude=constants.dorms[number]["longitude"]
-    )
-
 @bot.message_handler(commands=["settings"])
 def settings(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -377,6 +163,287 @@ def set_student_card_number(message):
             text="Если хочешь изменить настройки, начни с соответствующей команды.",
             reply_markup=keyboards.settings_entry()
         )
+
+@bot.message_handler(
+    func=lambda m:
+        student.student.get_institute() is None or
+        student.student.get_year() is None or
+        student.student.get_group_number_for_schedule() is None or
+        student.student.get_group_number_for_score() is None or
+        student.student.get_name() is None or
+        student.student.get_student_card_number() is None
+)
+def unsetup(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Прежде пройди настроку полностью.",
+        reply_markup=keyboards.settings_entry()
+    )
+
+@bot.callback_query_handler(
+    func=lambda m:
+        student.student.get_institute() is None or
+        student.student.get_year() is None or
+        student.student.get_group_number_for_schedule() is None or
+        student.student.get_group_number_for_score() is None or
+        student.student.get_name() is None or
+        student.student.get_student_card_number() is None
+)
+def unsetup(callback):
+    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+
+    bot.send_message(
+        chat_id=callback.message.chat.id,
+        text="Прежде пройди настроку полностью.",
+        reply_markup=keyboards.settings_entry()
+    )
+
+@bot.message_handler(commands=["classes"])
+def classes(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Тебе нужно расписание на:",
+        reply_markup=keyboards.schedule_type()
+    )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        callback.data == "today's" or callback.data == "tomorrow's"
+)
+def one_day_schedule(callback):
+    bot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text=helpers.get_schedule(
+            type="classes",
+            kind=callback.data
+        ),
+        parse_mode="Markdown"
+    )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        "weekly" in callback.data
+)
+def weekly_schedule(callback):
+    bot.delete_message(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id
+    )
+    
+    for weekday in constants.week:
+        bot.send_message(
+            chat_id=callback.message.chat.id,
+            text=helpers.get_schedule(
+                type="classes",
+                kind=weekday,
+                next="next" in callback.data
+            ),
+            parse_mode="Markdown"
+        )
+
+@bot.message_handler(commands=["exams"])
+def exams(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text=helpers.get_schedule(
+            type="exams",
+            kind=None,
+        ),
+        parse_mode="Markdown"
+    )
+
+@bot.message_handler(commands=["week"])
+def week(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text=helpers.get_week()
+    )
+
+@bot.message_handler(commands=["score"])
+def score(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Выбери номер семестра:",
+        reply_markup=keyboards.semester_dailer()
+    )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        "s_r" in callback.data
+)
+def s_r(callback):
+    bot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="Выбери предмет:",
+        reply_markup=keyboards.subject_chooser(callback.data[4:])
+    )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        "s_t all" in callback.data
+)
+def show_score(callback):
+    bot.delete_message(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id
+    )
+
+    callback_data = callback.data[8:].split()
+
+    for subject in range(int(callback_data[0])):
+        bot.send_message(
+            chat_id=callback.message.chat.id,
+            text=helpers.get_subject_score(subject, callback_data[1]),
+            parse_mode="Markdown"
+        )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        "s_t" in callback.data
+)
+def show_score(callback):
+    callback_data = callback.data[4:].split()
+
+    bot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text=helpers.get_subject_score(int(callback_data[0]), callback_data[1]),
+        parse_mode="Markdown"
+    )
+
+@bot.message_handler(commands=["locations"])
+def locations(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="find_location")
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Аж три варианта на выбор:",
+        reply_markup=keyboards.choose_location_type()
+    )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        callback.data == "buildings"
+)
+def b_s(callback):
+    bot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="У родного КАИ 8 учебных зданий и 1 спортивный комплекс:",
+        reply_markup=keyboards.buildings_dailer()
+    )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        "b_s" in callback.data
+)
+def send_building(callback):
+    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+
+    bot.delete_message(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id
+    )
+    
+    number = callback.data[4:]
+
+    bot.send_message(
+        chat_id=callback.message.chat.id,
+        text=constants.buildings[number]["description"],
+        parse_mode="Markdown"
+    )
+    bot.send_location(
+        chat_id=callback.message.chat.id,
+        latitude=constants.buildings[number]["latitude"],
+        longitude=constants.buildings[number]["longitude"]
+    )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        callback.data == "libraries"
+)
+def l_s(callback):
+    bot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="У родного КАИ 5 библиотек:",
+        reply_markup=keyboards.libraries_dailer()
+    )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        "l_s" in callback.data
+)
+def send_library(callback):
+    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+
+    bot.delete_message(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id
+    )
+    
+    number = callback.data[4:]
+    building = constants.libraries[number]["building"]
+    
+    bot.send_message(
+        chat_id=callback.message.chat.id,
+        text=constants.libraries[number]["description"],
+        parse_mode="Markdown"
+    )
+    bot.send_location(
+        chat_id=callback.message.chat.id,
+        latitude=constants.buildings[building]["latitude"],
+        longitude=constants.buildings[building]["longitude"]
+    )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        callback.data == "dorms"
+)
+def d_s(callback):
+    bot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="У родного КАИ 7 общежитий:",
+        reply_markup=keyboards.dorms_dailer()
+    )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        "d_s" in callback.data
+)
+def send_dorm(callback):
+    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+
+    bot.delete_message(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id
+    )
+
+    number = callback.data[4:]
+
+    bot.send_message(
+        chat_id=callback.message.chat.id,
+        text=constants.dorms[number]["description"],
+        parse_mode="Markdown"
+    )
+    bot.send_location(
+        chat_id=callback.message.chat.id,
+        latitude=constants.dorms[number]["latitude"],
+        longitude=constants.dorms[number]["longitude"]
+    )
 
 @bot.message_handler(
     func=lambda m:

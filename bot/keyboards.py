@@ -9,6 +9,7 @@ from constants import libraries
 from constants import dorms
 from constants import institutes
 from helpers   import get_dict_of_list
+from helpers   import get_score_table
 
 # /start
 def settings_entry():
@@ -29,13 +30,34 @@ def schedule_type():
 
 # /score
 def semester_dailer():
+    from student import student
+
     semester_dailer_keyboard = InlineKeyboardMarkup(row_width=4)
+    semesters_number = int(student.get_year() if student.get_year() else 1)*2 + 1
     
     semester_dailer_keyboard.add(*[
-        InlineKeyboardButton(text=str(s_r), callback_data="s_r {s_r}".format(s_r=s_r)) for s_r in range(1, 13)
+        InlineKeyboardButton(text=str(s_r), callback_data="s_r {s_r}".format(s_r=s_r)) for s_r in range(1, semesters_number)
     ])
 
     return semester_dailer_keyboard
+
+def subject_chooser(semester):
+    subject_chooser_keyboard = InlineKeyboardMarkup(row_width=1)
+    
+    score_table = get_score_table(semester)
+    
+    subject_chooser_keyboard.add(InlineKeyboardButton(
+        text="Показать все",
+        callback_data="s_t all {n} {s}".format(n=len(score_table), s=semester))
+    )
+    subject_chooser_keyboard.add(*[
+        InlineKeyboardButton(
+            text=subject[1][:len(subject[1]) - 6],
+            callback_data="s_t {n} {s}".format(n=int(subject[0]) - 1, s=semester)
+        ) for subject in score_table
+    ])
+
+    return subject_chooser_keyboard
 
 # /locations
 def choose_location_type():

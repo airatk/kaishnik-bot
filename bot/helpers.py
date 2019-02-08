@@ -169,3 +169,52 @@ def get_dict_of_list(type, params):
     for i in range(1, len(keys)): keys[i - 1] = keys[i - 1][:keys[i - 1].find(keys[i])]
 
     return dict(zip(keys, values))
+
+def get_score_table(semester):
+    from student import student
+
+    data = {
+        "p_sub":  '',                                     # Useless neccessary thing
+        "p_fac":   student.get_institute(),               # Institute
+        'p_kurs':  student.get_year(),                    # Year
+        'p_group': student.get_group_number_for_score(),  # Group ID for score
+        'p_stud':  student.get_name(),                    # Student ID
+        'p_zach':  student.get_student_card_number(),     # Student card number
+        'semestr': semester                               # Semester
+    }
+    
+    page = post(SCORE_URL, data=data).content.decode('CP1251')
+    soup = BeautifulSoup(page, features="html.parser")
+    table = soup.html.find("table", { "id": "reyt" })
+
+    subjects = []
+    for row in table.find_all('tr'):
+        subject = []
+        for data in row.find_all('td'):
+            subject.append(data.text if data.text else "-")
+        subjects.append(subject)
+    subjects = subjects[2:]
+
+    return subjects
+
+def get_subject_score(subjects_num, semester):
+    subject = get_score_table(semester)[subjects_num]
+
+    title = "*{title}*".format(title=subject[1][:len(subject[1]) - 6])
+
+    if "экз" in subject[1]:
+        type = "\n_экзамен_"
+    else:
+        type = "\n_зачёт_"
+
+    certification1 = "\n\n• 1 аттестация: {gained}/{max}".format(gained=subject[2], max=subject[3])
+    certification2 = "\n• 2 аттестация: {gained}/{max}".format(gained=subject[4], max=subject[5])
+    certification3 = "\n• 3 аттестация: {gained}/{max}".format(gained=subject[6], max=subject[7])
+
+    additional = "\n- Допбаллы: {gained}".format(gained=subject[9] if subject[9] else "-")
+    debts = "\n- Долги: {gained}".format(gained=subject[10] if subject[10] else "-")
+
+    preresult = "\n\nПредоценка: {preresult}".format(preresult=subject[8])
+    result = "\nОценка: {mark} ({result})".format(mark=subject[12], result=subject[11])
+
+    return "".join([title, type, certification1, certification2, certification3, additional, debts, preresult, result])
