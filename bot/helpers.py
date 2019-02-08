@@ -1,10 +1,12 @@
 from constants import SCHEDULE_URL
+from constants import SCORE_URL
 from constants import emoji
 from constants import week
 
 from datetime import datetime
 from requests import get
 from requests import post
+from bs4      import BeautifulSoup
 
 # Set MSK timezone
 import os, time; os.environ["TZ"] = "MSK"; time.tzset()
@@ -28,29 +30,20 @@ def reverse_week_in_file():
         week_file.write("False") if is_week_reversed() else week_file.write("True")
 
 # /classes & /exams
-def get_schedule(type, kind, group_number, next=False):
+def get_schedule(type, kind, next=False):
+    from student import student
+
     TODAYS_WEEKDAY = datetime.today().isoweekday()
 
-    # Helper for GET & POST
-    def get_params(resource_id):
-        return (
-            ("p_p_id", "pubStudentSchedule_WAR_publicStudentSchedule10"),
-            ("p_p_lifecycle", "2"),
-            ("p_p_resource_id", resource_id)
-        )
-    
-    # GET group_id
-    def get_group_id(group_number):
-        return get(
-            url=SCHEDULE_URL,
-            params=get_params("getGroupsURL") + tuple([("query", group_number)])
-        ).json()[0]["id"]
-    
-    # POST schedule or examSchedule
+    params = (
+        ("p_p_id", "pubStudentSchedule_WAR_publicStudentSchedule10"),
+        ("p_p_lifecycle", "2"),
+        ("p_p_resource_id", "schedule" if type == "classes" else "examSchedule")
+    )
     response = post(
         url=SCHEDULE_URL,
-        params=get_params("schedule" if type == "classes" else "examSchedule"),
-        data={ "groupId": get_group_id(group_number) }
+        params=params,
+        data={ "groupId": student.get_group_number_for_schedule() }
     ).json()
 
     if not response:
@@ -63,7 +56,8 @@ def get_schedule(type, kind, group_number, next=False):
     
         return "".join([
             "*{weekday}*\n\n".format(weekday=week[weekday]) if weekday else "",
-            "Нет данных"
+            "Нет данных",
+            "" if weekday else "."
         ])
 
     if type == "classes":
@@ -78,7 +72,7 @@ def get_schedule(type, kind, group_number, next=False):
                 weekday=TODAYS_WEEKDAY + 1
             )
         else:
-            if str(kind) in response.keys():
+            if str(kind) in response:
                 schedule = beautify_classes(
                     json_response=response[str(kind)],
                     weekday=kind,
@@ -160,3 +154,18 @@ def beautify_exams(json_response):
     # Have no data to parse exams-json-response
 
     return schedule
+
+# /score & associated stuff
+def get_dict_of_list(type, params):
+    page = get(url=SCORE_URL, params=params).content.decode("CP1251")
+    soup = BeautifulSoup(page, "html.parser")
+
+    selector = soup.find(name="select", attrs={ "name": type })
+
+    keys = [option.text for option in selector.find_all("option")][1:]
+    values = [option["value"] for option in selector.find_all("option")][1:]
+
+    # Fixing bad quality response
+    for i in range(1, len(keys)): keys[i - 1] = keys[i - 1][:keys[i - 1].find(keys[i])]
+
+    return dict(zip(keys, values))

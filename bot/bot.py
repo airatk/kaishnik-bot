@@ -40,14 +40,13 @@ def classes(message):
     func=lambda callback:
         callback.data == "today's" or callback.data == "tomorrow's"
 )
-def daily_schedule(callback):
+def one_day_schedule(callback):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text=helpers.get_schedule(
             type="classes",
-            kind=callback.data,
-            group_number=student.student.get_group_number()
+            kind=callback.data
         ),
         parse_mode="Markdown"
     )
@@ -62,13 +61,12 @@ def weekly_schedule(callback):
         message_id=callback.message.message_id
     )
     
-    for weekday in constants.week.keys():
+    for weekday in constants.week:
         bot.send_message(
             chat_id=callback.message.chat.id,
             text=helpers.get_schedule(
                 type="classes",
                 kind=weekday,
-                group_number=student.student.get_group_number(),
                 next="next" in callback.data
             ),
             parse_mode="Markdown"
@@ -101,7 +99,24 @@ def week(message):
 def score(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    pass
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Выбери номер семестра:",
+        reply_markup=keyboards.semester_dailer()
+    )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        "s_r" in callback.data
+)
+def s_r(callback):
+    bot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="Выбери предмет:" #if is_semester else "Этот семестр пока не доступен.",
+        # TODO: implement the thing below
+        # reply_markup=keyboards.subject_chooser()
+    )
 
 @bot.message_handler(commands=["locations"])
 def locations(message):
@@ -132,147 +147,29 @@ def b_s(callback):
 def send_building(callback):
     bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
 
-    if "1" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.buildings["1"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.buildings["1"]["latitude"],
-            longitude=constants.buildings["1"]["longitude"]
-        )
-    elif "2" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.buildings["2"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.buildings["2"]["latitude"],
-            longitude=constants.buildings["2"]["longitude"]
-        )
-    elif "3" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.buildings["3"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.buildings["3"]["latitude"],
-            longitude=constants.buildings["3"]["longitude"]
-        )
-    elif "4" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.buildings["4"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.buildings["4"]["latitude"],
-            longitude=constants.buildings["4"]["longitude"]
-        )
-    elif "5" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.buildings["5"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.buildings["5"]["latitude"],
-            longitude=constants.buildings["5"]["longitude"]
-        )
-    elif "6" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.buildings["6"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.buildings["6"]["latitude"],
-            longitude=constants.buildings["6"]["longitude"]
-        )
-    elif "7" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.buildings["7"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.buildings["7"]["latitude"],
-            longitude=constants.buildings["7"]["longitude"]
-        )
-    elif "8" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.buildings["8"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.buildings["8"]["latitude"],
-            longitude=constants.buildings["8"]["longitude"]
-        )
-    elif "СК Олимп" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.buildings["СК Олимп"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.buildings["СК Олимп"]["latitude"],
-            longitude=constants.buildings["СК Олимп"]["longitude"]
-        )
+    bot.delete_message(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id
+    )
+    
+    number = callback.data[4:]
+
+    bot.send_message(
+        chat_id=callback.message.chat.id,
+        text=constants.buildings[number]["description"],
+        parse_mode="Markdown"
+    )
+    bot.send_location(
+        chat_id=callback.message.chat.id,
+        latitude=constants.buildings[number]["latitude"],
+        longitude=constants.buildings[number]["longitude"]
+    )
 
 @bot.callback_query_handler(
     func=lambda callback:
         callback.data == "libraries"
 )
-def b_s(callback):
+def l_s(callback):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -287,81 +184,24 @@ def b_s(callback):
 def send_library(callback):
     bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
 
-    if "1" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.libraries["1"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.buildings["1"]["latitude"],
-            longitude=constants.buildings["1"]["longitude"]
-        )
-    elif "2" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.libraries["2"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.buildings["5"]["latitude"],
-            longitude=constants.buildings["5"]["longitude"]
-        )
-    elif "3" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.libraries["3"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.buildings["3"]["latitude"],
-            longitude=constants.buildings["3"]["longitude"]
-        )
-    elif "9" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.libraries["9"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.buildings["7"]["latitude"],
-            longitude=constants.buildings["7"]["longitude"]
-        )
-    elif "научно-техническая" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.libraries["научно-техническая"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.buildings["8"]["latitude"],
-            longitude=constants.buildings["8"]["longitude"]
-        )
+    bot.delete_message(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id
+    )
+    
+    number = callback.data[4:]
+    building = constants.libraries[number]["building"]
+    
+    bot.send_message(
+        chat_id=callback.message.chat.id,
+        text=constants.libraries[number]["description"],
+        parse_mode="Markdown"
+    )
+    bot.send_location(
+        chat_id=callback.message.chat.id,
+        latitude=constants.buildings[building]["latitude"],
+        longitude=constants.buildings[building]["longitude"]
+    )
 
 @bot.callback_query_handler(
     func=lambda callback:
@@ -382,111 +222,23 @@ def d_s(callback):
 def send_dorm(callback):
     bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
 
-    if "1" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.dorms["1"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.dorms["1"]["latitude"],
-            longitude=constants.dorms["1"]["longitude"]
-        )
-    elif "2" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.dorms["2"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.dorms["2"]["latitude"],
-            longitude=constants.dorms["2"]["longitude"]
-        )
-    elif "3" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.dorms["3"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.dorms["3"]["latitude"],
-            longitude=constants.dorms["3"]["longitude"]
-        )
-    elif "4" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.dorms["4"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.dorms["4"]["latitude"],
-            longitude=constants.dorms["4"]["longitude"]
-        )
-    elif "5" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.dorms["5"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.dorms["5"]["latitude"],
-            longitude=constants.dorms["5"]["longitude"]
-        )
-    elif "6" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.dorms["6"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.dorms["6"]["latitude"],
-            longitude=constants.dorms["6"]["longitude"]
-        )
-    elif "7" in callback.data:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        bot.send_message(
-            chat_id=callback.message.chat.id,
-            text=constants.dorms["7"]["description"],
-            parse_mode="Markdown"
-        )
-        bot.send_location(
-            chat_id=callback.message.chat.id,
-            latitude=constants.dorms["7"]["latitude"],
-            longitude=constants.dorms["7"]["longitude"]
-        )
+    bot.delete_message(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id
+    )
+
+    number = callback.data[4:]
+
+    bot.send_message(
+        chat_id=callback.message.chat.id,
+        text=constants.dorms[number]["description"],
+        parse_mode="Markdown"
+    )
+    bot.send_location(
+        chat_id=callback.message.chat.id,
+        latitude=constants.dorms[number]["latitude"],
+        longitude=constants.dorms[number]["longitude"]
+    )
 
 @bot.message_handler(commands=["settings"])
 def settings(message):
@@ -494,49 +246,143 @@ def settings(message):
 
     bot.send_message(
         chat_id=message.chat.id,
-        text="Отправь номер своей группы в формате: 1234",
-        reply_markup=keyboards.remove_keyboard()
+        text="Выбери свой институт (привет, ФМФ" + constants.emoji["moon"] + ").",
+        reply_markup=keyboards.institute_setter()
     )
+
+@bot.message_handler(
+    func=lambda m:
+        m.text in constants.institutes
+)
+def set_institute(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    student.student = student.Student(constants.institutes[message.text])
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Выбери свой курс.",
+        reply_markup=keyboards.year_setter()
+    )
+
+@bot.message_handler(
+    func=lambda m:
+        True if re.fullmatch("[1-6]", m.text) else False
+)
+def set_year(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    if student.student.get_institute() is not None and \
+       student.student.get_year() is None:
+        student.student.set_year(message.text)
+
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Выбери свою группу.",
+            reply_markup=keyboards.group_number_setter()
+        )
+    else:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Если хочешь изменить настройки, начни с соответствующей команды.",
+            reply_markup=keyboards.settings_entry()
+        )
 
 @bot.message_handler(
     func=lambda m:
         True if re.fullmatch("[1-59][1-6][0-9][0-9]", m.text) else False
 )
-def remember_group_number(message):
+def set_group_number(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    student.student.set_group_number(message.text)
-    
-    bot.send_message(
-        chat_id=message.chat.id,
-        text="Отправь номер своей зачётки в формате: 123456",
-        reply_markup=keyboards.remove_keyboard()
-    )
+    if student.student.get_institute() is not None and \
+       student.student.get_year() is not None and \
+       student.student.get_group_number_for_schedule() is None:
+        student.student.set_group_number_for_schedule(message.text)
+        student.student.set_group_number_for_score(message.text)
+
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Выбери себя.",
+            reply_markup=keyboards.name_setter()
+        )
+    else:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Если хочешь изменить настройки, начни с соответствующей команды.",
+            reply_markup=keyboards.settings_entry()
+        )
+
+@bot.message_handler(
+    func=lambda m:
+        student.student.get_institute() is not None and \
+        student.student.get_year() is not None and \
+        student.student.get_group_number_for_score() is not None and \
+        m.text in helpers.get_dict_of_list(
+            type="p_stud",
+            params=(
+                ("p_fac", student.student.get_institute()),
+                ("p_kurs", student.student.get_year()),
+                ("p_group", student.student.get_group_number_for_score())
+            )
+        )
+)
+def set_name(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    if student.student.get_institute() is not None and \
+       student.student.get_year() is not None and \
+       student.student.get_group_number_for_schedule() is not None and \
+       student.student.get_name() is None:
+        student.student.set_name(message.text)
+
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Отправь номер своей зачётки в формате: 123456 (интересный факт - номер твоего студенческого и номер твоей зачётки одинаковы!).",
+            reply_markup=keyboards.remove_keyboard()
+        )
+    else:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Если хочешь изменить настройки, начни с соответствующей команды.",
+            reply_markup=keyboards.settings_entry()
+        )
 
 @bot.message_handler(
     func=lambda m:
         True if re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9]", m.text) else False
 )
-def remember_student_card_number(message):
+def set_student_card_number(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    student.student.set_student_card_number(message.text)
-    
-    bot.send_message(
-        chat_id=message.chat.id,
-        text="Запомнено!",
-    )
-    bot.send_message(
-        chat_id=message.chat.id,
-        text=constants.replies_to_unknown_command[0], # Coincidencially this string is on replies_to_unknown_command list :)
-        parse_mode="Markdown"
-    )
+    if student.student.get_institute() is not None and \
+       student.student.get_year() is not None and \
+       student.student.get_group_number_for_score() is not None and \
+       student.student.get_name() is not None and \
+       student.student.get_student_card_number() is None:
+        student.student.set_student_card_number(message.text)
+
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Запомнено!",
+        )
+        bot.send_message(
+            chat_id=message.chat.id,
+            text=constants.replies_to_unknown_command[0], # Coincidencially this string is on replies_to_unknown_command list :)
+            parse_mode="Markdown"
+        )
+    else:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Если хочешь изменить настройки, начни с соответствующей команды.",
+            reply_markup=keyboards.settings_entry()
+        )
 
 @bot.message_handler(
     func=lambda m:
         m.chat.id == secrets.CREATOR and m.text == "What can I do?"
 )
-def reverseweek(message):
+def creators_features(message):
     bot.send_message(
         chat_id=message.chat.id,
         text=constants.YOU_CAN,
