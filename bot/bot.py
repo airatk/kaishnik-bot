@@ -58,8 +58,7 @@ def set_institute(message):
 def set_year(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    if student.student.get_institute() is not None and \
-       student.student.get_year() is None:
+    if student.student.get_institute() is not None and student.student.get_year() is None:
         student.student.set_year(message.text)
        
         params = (
@@ -93,9 +92,7 @@ def set_year(message):
 def set_group_number(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    if student.student.get_institute() is not None and \
-       student.student.get_year() is not None and \
-       student.student.get_group_number_for_schedule() is None:
+    if student.student.get_year() is not None and student.student.get_group_number_for_schedule() is None:
         student.student.set_group_number_for_score(message.text)
        
         params = (
@@ -127,9 +124,6 @@ def set_group_number(message):
 
 @bot.message_handler(
     func=lambda m:
-        student.student.get_institute() is not None and \
-        student.student.get_year() is not None and \
-        student.student.get_group_number_for_score() is not None and \
         m.text in helpers.get_dict_of_list(
             type="p_stud",
             params=(
@@ -142,10 +136,7 @@ def set_group_number(message):
 def set_name(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    if student.student.get_institute() is not None and \
-       student.student.get_year() is not None and \
-       student.student.get_group_number_for_schedule() is not None and \
-       student.student.get_name() is None:
+    if student.student.get_group_number_for_schedule() is not None and student.student.get_name() is None:
         student.student.set_name(message.text)
 
         bot.send_message(
@@ -169,11 +160,7 @@ def set_name(message):
 def set_student_card_number(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    if student.student.get_institute() is not None and \
-       student.student.get_year() is not None and \
-       student.student.get_group_number_for_score() is not None and \
-       student.student.get_name() is not None and \
-       student.student.get_student_card_number() is None:
+    if student.student.get_name() is not None and student.student.get_student_card_number() is None:
         student.student.set_student_card_number(message.text)
 
         if helpers.get_score_table(1):
@@ -201,38 +188,18 @@ def set_student_card_number(message):
             reply_markup=keyboards.settings_entry()
         )
 
-@bot.message_handler(
-    func=lambda m:
-        student.student.get_institute() is None or
-        student.student.get_year() is None or
-        student.student.get_group_number_for_schedule() is None or
-        student.student.get_group_number_for_score() is None or
-        student.student.get_name() is None or
-        student.student.get_student_card_number() is None
-)
-def unsetup(message):
+@bot.message_handler(func=lambda m: helpers.is_set_up())
+@bot.callback_query_handler(func=lambda m: helpers.is_set_up())
+def unsetup(callback):
+    try:
+        message = callback.message
+    except:
+        message = callback
+
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
     bot.send_message(
         chat_id=message.chat.id,
-        text="Прежде пройди настроку полностью.",
-        reply_markup=keyboards.settings_entry()
-    )
-
-@bot.callback_query_handler(
-    func=lambda m:
-        student.student.get_institute() is None or
-        student.student.get_year() is None or
-        student.student.get_group_number_for_schedule() is None or
-        student.student.get_group_number_for_score() is None or
-        student.student.get_name() is None or
-        student.student.get_student_card_number() is None
-)
-def unsetup(callback):
-    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-
-    bot.send_message(
-        chat_id=callback.message.chat.id,
         text="Прежде пройди настроку полностью.",
         reply_markup=keyboards.settings_entry()
     )
@@ -257,7 +224,7 @@ def one_day_schedule(callback):
         message_id=callback.message.message_id,
         text=helpers.get_schedule(
             type="classes",
-            kind=callback.data
+            weekday=constants.TODAYS_WEEKDAY if callback.data == "today's" else constants.TODAYS_WEEKDAY + 1
         ),
         parse_mode="Markdown"
     )
@@ -277,7 +244,7 @@ def weekly_schedule(callback):
             chat_id=callback.message.chat.id,
             text=helpers.get_schedule(
                 type="classes",
-                kind=weekday,
+                weekday=weekday,
                 next="next" in callback.data
             ),
             parse_mode="Markdown"
@@ -289,10 +256,7 @@ def exams(message):
 
     bot.send_message(
         chat_id=message.chat.id,
-        text=helpers.get_schedule(
-            type="exams",
-            kind=None,
-        ),
+        text=helpers.get_schedule(type="exams"),
         parse_mode="Markdown"
     )
 

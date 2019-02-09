@@ -11,6 +11,17 @@ from bs4      import BeautifulSoup
 # Set MSK timezone
 import os, time; os.environ["TZ"] = "MSK"; time.tzset()
 
+# No set up - no conversation
+def is_set_up():
+    from student import student
+
+    return student.get_institute() is None or \
+        student.get_year() is None or \
+        student.get_group_number_for_schedule() is None or \
+        student.get_group_number_for_score() is None or \
+        student.get_name() is None or \
+        student.get_student_card_number() is None
+
 # /week
 def get_week():
     return "Текущая неделя чётная." if is_even() else "Текущая неделя нечётная."
@@ -27,10 +38,8 @@ def reverse_week_in_file():
         week_file.write("False") if is_week_reversed() else week_file.write("True")
 
 # /classes & /exams
-def get_schedule(type, kind, next=False):
+def get_schedule(type, weekday=None, next=False):
     from student import student
-
-    TODAYS_WEEKDAY = datetime.today().isoweekday()
 
     params = (
         ("p_p_id", "pubStudentSchedule_WAR_publicStudentSchedule10"),
@@ -44,13 +53,6 @@ def get_schedule(type, kind, next=False):
     ).json()
 
     if not response:
-        if kind == "today's":
-            weekday = TODAYS_WEEKDAY
-        elif kind == "tomorrow's":
-            weekday = TODAYS_WEEKDAY + 1
-        else:
-            weekday = kind
-    
         return "".join([
             "*{weekday}*\n\n".format(weekday=week[weekday]) if weekday and weekday != 7 else "",
             "Нет данных",
@@ -58,37 +60,23 @@ def get_schedule(type, kind, next=False):
         ])
 
     if type == "classes":
-        if kind == "today's":
-            if TODAYS_WEEKDAY == 7:
-                return "*Воскресенье*\n\nОднозначно выходной"
+        if weekday == 7:
+            return "*Воскресенье*\n\nОднозначно выходной"
         
+        if str(weekday) in response:
             schedule = beautify_classes(
-                json_response=response[str(TODAYS_WEEKDAY)],
-                weekday=TODAYS_WEEKDAY
-            )
-        elif kind == "tomorrow's":
-            if TODAYS_WEEKDAY + 1 == 7:
-                return "*Воскресенье*\n\nОднозначно выходной"
-        
-            schedule = beautify_classes(
-                json_response=response[str(TODAYS_WEEKDAY + 1)],
-                weekday=TODAYS_WEEKDAY + 1
+                json_response=response[str(weekday)],
+                weekday=weekday,
+                next=next
             )
         else:
-            if str(kind) in response:
-                schedule = beautify_classes(
-                    json_response=response[str(kind)],
-                    weekday=kind,
-                    next=next
-                )
-            else:
-                return "*{weekday}*\n\nВыходной".format(weekday=week[kind])
+            return "*{weekday}*\n\nВыходной".format(weekday=week[weekday])
     else:
         schedule = beautify_exams(response)
 
     return schedule
 
-def beautify_classes(json_response, weekday, next=False):
+def beautify_classes(json_response, weekday, next):
     schedule = ""
     is_day_off = False
     
