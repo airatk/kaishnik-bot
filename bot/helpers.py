@@ -232,3 +232,9 @@ def get_subject_score(subjects_num, semester):
     ])
 
     return "".join([title, type, certification1, certification2, certification3, additional, debts, preresult, result])
+
+# /card
+def get_card():
+    from student import student
+
+    return "Номер твоего студенческого билета и твоей зачётной книжки: *{card}*.".format(card=student.get_student_card_number())

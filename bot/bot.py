@@ -150,7 +150,9 @@ def set_name(message):
 
         bot.send_message(
             chat_id=message.chat.id,
-            text="Отправь номер своей зачётки в формате: 123456 (интересный факт - номер твоего студенческого и номер твоей зачётки одинаковы!).",
+            text="Отправь номер своей зачётки в формате: *123456* "
+                 "(интересный факт - номер твоего студенческого и номер твоей зачётки одинаковы!).",
+            parse_mode="Markdown",
             reply_markup=keyboards.remove_keyboard()
         )
     else:
@@ -478,6 +480,16 @@ def send_dorm(callback):
         chat_id=callback.message.chat.id,
         latitude=constants.dorms[number]["latitude"],
         longitude=constants.dorms[number]["longitude"]
+    )
+
+@bot.message_handler(commands=["card"])
+def card(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text=helpers.get_card(),
+        parse_mode="Markdown"
     )
 
 @bot.message_handler(

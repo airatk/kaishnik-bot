@@ -57,7 +57,7 @@ class Student:
             ("p_fac", student.get_institute()),
             ("p_kurs", student.get_year())
         )
-                
+        
         self.group_number_for_score = get_dict_of_list(type="p_group", params=params)[group_number]
 
     def set_name(self, name):
