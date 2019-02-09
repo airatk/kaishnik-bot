@@ -55,18 +55,24 @@ def get_schedule(type, kind, next=False):
             weekday = kind
     
         return "".join([
-            "*{weekday}*\n\n".format(weekday=week[weekday]) if weekday else "",
+            "*{weekday}*\n\n".format(weekday=week[weekday]) if weekday and weekday != 7 else "",
             "Нет данных",
             "" if weekday else "."
         ])
 
     if type == "classes":
         if kind == "today's":
+            if TODAYS_WEEKDAY == 7:
+                return "*Воскресенье*\n\nОднозначно выходной"
+        
             schedule = beautify_classes(
                 json_response=response[str(TODAYS_WEEKDAY)],
                 weekday=TODAYS_WEEKDAY
             )
         elif kind == "tomorrow's":
+            if TODAYS_WEEKDAY + 1 == 7:
+                return "*Воскресенье*\n\nОднозначно выходной"
+        
             schedule = beautify_classes(
                 json_response=response[str(TODAYS_WEEKDAY + 1)],
                 weekday=TODAYS_WEEKDAY + 1
@@ -167,6 +173,7 @@ def get_dict_of_list(type, params):
 
     # Fixing bad quality response
     for i in range(1, len(keys)): keys[i - 1] = keys[i - 1][:keys[i - 1].find(keys[i])]
+    if keys and type == "p_group" and keys[-1][-1] == " ": keys[-1] = keys[-1][:-1]
 
     return dict(zip(keys, values))
 
@@ -174,23 +181,27 @@ def get_score_table(semester):
     from student import student
 
     data = {
-        "p_sub":  '',                                     # Useless neccessary thing
+        "p_sub":   "",                                    # Useless neccessary thing
         "p_fac":   student.get_institute(),               # Institute
-        'p_kurs':  student.get_year(),                    # Year
-        'p_group': student.get_group_number_for_score(),  # Group ID for score
-        'p_stud':  student.get_name(),                    # Student ID
-        'p_zach':  student.get_student_card_number(),     # Student card number
-        'semestr': semester                               # Semester
+        "p_kurs":  student.get_year(),                    # Year
+        "p_group": student.get_group_number_for_score(),  # Group ID for score
+        "p_stud":  student.get_name(),                    # Student ID
+        "p_zach":  student.get_student_card_number(),     # Student card number
+        "semestr": semester                               # Semester
     }
     
-    page = post(SCORE_URL, data=data).content.decode('CP1251')
+    page = post(SCORE_URL, data=data).content.decode("CP1251")
     soup = BeautifulSoup(page, features="html.parser")
     table = soup.html.find("table", { "id": "reyt" })
 
+    # Returns None if student card number is incorrect
+    if not table:
+        return None
+
     subjects = []
-    for row in table.find_all('tr'):
+    for row in table.find_all("tr"):
         subject = []
-        for data in row.find_all('td'):
+        for data in row.find_all("td"):
             subject.append(data.text if data.text else "-")
         subjects.append(subject)
     subjects = subjects[2:]
@@ -215,6 +226,9 @@ def get_subject_score(subjects_num, semester):
     debts = "\n- Долги: {gained}".format(gained=subject[10] if subject[10] else "-")
 
     preresult = "\n\nПредоценка: {preresult}".format(preresult=subject[8])
-    result = "\nОценка: {mark} ({result})".format(mark=subject[12], result=subject[11])
+    result = "".join([
+        "\nОценка: {mark}".format(mark=subject[12] if subject[12] != " " else "-"),
+        " ({result})".format(result=subject[11]) if subject[11] != " " else ""
+    ])
 
     return "".join([title, type, certification1, certification2, certification3, additional, debts, preresult, result])

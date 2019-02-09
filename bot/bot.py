@@ -61,12 +61,24 @@ def set_year(message):
     if student.student.get_institute() is not None and \
        student.student.get_year() is None:
         student.student.set_year(message.text)
-
-        bot.send_message(
-            chat_id=message.chat.id,
-            text="Выбери свою группу.",
-            reply_markup=keyboards.group_number_setter()
+       
+        params = (
+            ("p_fac", student.student.get_institute()),
+            ("p_kurs", student.student.get_year())
         )
+       
+        if helpers.get_dict_of_list(type="p_group", params=params):
+            bot.send_message(
+                chat_id=message.chat.id,
+                text="Выбери свою группу.",
+                reply_markup=keyboards.group_number_setter()
+            )
+        else:
+            bot.send_message(
+                chat_id=message.chat.id,
+                text="Здесь ничего нет. Начни сначала.",
+                reply_markup=keyboards.settings_entry()
+            )
     else:
         bot.send_message(
             chat_id=message.chat.id,
@@ -76,7 +88,7 @@ def set_year(message):
 
 @bot.message_handler(
     func=lambda m:
-        True if re.fullmatch("[1-59][1-6][0-9][0-9]", m.text) else False
+        True if re.fullmatch("[1-59][0-6][0-9][0-9]", m.text) else False
 )
 def set_group_number(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -84,14 +96,28 @@ def set_group_number(message):
     if student.student.get_institute() is not None and \
        student.student.get_year() is not None and \
        student.student.get_group_number_for_schedule() is None:
-        student.student.set_group_number_for_schedule(message.text)
         student.student.set_group_number_for_score(message.text)
-
-        bot.send_message(
-            chat_id=message.chat.id,
-            text="Выбери себя.",
-            reply_markup=keyboards.name_setter()
+       
+        params = (
+            ("p_fac", student.student.get_institute()),
+            ("p_kurs", student.student.get_year()),
+            ("p_group", student.student.get_group_number_for_score())
         )
+       
+        if helpers.get_dict_of_list(type="p_stud", params=params):
+            student.student.set_group_number_for_schedule(message.text)
+            
+            bot.send_message(
+                chat_id=message.chat.id,
+                text="Выбери себя.",
+                reply_markup=keyboards.name_setter()
+            )
+        else:
+            bot.send_message(
+                chat_id=message.chat.id,
+                text="Здесь ничего нет. Начни сначала.",
+                reply_markup=keyboards.settings_entry()
+            )
     else:
         bot.send_message(
             chat_id=message.chat.id,
@@ -148,15 +174,24 @@ def set_student_card_number(message):
        student.student.get_student_card_number() is None:
         student.student.set_student_card_number(message.text)
 
-        bot.send_message(
-            chat_id=message.chat.id,
-            text="Запомнено!",
-        )
-        bot.send_message(
-            chat_id=message.chat.id,
-            text=constants.replies_to_unknown_command[0], # Coincidencially this string is on replies_to_unknown_command list :)
-            parse_mode="Markdown"
-        )
+        if helpers.get_score_table(1):
+            bot.send_message(
+                chat_id=message.chat.id,
+                text="Запомнено!",
+            )
+            bot.send_message(
+                chat_id=message.chat.id,
+                # Coincidencially this string is on replies_to_unknown_command list :)
+                text=constants.replies_to_unknown_command[0],
+                parse_mode="Markdown"
+            )
+        else:
+            student.student.set_student_card_number(None)
+        
+            bot.send_message(
+                chat_id=message.chat.id,
+                text="Неверный номер зачётки. Исправляйся."
+            )
     else:
         bot.send_message(
             chat_id=message.chat.id,
