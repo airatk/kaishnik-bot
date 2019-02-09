@@ -4,13 +4,15 @@ from helpers   import get_dict_of_list
 from requests import get
 
 class Student:
-    def __init__(self,
-                 institute=None,
-                 year=None,
-                 group_number_for_schedule=None,
-                 group_number_for_score=None,
-                 name=None,
-                 student_card_number=None):
+    def __init__(
+        self,
+        institute=None,
+        year=None,
+        group_number_for_schedule=None,
+        group_number_for_score=None,
+        name=None,
+        student_card_number=None
+    ):
         self.institute = institute
         self.year = year
         self.group_number_for_schedule = group_number_for_schedule

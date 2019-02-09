@@ -33,7 +33,7 @@ def semester_dailer():
     from student import student
 
     semester_dailer_keyboard = InlineKeyboardMarkup(row_width=4)
-    semesters_number = int(student.get_year() if student.get_year() else 1)*2 + 1
+    semesters_number = int(student.get_year())*2 + 1
     
     semester_dailer_keyboard.add(*[
         InlineKeyboardButton(text=str(s_r), callback_data="s_r {s_r}".format(s_r=s_r)) for s_r in range(1, semesters_number)

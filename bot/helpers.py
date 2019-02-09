@@ -16,10 +16,7 @@ def get_week():
     return "Текущая неделя чётная." if is_even() else "Текущая неделя нечётная."
 
 def is_even():
-    if datetime.today().isocalendar()[1] % 2 == 0:
-        return True if not is_week_reversed() else False
-    else:
-        return False if not is_week_reversed() else True
+    return not is_week_reversed() if datetime.today().isocalendar()[1] % 2 == 0 else is_week_reversed()
 
 def is_week_reversed():
     with open("is_week_reversed", "r") as week_file:
