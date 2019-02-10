@@ -1,6 +1,5 @@
 import telebot
 
-import secrets
 import constants
 import keyboards
 import helpers
@@ -9,20 +8,22 @@ import student
 import re
 import random
 
-telebot.apihelper.proxy = secrets.PROXY
-bot = telebot.TeleBot(secrets.TOKEN)
+telebot.apihelper.proxy = { "https": "socks5://163.172.152.192:1080" }
+bot = telebot.TeleBot(constants.TOKEN)
 
 @bot.message_handler(commands=["start"])
 def start(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
+    student.students[message.chat.id] = student.Student()
+    
     bot.send_message(
         chat_id=message.chat.id,
         text="Йоу!"
     )
     bot.send_message(
         chat_id=message.chat.id,
-        text="Для начала настрой меня на общение с тобой" + constants.emoji["smirking"],
+        text="Для начала настрой меня на общение с тобой" + constants.EMOJI["smirking"],
         reply_markup=keyboards.settings_entry()
     )
 
@@ -32,45 +33,37 @@ def settings(message):
 
     bot.send_message(
         chat_id=message.chat.id,
-        text="Выбери свой институт (привет, ФМФ" + constants.emoji["moon"] + ").",
+        text="Выбери свой институт (привет, ФМФ" + constants.EMOJI["moon"] + ").",
         reply_markup=keyboards.institute_setter()
     )
 
-@bot.message_handler(
-    func=lambda m:
-        m.text in constants.institutes
-)
+@bot.message_handler(func=lambda message: message.text in constants.INSTITUTES)
 def set_institute(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    student.student = student.Student(constants.institutes[message.text])
+    student.students[message.chat.id] = student.Student(constants.INSTITUTES[message.text])
 
     bot.send_message(
         chat_id=message.chat.id,
         text="Выбери свой курс.",
-        reply_markup=keyboards.year_setter()
+        reply_markup=keyboards.year_setter(student.students[message.chat.id].get_dict_of_list(type="p_kurs"))
     )
 
-@bot.message_handler(
-    func=lambda m:
-        True if re.fullmatch("[1-6]", m.text) else False
-)
+@bot.message_handler(func=lambda message: re.fullmatch("[1-6]", message.text))
 def set_year(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    if student.student.get_institute() is not None and student.student.get_year() is None:
-        student.student.set_year(message.text)
+    if student.students[message.chat.id].get_institute() is not None and \
+       student.students[message.chat.id].get_year() is None:
+        student.students[message.chat.id].set_year(message.text)
        
-        params = (
-            ("p_fac", student.student.get_institute()),
-            ("p_kurs", student.student.get_year())
-        )
+        groups = student.students[message.chat.id].get_dict_of_list(type="p_group")
        
-        if helpers.get_dict_of_list(type="p_group", params=params):
+        if groups:
             bot.send_message(
                 chat_id=message.chat.id,
                 text="Выбери свою группу.",
-                reply_markup=keyboards.group_number_setter()
+                reply_markup=keyboards.group_number_setter(groups)
             )
         else:
             bot.send_message(
@@ -85,29 +78,23 @@ def set_year(message):
             reply_markup=keyboards.settings_entry()
         )
 
-@bot.message_handler(
-    func=lambda m:
-        True if re.fullmatch("[1-59][0-6][0-9][0-9]", m.text) else False
-)
+@bot.message_handler(func=lambda message: re.fullmatch("[1-59][0-6][0-9][0-9]", message.text))
 def set_group_number(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    if student.student.get_year() is not None and student.student.get_group_number_for_schedule() is None:
-        student.student.set_group_number_for_score(message.text)
+    if student.students[message.chat.id].get_year() is not None and \
+       student.students[message.chat.id].get_group_number_for_schedule() is None:
+        student.students[message.chat.id].set_group_number_for_score(message.text)
        
-        params = (
-            ("p_fac", student.student.get_institute()),
-            ("p_kurs", student.student.get_year()),
-            ("p_group", student.student.get_group_number_for_score())
-        )
+        names = student.students[message.chat.id].get_dict_of_list(type="p_stud")
        
-        if helpers.get_dict_of_list(type="p_stud", params=params):
-            student.student.set_group_number_for_schedule(message.text)
+        if names:
+            student.students[message.chat.id].set_group_number_for_schedule(message.text)
             
             bot.send_message(
                 chat_id=message.chat.id,
                 text="Выбери себя.",
-                reply_markup=keyboards.name_setter()
+                reply_markup=keyboards.name_setter(names)
             )
         else:
             bot.send_message(
@@ -123,21 +110,15 @@ def set_group_number(message):
         )
 
 @bot.message_handler(
-    func=lambda m:
-        m.text in helpers.get_dict_of_list(
-            type="p_stud",
-            params=(
-                ("p_fac", student.student.get_institute()),
-                ("p_kurs", student.student.get_year()),
-                ("p_group", student.student.get_group_number_for_score())
-            )
-        )
+    func=lambda message:
+        message.chat.id in student.students and message.text in student.students[message.chat.id].get_dict_of_list(type="p_stud")
 )
 def set_name(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    if student.student.get_group_number_for_schedule() is not None and student.student.get_name() is None:
-        student.student.set_name(message.text)
+    if student.students[message.chat.id].get_group_number_for_schedule() is not None and \
+       student.students[message.chat.id].get_name() is None:
+        student.students[message.chat.id].set_name(message.text)
 
         bot.send_message(
             chat_id=message.chat.id,
@@ -153,29 +134,26 @@ def set_name(message):
             reply_markup=keyboards.settings_entry()
         )
 
-@bot.message_handler(
-    func=lambda m:
-        True if re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9]", m.text) else False
-)
+@bot.message_handler(func=lambda message: re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9]", message.text))
 def set_student_card_number(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    if student.student.get_name() is not None and student.student.get_student_card_number() is None:
-        student.student.set_student_card_number(message.text)
+    if student.students[message.chat.id].get_name() is not None and \
+       student.students[message.chat.id].get_student_card_number() is None:
+        student.students[message.chat.id].set_student_card_number(message.text)
 
-        if helpers.get_score_table(1):
+        if student.students[message.chat.id].get_score_table(1):
             bot.send_message(
                 chat_id=message.chat.id,
                 text="Запомнено!",
             )
             bot.send_message(
                 chat_id=message.chat.id,
-                # Coincidencially this string is on replies_to_unknown_command list :)
-                text=constants.replies_to_unknown_command[0],
+                text=constants.REPLIES_TO_UNKNOWN_COMMAND[0],
                 parse_mode="Markdown"
             )
         else:
-            student.student.set_student_card_number(None)
+            student.students[message.chat.id].set_student_card_number(None)
         
             bot.send_message(
                 chat_id=message.chat.id,
@@ -188,8 +166,14 @@ def set_student_card_number(message):
             reply_markup=keyboards.settings_entry()
         )
 
-@bot.message_handler(func=lambda m: helpers.is_set_up())
-@bot.callback_query_handler(func=lambda m: helpers.is_set_up())
+@bot.message_handler(
+    func=lambda message:
+        student.students[message.chat.id].is_not_set_up() if message.chat.id in student.students else True
+)
+@bot.callback_query_handler(
+    func=lambda callback:
+        student.students[callback.message.chat.id].is_not_set_up() if callback.message.chat.id in student.students else True
+)
 def unsetup(callback):
     try:
         message = callback.message
@@ -200,7 +184,7 @@ def unsetup(callback):
 
     bot.send_message(
         chat_id=message.chat.id,
-        text="Прежде пройди настроку полностью.",
+        text="Пройди настроку полностью.",
         reply_markup=keyboards.settings_entry()
     )
 
@@ -222,7 +206,7 @@ def one_day_schedule(callback):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text=helpers.get_schedule(
+        text=student.students[callback.message.chat.id].get_schedule(
             type="classes",
             weekday=constants.TODAYS_WEEKDAY if callback.data == "today's" else constants.TODAYS_WEEKDAY + 1
         ),
@@ -239,10 +223,10 @@ def weekly_schedule(callback):
         message_id=callback.message.message_id
     )
     
-    for weekday in constants.week:
+    for weekday in constants.WEEK:
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text=helpers.get_schedule(
+            text=student.students[callback.message.chat.id].get_schedule(
                 type="classes",
                 weekday=weekday,
                 next="next" in callback.data
@@ -256,7 +240,7 @@ def exams(message):
 
     bot.send_message(
         chat_id=message.chat.id,
-        text=helpers.get_schedule(type="exams"),
+        text=student.students[message.chat.id].get_schedule(type="exams"),
         parse_mode="Markdown"
     )
 
@@ -276,7 +260,7 @@ def score(message):
     bot.send_message(
         chat_id=message.chat.id,
         text="Выбери номер семестра:",
-        reply_markup=keyboards.semester_dailer()
+        reply_markup=keyboards.semester_dailer(int(student.students[message.chat.id].get_year())*2 + 1)
     )
 
 @bot.callback_query_handler(
@@ -288,7 +272,10 @@ def s_r(callback):
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Выбери предмет:",
-        reply_markup=keyboards.subject_chooser(callback.data[4:])
+        reply_markup=keyboards.subject_chooser(
+            score_table=student.students[callback.message.chat.id].get_score_table(callback.data[4:]),
+            semester=callback.data[4:]
+        )
     )
 
 @bot.callback_query_handler(
@@ -306,7 +293,10 @@ def show_score(callback):
     for subject in range(int(callback_data[0])):
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text=helpers.get_subject_score(subject, callback_data[1]),
+            text=helpers.get_subject_score(
+                score_table=student.students[callback.message.chat.id].get_score_table(callback_data[1]),
+                subjects_num=subject
+            ),
             parse_mode="Markdown"
         )
 
@@ -320,7 +310,10 @@ def show_score(callback):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text=helpers.get_subject_score(int(callback_data[0]), callback_data[1]),
+        text=helpers.get_subject_score(
+            score_table=student.students[callback.message.chat.id].get_score_table(callback_data[1]),
+            subjects_num=int(callback_data[0])
+        ),
         parse_mode="Markdown"
     )
 
@@ -362,13 +355,13 @@ def send_building(callback):
 
     bot.send_message(
         chat_id=callback.message.chat.id,
-        text=constants.buildings[number]["description"],
+        text=constants.BUILDINGS[number]["description"],
         parse_mode="Markdown"
     )
     bot.send_location(
         chat_id=callback.message.chat.id,
-        latitude=constants.buildings[number]["latitude"],
-        longitude=constants.buildings[number]["longitude"]
+        latitude=constants.BUILDINGS[number]["latitude"],
+        longitude=constants.BUILDINGS[number]["longitude"]
     )
 
 @bot.callback_query_handler(
@@ -396,17 +389,17 @@ def send_library(callback):
     )
     
     number = callback.data[4:]
-    building = constants.libraries[number]["building"]
+    building = constants.LIBRARIES[number]["building"]
     
     bot.send_message(
         chat_id=callback.message.chat.id,
-        text=constants.libraries[number]["description"],
+        text=constants.LIBRARIES[number]["description"],
         parse_mode="Markdown"
     )
     bot.send_location(
         chat_id=callback.message.chat.id,
-        latitude=constants.buildings[building]["latitude"],
-        longitude=constants.buildings[building]["longitude"]
+        latitude=constants.BUILDINGS[building]["latitude"],
+        longitude=constants.BUILDINGS[building]["longitude"]
     )
 
 @bot.callback_query_handler(
@@ -437,13 +430,13 @@ def send_dorm(callback):
 
     bot.send_message(
         chat_id=callback.message.chat.id,
-        text=constants.dorms[number]["description"],
+        text=constants.DORMS[number]["description"],
         parse_mode="Markdown"
     )
     bot.send_location(
         chat_id=callback.message.chat.id,
-        latitude=constants.dorms[number]["latitude"],
-        longitude=constants.dorms[number]["longitude"]
+        latitude=constants.DORMS[number]["latitude"],
+        longitude=constants.DORMS[number]["longitude"]
     )
 
 @bot.message_handler(commands=["card"])
@@ -452,24 +445,20 @@ def card(message):
 
     bot.send_message(
         chat_id=message.chat.id,
-        text=helpers.get_card(),
+        text=student.students[message.chat.id].get_card(),
         parse_mode="Markdown"
     )
 
-@bot.message_handler(
-    func=lambda m:
-        m.chat.id == secrets.CREATOR and m.text == "What can I do?"
-)
+@bot.message_handler(func=lambda message: message.chat.id == constants.CREATOR and message.text == "What can I do?")
 def creators_features(message):
     bot.send_message(
         chat_id=message.chat.id,
-        text=constants.YOU_CAN,
+        text=constants.CREATOR_CAN,
         parse_mode="Markdown"
     )
 
 @bot.message_handler(
-    func=lambda m:
-        m.chat.id == secrets.CREATOR,
+    func=lambda message: message.chat.id == constants.CREATOR,
     commands=["reverseweek"]
 )
 def reverseweek(message):
@@ -481,15 +470,24 @@ def reverseweek(message):
     )
 
 @bot.message_handler(
-    func=lambda m:
-        m.text[0] == "/"
+    func=lambda message: message.chat.id == constants.CREATOR,
+    commands=["users"]
 )
+def users(message):
+    helpers.reverse_week_in_file()
+    
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="{users} users have tried me!".format(users=len(student.students))
+    )
+
+@bot.message_handler(func=lambda message: message.text[0] == "/")
 def unknown_command(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
     bot.send_message(
         chat_id=message.chat.id,
-        text=random.choice(constants.replies_to_unknown_command),
+        text=random.choice(constants.REPLIES_TO_UNKNOWN_COMMAND),
         parse_mode="Markdown",
         disable_web_page_preview=True
     )
@@ -500,8 +498,8 @@ def unknown_message(message):
 
     bot.send_message(
         chat_id=message.chat.id,
-        text=random.choice(constants.replies_to_unknown_message),
+        text=random.choice(constants.REPLIES_TO_UNKNOWN_MESSAGE),
         parse_mode="Markdown"
     )
 
-bot.polling()
+bot.polling(timeout=100)

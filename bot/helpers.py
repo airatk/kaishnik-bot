@@ -1,26 +1,12 @@
-from constants import SCHEDULE_URL
-from constants import SCORE_URL
-from constants import emoji
-from constants import week
+from constants import (
+    SCHEDULE_URL, SCORE_URL,
+    WEEK
+)
 
 from datetime import datetime
-from requests import get
-from requests import post
-from bs4      import BeautifulSoup
 
 # Set MSK timezone
 import os, time; os.environ["TZ"] = "MSK"; time.tzset()
-
-# No set up - no conversation
-def is_set_up():
-    from student import student
-
-    return student.get_institute() is None or \
-        student.get_year() is None or \
-        student.get_group_number_for_schedule() is None or \
-        student.get_group_number_for_score() is None or \
-        student.get_name() is None or \
-        student.get_student_card_number() is None
 
 # /week
 def get_week():
@@ -37,45 +23,7 @@ def reverse_week_in_file():
     with open("is_week_reversed", "w") as week_file:
         week_file.write("False") if is_week_reversed() else week_file.write("True")
 
-# /classes & /exams
-def get_schedule(type, weekday=None, next=False):
-    from student import student
-
-    params = (
-        ("p_p_id", "pubStudentSchedule_WAR_publicStudentSchedule10"),
-        ("p_p_lifecycle", "2"),
-        ("p_p_resource_id", "schedule" if type == "classes" else "examSchedule")
-    )
-    response = post(
-        url=SCHEDULE_URL,
-        params=params,
-        data={ "groupId": student.get_group_number_for_schedule() }
-    ).json()
-
-    if not response:
-        return "".join([
-            "*{weekday}*\n\n".format(weekday=week[weekday]) if weekday and weekday != 7 else "",
-            "Нет данных",
-            "" if weekday else "."
-        ])
-
-    if type == "classes":
-        if weekday == 7:
-            return "*Воскресенье*\n\nОднозначно выходной"
-        
-        if str(weekday) in response:
-            schedule = beautify_classes(
-                json_response=response[str(weekday)],
-                weekday=weekday,
-                next=next
-            )
-        else:
-            return "*{weekday}*\n\nВыходной".format(weekday=week[weekday])
-    else:
-        schedule = beautify_exams(response)
-
-    return schedule
-
+# /classes
 def beautify_classes(json_response, weekday, next):
     schedule = ""
     is_day_off = False
@@ -135,10 +83,11 @@ def beautify_classes(json_response, weekday, next):
         schedule = "".join([schedule, time_place, date, subject_name, subject_type, teacher, department])
     
     return "".join([
-        "*{weekday}*".format(weekday=week[weekday]),
+        "*{weekday}*".format(weekday=WEEK[weekday]),
         schedule if schedule and not is_day_off else "\n\nВыходной"
     ])
 
+# /exams
 def beautify_exams(json_response):
     schedule = ""
 
@@ -146,55 +95,9 @@ def beautify_exams(json_response):
 
     return schedule
 
-# /score & associated stuff
-def get_dict_of_list(type, params):
-    page = get(url=SCORE_URL, params=params).content.decode("CP1251")
-    soup = BeautifulSoup(page, "html.parser")
-
-    selector = soup.find(name="select", attrs={ "name": type })
-
-    keys = [option.text for option in selector.find_all("option")][1:]
-    values = [option["value"] for option in selector.find_all("option")][1:]
-
-    # Fixing bad quality response
-    for i in range(1, len(keys)): keys[i - 1] = keys[i - 1][:keys[i - 1].find(keys[i])]
-    if keys and type == "p_group" and keys[-1][-1] == " ": keys[-1] = keys[-1][:-1]
-
-    return dict(zip(keys, values))
-
-def get_score_table(semester):
-    from student import student
-
-    data = {
-        "p_sub":   "",                                    # Useless neccessary thing
-        "p_fac":   student.get_institute(),               # Institute
-        "p_kurs":  student.get_year(),                    # Year
-        "p_group": student.get_group_number_for_score(),  # Group ID for score
-        "p_stud":  student.get_name(),                    # Student ID
-        "p_zach":  student.get_student_card_number(),     # Student card number
-        "semestr": semester                               # Semester
-    }
-    
-    page = post(SCORE_URL, data=data).content.decode("CP1251")
-    soup = BeautifulSoup(page, features="html.parser")
-    table = soup.html.find("table", { "id": "reyt" })
-
-    # Returns None if student card number is incorrect
-    if not table:
-        return None
-
-    subjects = []
-    for row in table.find_all("tr"):
-        subject = []
-        for data in row.find_all("td"):
-            subject.append(data.text if data.text else "-")
-        subjects.append(subject)
-    subjects = subjects[2:]
-
-    return subjects
-
-def get_subject_score(subjects_num, semester):
-    subject = get_score_table(semester)[subjects_num]
+# /score
+def get_subject_score(score_table, subjects_num):
+    subject = score_table[subjects_num]
 
     title = "*{title}*".format(title=subject[1][:len(subject[1]) - 6])
 
@@ -217,9 +120,3 @@ def get_subject_score(subjects_num, semester):
     ])
 
     return "".join([title, type, certification1, certification2, certification3, additional, debts, preresult, result])
-
-# /card
-def get_card():
-    from student import student
-
-    return "Номер твоего студенческого билета и твоей зачётной книжки: *{card}*.".format(card=student.get_student_card_number())
