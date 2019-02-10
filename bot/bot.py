@@ -17,6 +17,10 @@ def start(message):
 
     student.students[message.chat.id] = student.Student()
     
+    # Logs
+    from datetime import datetime
+    print("New user! ID: {id}; time: {time}".format(id=message.chat.id, time=datetime.now()))
+    
     bot.send_message(
         chat_id=message.chat.id,
         text="Йоу!"
@@ -502,4 +506,4 @@ def unknown_message(message):
         parse_mode="Markdown"
     )
 
-bot.polling(timeout=100)
+bot.infinity_polling(True)
