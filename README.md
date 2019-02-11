@@ -5,4 +5,4 @@ The bot might be considered is kai.ru & old.kai.ru wrapper. It's build using [py
 
 Undescribably useful, joyfully cute!
 
-![logo](https://raw.githubusercontent.com/AiratK/kaishnik-bot/master/design/logo.png)
+![logo](https://github.com/AiratK/kaishnik-bot/blob/master/design/logo.png)
