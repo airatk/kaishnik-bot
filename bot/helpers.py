@@ -1,7 +1,4 @@
-from constants import (
-    SCHEDULE_URL, SCORE_URL,
-    WEEK
-)
+from constants import WEEK
 
 from datetime import datetime
 
