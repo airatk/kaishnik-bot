@@ -1,7 +1,7 @@
 # kaishnik-bot
 _Telegram bot for KAI students_
 
-The bot might be considered is kai.ru & old.kai.ru wrapper. It's build using [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI). 
+The bot might be considered as kai.ru & old.kai.ru wrapper. It's build using [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI). 
 
 Undescribably useful, joyfully cute!
 
