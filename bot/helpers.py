@@ -1,9 +1,19 @@
 from constants import WEEK
 
 from datetime import datetime
+import pickle
 
 # Set MSK timezone
 import os, time; os.environ["TZ"] = "MSK"; time.tzset()
+
+# No user data is lost anymore!
+def save_users(users):
+    with open("users.pkl", "wb") as users_file:
+        pickle.dump(users, users_file, pickle.HIGHEST_PROTOCOL)
+
+def load_users():
+    with open("users.pkl", "rb") as users_file:
+        return pickle.load(users_file)
 
 # /week
 def get_week():

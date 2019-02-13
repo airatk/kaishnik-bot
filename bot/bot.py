@@ -148,6 +148,8 @@ def set_student_card_number(message):
         student.students[message.chat.id].set_student_card_number(message.text)
 
         if student.students[message.chat.id].get_score_table(1):
+            helpers.save_users(student.students)
+            
             bot.send_message(
                 chat_id=message.chat.id,
                 text="Запомнено!",

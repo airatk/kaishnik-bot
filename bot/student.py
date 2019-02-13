@@ -3,7 +3,10 @@ from constants import (
     WEEK
 )
 
-from helpers   import beautify_classes, beautify_exams
+from helpers import (
+    beautify_classes, beautify_exams,
+    load_users
+)
 
 from requests import get, post
 from bs4      import BeautifulSoup
@@ -129,7 +132,7 @@ class Student:
         # Fixing bad quality response
         for i in range(1, len(keys)): keys[i - 1] = keys[i - 1][:keys[i - 1].find(keys[i])]
         for i in range(len(keys)):
-            if type == "p_group" and keys[i][-1] == " ":
+            if keys[i][-1] == " ":
                 keys[i] = keys[i][:-1]
 
         return dict(zip(keys, values))
@@ -176,4 +179,4 @@ class Student:
             self.name is None or \
             self.student_card_number is None
 
-students = {}
+students = load_users()
