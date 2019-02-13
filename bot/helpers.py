@@ -116,14 +116,8 @@ def get_subject_score(score_table, subjects_num):
     certification1 = "\n\n• 1 аттестация: {gained}/{max}".format(gained=subject[2], max=subject[3])
     certification2 = "\n• 2 аттестация: {gained}/{max}".format(gained=subject[4], max=subject[5])
     certification3 = "\n• 3 аттестация: {gained}/{max}".format(gained=subject[6], max=subject[7])
+    preresult = "\n- Предоценка: {preresult}".format(preresult=subject[11] if subject[11] else "-")
 
-    additional = "\n- Допбаллы: {gained}".format(gained=subject[9] if subject[9] else "-")
-    debts = "\n- Долги: {gained}".format(gained=subject[10] if subject[10] else "-")
+    debts = "\n\nДолги: {gained}".format(gained=subject[10] if subject[10] else "-")
 
-    preresult = "\n\nПредоценка: {preresult}".format(preresult=subject[8])
-    result = "".join([
-        "\nОценка: {mark}".format(mark=subject[12] if subject[12] != " " else "-"),
-        " ({result})".format(result=subject[11]) if subject[11] != " " else ""
-    ])
-
-    return "".join([title, type, certification1, certification2, certification3, additional, debts, preresult, result])
+    return "".join([title, type, certification1, certification2, certification3, preresult, debts])
