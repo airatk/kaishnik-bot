@@ -50,7 +50,10 @@ def set_institute(message):
         reply_markup=keyboards.year_setter(student.students[message.chat.id].get_dict_of_list(type="p_kurs"))
     )
 
-@bot.message_handler(func=lambda message: re.fullmatch("[1-6]", message.text))
+@bot.message_handler(
+    func=lambda message:
+        message.chat.id in student.students and re.fullmatch("[1-6]", message.text)
+)
 def set_year(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
@@ -79,7 +82,10 @@ def set_year(message):
             reply_markup=keyboards.settings_entry()
         )
 
-@bot.message_handler(func=lambda message: re.fullmatch("[1-59][0-6][0-9][0-9]", message.text))
+@bot.message_handler(
+    func=lambda message:
+        message.chat.id in student.students and re.fullmatch("[1-59][0-6][0-9][0-9]", message.text)
+)
 def set_group_number(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
@@ -137,8 +143,7 @@ def set_name(message):
 
 @bot.message_handler(
     func=lambda message:
-        re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9]", message.text) or
-        re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9][0-9]", message.text)
+        message.chat.id in student.students and (re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9]", message.text) or re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9][0-9]", message.text))
 )
 def set_student_card_number(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
