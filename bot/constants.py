@@ -28,9 +28,6 @@ WEEK = {
     6: "Суббота"
 }
 
-from datetime import datetime
-TODAYS_WEEKDAY = datetime.today().isoweekday()
-
 # Institutes
 INSTITUTES = {
     "ИАНТЭ": "1",

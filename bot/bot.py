@@ -7,6 +7,7 @@ import student
 
 import re
 import random
+import datetime
 
 telebot.apihelper.proxy = { "https": "socks5://163.172.152.192:1080" }
 bot = telebot.TeleBot(constants.TOKEN)
@@ -16,10 +17,6 @@ def start(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
     student.students[message.chat.id] = student.Student()
-    
-    # Logs
-    from datetime import datetime
-    print("New user! ID: {id}; time: {time}".format(id=message.chat.id, time=datetime.now()))
     
     bot.send_message(
         chat_id=message.chat.id,
@@ -126,7 +123,7 @@ def set_name(message):
 
         bot.send_message(
             chat_id=message.chat.id,
-            text="Отправь номер своей зачётки в формате: *123456* "
+            text="Отправь номер своей зачётки "
                  "(интересный факт - номер твоего студенческого и номер твоей зачётки одинаковы!).",
             parse_mode="Markdown",
             reply_markup=keyboards.remove_keyboard()
@@ -138,7 +135,11 @@ def set_name(message):
             reply_markup=keyboards.settings_entry()
         )
 
-@bot.message_handler(func=lambda message: re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9]", message.text))
+@bot.message_handler(
+    func=lambda message:
+        re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9]", message.text) or
+        re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9][0-9]", message.text)
+)
 def set_student_card_number(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
@@ -188,7 +189,7 @@ def unsetup(callback):
 
     bot.send_message(
         chat_id=message.chat.id,
-        text="Пройди настроку полностью.",
+        text="Пройди настройку полностью.",
         reply_markup=keyboards.settings_entry()
     )
 
@@ -207,12 +208,14 @@ def classes(message):
         callback.data == "today's" or callback.data == "tomorrow's"
 )
 def one_day_schedule(callback):
+    todays_weekday = datetime.datetime.today().isoweekday()
+
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text=student.students[callback.message.chat.id].get_schedule(
             type="classes",
-            weekday=constants.TODAYS_WEEKDAY if callback.data == "today's" else constants.TODAYS_WEEKDAY + 1
+            weekday=todays_weekday if callback.data == "today's" else todays_weekday + 1
         ),
         parse_mode="Markdown"
     )
