@@ -506,7 +506,7 @@ def unknown_command(message):
         disable_web_page_preview=True
     )
 
-@bot.message_handler(content_types=["text"])
+@bot.message_handler(func=lambda message: True)
 def unknown_message(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 

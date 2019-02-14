@@ -47,10 +47,10 @@ def beautify_classes(json_response, weekday, next):
     
         # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
         if not next:
-            if not is_even() and "чет" in subject["dayDate"] or is_even() and "неч" in subject["dayDate"]:
+            if not is_even() and subject["dayDate"] == "чет" or is_even() and subject["dayDate"] == "неч":
                 continue
         else:
-            if is_even() and "чет" in subject["dayDate"] or not is_even() and "неч" in subject["dayDate"]:
+            if is_even() and subject["dayDate"] == "чет" or not is_even() and subject["dayDate"] == "неч":
                 continue
     
         # Make buildings look beautiful
@@ -116,8 +116,8 @@ def get_subject_score(score_table, subjects_num):
     certification1 = "\n\n• 1 аттестация: {gained}/{max}".format(gained=subject[2], max=subject[3])
     certification2 = "\n• 2 аттестация: {gained}/{max}".format(gained=subject[4], max=subject[5])
     certification3 = "\n• 3 аттестация: {gained}/{max}".format(gained=subject[6], max=subject[7])
-    preresult = "\n- Предоценка: {preresult}".format(preresult=subject[11] if subject[11] else "-")
+    preresult = "\n- Предоценка: {preresult}/50".format(preresult=subject[8]) # Which is sum of the above
 
-    debts = "\n\nДолги: {gained}".format(gained=subject[10] if subject[10] else "-")
+    debts = "\n\nДолги: {gained}".format(gained=subject[10])
 
     return "".join([title, type, certification1, certification2, certification3, preresult, debts])
