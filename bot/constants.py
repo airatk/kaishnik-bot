@@ -189,7 +189,8 @@ DORMS = {
 # Creator's commands
 CREATOR_CAN = "*You can:*\n"\
               "/reverseweek - to show whether week is even or odd correctly\n"\
-              "/users - shows number of users"
+              "/users - shows number of users\n"\
+              "/broadcast _text_ - broadcasting to users"
 
 # Replies to unknow stuff
 REPLIES_TO_UNKNOWN_COMMAND = [

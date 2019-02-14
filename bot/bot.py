@@ -10,7 +10,7 @@ import random
 import datetime
 
 telebot.apihelper.proxy = { "https": "socks5://163.172.152.192:1080" }
-bot = telebot.TeleBot(constants.TOKEN)
+bot = telebot.TeleBot(constants.TOKEN, threaded=False)
 
 @bot.message_handler(commands=["start"])
 def start(message):
@@ -485,6 +485,20 @@ def reverseweek(message):
 
 @bot.message_handler(
     func=lambda message: message.chat.id == constants.CREATOR,
+    commands=["broadcast"]
+)
+def users(message):
+    for user in student.students:
+        bot.send_message(
+            chat_id=user,
+            text="*Телеграмма от разработчика*\n\n" +
+                    " ".join(message.text.split()[1:]) +
+                    "\n\nНаписать разработчику: @airatk",
+            parse_mode="Markdown"
+        )
+
+@bot.message_handler(
+    func=lambda message: message.chat.id == constants.CREATOR,
     commands=["users"]
 )
 def users(message):
@@ -506,7 +520,7 @@ def unknown_command(message):
         disable_web_page_preview=True
     )
 
-@bot.message_handler(func=lambda message: True)
+@bot.message_handler(content_types=["text"])
 def unknown_message(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
