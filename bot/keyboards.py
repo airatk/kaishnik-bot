@@ -3,7 +3,10 @@ from telebot.types import (
     ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 )
 
-from constants import INSTITUTES, BUILDINGS, LIBRARIES, DORMS
+from constants import (
+    INSTITUTES,
+    BUILDINGS, LIBRARIES, DORMS
+)
 
 # /start
 def settings_entry():
@@ -58,6 +61,24 @@ def schedule_type():
     schedule_type_keyboard.row(InlineKeyboardButton(text="следующую неделю", callback_data="weekly next"))
 
     return schedule_type_keyboard
+
+# /lecturers
+def choose_lecturer(names):
+    choose_lecturer_keyboard = InlineKeyboardMarkup(row_width=1)
+
+    choose_lecturer_keyboard.add(*[
+        InlineKeyboardButton(text=name["lecturer"], callback_data="l_r " + name["id"]) for name in names
+    ])
+
+    return choose_lecturer_keyboard
+
+def lecturer_schedule_type(prepod_login):
+    lecturer_schedule_type_keyboard = InlineKeyboardMarkup()
+
+    lecturer_schedule_type_keyboard.row(InlineKeyboardButton(text="занятий", callback_data=" ".join(["l_c", prepod_login])))
+    lecturer_schedule_type_keyboard.row(InlineKeyboardButton(text="экзаменов", callback_data=" ".join(["l_e", prepod_login])))
+
+    return lecturer_schedule_type_keyboard
 
 # /score
 def semester_dailer(semesters_number):

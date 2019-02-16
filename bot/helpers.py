@@ -1,7 +1,11 @@
-from constants import WEEK
+from constants import (
+    WEEK,
+    LECTURERS_SCHEDULE
+)
 
 from datetime import datetime
 import pickle
+from requests import get, post
 
 # Set MSK timezone
 import os, time; os.environ["TZ"] = "MSK"; time.tzset()
@@ -99,6 +103,113 @@ def beautify_exams(json_response):
     schedule = ""
 
     # Have no data to parse exams-json-response
+
+    return schedule
+
+# /lecturers
+def get_lecturers_names(name_part):
+    params = (
+        ("p_p_id", "pubLecturerSchedule_WAR_publicLecturerSchedule10"),
+        ("p_p_lifecycle", "2"),
+        ("p_p_resource_id", "getLecturersURL"),
+        ("query", name_part)
+    )
+
+    return get(LECTURERS_SCHEDULE, params=params).json()
+
+def get_lecturers_schedule(prepod_login, type, weekday=None):
+    params = (
+        ("p_p_id", "pubLecturerSchedule_WAR_publicLecturerSchedule10"),
+        ("p_p_lifecycle", "2"),
+        ("p_p_resource_id", "schedule" if type == "l_c" else "examSchedule")
+    )
+    data = {
+      "prepodLogin": prepod_login
+    }
+
+    schedule = post(LECTURERS_SCHEDULE, params=params, data=data).json()
+
+    if not schedule:
+        return "*{weekday}*\n\nНет данных".format(weekday=WEEK[weekday])
+
+    if type == "l_c":
+        return beautify_lecturers_classes(schedule, weekday)
+    else:
+        return beautify_lecturers_exams(schedule)
+
+def beautify_lecturers_classes(json_response, weekday):
+    schedule = ""
+
+    if str(weekday) not in json_response:
+        return "*{weekday}*\n\nНет занятий".format(weekday=WEEK[weekday])
+
+    for subject in json_response[str(weekday)]:
+        # Removing extraspaces
+        for property in subject:
+            subject[property] = str(subject[property])
+            subject[property] = " ".join(subject[property].split())
+    
+        # Make buildings look beautiful
+        if subject["buildNum"] == "КАИ ОЛИМП":
+            building = "СК Олимп"
+        elif subject["buildNum"] == "1":
+            building = "1ый дом"
+        else:
+            building = "".join([subject["buildNum"], "ка"])
+    
+        time_place = "\n\n*[ {time} ][ {building} ][ {auditorium} ]*".format(
+            time=subject["dayTime"],
+            building=building,
+            auditorium=subject["audNum"] if subject["audNum"] else "-"
+        )
+        
+        if subject["dayDate"] and "неч/чет" not in subject["dayDate"] and "чет/неч" not in subject["dayDate"]:
+            date = "\n*[ {date} ]*".format(date=subject["dayDate"])
+        else:
+            date = ""
+
+        subject_name = "\n*{subject_name}*".format(subject_name=subject["disciplName"])
+        
+        # Make subject types look beautiful
+        if subject["disciplType"] == "лек":
+            subject_type = "\n_лекция_"
+        elif subject["disciplType"] == "пр":
+            subject_type = "\n_практика_"
+        elif subject["disciplType"] == "л.р.":
+            subject_type = "\n_лабораторная работа_"
+        else:
+            subject_type = ""
+
+        group = "\n# У группы {group}".format(group=subject["group"])
+
+        # Concatenate all the stuff above
+        schedule = "".join([schedule, time_place, date, subject_name, subject_type, group])
+    
+    return schedule
+
+def beautify_lecturers_exams(json_response):
+    schedule = ""
+
+    for subject in json_response:
+        # Removing extraspaces
+        for property in subject:
+            subject[property] = str(subject[property])
+            subject[property] = " ".join(subject[property].split())
+            
+        time_place = "\n\n*[ {date} ][ {time} ][ {building} ][ {auditorium} ]*".format(
+            date=subject["examDate"],
+            time=subject["examTime"],
+            # Make buildings look beautiful
+            building="1ый дом" if subject["buildNum"] == "1" else "".join([subject["buildNum"], "ка"]),
+            auditorium=subject["audNum"] if subject["audNum"] else "-"
+        )
+
+        subject_name = "\n*{subject_name}*".format(subject_name=subject["disciplName"])
+
+        group = "\n# У группы {group}".format(group=subject["group"])
+
+        # Concatenate all the stuff above
+        schedule = "".join([schedule, time_place, subject_name, group])
 
     return schedule
 

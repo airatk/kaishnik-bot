@@ -6,10 +6,12 @@ CREATOR = int(environ["T_CREATOR"])
 # Directions to go in for the main data
 SCHEDULE_URL = "https://kai.ru/raspisanie"
 SCORE_URL = "http://old.kai.ru/info/students/brs.php"
+LECTURERS_SCHEDULE = "https://kai.ru/for-staff/raspisanie"
 
 # Official emoji list of the Unicode Consortium: http://unicode.org/emoji/charts/full-emoji-list.html
 EMOJI = {
     "smirking":    "\U0001F60F", # 😏
+    "smiling":     "\U0001F642", # 🙂
     "upside-down": "\U0001F643", # 🙃
     "kissing":     "\U0001F61A", # 😚
     "crying":      "\U0001F622", # 😢
@@ -187,9 +189,9 @@ DORMS = {
 }
 
 # Creator's commands
-CREATOR_CAN = "*You can:*\n"\
-              "/reverseweek - to show whether week is even or odd correctly\n"\
-              "/users - shows number of users\n"\
+CREATOR_CAN = "*You can:*\n" \
+              "/reverseweek - to show whether week is even or odd correctly\n" \
+              "/users - shows number of users\n" \
               "/broadcast _text_ - broadcasting to users"
 
 # Replies to unknow stuff

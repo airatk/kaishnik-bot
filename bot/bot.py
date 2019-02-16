@@ -12,6 +12,8 @@ import datetime
 telebot.apihelper.proxy = { "https": "socks5://163.172.152.192:1080" }
 bot = telebot.TeleBot(constants.TOKEN, threaded=False)
 
+previous_message_text = ""  # Used to let user enter lecturer's name. "/lecturers" command's text is saved in
+
 @bot.message_handler(commands=["start"])
 def start(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -267,6 +269,92 @@ def week(message):
         text=helpers.get_week()
     )
 
+@bot.message_handler(commands=["lecturers"])
+def lecturers(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Введи ФИО преподавателя. "
+             "Можно просто ФИ. Или даже только Ф. "
+             "Да и запрос в виде нескольких первых букв Ф пойдёт. "
+             "Главное, сохрани порядок" + constants.EMOJI["smiling"]
+    )
+
+    global previous_message_text
+    previous_message_text = message.text
+
+@bot.message_handler(
+    func=lambda message: previous_message_text == "/lecturers",
+    content_types=["text"]
+)
+def find_lecturer(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    names = helpers.get_lecturers_names(message.text)
+
+    if names:
+        try:
+            bot.send_message(
+                chat_id=message.chat.id,
+                text="Выбери преподавателя:",
+                reply_markup=keyboards.choose_lecturer(names)
+            )
+        except:
+            bot.send_message(
+                chat_id=message.chat.id,
+                text="Слишком мало букв, слишком много преподавателей…"
+            )
+    else:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Ничего не найдено :("
+        )
+    
+    global previous_message_text
+    previous_message_text = ""
+
+@bot.callback_query_handler(func=lambda callback: "l_r" in callback.data)
+def send_lecturers_schedule(callback):
+    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+
+    bot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="Тебе нужно преподавателево расписание",
+        reply_markup=keyboards.lecturer_schedule_type(callback.data[4:])
+    )
+
+@bot.callback_query_handler(func=lambda callback: "l_c" in callback.data or "l_e" in callback.data)
+def send_lecturers_schedule(callback):
+    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+
+    bot.delete_message(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id
+    )
+
+    if "l_c" in callback.data:
+        for weekday in constants.WEEK:
+            bot.send_message(
+                chat_id=callback.message.chat.id,
+                text=helpers.get_lecturers_schedule(
+                    prepod_login=callback.data[4:],
+                    type=callback.data[:3],
+                    weekday=weekday
+                ),
+                parse_mode="Markdown"
+            )
+    else:
+        bot.send_message(
+            chat_id=callback.message.chat.id,
+            text=helpers.get_lecturers_schedule(
+                prepod_login=callback.data[4:],
+                type=callback.data[:3]
+            ),
+            parse_mode="Markdown"
+        )
+
 @bot.message_handler(commands=["score"])
 def score(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -492,9 +580,10 @@ def users(message):
         bot.send_message(
             chat_id=user,
             text="*Телеграмма от разработчика*\n\n" +
-                    " ".join(message.text.split()[1:]) +
-                    "\n\nНаписать разработчику: @airatk",
-            parse_mode="Markdown"
+                 " ".join(message.text.split()[1:]) +
+                 "\n\nНаписать разработчику: @airatk",
+            parse_mode="Markdown",
+            disable_web_page_preview=True
         )
 
 @bot.message_handler(
