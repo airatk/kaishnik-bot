@@ -321,7 +321,7 @@ def send_lecturers_schedule(callback):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text="Тебе нужно преподавателево расписание",
+        text="Тебе нужно преподавателево расписание:",
         reply_markup=keyboards.lecturer_schedule_type(callback.data[4:])
     )
 

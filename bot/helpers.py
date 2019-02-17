@@ -184,8 +184,8 @@ def beautify_lecturers_classes(json_response, weekday):
 
         # Concatenate all the stuff above
         schedule = "".join([schedule, time_place, date, subject_name, subject_type, group])
-    
-    return schedule
+
+    return "".join(["*{weekday}*".format(weekday=WEEK[weekday]), schedule])
 
 def beautify_lecturers_exams(json_response):
     schedule = ""
@@ -211,7 +211,7 @@ def beautify_lecturers_exams(json_response):
         # Concatenate all the stuff above
         schedule = "".join([schedule, time_place, subject_name, group])
 
-    return schedule
+    return schedule if schedule else "Нет данных."
 
 # /score
 def get_subject_score(score_table, subjects_num):
@@ -227,7 +227,7 @@ def get_subject_score(score_table, subjects_num):
     certification1 = "\n\n• 1 аттестация: {gained}/{max}".format(gained=subject[2], max=subject[3])
     certification2 = "\n• 2 аттестация: {gained}/{max}".format(gained=subject[4], max=subject[5])
     certification3 = "\n• 3 аттестация: {gained}/{max}".format(gained=subject[6], max=subject[7])
-    preresult = "\n- Предоценка: {preresult}/50".format(preresult=subject[8]) # Which is sum of the above
+    preresult = "\n- За семестр: {preresult}/50".format(preresult=subject[8]) # Which is sum of the above
 
     debts = "\n\nДолги: {gained}".format(gained=subject[10])
 
