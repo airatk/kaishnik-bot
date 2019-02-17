@@ -316,8 +316,6 @@ def find_lecturer(message):
 
 @bot.callback_query_handler(func=lambda callback: "l_r" in callback.data)
 def send_lecturers_schedule(callback):
-    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -327,8 +325,6 @@ def send_lecturers_schedule(callback):
 
 @bot.callback_query_handler(func=lambda callback: "l_c" in callback.data or "l_e" in callback.data)
 def send_lecturers_schedule(callback):
-    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-
     bot.delete_message(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id

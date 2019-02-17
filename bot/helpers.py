@@ -130,7 +130,7 @@ def get_lecturers_schedule(prepod_login, type, weekday=None):
     schedule = post(LECTURERS_SCHEDULE, params=params, data=data).json()
 
     if not schedule:
-        return "*{weekday}*\n\nНет данных".format(weekday=WEEK[weekday])
+        return "*{weekday}*\n\nНет данных".format(weekday=WEEK[weekday]) if weekday else "Нет данных."
 
     if type == "l_c":
         return beautify_lecturers_classes(schedule, weekday)
@@ -211,7 +211,7 @@ def beautify_lecturers_exams(json_response):
         # Concatenate all the stuff above
         schedule = "".join([schedule, time_place, subject_name, group])
 
-    return schedule if schedule else "Нет данных."
+    return schedule
 
 # /score
 def get_subject_score(score_table, subjects_num):
