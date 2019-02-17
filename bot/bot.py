@@ -17,8 +17,6 @@ previous_message_text = ""  # Used to let user enter lecturer's name. "/lecturer
 @bot.message_handler(commands=["start"])
 def start(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
-    student.students[message.chat.id] = student.Student()
     
     bot.send_message(
         chat_id=message.chat.id,
@@ -40,7 +38,10 @@ def settings(message):
         reply_markup=keyboards.institute_setter()
     )
 
-@bot.message_handler(func=lambda message: message.text in constants.INSTITUTES)
+@bot.message_handler(
+    func=lambda message:
+        message.text in constants.INSTITUTES
+)
 def set_institute(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
@@ -133,7 +134,6 @@ def set_name(message):
             chat_id=message.chat.id,
             text="Отправь номер своей зачётки "
                  "(интересный факт - номер твоего студенческого и номер твоей зачётки одинаковы!).",
-            parse_mode="Markdown",
             reply_markup=keyboards.remove_keyboard()
         )
     else:
@@ -145,7 +145,10 @@ def set_name(message):
 
 @bot.message_handler(
     func=lambda message:
-        message.chat.id in student.students and (re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9]", message.text) or re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9][0-9]", message.text))
+        message.chat.id in student.students and (\
+            re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9]", message.text) or \
+            re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9][0-9]", message.text) \
+        )
 )
 def set_student_card_number(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -285,7 +288,8 @@ def lecturers(message):
     previous_message_text = message.text
 
 @bot.message_handler(
-    func=lambda message: previous_message_text == "/lecturers",
+    func=lambda message:
+        previous_message_text == "/lecturers",
     content_types=["text"]
 )
 def find_lecturer(message):
@@ -314,7 +318,10 @@ def find_lecturer(message):
     global previous_message_text
     previous_message_text = ""
 
-@bot.callback_query_handler(func=lambda callback: "l_r" in callback.data)
+@bot.callback_query_handler(
+    func=lambda callback:
+        "l_r" in callback.data
+)
 def send_lecturers_schedule(callback):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -323,7 +330,10 @@ def send_lecturers_schedule(callback):
         reply_markup=keyboards.lecturer_schedule_type(callback.data[4:])
     )
 
-@bot.callback_query_handler(func=lambda callback: "l_c" in callback.data or "l_e" in callback.data)
+@bot.callback_query_handler(
+    func=lambda callback:
+        "l_c" in callback.data or "l_e" in callback.data
+)
 def send_lecturers_schedule(callback):
     bot.delete_message(
         chat_id=callback.message.chat.id,
@@ -417,7 +427,7 @@ def show_score(callback):
 
 @bot.message_handler(commands=["locations"])
 def locations(message):
-    bot.send_chat_action(chat_id=message.chat.id, action="find_location")
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
     bot.send_message(
         chat_id=message.chat.id,
@@ -442,7 +452,7 @@ def b_s(callback):
         "b_s" in callback.data
 )
 def send_building(callback):
-    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    bot.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
 
     bot.delete_message(
         chat_id=callback.message.chat.id,
@@ -479,7 +489,7 @@ def l_s(callback):
         "l_s" in callback.data
 )
 def send_library(callback):
-    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    bot.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
 
     bot.delete_message(
         chat_id=callback.message.chat.id,
@@ -517,7 +527,7 @@ def d_s(callback):
         "d_s" in callback.data
 )
 def send_dorm(callback):
-    bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    bot.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
 
     bot.delete_message(
         chat_id=callback.message.chat.id,
@@ -547,7 +557,10 @@ def card(message):
         parse_mode="Markdown"
     )
 
-@bot.message_handler(func=lambda message: message.chat.id == constants.CREATOR and message.text == "What can I do?")
+@bot.message_handler(
+    func=lambda message:
+        message.chat.id == constants.CREATOR and message.text == "What can I do?"
+)
 def creators_features(message):
     bot.send_message(
         chat_id=message.chat.id,
@@ -556,7 +569,8 @@ def creators_features(message):
     )
 
 @bot.message_handler(
-    func=lambda message: message.chat.id == constants.CREATOR,
+    func=lambda message:
+        message.chat.id == constants.CREATOR,
     commands=["reverseweek"]
 )
 def reverseweek(message):
@@ -568,7 +582,8 @@ def reverseweek(message):
     )
 
 @bot.message_handler(
-    func=lambda message: message.chat.id == constants.CREATOR,
+    func=lambda message:
+        message.chat.id == constants.CREATOR,
     commands=["broadcast"]
 )
 def users(message):
@@ -583,7 +598,8 @@ def users(message):
         )
 
 @bot.message_handler(
-    func=lambda message: message.chat.id == constants.CREATOR,
+    func=lambda message:
+        message.chat.id == constants.CREATOR,
     commands=["users"]
 )
 def users(message):
@@ -594,7 +610,10 @@ def users(message):
         text="{users} users have tried me!".format(users=len(student.students))
     )
 
-@bot.message_handler(func=lambda message: message.text[0] == "/")
+@bot.message_handler(
+    func=lambda message:
+        message.text[0] == "/"
+)
 def unknown_command(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 

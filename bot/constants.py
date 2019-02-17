@@ -1,12 +1,12 @@
 # kaishnik-bot constants
 from os import environ
-TOKEN = environ["T_TOKEN"]
+TOKEN   = environ["T_TOKEN"]
 CREATOR = int(environ["T_CREATOR"])
 
 # Directions to go in for the main data
-SCHEDULE_URL = "https://kai.ru/raspisanie"
-SCORE_URL = "http://old.kai.ru/info/students/brs.php"
-LECTURERS_SCHEDULE = "https://kai.ru/for-staff/raspisanie"
+SCHEDULE_URL           = "https://kai.ru/raspisanie"
+SCORE_URL              = "http://old.kai.ru/info/students/brs.php"
+LECTURERS_SCHEDULE_URL = "https://kai.ru/for-staff/raspisanie"
 
 # Official emoji list of the Unicode Consortium: http://unicode.org/emoji/charts/full-emoji-list.html
 EMOJI = {
@@ -209,11 +209,10 @@ REPLIES_TO_UNKNOWN_MESSAGE = [
     "Ўт тЅЁЅ! тЎЁы Ј тЅЁЅ ЁыЋЎ ­ЅЏЎ­ят­Ў!",
     "А может, ты лучше команду введёшь?",
     "О, ты, как моя девушка! Я тебя тоже не понял.",
-    "Я не умею отвечать на естественные сообщения - я же всего лишь глупый алгоритм, а не ИИ.",
+    "Я не умею отвечать на естественные сообщения - я же всего лишь глупый алгоритм.",
     EMOJI["upside-down"],
-    "Есть вещи, которые я понимаю (кстати, они начинаются с * / *), а есть вещи, которых я не понимаю. Вторых, конечно же, больше." + EMOJI["crying"],
     "К чёрту всё! Я люблю тебя!" + EMOJI["kissing"],
-    "Нет, это не по мне... По мне - это простые запросы, которые начинаются с * / *.",
+    "Введи * / * - увидишь список поддерживаемых команд.",
     "Целовались студееенты, распускались тюльпаааны, чикчири-ка-ло там и тут... Ой, ты ещё здесь?",
     "Список команд можно увидеть, введя * / * (но не отправляя!).",
     "Я понимаю лишь несколько команд. Они доступны после ввода * / * (не отправлять, только ввести)."

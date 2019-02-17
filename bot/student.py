@@ -71,7 +71,6 @@ class Student:
     def set_student_card_number(self, student_card_number):
         self.student_card_number = student_card_number
 
-
     # /classes & /exams
     def get_schedule(self, type, weekday=None, next=False):
         params = (
@@ -89,8 +88,7 @@ class Student:
         if not response:
             return "".join([
                 "*{weekday}*\n\n".format(weekday=WEEK[weekday]) if weekday and weekday != 7 else "",
-                "Нет данных",
-                "" if weekday else "."
+                "Нет данных", "" if weekday else "."
             ])
 
         if type == "classes":
@@ -131,21 +129,19 @@ class Student:
 
         # Fixing bad quality response
         for i in range(1, len(keys)): keys[i - 1] = keys[i - 1][:keys[i - 1].find(keys[i])]
-        for i in range(len(keys)):
-            if keys[i][-1] == " ":
-                keys[i] = keys[i][:-1]
+        for i in range(len(keys)): keys[i] = keys[i][:-1] if keys[i][-1] == " " else keys[i]
 
         return dict(zip(keys, values))
 
     def get_score_table(self, semester):
         data = {
-            "p_sub":   "",                           # Useless neccessary thing
-            "p_fac":   self.institute,               # Institute
-            "p_kurs":  self.year,                    # Year
-            "p_group": self.group_number_for_score,  # Group ID for score
-            "p_stud":  self.name,                    # Student ID
-            "p_zach":  self.student_card_number,     # Student card number
-            "semestr": semester                      # Semester
+            "p_sub":   "",
+            "p_fac":   self.institute,
+            "p_kurs":  self.year,
+            "p_group": self.group_number_for_score,
+            "p_stud":  self.name,
+            "p_zach":  self.student_card_number,
+            "semestr": semester
         }
         
         page = post(SCORE_URL, data=data).content.decode("CP1251")

@@ -1,10 +1,10 @@
 from constants import (
     WEEK,
-    LECTURERS_SCHEDULE
+    LECTURERS_SCHEDULE_URL
 )
 
 from datetime import datetime
-import pickle
+from pickle   import dump, load, HIGHEST_PROTOCOL
 from requests import get, post
 
 # Set MSK timezone
@@ -13,11 +13,11 @@ import os, time; os.environ["TZ"] = "MSK"; time.tzset()
 # No user data is lost anymore!
 def save_users(users):
     with open("users.pkl", "wb") as users_file:
-        pickle.dump(users, users_file, pickle.HIGHEST_PROTOCOL)
+        dump(users, users_file, HIGHEST_PROTOCOL)
 
 def load_users():
     with open("users.pkl", "rb") as users_file:
-        return pickle.load(users_file)
+        return load(users_file)
 
 # /week
 def get_week():
@@ -115,7 +115,7 @@ def get_lecturers_names(name_part):
         ("query", name_part)
     )
 
-    return get(LECTURERS_SCHEDULE, params=params).json()
+    return get(LECTURERS_SCHEDULE_URL, params=params).json()
 
 def get_lecturers_schedule(prepod_login, type, weekday=None):
     params = (
@@ -127,7 +127,7 @@ def get_lecturers_schedule(prepod_login, type, weekday=None):
       "prepodLogin": prepod_login
     }
 
-    schedule = post(LECTURERS_SCHEDULE, params=params, data=data).json()
+    schedule = post(LECTURERS_SCHEDULE_URL, params=params, data=data).json()
 
     if not schedule:
         return "*{weekday}*\n\nНет данных".format(weekday=WEEK[weekday]) if weekday else "Нет данных."
@@ -144,7 +144,7 @@ def beautify_lecturers_classes(json_response, weekday):
         return "*{weekday}*\n\nНет занятий".format(weekday=WEEK[weekday])
 
     for subject in json_response[str(weekday)]:
-        # Removing extraspaces
+        # Removing extraspaces, standardizing values to string type
         for property in subject:
             subject[property] = str(subject[property])
             subject[property] = " ".join(subject[property].split())
@@ -191,7 +191,7 @@ def beautify_lecturers_exams(json_response):
     schedule = ""
 
     for subject in json_response:
-        # Removing extraspaces
+        # Removing extraspaces, standardizing values to string type
         for property in subject:
             subject[property] = str(subject[property])
             subject[property] = " ".join(subject[property].split())
@@ -218,16 +218,12 @@ def get_subject_score(score_table, subjects_num):
     subject = score_table[subjects_num]
 
     title = "*{title}*".format(title=subject[1][:len(subject[1]) - 6])
+    type = "\n_экзамен_\n" if "экз" in subject[1] else "\n_зачёт_\n"
 
-    if "экз" in subject[1]:
-        type = "\n_экзамен_"
-    else:
-        type = "\n_зачёт_"
-
-    certification1 = "\n\n• 1 аттестация: {gained}/{max}".format(gained=subject[2], max=subject[3])
+    certification1 = "\n• 1 аттестация: {gained}/{max}".format(gained=subject[2], max=subject[3])
     certification2 = "\n• 2 аттестация: {gained}/{max}".format(gained=subject[4], max=subject[5])
     certification3 = "\n• 3 аттестация: {gained}/{max}".format(gained=subject[6], max=subject[7])
-    preresult = "\n- За семестр: {preresult}/50".format(preresult=subject[8]) # Which is sum of the above
+    preresult      = "\n- За семестр: {preresult}/50".format(preresult=subject[8]) # Which is sum of the above
 
     debts = "\n\nДолги: {gained}".format(gained=subject[10])
 
