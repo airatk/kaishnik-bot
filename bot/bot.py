@@ -222,35 +222,51 @@ def classes(message):
 def one_day_schedule(callback):
     todays_weekday = datetime.datetime.today().isoweekday()
 
-    bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        text=student.students[callback.message.chat.id].get_schedule(
-            type="classes",
-            weekday=todays_weekday if callback.data == "today's" else todays_weekday + 1
-        ),
-        parse_mode="Markdown"
-    )
+    try:
+        bot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text=student.students[callback.message.chat.id].get_schedule(
+                type="classes",
+                weekday=todays_weekday if callback.data == "today's" else todays_weekday + 1
+            ),
+            parse_mode="Markdown"
+        )
+    except:
+        bot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+            disable_web_page_preview=True
+        )
 
 @bot.callback_query_handler(
     func=lambda callback:
         "weekly" in callback.data
 )
 def weekly_schedule(callback):
-    bot.delete_message(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id
-    )
-    
-    for weekday in constants.WEEK:
-        bot.send_message(
+    try:
+        bot.delete_message(
             chat_id=callback.message.chat.id,
-            text=student.students[callback.message.chat.id].get_schedule(
-                type="classes",
-                weekday=weekday,
-                next="next" in callback.data
-            ),
-            parse_mode="Markdown"
+            message_id=callback.message.message_id
+        )
+        
+        for weekday in constants.WEEK:
+            bot.send_message(
+                chat_id=callback.message.chat.id,
+                text=student.students[callback.message.chat.id].get_schedule(
+                    type="classes",
+                    weekday=weekday,
+                    next="next" in callback.data
+                ),
+                parse_mode="Markdown"
+            )
+    except:
+        bot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+            disable_web_page_preview=True
         )
 
 @bot.message_handler(commands=["exams"])
