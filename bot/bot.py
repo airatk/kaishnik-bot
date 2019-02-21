@@ -157,7 +157,10 @@ def set_student_card_number(message):
        student.students[message.chat.id].get_student_card_number() is None:
         student.students[message.chat.id].set_student_card_number(message.text)
 
-        if student.students[message.chat.id].get_score_table(1):
+        # Because the first semester might be empty
+        prelast_semester = int(student.students[message.chat.id].get_year())*2 - 1
+
+        if student.students[message.chat.id].get_score_table(prelast_semester):
             helpers.save_users(student.students)
             
             bot.send_message(
@@ -392,15 +395,23 @@ def score(message):
         "s_r" in callback.data
 )
 def s_r(callback):
-    bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        text="Выбери предмет:",
-        reply_markup=keyboards.subject_chooser(
-            score_table=student.students[callback.message.chat.id].get_score_table(callback.data[4:]),
-            semester=callback.data[4:]
+    # There might be no data for the certain semester
+    if student.students[callback.message.chat.id].get_score_table(callback.data[4:]) is None:
+        bot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Нет данных."
         )
-    )
+    else:
+        bot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Выбери предмет:",
+            reply_markup=keyboards.subject_chooser(
+                score_table=student.students[callback.message.chat.id].get_score_table(callback.data[4:]),
+                semester=callback.data[4:]
+            )
+        )
 
 @bot.callback_query_handler(
     func=lambda callback:

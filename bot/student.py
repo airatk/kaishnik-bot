@@ -148,7 +148,7 @@ class Student:
         soup = BeautifulSoup(page, features="html.parser")
         table = soup.html.find("table", { "id": "reyt" })
 
-        # Returns None if student card number is incorrect
+        # Returns None if student card number is incorrect or there is no data for certain semester
         if not table:
             return None
 
