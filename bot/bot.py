@@ -47,11 +47,18 @@ def set_institute(message):
 
     student.students[message.chat.id] = student.Student(constants.INSTITUTES[message.text])
 
-    bot.send_message(
-        chat_id=message.chat.id,
-        text="Выбери свой курс.",
-        reply_markup=keyboards.year_setter(student.students[message.chat.id].get_dict_of_list(type="p_kurs"))
-    )
+    try:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Выбери свой курс.",
+            reply_markup=keyboards.year_setter(student.students[message.chat.id].get_dict_of_list(type="p_kurs"))
+        )
+    except:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+            disable_web_page_preview=True
+        )
 
 @bot.message_handler(
     func=lambda message:
@@ -64,19 +71,26 @@ def set_year(message):
        student.students[message.chat.id].get_year() is None:
         student.students[message.chat.id].set_year(message.text)
        
-        groups = student.students[message.chat.id].get_dict_of_list(type="p_group")
-       
-        if groups:
+        try:
+            groups = student.students[message.chat.id].get_dict_of_list(type="p_group")
+           
+            if groups:
+                bot.send_message(
+                    chat_id=message.chat.id,
+                    text="Выбери свою группу.",
+                    reply_markup=keyboards.group_number_setter(groups)
+                )
+            else:
+                bot.send_message(
+                    chat_id=message.chat.id,
+                    text="Здесь ничего нет. Начни сначала.",
+                    reply_markup=keyboards.make_send("/settings")
+                )
+        except:
             bot.send_message(
                 chat_id=message.chat.id,
-                text="Выбери свою группу.",
-                reply_markup=keyboards.group_number_setter(groups)
-            )
-        else:
-            bot.send_message(
-                chat_id=message.chat.id,
-                text="Здесь ничего нет. Начни сначала.",
-                reply_markup=keyboards.make_send("/settings")
+                text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+                disable_web_page_preview=True
             )
     else:
         bot.send_message(
@@ -96,21 +110,28 @@ def set_group_number(message):
        student.students[message.chat.id].get_group_number_for_schedule() is None:
         student.students[message.chat.id].set_group_number_for_score(message.text)
        
-        names = student.students[message.chat.id].get_dict_of_list(type="p_stud")
-       
-        if names:
-            student.students[message.chat.id].set_group_number_for_schedule(message.text)
-            
+        try:
+            names = student.students[message.chat.id].get_dict_of_list(type="p_stud")
+           
+            if names:
+                student.students[message.chat.id].set_group_number_for_schedule(message.text)
+                
+                bot.send_message(
+                    chat_id=message.chat.id,
+                    text="Выбери себя.",
+                    reply_markup=keyboards.name_setter(names)
+                )
+            else:
+                bot.send_message(
+                    chat_id=message.chat.id,
+                    text="Здесь ничего нет. Начни сначала.",
+                    reply_markup=keyboards.make_send("/settings")
+                )
+        except:
             bot.send_message(
                 chat_id=message.chat.id,
-                text="Выбери себя.",
-                reply_markup=keyboards.name_setter(names)
-            )
-        else:
-            bot.send_message(
-                chat_id=message.chat.id,
-                text="Здесь ничего нет. Начни сначала.",
-                reply_markup=keyboards.make_send("/settings")
+                text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+                disable_web_page_preview=True
             )
     else:
         bot.send_message(
@@ -164,25 +185,32 @@ def set_student_card_number(message):
 
         # Because the first semester might be empty
         prelast_semester = int(student.students[message.chat.id].get_year())*2 - 1
-
-        if student.students[message.chat.id].get_score_table(prelast_semester):
-            helpers.save_users(student.students)
-            
-            bot.send_message(
-                chat_id=message.chat.id,
-                text="Запомнено!"
-            )
-            bot.send_message(
-                chat_id=message.chat.id,
-                text=constants.REPLIES_TO_UNKNOWN_COMMAND[0],
-                parse_mode="Markdown"
-            )
-        else:
-            student.students[message.chat.id].set_student_card_number(None)
         
+        try:
+            if student.students[message.chat.id].get_score_table(prelast_semester):
+                helpers.save_users(student.students)
+                
+                bot.send_message(
+                    chat_id=message.chat.id,
+                    text="Запомнено!"
+                )
+                bot.send_message(
+                    chat_id=message.chat.id,
+                    text=constants.REPLIES_TO_UNKNOWN_COMMAND[0],
+                    parse_mode="Markdown"
+                )
+            else:
+                student.students[message.chat.id].set_student_card_number(None)
+            
+                bot.send_message(
+                    chat_id=message.chat.id,
+                    text="Неверный номер зачётки. Исправляйся."
+                )
+        except:
             bot.send_message(
                 chat_id=message.chat.id,
-                text="Неверный номер зачётки. Исправляйся."
+                text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+                disable_web_page_preview=True
             )
     else:
         bot.send_message(
@@ -299,11 +327,18 @@ def weekly_schedule(callback):
 def exams(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    bot.send_message(
-        chat_id=message.chat.id,
-        text=student.students[message.chat.id].get_schedule(type="exams"),
-        parse_mode="Markdown"
-    )
+    try:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text=student.students[message.chat.id].get_schedule(type="exams"),
+            parse_mode="Markdown"
+        )
+    except:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+            disable_web_page_preview=True
+        )
 
 @bot.message_handler(commands=["week"])
 def week(message):
@@ -320,10 +355,7 @@ def lecturers(message):
 
     bot.send_message(
         chat_id=message.chat.id,
-        text="Введи ФИО преподавателя. "
-             "Можно просто ФИ. Или даже только Ф. "
-             "Да и запрос в виде нескольких первых букв Ф пойдёт. "
-             "Главное, сохрани порядок" + constants.EMOJI["smiling"]
+        text="Введи ФИО преподавателя полностью или частично."
     )
 
     global previous_message_text
@@ -337,7 +369,11 @@ def lecturers(message):
 def find_lecturer(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    names = helpers.get_lecturers_names(message.text)
+    # In case kai.ru is down
+    try:
+        names = helpers.get_lecturers_names(message.text)
+    except:
+        names = None
 
     if names:
         try:
@@ -382,25 +418,32 @@ def send_lecturers_schedule(callback):
         message_id=callback.message.message_id
     )
 
-    if "l_c" in callback.data:
-        for weekday in constants.WEEK:
+    try:
+        if "l_c" in callback.data:
+            for weekday in constants.WEEK:
+                bot.send_message(
+                    chat_id=callback.message.chat.id,
+                    text=helpers.get_lecturers_schedule(
+                        prepod_login=callback.data[4:],
+                        type=callback.data[:3],
+                        weekday=weekday
+                    ),
+                    parse_mode="Markdown"
+                )
+        else:
             bot.send_message(
                 chat_id=callback.message.chat.id,
                 text=helpers.get_lecturers_schedule(
                     prepod_login=callback.data[4:],
-                    type=callback.data[:3],
-                    weekday=weekday
+                    type=callback.data[:3]
                 ),
                 parse_mode="Markdown"
             )
-    else:
+    except:
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text=helpers.get_lecturers_schedule(
-                prepod_login=callback.data[4:],
-                type=callback.data[:3]
-            ),
-            parse_mode="Markdown"
+            text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+            disable_web_page_preview=True
         )
 
 @bot.message_handler(commands=["score"])
@@ -425,22 +468,30 @@ def score(message):
         "s_r" in callback.data
 )
 def s_r(callback):
-    # There might be no data for the certain semester
-    if student.students[callback.message.chat.id].get_score_table(callback.data[4:]) is None:
-        bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
-            text="Нет данных."
-        )
-    else:
-        bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
-            text="Выбери предмет:",
-            reply_markup=keyboards.subject_chooser(
-                score_table=student.students[callback.message.chat.id].get_score_table(callback.data[4:]),
-                semester=callback.data[4:]
+    try:
+        # There might be no data for the certain semester
+        if student.students[callback.message.chat.id].get_score_table(callback.data[4:]) is None:
+            bot.edit_message_text(
+                chat_id=callback.message.chat.id,
+                message_id=callback.message.message_id,
+                text="Нет данных."
             )
+        else:
+            bot.edit_message_text(
+                chat_id=callback.message.chat.id,
+                message_id=callback.message.message_id,
+                text="Выбери предмет:",
+                reply_markup=keyboards.subject_chooser(
+                    score_table=student.students[callback.message.chat.id].get_score_table(callback.data[4:]),
+                    semester=callback.data[4:]
+                )
+            )
+    except:
+        bot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+            disable_web_page_preview=True
         )
 
 @bot.callback_query_handler(
@@ -455,14 +506,21 @@ def show_score(callback):
 
     callback_data = callback.data[8:].split()
 
-    for subject in range(int(callback_data[0])):
+    try:
+        for subject in range(int(callback_data[0])):
+            bot.send_message(
+                chat_id=callback.message.chat.id,
+                text=helpers.get_subject_score(
+                    score_table=student.students[callback.message.chat.id].get_score_table(callback_data[1]),
+                    subjects_num=subject
+                ),
+                parse_mode="Markdown"
+            )
+    except:
         bot.send_message(
             chat_id=callback.message.chat.id,
-            text=helpers.get_subject_score(
-                score_table=student.students[callback.message.chat.id].get_score_table(callback_data[1]),
-                subjects_num=subject
-            ),
-            parse_mode="Markdown"
+            text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+            disable_web_page_preview=True
         )
 
 @bot.callback_query_handler(
@@ -472,15 +530,23 @@ def show_score(callback):
 def show_score(callback):
     callback_data = callback.data[4:].split()
 
-    bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        text=helpers.get_subject_score(
-            score_table=student.students[callback.message.chat.id].get_score_table(callback_data[1]),
-            subjects_num=int(callback_data[0])
-        ),
-        parse_mode="Markdown"
-    )
+    try:
+        bot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text=helpers.get_subject_score(
+                score_table=student.students[callback.message.chat.id].get_score_table(callback_data[1]),
+                subjects_num=int(callback_data[0])
+            ),
+            parse_mode="Markdown"
+        )
+    except:
+        bot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+            disable_web_page_preview=True
+        )
 
 @bot.message_handler(commands=["locations"])
 def locations(message):
