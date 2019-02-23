@@ -742,10 +742,11 @@ def users(message):
     # Deleting users who doesn't use the bot
     for user in student.students.copy():
         try:
-            bot.get_chat(chat_id=user)
+            bot.send_chat_action(chat_id=user, action="upload_document")
         except:
             del student.students[user]
-    
+    helpers.save_users(student.students)
+
     bot.send_message(
         chat_id=message.chat.id,
         text="{users} users have tried me!".format(users=len(student.students))
