@@ -615,14 +615,17 @@ def reverseweek(message):
 )
 def users(message):
     for user in student.students:
-        bot.send_message(
-            chat_id=user,
-            text="*Телеграмма от разработчика*\n\n" +
-                 " ".join(message.text.split()[1:]) +
-                 "\n\nНаписать разработчику: @airatk",
-            parse_mode="Markdown",
-            disable_web_page_preview=True
-        )
+        try:
+            bot.send_message(
+                chat_id=user,
+                text="*Телеграмма от разработчика*\n\n" +
+                     " ".join(message.text.split()[1:]) +
+                     "\n\nНаписать разработчику: @airatk",
+                parse_mode="Markdown",
+                disable_web_page_preview=True
+            )
+        except:
+            pass  # Do nothing with a user who blocked the bot. Right, just leave him
 
 @bot.message_handler(
     func=lambda message:
@@ -631,6 +634,13 @@ def users(message):
 )
 def users(message):
     helpers.reverse_week_in_file()
+    
+    # Deleting users who doesn't use the bot
+    for user in student.students.copy():
+        try:
+            bot.get_chat(chat_id=user)
+        except:
+            del student.students[user]
     
     bot.send_message(
         chat_id=message.chat.id,
