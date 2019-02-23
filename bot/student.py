@@ -172,7 +172,6 @@ class Student:
             self.year is None or \
             self.group_number_for_schedule is None or \
             self.group_number_for_score is None or \
-            self.name is None or \
-            self.student_card_number is None
+            self.name is None
 
 students = load_users()

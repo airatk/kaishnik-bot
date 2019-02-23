@@ -25,7 +25,7 @@ def start(message):
     bot.send_message(
         chat_id=message.chat.id,
         text="Для начала настрой меня на общение с тобой" + constants.EMOJI["smirking"],
-        reply_markup=keyboards.settings_entry()
+        reply_markup=keyboards.make_send("/settings")
     )
 
 @bot.message_handler(commands=["settings"])
@@ -76,13 +76,13 @@ def set_year(message):
             bot.send_message(
                 chat_id=message.chat.id,
                 text="Здесь ничего нет. Начни сначала.",
-                reply_markup=keyboards.settings_entry()
+                reply_markup=keyboards.make_send("/settings")
             )
     else:
         bot.send_message(
             chat_id=message.chat.id,
             text="Если хочешь изменить настройки, начни с соответствующей команды.",
-            reply_markup=keyboards.settings_entry()
+            reply_markup=keyboards.make_send("/settings")
         )
 
 @bot.message_handler(
@@ -110,13 +110,13 @@ def set_group_number(message):
             bot.send_message(
                 chat_id=message.chat.id,
                 text="Здесь ничего нет. Начни сначала.",
-                reply_markup=keyboards.settings_entry()
+                reply_markup=keyboards.make_send("/settings")
             )
     else:
         bot.send_message(
             chat_id=message.chat.id,
             text="Если хочешь изменить настройки, начни с соответствующей команды.",
-            reply_markup=keyboards.settings_entry()
+            reply_markup=keyboards.make_send("/settings")
         )
 
 @bot.message_handler(
@@ -136,11 +136,16 @@ def set_name(message):
                  "(интересный факт - номер твоего студенческого и номер твоей зачётки одинаковы!).",
             reply_markup=keyboards.remove_keyboard()
         )
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Можешь не указывать, если не хочешь, но баллы показать не смогу.",
+            reply_markup=keyboards.skipper()
+        )
     else:
         bot.send_message(
             chat_id=message.chat.id,
             text="Если хочешь изменить настройки, начни с соответствующей команды.",
-            reply_markup=keyboards.settings_entry()
+            reply_markup=keyboards.make_send("/settings")
         )
 
 @bot.message_handler(
@@ -165,7 +170,7 @@ def set_student_card_number(message):
             
             bot.send_message(
                 chat_id=message.chat.id,
-                text="Запомнено!",
+                text="Запомнено!"
             )
             bot.send_message(
                 chat_id=message.chat.id,
@@ -183,8 +188,26 @@ def set_student_card_number(message):
         bot.send_message(
             chat_id=message.chat.id,
             text="Если хочешь изменить настройки, начни с соответствующей команды.",
-            reply_markup=keyboards.settings_entry()
+            reply_markup=keyboards.make_send("/settings")
         )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        callback.data == "skip"
+)
+def without_student_card_number(callback):
+    helpers.save_users(student.students)
+        
+    bot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="Запомнено!"
+    )
+    bot.send_message(
+        chat_id=callback.message.chat.id,
+        text=constants.REPLIES_TO_UNKNOWN_COMMAND[0],
+        parse_mode="Markdown"
+    )
 
 @bot.message_handler(
     func=lambda message:
@@ -205,7 +228,7 @@ def unsetup(callback):
     bot.send_message(
         chat_id=message.chat.id,
         text="Пройди настройку полностью.",
-        reply_markup=keyboards.settings_entry()
+        reply_markup=keyboards.make_send("/settings")
     )
 
 @bot.message_handler(commands=["classes"])
@@ -383,12 +406,19 @@ def send_lecturers_schedule(callback):
 @bot.message_handler(commands=["score"])
 def score(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
-    bot.send_message(
-        chat_id=message.chat.id,
-        text="Выбери номер семестра:",
-        reply_markup=keyboards.semester_dailer(int(student.students[message.chat.id].get_year())*2 + 1)
-    )
+    
+    if student.students[message.chat.id].get_student_card_number() is not None:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Выбери номер семестра:",
+            reply_markup=keyboards.semester_dailer(int(student.students[message.chat.id].get_year())*2 + 1)
+        )
+    else:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Номер зачёт не указан, но ты можешь это исправить.",
+            reply_markup=keyboards.make_send("/card")
+        )
 
 @bot.callback_query_handler(
     func=lambda callback:
@@ -578,11 +608,19 @@ def send_dorm(callback):
 def card(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    bot.send_message(
-        chat_id=message.chat.id,
-        text=student.students[message.chat.id].get_card(),
-        parse_mode="Markdown"
-    )
+    if student.students[message.chat.id].get_student_card_number() is not None:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text=student.students[message.chat.id].get_card(),
+            parse_mode="Markdown"
+        )
+    else:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Отправь номер своей зачётки "
+                 "(интересный факт - номер твоего студенческого и номер твоей зачётки одинаковы!).",
+            reply_markup=keyboards.remove_keyboard()
+        )
 
 @bot.message_handler(
     func=lambda message:

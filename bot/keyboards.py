@@ -8,9 +8,8 @@ from constants import (
     BUILDINGS, LIBRARIES, DORMS
 )
 
-# /start
-def settings_entry():
-    return ReplyKeyboardMarkup(resize_keyboard=True).row(KeyboardButton(text="/settings"))
+def make_send(command):
+    return ReplyKeyboardMarkup(resize_keyboard=True).row(KeyboardButton(text=command))
 
 # /settings
 def institute_setter():
@@ -48,6 +47,13 @@ def name_setter(names):
     ])
 
     return name_setter_keyboard
+
+def skipper():
+    skipper_keyboard = InlineKeyboardMarkup()
+    
+    skipper_keyboard.row(InlineKeyboardButton(text="пропустить", callback_data="skip"))
+
+    return skipper_keyboard
 
 # /classes
 def schedule_type():
