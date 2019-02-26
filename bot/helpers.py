@@ -7,9 +7,6 @@ from datetime import datetime
 from pickle   import dump, load, HIGHEST_PROTOCOL
 from requests import get, post
 
-# Set MSK timezone
-import os, time; os.environ["TZ"] = "MSK"; time.tzset()
-
 # No user data is lost anymore!
 def save_users(users):
     with open("users.pkl", "wb") as users_file:
