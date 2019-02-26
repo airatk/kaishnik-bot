@@ -25,10 +25,10 @@ def is_even():
 
 def is_week_reversed():
     with open("is_week_reversed", "r") as week_file:
-        return True if week_file.read() == "True" else False
+        return "True" in week_file.read()
 
 def reverse_week_in_file():
-    with open("is_week_reversed", "w") as week_file:
+    with open("is_week_reversed", "r+") as week_file:
         week_file.write("False") if is_week_reversed() else week_file.write("True")
 
 # /classes

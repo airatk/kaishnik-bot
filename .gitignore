@@ -1,3 +1,4 @@
 **/.DS_Store
 **/__pycache__/
 *.pkl
+is_week_reversed

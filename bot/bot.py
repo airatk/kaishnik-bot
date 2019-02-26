@@ -12,6 +12,22 @@ import datetime
 telebot.apihelper.proxy = { "https": "socks5://163.172.152.192:1080" }
 bot = telebot.TeleBot(constants.TOKEN, threaded=False)
 
+@bot.message_handler(
+    content_types=[
+        "sticker",
+        "photo", "video", "audio", "document",
+        "voice", "video_note", "location", "contact"
+    ]
+)
+def unknown_nontext_message(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text=random.choice(constants.REPLIES_TO_UNKNOWN_MESSAGE),
+        parse_mode="Markdown"
+    )
+
 @bot.message_handler(commands=["start"])
 def start(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -223,11 +239,15 @@ def set_student_card_number(message):
 )
 def without_student_card_number(callback):
     helpers.save_users(student.students)
-        
+    
+    bot.delete_message(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id - 1
+    )
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text="Запомнено!"
+        text="Запомнено без зачётки!"
     )
     bot.send_message(
         chat_id=callback.message.chat.id,
@@ -713,7 +733,7 @@ def reverseweek(message):
         message.chat.id == constants.CREATOR,
     commands=["broadcast"]
 )
-def users(message):
+def broadcast(message):
     for user in student.students:
         try:
             bot.send_message(
@@ -732,9 +752,7 @@ def users(message):
         message.chat.id == constants.CREATOR,
     commands=["users"]
 )
-def users(message):
-    helpers.reverse_week_in_file()
-    
+def users(message):    
     # Deleting users who doesn't use the bot
     for user in student.students.copy():
         try:
@@ -763,7 +781,7 @@ def unknown_command(message):
     )
 
 @bot.message_handler(content_types=["text"])
-def unknown_message(message):
+def unknown_text_message(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
     bot.send_message(
