@@ -12,8 +12,6 @@ import datetime
 telebot.apihelper.proxy = { "https": "socks5://163.172.152.192:1080" }
 bot = telebot.TeleBot(constants.TOKEN, threaded=False)
 
-previous_message_text = ""  # Used to let user enter lecturer's name. "/lecturers" command's text is saved in
-
 @bot.message_handler(commands=["start"])
 def start(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -358,12 +356,11 @@ def lecturers(message):
         text="Введи ФИО преподавателя полностью или частично."
     )
 
-    global previous_message_text
-    previous_message_text = message.text
+    student.students[message.chat.id].set_pmt(message.text)
 
 @bot.message_handler(
     func=lambda message:
-        previous_message_text == "/lecturers",
+        student.students[message.chat.id].get_pmt() == "/lecturers",
     content_types=["text"]
 )
 def find_lecturer(message):
@@ -393,8 +390,7 @@ def find_lecturer(message):
             text="Ничего не найдено :("
         )
     
-    global previous_message_text
-    previous_message_text = ""
+    student.students[message.chat.id].set_pmt(None)
 
 @bot.callback_query_handler(
     func=lambda callback:
@@ -459,7 +455,7 @@ def score(message):
     else:
         bot.send_message(
             chat_id=message.chat.id,
-            text="Номер зачёт не указан, но ты можешь это исправить.",
+            text="Номер зачётки не указан, но ты можешь это исправить.",
             reply_markup=keyboards.make_send("/card")
         )
 

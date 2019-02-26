@@ -19,7 +19,8 @@ class Student:
         group_number_for_schedule=None,
         group_number_for_score=None,
         name=None,
-        student_card_number=None
+        student_card_number=None,
+        previous_message_text=None  # Used to let user enter lecturer's name. "/lecturers" command's text is saved in
     ):
         self.institute = institute
         self.year = year
@@ -27,6 +28,7 @@ class Student:
         self.group_number_for_score = group_number_for_score
         self.name = name
         self.student_card_number = student_card_number
+        self.previous_message_text = previous_message_text
 
     def get_institute(self):
         return self.institute
@@ -45,6 +47,9 @@ class Student:
 
     def get_student_card_number(self):
         return self.student_card_number
+    
+    def get_pmt(self):
+        return self.previous_message_text
 
     def set_institute(self, institute):
         self.institute = institute
@@ -70,6 +75,9 @@ class Student:
 
     def set_student_card_number(self, student_card_number):
         self.student_card_number = student_card_number
+
+    def set_pmt(self, previous_message_text):
+        self.previous_message_text = previous_message_text
 
     # /classes & /exams
     def get_schedule(self, type, weekday=None, next=False):
