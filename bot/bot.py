@@ -277,96 +277,6 @@ def unsetup(callback):
         reply_markup=keyboards.make_send("/settings")
     )
 
-@bot.message_handler(commands=["classes"])
-def classes(message):
-    bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
-    bot.send_message(
-        chat_id=message.chat.id,
-        text="Тебе нужно расписание на:",
-        reply_markup=keyboards.schedule_type()
-    )
-
-@bot.callback_query_handler(
-    func=lambda callback:
-        callback.data == "today's" or callback.data == "tomorrow's"
-)
-def one_day_schedule(callback):
-    todays_weekday = datetime.datetime.today().isoweekday()
-
-    try:
-        bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
-            text=student.students[callback.message.chat.id].get_schedule(
-                type="classes",
-                weekday=todays_weekday if callback.data == "today's" else todays_weekday + 1
-            ),
-            parse_mode="Markdown"
-        )
-    except:
-        bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
-            text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
-            disable_web_page_preview=True
-        )
-
-@bot.callback_query_handler(
-    func=lambda callback:
-        "weekly" in callback.data
-)
-def weekly_schedule(callback):
-    try:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        
-        for weekday in constants.WEEK:
-            bot.send_message(
-                chat_id=callback.message.chat.id,
-                text=student.students[callback.message.chat.id].get_schedule(
-                    type="classes",
-                    weekday=weekday,
-                    next="next" in callback.data
-                ),
-                parse_mode="Markdown"
-            )
-    except:
-        bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
-            text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
-            disable_web_page_preview=True
-        )
-
-@bot.message_handler(commands=["exams"])
-def exams(message):
-    bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
-    try:
-        bot.send_message(
-            chat_id=message.chat.id,
-            text=student.students[message.chat.id].get_schedule(type="exams"),
-            parse_mode="Markdown"
-        )
-    except:
-        bot.send_message(
-            chat_id=message.chat.id,
-            text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
-            disable_web_page_preview=True
-        )
-
-@bot.message_handler(commands=["week"])
-def week(message):
-    bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
-    bot.send_message(
-        chat_id=message.chat.id,
-        text=helpers.get_week()
-    )
-
 @bot.message_handler(commands=["lecturers"])
 def lecturers(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -461,6 +371,96 @@ def send_lecturers_schedule(callback):
             text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
             disable_web_page_preview=True
         )
+
+@bot.message_handler(commands=["classes"])
+def classes(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Тебе нужно расписание на:",
+        reply_markup=keyboards.schedule_type()
+    )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        callback.data == "today's" or callback.data == "tomorrow's"
+)
+def one_day_schedule(callback):
+    todays_weekday = datetime.datetime.today().isoweekday()
+
+    try:
+        bot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text=student.students[callback.message.chat.id].get_schedule(
+                type="classes",
+                weekday=todays_weekday if callback.data == "today's" else todays_weekday + 1
+            ),
+            parse_mode="Markdown"
+        )
+    except:
+        bot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+            disable_web_page_preview=True
+        )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        "weekly" in callback.data
+)
+def weekly_schedule(callback):
+    try:
+        bot.delete_message(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id
+        )
+        
+        for weekday in constants.WEEK:
+            bot.send_message(
+                chat_id=callback.message.chat.id,
+                text=student.students[callback.message.chat.id].get_schedule(
+                    type="classes",
+                    weekday=weekday,
+                    next="next" in callback.data
+                ),
+                parse_mode="Markdown"
+            )
+    except:
+        bot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+            disable_web_page_preview=True
+        )
+
+@bot.message_handler(commands=["exams"])
+def exams(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    try:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text=student.students[message.chat.id].get_schedule(type="exams"),
+            parse_mode="Markdown"
+        )
+    except:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+            disable_web_page_preview=True
+        )
+
+@bot.message_handler(commands=["week"])
+def week(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text=helpers.get_week()
+    )
 
 @bot.message_handler(commands=["score"])
 def score(message):
