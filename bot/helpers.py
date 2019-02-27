@@ -70,7 +70,7 @@ def beautify_classes(json_response, weekday, next):
         
         # Show if a subject is supposed to be only on certain date (like 21.09 or 07.11 or неч(6) or чет/неч неч/чет)
         if "." in subject["dayDate"] or "/" in subject["dayDate"] or "(" in subject["dayDate"]:
-            date = "\n*[ !!! {date} ]*".format(date=subject["dayDate"])
+            date = "\n*[ {date} ]*".format(date=subject["dayDate"])
         else:
             date = ""
         
