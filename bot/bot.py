@@ -52,6 +52,39 @@ def settings(message):
         reply_markup=keyboards.institute_setter()
     )
 
+    try:
+        if student.students[message.chat.id].get_institute() is not None:
+            bot.send_message(
+                chat_id=message.chat.id,
+                text="Или не выбирай:",
+                reply_markup=keyboards.skipper(
+                    text="отменить",
+                    callback_data="cancel"
+                )
+            )
+    except:
+        pass  # For unadded-to-file users
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        callback.data == "cancel"
+)
+def cancel_setting_process(callback):
+    bot.delete_message(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id - 1
+    )
+    bot.delete_message(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id
+    )
+    
+    bot.send_message(
+        chat_id=callback.message.chat.id,
+        text="Отменено!",
+        reply_markup=keyboards.remove_keyboard()
+    )
+
 @bot.message_handler(
     func=lambda message:
         message.text in constants.INSTITUTES
@@ -60,6 +93,11 @@ def set_institute(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
     student.students[message.chat.id] = student.Student(constants.INSTITUTES[message.text])
+
+    bot.delete_message(
+        chat_id=message.chat.id,
+        message_id=message.message_id - 1
+    )  # Delete "cancel" message
 
     try:
         bot.send_message(
@@ -109,8 +147,7 @@ def set_year(message):
     else:
         bot.send_message(
             chat_id=message.chat.id,
-            text="Если хочешь изменить настройки, начни с соответствующей команды.",
-            reply_markup=keyboards.make_send("/settings")
+            text="Если хочешь изменить настройки, начни с соответствующей команды - отправь /settings"
         )
 
 @bot.message_handler(
@@ -150,8 +187,7 @@ def set_group_number(message):
     else:
         bot.send_message(
             chat_id=message.chat.id,
-            text="Если хочешь изменить настройки, начни с соответствующей команды.",
-            reply_markup=keyboards.make_send("/settings")
+            text="Если хочешь изменить настройки, начни с соответствующей команды - отправь /settings"
         )
 
 @bot.message_handler(
@@ -174,63 +210,15 @@ def set_name(message):
         bot.send_message(
             chat_id=message.chat.id,
             text="Можешь не указывать, если не хочешь, но баллы показать не смогу.",
-            reply_markup=keyboards.skipper()
-        )
-    else:
-        bot.send_message(
-            chat_id=message.chat.id,
-            text="Если хочешь изменить настройки, начни с соответствующей команды.",
-            reply_markup=keyboards.make_send("/settings")
-        )
-
-@bot.message_handler(
-    func=lambda message:
-        message.chat.id in student.students and (\
-            re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9]", message.text) or \
-            re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9][0-9]", message.text) \
-        )
-)
-def set_student_card_number(message):
-    bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
-    if student.students[message.chat.id].get_name() is not None and \
-       student.students[message.chat.id].get_student_card_number() is None:
-        student.students[message.chat.id].set_student_card_number(message.text)
-
-        # Because the first semester might be empty
-        prelast_semester = int(student.students[message.chat.id].get_year())*2 - 1
-        
-        try:
-            if student.students[message.chat.id].get_score_table(prelast_semester):
-                helpers.save_users(student.students)
-                
-                bot.send_message(
-                    chat_id=message.chat.id,
-                    text="Запомнено!"
-                )
-                bot.send_message(
-                    chat_id=message.chat.id,
-                    text=constants.REPLIES_TO_UNKNOWN_COMMAND[0],
-                    parse_mode="Markdown"
-                )
-            else:
-                student.students[message.chat.id].set_student_card_number(None)
-            
-                bot.send_message(
-                    chat_id=message.chat.id,
-                    text="Неверный номер зачётки. Исправляйся."
-                )
-        except:
-            bot.send_message(
-                chat_id=message.chat.id,
-                text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
-                disable_web_page_preview=True
+            reply_markup=keyboards.skipper(
+                text="пропустить",
+                callback_data="skip"
             )
+        )
     else:
         bot.send_message(
             chat_id=message.chat.id,
-            text="Если хочешь изменить настройки, начни с соответствующей команды.",
-            reply_markup=keyboards.make_send("/settings")
+            text="Если хочешь изменить настройки, начни с соответствующей команды - отправь /settings",
         )
 
 @bot.callback_query_handler(
@@ -252,8 +240,72 @@ def without_student_card_number(callback):
     bot.send_message(
         chat_id=callback.message.chat.id,
         text=constants.REPLIES_TO_UNKNOWN_COMMAND[0],
-        parse_mode="Markdown"
+        parse_mode="Markdown",
+        reply_markup=keyboards.remove_keyboard()
     )
+
+@bot.message_handler(
+    func=lambda message:
+        message.chat.id in student.students and (\
+            re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9]", message.text) or \
+            re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9][0-9]", message.text) \
+        )
+)
+def set_student_card_number(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    if student.students[message.chat.id].get_name() is not None and \
+       student.students[message.chat.id].get_student_card_number() is None:
+        student.students[message.chat.id].set_student_card_number(message.text)
+
+        # Because the first semester might be empty
+        prelast_semester = int(student.students[message.chat.id].get_year())*2 - 1
+        
+        bot.delete_message(
+            chat_id=message.chat.id,
+            message_id=message.message_id - 1
+        )  # Delete "skip" message
+        
+        try:
+            if student.students[message.chat.id].get_score_table(prelast_semester):
+                helpers.save_users(student.students)
+                
+                bot.send_message(
+                    chat_id=message.chat.id,
+                    text="Запомнено!"
+                )
+                bot.send_message(
+                    chat_id=message.chat.id,
+                    text=constants.REPLIES_TO_UNKNOWN_COMMAND[0],
+                    parse_mode="Markdown",
+                    reply_markup=keyboards.remove_keyboard()
+                )
+            else:
+                student.students[message.chat.id].set_student_card_number(None)
+            
+                bot.send_message(
+                    chat_id=message.chat.id,
+                    text="Неверный номер зачётки. Исправляйся."
+                )
+                bot.send_message(
+                    chat_id=message.chat.id,
+                    text="Можешь не указывать, если не хочешь, но баллы показать не смогу.",
+                    reply_markup=keyboards.skipper(
+                        text="пропустить",
+                        callback_data="skip"
+                    )
+                )
+        except:
+            bot.send_message(
+                chat_id=message.chat.id,
+                text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+                disable_web_page_preview=True
+            )
+    else:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Если хочешь изменить настройки, начни с соответствующей команды - отправь /settings"
+        )
 
 @bot.message_handler(
     func=lambda message:
@@ -475,8 +527,7 @@ def score(message):
     else:
         bot.send_message(
             chat_id=message.chat.id,
-            text="Номер зачётки не указан, но ты можешь это исправить.",
-            reply_markup=keyboards.make_send("/card")
+            text="Номер зачётки не указан, но ты можешь это исправить - отправь /card"
         )
 
 @bot.callback_query_handler(
@@ -703,6 +754,14 @@ def card(message):
                  "(интересный факт - номер твоего студенческого и номер твоей зачётки одинаковы!).",
             reply_markup=keyboards.remove_keyboard()
         )
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Можешь не указывать, если не хочешь, но баллы показать не смогу.",
+            reply_markup=keyboards.skipper(
+                text="пропустить",
+                callback_data="skip"
+            )
+        )
 
 @bot.message_handler(
     func=lambda message:
@@ -739,7 +798,7 @@ def broadcast(message):
             bot.send_message(
                 chat_id=user,
                 text="*Телеграмма от разработчика*\n\n" +
-                     " ".join(message.text.split()[1:]) +
+                     message.text[11:] +
                      "\n\nНаписать разработчику: @airatk",
                 parse_mode="Markdown",
                 disable_web_page_preview=True

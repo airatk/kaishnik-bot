@@ -48,10 +48,10 @@ def name_setter(names):
 
     return name_setter_keyboard
 
-def skipper():
+def skipper(text, callback_data):
     skipper_keyboard = InlineKeyboardMarkup()
     
-    skipper_keyboard.row(InlineKeyboardButton(text="пропустить", callback_data="skip"))
+    skipper_keyboard.row(InlineKeyboardButton(text=text, callback_data=callback_data))
 
     return skipper_keyboard
 
