@@ -763,6 +763,14 @@ def card(message):
             )
         )
 
+@bot.message_handler(commands=["brs"])
+def brs(message):
+    bot.send_message(
+        chat_id=message.chat.id,
+        text=constants.BRS,
+        parse_mode="Markdown"
+    )
+
 @bot.message_handler(
     func=lambda message:
         message.chat.id == constants.CREATOR and message.text == "What can I do?"
