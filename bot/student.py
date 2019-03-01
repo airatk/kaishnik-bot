@@ -71,7 +71,7 @@ class Student:
         self.group_number_for_score = self.get_dict_of_list(type="p_group")[group_number] if not group_number == "КИТ" else "КИТ"
 
     def set_name(self, name):
-        self.name = self.get_dict_of_list(type="p_stud")[name] if not group_number == "КИТ" else "КИТ"
+        self.name = self.get_dict_of_list(type="p_stud")[name] if not name == "КИТ" else "КИТ"
 
     def set_student_card_number(self, student_card_number):
         self.student_card_number = student_card_number
