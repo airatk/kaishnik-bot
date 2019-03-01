@@ -315,10 +315,13 @@ def set_student_card_number(message):
         # Because the first semester might be empty
         prelast_semester = int(student.students[message.chat.id].get_year())*2 - 1
         
-        bot.delete_message(
-            chat_id=message.chat.id,
-            message_id=message.message_id - 1
-        )  # Delete "skip" message
+        try:
+            bot.delete_message(
+                chat_id=message.chat.id,
+                message_id=message.message_id - 1
+            )  # Delete "skip" message
+        except:
+            pass
         
         try:
             if student.students[message.chat.id].get_score_table(prelast_semester):
