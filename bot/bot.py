@@ -122,10 +122,16 @@ def set_KIT_group_number(message):
                 text=constants.REPLIES_TO_UNKNOWN_COMMAND[0],
                 parse_mode="Markdown"
             )
-        except:
+        except IndexError:
             bot.send_message(
                 chat_id=message.chat.id,
                 text="Неверный номер группы. Исправляйся."
+            )
+        except:
+            bot.send_message(
+                chat_id=message.chat.id,
+                text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+                disable_web_page_preview=True
             )
     else:
         bot.send_message(
