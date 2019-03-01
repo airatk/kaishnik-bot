@@ -141,10 +141,13 @@ def set_institute(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
     if message.chat.id in student.students:
-        bot.delete_message(
-            chat_id=message.chat.id,
-            message_id=message.message_id - 1
-        )  # Delete "cancel" message
+        try:
+            bot.delete_message(
+                chat_id=message.chat.id,
+                message_id=message.message_id - 1
+            )  # Delete "cancel" message
+        except:
+            pass
 
     student.students[message.chat.id] = student.Student(constants.INSTITUTES[message.text])
 
