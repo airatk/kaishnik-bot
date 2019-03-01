@@ -172,7 +172,7 @@ class Student:
 
     # /card
     def get_card(self):
-        return "Номер твоего студенческого билета и твоей зачётной книжки: *{card}*.".format(card=self.student_card_number)
+        return "Номер твоего студенческого билета и твоей зачётной книжки: *{card}*".format(card=self.student_card_number)
 
     # No set up - no conversation
     def is_not_set_up(self):
