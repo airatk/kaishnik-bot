@@ -48,22 +48,20 @@ def settings(message):
 
     bot.send_message(
         chat_id=message.chat.id,
-        text="Выбери свой институт (привет, ФМФ" + constants.EMOJI["moon"] + ").",
+        text="Выбери свой институт (привет, ФМФ, привет, КИТ" + constants.EMOJI["moon"] + ").",
         reply_markup=keyboards.institute_setter()
     )
 
-    try:
-        if student.students[message.chat.id].get_institute() is not None:
-            bot.send_message(
-                chat_id=message.chat.id,
-                text="Или не выбирай:",
-                reply_markup=keyboards.skipper(
-                    text="отменить",
-                    callback_data="cancel"
-                )
+    # Show cancel option for old users
+    if message.chat.id in student.students:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Или не выбирай:",
+            reply_markup=keyboards.skipper(
+                text="отменить",
+                callback_data="cancel"
             )
-    except:
-        pass  # For unadded-to-file users
+        )
 
 @bot.callback_query_handler(
     func=lambda callback:
@@ -87,17 +85,61 @@ def cancel_setting_process(callback):
 
 @bot.message_handler(
     func=lambda message:
+        message.text == "КИТ"
+)
+def set_KIT(message):
+    student.students[message.chat.id] = student.Student("КИТ")
+    student.students[message.chat.id].set_year("КИТ")
+    student.students[message.chat.id].set_group_number_for_score("КИТ")
+    student.students[message.chat.id].set_name("КИТ")
+    student.students[message.chat.id].set_student_card_number("КИТ")
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Отправь номер своей группы.",
+        reply_markup=keyboards.remove_keyboard()
+    )
+
+@bot.message_handler(
+    func=lambda message:
+        message.chat.id in student.students and re.fullmatch("[4][1-4][0-9][0-9]", message.text)
+)
+def set_KIT_group_number(message):
+    if student.students[message.chat.id].get_group_number_for_schedule() is None:
+        student.students[message.chat.id].set_group_number_for_schedule(message.text)
+
+        helpers.save_users(student.students)
+        
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Запомнено!"
+        )
+        bot.send_message(
+            chat_id=message.chat.id,
+            text=constants.REPLIES_TO_UNKNOWN_COMMAND[0],
+            parse_mode="Markdown",
+            reply_markup=keyboards.remove_keyboard()
+        )
+    else:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Если хочешь изменить настройки, начни с соответствующей команды - отправь /settings"
+        )
+
+@bot.message_handler(
+    func=lambda message:
         message.text in constants.INSTITUTES
 )
 def set_institute(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    student.students[message.chat.id] = student.Student(constants.INSTITUTES[message.text])
+    if message.chat.id in student.students:
+        bot.delete_message(
+            chat_id=message.chat.id,
+            message_id=message.message_id - 1
+        )  # Delete "cancel" message
 
-    bot.delete_message(
-        chat_id=message.chat.id,
-        message_id=message.message_id - 1
-    )  # Delete "cancel" message
+    student.students[message.chat.id] = student.Student(constants.INSTITUTES[message.text])
 
     try:
         bot.send_message(
