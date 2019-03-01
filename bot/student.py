@@ -68,7 +68,7 @@ class Student:
         self.group_number_for_schedule = get(url=SCHEDULE_URL, params=params).json()[0]["id"]
     
     def set_group_number_for_score(self, group_number):
-        self.group_number_for_score = self.get_dict_of_list(type="p_group")[group_number]
+        self.group_number_for_score = self.get_dict_of_list(type="p_group")[group_number] if not group_number == "КИТ" else "КИТ"
 
     def set_name(self, name):
         self.name = self.get_dict_of_list(type="p_stud")[name]

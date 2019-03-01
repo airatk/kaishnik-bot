@@ -102,7 +102,9 @@ def set_KIT(message):
 
 @bot.message_handler(
     func=lambda message:
-        message.chat.id in student.students and re.fullmatch("[4][1-4][0-9][0-9]", message.text)
+        message.chat.id in student.students and \
+        student.students[message.chat.id].get_institute() == "КИТ" and \
+        re.fullmatch("[4][1-4][0-9][0-9]", message.text)
 )
 def set_KIT_group_number(message):
     if student.students[message.chat.id].get_group_number_for_schedule() is None:
@@ -194,7 +196,9 @@ def set_year(message):
 
 @bot.message_handler(
     func=lambda message:
-        message.chat.id in student.students and re.fullmatch("[1-59][0-6][0-9][0-9]", message.text)
+        message.chat.id in student.students and \
+        not student.students[message.chat.id].get_institute() == "КИТ" and \
+        re.fullmatch("[1-59][0-6][0-9][0-9]", message.text)
 )
 def set_group_number(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -560,16 +564,21 @@ def week(message):
 def score(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
     
-    if student.students[message.chat.id].get_student_card_number() is not None:
+    if student.students[message.chat.id].get_student_card_number() is None:
         bot.send_message(
             chat_id=message.chat.id,
-            text="Выбери номер семестра:",
-            reply_markup=keyboards.semester_dailer(int(student.students[message.chat.id].get_year())*2 + 1)
+            text="Номер зачётки не указан, но ты можешь это исправить - отправь /card"
+        )
+    elif student.students[message.chat.id].get_institute() == "КИТ":
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Не доступно :("
         )
     else:
         bot.send_message(
             chat_id=message.chat.id,
-            text="Номер зачётки не указан, но ты можешь это исправить - отправь /card"
+            text="Выбери номер семестра:",
+            reply_markup=keyboards.semester_dailer(int(student.students[message.chat.id].get_year())*2 + 1)
         )
 
 @bot.callback_query_handler(
@@ -788,6 +797,11 @@ def card(message):
             chat_id=message.chat.id,
             text=student.students[message.chat.id].get_card(),
             parse_mode="Markdown"
+        )
+    elif student.students[message.chat.id].get_institute() == "КИТ":
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Не доступно :("
         )
     else:
         bot.send_message(
