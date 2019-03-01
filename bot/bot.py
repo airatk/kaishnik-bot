@@ -899,4 +899,5 @@ def unknown_text_message(message):
         parse_mode="Markdown"
     )
 
-bot.infinity_polling(True)
+#bot.infinity_polling(True)
+bot.polling()
