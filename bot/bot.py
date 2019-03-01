@@ -104,7 +104,7 @@ def set_KIT(message):
     func=lambda message:
         message.chat.id in student.students and \
         student.students[message.chat.id].get_institute() == "КИТ" and \
-        re.fullmatch("[4][1-4][0-9][0-9]", message.text)
+        re.fullmatch("[4][1-4][2-9][0-9]", message.text)
 )
 def set_KIT_group_number(message):
     if student.students[message.chat.id].get_group_number_for_schedule() is None:
@@ -792,18 +792,7 @@ def send_dorm(callback):
 def card(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    if student.students[message.chat.id].get_student_card_number() is not None:
-        bot.send_message(
-            chat_id=message.chat.id,
-            text=student.students[message.chat.id].get_card(),
-            parse_mode="Markdown"
-        )
-    elif student.students[message.chat.id].get_institute() == "КИТ":
-        bot.send_message(
-            chat_id=message.chat.id,
-            text="Не доступно :("
-        )
-    else:
+    if student.students[message.chat.id].get_student_card_number() is None:
         bot.send_message(
             chat_id=message.chat.id,
             text="Отправь номер своей зачётки "
@@ -817,6 +806,17 @@ def card(message):
                 text="пропустить",
                 callback_data="skip"
             )
+        )
+    elif student.students[message.chat.id].get_institute() == "КИТ":
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Не доступно :("
+        )
+    else:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text=student.students[message.chat.id].get_card(),
+            parse_mode="Markdown"
         )
 
 @bot.message_handler(commands=["brs"])
