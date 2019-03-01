@@ -108,20 +108,25 @@ def set_KIT(message):
 )
 def set_KIT_group_number(message):
     if student.students[message.chat.id].get_group_number_for_schedule() is None:
-        student.students[message.chat.id].set_group_number_for_schedule(message.text)
+        try:
+            student.students[message.chat.id].set_group_number_for_schedule(message.text)
 
-        helpers.save_users(student.students)
-        
-        bot.send_message(
-            chat_id=message.chat.id,
-            text="Запомнено!"
-        )
-        bot.send_message(
-            chat_id=message.chat.id,
-            text=constants.REPLIES_TO_UNKNOWN_COMMAND[0],
-            parse_mode="Markdown",
-            reply_markup=keyboards.remove_keyboard()
-        )
+            helpers.save_users(student.students)
+            
+            bot.send_message(
+                chat_id=message.chat.id,
+                text="Запомнено!"
+            )
+            bot.send_message(
+                chat_id=message.chat.id,
+                text=constants.REPLIES_TO_UNKNOWN_COMMAND[0],
+                parse_mode="Markdown"
+            )
+        except:
+            bot.send_message(
+                chat_id=message.chat.id,
+                text="Неверный номер группы. Исправляйся."
+            )
     else:
         bot.send_message(
             chat_id=message.chat.id,
