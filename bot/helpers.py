@@ -163,10 +163,16 @@ def beautify_lecturers_classes(json_response, weekday):
         else:
             building = "".join([subject["buildNum"], "ка"])
     
-        time_place = "\n\n*[ {time} ][ {building} ][ {auditorium} ]*".format(
-            time=subject["dayTime"],
+        # Showing time in standart representation & adding the end time
+        class_hours, class_minutes = subject["dayTime"].split(":")[0], subject["dayTime"].split(":")[1]
+        begin_time = datetime(1, 1, 1, int(class_hours), int(class_minutes))  # Year, month, day are filled with nonsence
+        end_time = begin_time + timedelta(hours=1, minutes=30)  # Class time is 1:30
+
+        time_place = "\n\n*[ {begin_time} - {end_time} ][ {building} ]{auditorium}*".format(
+            begin_time=begin_time.strftime("%H:%M"),
+            end_time=end_time.strftime("%H:%M"),
             building=building,
-            auditorium=subject["audNum"] if subject["audNum"] else "-"
+            auditorium=("[ " + subject["audNum"] + " ]") if subject["audNum"] else ""
         )
         
         if subject["dayDate"] and "неч/чет" not in subject["dayDate"] and "чет/неч" not in subject["dayDate"]:
@@ -207,7 +213,7 @@ def beautify_lecturers_exams(json_response):
             time=subject["examTime"],
             # Make buildings look beautiful
             building="1ый дом" if subject["buildNum"] == "1" else "".join([subject["buildNum"], "ка"]),
-            auditorium=subject["audNum"] if subject["audNum"] else "-"
+            auditorium=subject["audNum"]
         )
 
         subject_name = "\n*{subject_name}*".format(subject_name=subject["disciplName"])
@@ -229,7 +235,7 @@ def get_subject_score(score_table, subjects_num):
     certification1 = "\n• 1 аттестация: {gained}/{max}".format(gained=subject[2], max=subject[3])
     certification2 = "\n• 2 аттестация: {gained}/{max}".format(gained=subject[4], max=subject[5])
     certification3 = "\n• 3 аттестация: {gained}/{max}".format(gained=subject[6], max=subject[7])
-    preresult      = "\n- За семестр: {preresult}/50".format(preresult=subject[8]) # Which is sum of the above
+    preresult      = "\n- За семестр: {preresult}/50".format(preresult=subject[8])
 
     debts = "\n\nДолги: {gained}".format(gained=subject[10])
 

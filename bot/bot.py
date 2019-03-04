@@ -106,7 +106,7 @@ def set_KIT(message):
     func=lambda message:
         message.chat.id in student.students and \
         student.students[message.chat.id].get_institute() == "КИТ" and \
-        re.fullmatch("[4][1-4][2-9][0-9]", message.text)
+        re.fullmatch("[4][1-4][2-5][0-9]", message.text)
 )
 def set_KIT_group_number(message):
     if student.students[message.chat.id].get_group_number_for_schedule() is None:
@@ -174,7 +174,8 @@ def set_institute(message):
 
 @bot.message_handler(
     func=lambda message:
-        message.chat.id in student.students and re.fullmatch("[1-6]", message.text)
+        message.chat.id in student.students and \
+        re.fullmatch("[1-6]", message.text)
 )
 def set_year(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -254,7 +255,8 @@ def set_group_number(message):
 
 @bot.message_handler(
     func=lambda message:
-        message.chat.id in student.students and message.text in student.students[message.chat.id].get_dict_of_list(type="p_stud")
+        message.chat.id in student.students and \
+        message.text in student.students[message.chat.id].get_dict_of_list(type="p_stud")
 )
 def set_name(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -308,7 +310,7 @@ def without_student_card_number(callback):
 
 @bot.message_handler(
     func=lambda message:
-        message.chat.id in student.students and (\
+        message.chat.id in student.students and ( \
             re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9]", message.text) or \
             re.fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9][0-9]", message.text) \
         )
@@ -320,9 +322,6 @@ def set_student_card_number(message):
        student.students[message.chat.id].get_student_card_number() is None:
         student.students[message.chat.id].set_student_card_number(message.text)
 
-        # Because the first semester might be empty
-        prelast_semester = int(student.students[message.chat.id].get_year())*2 - 1
-        
         try:
             bot.delete_message(
                 chat_id=message.chat.id,
@@ -330,6 +329,9 @@ def set_student_card_number(message):
             )  # Delete "skip" message
         except:
             pass
+
+        # Because the first semester might be empty
+        prelast_semester = int(student.students[message.chat.id].get_year())*2 - 1
         
         try:
             if student.students[message.chat.id].get_score_table(prelast_semester):
@@ -453,7 +455,8 @@ def send_lecturers_schedule(callback):
 
 @bot.callback_query_handler(
     func=lambda callback:
-        "l_c" in callback.data or "l_e" in callback.data
+        "l_c" in callback.data or \
+        "l_e" in callback.data
 )
 def send_lecturers_schedule(callback):
     bot.delete_message(
@@ -501,7 +504,8 @@ def classes(message):
 
 @bot.callback_query_handler(
     func=lambda callback:
-        callback.data == "today's" or callback.data == "tomorrow's"
+        callback.data == "today's" or \
+        callback.data == "tomorrow's"
 )
 def one_day_schedule(callback):
     todays_weekday = datetime.datetime.today().isoweekday()
@@ -529,12 +533,12 @@ def one_day_schedule(callback):
         "weekly" in callback.data
 )
 def weekly_schedule(callback):
+    bot.delete_message(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id
+    )
+    
     try:
-        bot.delete_message(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id
-        )
-        
         for weekday in constants.WEEK:
             bot.send_message(
                 chat_id=callback.message.chat.id,
@@ -546,9 +550,8 @@ def weekly_schedule(callback):
                 parse_mode="Markdown"
             )
     except:
-        bot.edit_message_text(
+        bot.send_message(
             chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
             text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
             disable_web_page_preview=True
         )
@@ -635,7 +638,7 @@ def s_r(callback):
     func=lambda callback:
         "s_t all" in callback.data
 )
-def show_score(callback):
+def show_all_score(callback):
     bot.delete_message(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id
@@ -848,7 +851,8 @@ def brs(message):
 
 @bot.message_handler(
     func=lambda message:
-        message.chat.id == constants.CREATOR and message.text == "What can I do?"
+        message.chat.id == constants.CREATOR and \
+        message.text == "What can I do?"
 )
 def creators_features(message):
     bot.send_message(
