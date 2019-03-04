@@ -3,7 +3,7 @@ from constants import (
     LECTURERS_SCHEDULE_URL
 )
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from pickle   import dump, load, HIGHEST_PROTOCOL
 from requests import get, post
 
@@ -61,11 +61,17 @@ def beautify_classes(json_response, weekday, next):
             building = "1ый дом"
         else:
             building = "".join([subject["buildNum"], "ка"])
-    
-        time_place = "\n\n*[ {time} ][ {building} ][ {auditorium} ]*".format(
-            time=subject["dayTime"],
+        
+        # Showing time in standart representation & adding the end time
+        class_hours, class_minutes = subject["dayTime"].split(":")[0], subject["dayTime"].split(":")[1]
+        begin_time = datetime(1, 1, 1, int(class_hours), int(class_minutes))  # Year, month, day are filled with nonsence
+        end_time = begin_time + timedelta(hours=1, minutes=30)  # Class time is 1:30
+        
+        time_place = "\n\n*[ {begin_time} - {end_time} ][ {building} ]{auditorium}*".format(
+            begin_time=begin_time.strftime("%H:%M"),
+            end_time=end_time.strftime("%H:%M"),
             building=building,
-            auditorium=subject["audNum"] if subject["audNum"] else "-"
+            auditorium=("[ " + subject["audNum"] + " ]") if subject["audNum"] else ""
         )
         
         # Show if a subject is supposed to be only on certain date (like 21.09 or 07.11 or неч(6) or чет/неч неч/чет)
