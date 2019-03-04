@@ -88,11 +88,13 @@ def cancel_setting_process(callback):
         message.text == "КИТ"
 )
 def set_KIT(message):
-    student.students[message.chat.id] = student.Student("КИТ")
-    student.students[message.chat.id].set_year("КИТ")
-    student.students[message.chat.id].set_group_number_for_score("КИТ")
-    student.students[message.chat.id].set_name("КИТ")
-    student.students[message.chat.id].set_student_card_number("КИТ")
+    student.students[message.chat.id] = student.Student(
+        institute="КИТ",
+        year="КИТ",
+        group_number_for_score="КИТ",
+        name="КИТ",
+        student_card_number="КИТ",
+    )
 
     bot.send_message(
         chat_id=message.chat.id,
