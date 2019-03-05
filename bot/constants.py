@@ -203,7 +203,7 @@ BRS = "*БРС*\n" \
 CREATOR_CAN = "*You can:*\n" \
               "/users - shows statistics of users\n" \
               "/clear - delete & print out users who blocked the bot\n" \
-              "/broadcast_text - broadcasting to users\n" \
+              "/broadcasт _text_ - broadcasting to users\n" \
               "/reverseweek - even is not even sometimes for some reason"
 
 # Replies to unknow stuff
