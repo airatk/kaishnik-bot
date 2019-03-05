@@ -918,7 +918,7 @@ def clear(message):  # Deleting users who doesn't use the bot
         except:
             bot.send_message(
                 chat_id=message.chat.id,
-                text="{user} stopped using the bot.\n\n" \
+                text="{user} stopped using the bot, so was #erased.\n\n" \
                      "Institute: {institute}\n" \
                      "Year: {year}\n" \
                      "Student card number: {student_card_number}".format(
