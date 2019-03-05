@@ -906,7 +906,8 @@ def users(message):
                  year_statistics.count("5"),
                  year_statistics.count("6"),
                  len(student.students)
-             )
+        ),
+        parse_mode="Markdown"
     )
 
 @bot.message_handler(
@@ -931,7 +932,8 @@ def clear(message):  # Deleting users who doesn't use the bot
                          year=student.students[user].get_year(),
                          name=student.students[user].get_name(),
                          student_card_number=student.students[user].get_student_card_number()
-                     )
+                ),
+                parse_mode="Markdown"
             )
             
             del student.students[user]
