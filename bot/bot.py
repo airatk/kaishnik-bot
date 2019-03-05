@@ -867,12 +867,8 @@ def creators_features(message):
     commands=["users"]
 )
 def users(message):
-    institutes_statistics = []
-    year_statistics = []
-
-    for user in student.students:
-        institutes_statistics.append(student.students[user].get_institute())
-        year_statistics.append(student.students[user].get_year())
+    institutes_statistics = [student.students[user].get_institute() for user in student.students]
+    year_statistics = [student.students[user].get_year() for user in student.students]
 
     bot.send_message(
         chat_id=message.chat.id,
@@ -891,7 +887,7 @@ def users(message):
              "• 4: {}\n" \
              "• 5: {}\n" \
              "• 6: {}\n\n" \
-             "{} users in total!".format(
+             "*{}* users in total!".format(
                  institutes_statistics.count("1"),
                  institutes_statistics.count("2"),
                  institutes_statistics.count("3"),
@@ -925,12 +921,10 @@ def clear(message):  # Deleting users who doesn't use the bot
                 text="{user} stopped using the bot.\n\n" \
                      "Institute: {institute}\n" \
                      "Year: {year}\n" \
-                     "Name: {name}\n" \
                      "Student card number: {student_card_number}".format(
                          user=user,
                          institute=student.students[user].get_institute(),
                          year=student.students[user].get_year(),
-                         name=student.students[user].get_name(),
                          student_card_number=student.students[user].get_student_card_number()
                 ),
                 parse_mode="Markdown"
@@ -939,6 +933,24 @@ def clear(message):  # Deleting users who doesn't use the bot
             del student.students[user]
 
     helpers.save_users(student.students)
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Cleared!"
+    )
+
+@bot.message_handler(
+    func=lambda message:
+        message.chat.id == constants.CREATOR,
+    commands=["drop"]
+)
+def drop(message):
+    helpers.save_users(dict())
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Dropped!"
+    )
 
 @bot.message_handler(
     func=lambda message:
