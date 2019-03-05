@@ -48,7 +48,7 @@ def settings(message):
 
     bot.send_message(
         chat_id=message.chat.id,
-        text="Выбери свой институт (привет, ФМФ, привет, КИТ" + constants.EMOJI["moon"] + ").",
+        text="Выбери своё подразделение.",
         reply_markup=keyboards.institute_setter()
     )
 
