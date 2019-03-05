@@ -876,7 +876,7 @@ def users(message):
 
     bot.send_message(
         chat_id=message.chat.id,
-        text="*Institutes:*\n" \
+        text="*Institutes*\n" \
              "• ИАНТЭ: {}\n" \
              "• ФМФ: {}\n" \
              "• ИАЭП: {}\n" \
@@ -884,7 +884,7 @@ def users(message):
              "• КИТ: {}\n" \
              "• ИРЭТ: {}\n" \
              "• ИЭУСТ: {}\n\n" \
-             "*Years:*\n" \
+             "*Years*\n" \
              "• 1: {}\n" \
              "• 2: {}\n" \
              "• 3: {}\n" \
