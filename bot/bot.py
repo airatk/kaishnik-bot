@@ -912,10 +912,14 @@ def users(message):
     commands=["clear"]
 )
 def clear(message):  # Deleting users who doesn't use the bot
+    is_someone_cleared = False
+
     for user in student.students.copy():
         try:
             bot.send_chat_action(chat_id=user, action="upload_document")
         except:
+            is_someone_cleared = True
+        
             bot.send_message(
                 chat_id=message.chat.id,
                 text="{user} stopped using the bot, so was #erased.\n\n" \
@@ -934,10 +938,16 @@ def clear(message):  # Deleting users who doesn't use the bot
 
     helpers.save_users(student.students)
 
-    bot.send_message(
-        chat_id=message.chat.id,
-        text="Cleared!"
-    )
+    if is_someone_cleared:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Cleared!"
+        )
+    else:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="No one has stopped using the bot!"
+        )
 
 @bot.message_handler(
     func=lambda message:
