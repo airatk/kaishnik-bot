@@ -201,9 +201,10 @@ BRS = "*БРС*\n" \
 
 # Creator's commands
 CREATOR_CAN = "*You can:*\n" \
-              "/reverseweek - to show whether week is even or odd correctly\n" \
-              "/users - shows number of users\n" \
-              "/broadcast _text_ - broadcasting to users"
+              "/users - shows statistics of users\n" \
+              "/clear - delete & print out users who blocked the bot\n" \
+              "/broadcast_text_ - broadcasting to users\n" \
+              "/reverseweek - even is not even sometimes for some reason"
 
 # Replies to unknow stuff
 REPLIES_TO_UNKNOWN_COMMAND = [

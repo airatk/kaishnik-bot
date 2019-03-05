@@ -864,15 +864,79 @@ def creators_features(message):
 @bot.message_handler(
     func=lambda message:
         message.chat.id == constants.CREATOR,
-    commands=["reverseweek"]
+    commands=["users"]
 )
-def reverseweek(message):
-    helpers.reverse_week_in_file()
-    
+def users(message):
+    institutes_statistics = []
+    year_statistics = []
+
+    for user in student.students:
+        institutes_statistics.append(student.students[user].get_institute())
+        year_statistics.append(student.students[user].get_year())
+
     bot.send_message(
         chat_id=message.chat.id,
-        text="Reversed."
+        text="*Institutes:*\n" \
+             "`ИАНТЭ - {}`\n" \
+             "`ФМФ   - {}`\n" \
+             "`ИАЭП  - {}`\n" \
+             "`ИКТЗИ - {}`\n" \
+             "`КИТ   - {}`\n" \
+             "`ИРЭТ  - {}`\n" \
+             "`ИЭУСТ - {}`\n\n" \
+             "*Years:*\n" \
+             "`1 - {}`\n" \
+             "`2 - {}`\n" \
+             "`3 - {}`\n" \
+             "`4 - {}`\n" \
+             "`5 - {}`\n" \
+             "`6 - {}`\n\n" \
+             "{} users in total!".format(
+                 institutes_statistics.count("1"),
+                 institutes_statistics.count("2"),
+                 institutes_statistics.count("3"),
+                 institutes_statistics.count("4"),
+                 institutes_statistics.count("КИТ"),
+                 institutes_statistics.count("5"),
+                 institutes_statistics.count("28"),
+                 year_statistics.count("1"),
+                 year_statistics.count("2"),
+                 year_statistics.count("3"),
+                 year_statistics.count("4"),
+                 year_statistics.count("5"),
+                 year_statistics.count("6"),
+                 len(student.students)
+             )
     )
+
+@bot.message_handler(
+    func=lambda message:
+        message.chat.id == constants.CREATOR,
+    commands=["clear"]
+)
+def clear(message):  # Deleting users who doesn't use the bot
+    for user in student.students.copy():
+        try:
+            bot.send_chat_action(chat_id=user, action="upload_document")
+        except:
+            bot.send_message(
+                chat_id=message.chat.id,
+                text="{user} stopped using the bot.\n\n" \
+                     "Institute: {institute}\n" \
+                     "Year: {year}\n" \
+                     "Name: {name}\n" \
+                     "Student card number: {student_card_number}".format(
+                         user=user,
+                         institute=student.students[user].get_institute(),
+                         year=student.students[user].get_year(),
+                         name=student.students[user].get_name(),
+                         student_card_number=student.students[user].get_student_card_number()
+                     )
+            )
+            
+            del student.students[user]
+
+    helpers.save_users(student.students)
 
 @bot.message_handler(
     func=lambda message:
@@ -896,20 +960,14 @@ def broadcast(message):
 @bot.message_handler(
     func=lambda message:
         message.chat.id == constants.CREATOR,
-    commands=["users"]
+    commands=["reverseweek"]
 )
-def users(message):    
-    # Deleting users who doesn't use the bot
-    for user in student.students.copy():
-        try:
-            bot.send_chat_action(chat_id=user, action="upload_document")
-        except:
-            del student.students[user]
-    helpers.save_users(student.students)
-
+def reverseweek(message):
+    helpers.reverse_week_in_file()
+    
     bot.send_message(
         chat_id=message.chat.id,
-        text="{users} users have tried me!".format(users=len(student.students))
+        text="Reversed."
     )
 
 @bot.message_handler(
