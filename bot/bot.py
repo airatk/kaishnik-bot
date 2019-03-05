@@ -877,20 +877,20 @@ def users(message):
     bot.send_message(
         chat_id=message.chat.id,
         text="*Institutes:*\n" \
-             "`ИАНТЭ - {}`\n" \
-             "`ФМФ   - {}`\n" \
-             "`ИАЭП  - {}`\n" \
-             "`ИКТЗИ - {}`\n" \
-             "`КИТ   - {}`\n" \
-             "`ИРЭТ  - {}`\n" \
-             "`ИЭУСТ - {}`\n\n" \
+             "• ИАНТЭ: {}\n" \
+             "• ФМФ: {}\n" \
+             "• ИАЭП: {}\n" \
+             "• ИКТЗИ: {}\n" \
+             "• КИТ: {}\n" \
+             "• ИРЭТ: {}\n" \
+             "• ИЭУСТ: {}\n\n" \
              "*Years:*\n" \
-             "`1 - {}`\n" \
-             "`2 - {}`\n" \
-             "`3 - {}`\n" \
-             "`4 - {}`\n" \
-             "`5 - {}`\n" \
-             "`6 - {}`\n\n" \
+             "• 1: {}\n" \
+             "• 2: {}\n" \
+             "• 3: {}\n" \
+             "• 4: {}\n" \
+             "• 5: {}\n" \
+             "• 6: {}\n\n" \
              "{} users in total!".format(
                  institutes_statistics.count("1"),
                  institutes_statistics.count("2"),
