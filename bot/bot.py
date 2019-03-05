@@ -914,7 +914,7 @@ def users(message):
 def clear(message):  # Deleting users who doesn't use the bot
     is_someone_cleared = False
 
-    for user in student.students.copy():
+    for user in list(student.students):
         try:
             bot.send_chat_action(chat_id=user, action="upload_document")
         except:
