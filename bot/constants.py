@@ -204,7 +204,7 @@ CREATOR_CAN = "*Safe commands*\n" \
               "/users - shows statistics of users\n" \
               "/clear - delete & print out users who blocked the bot\n" \
               "\n*Unsafe commands*\n" \
-              "/droр - delete all data\n" \
+              "/droп - delete all data\n" \
               "/broadcasт _text_ - broadcasting to users\n" \
               "/reverseweeк - even is not even sometimes for some reason"
 
