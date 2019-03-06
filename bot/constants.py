@@ -201,6 +201,7 @@ BRS = "*БРС*\n" \
 
 # Creator's commands
 CREATOR_COMMAND = "*Safe commands*\n" \
+                  "/metrics\n" \
                   "/users\n" \
                   "/clear\n" \
                   "\n*Unsafe commands*\n" \

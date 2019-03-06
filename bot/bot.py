@@ -12,6 +12,17 @@ import datetime
 telebot.apihelper.proxy = { "https": "socks5://163.172.152.192:1080" }
 bot = telebot.TeleBot(constants.TOKEN, threaded=False)
 
+metrics = {
+    "classes":   0,
+    "score":     0,
+    "lecturers": 0,
+    "week":      0,
+    "exams":     0,
+    "locations": 0,
+    "card":      0,
+    "brs":       0
+}
+
 @bot.message_handler(
     content_types=[
         "sticker",
@@ -21,7 +32,7 @@ bot = telebot.TeleBot(constants.TOKEN, threaded=False)
 )
 def unknown_nontext_message(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
+    
     bot.send_message(
         chat_id=message.chat.id,
         text=random.choice(constants.REPLIES_TO_UNKNOWN_MESSAGE),
@@ -45,13 +56,13 @@ def start(message):
 @bot.message_handler(commands=["settings"])
 def settings(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
+    
     bot.send_message(
         chat_id=message.chat.id,
         text="Выбери своё подразделение.",
         reply_markup=keyboards.institute_setter()
     )
-
+    
     # Show cancel option for old users
     if message.chat.id in student.students:
         bot.send_message(
@@ -95,7 +106,7 @@ def set_KIT(message):
         name="КИТ",
         student_card_number="КИТ",
     )
-
+    
     bot.send_message(
         chat_id=message.chat.id,
         text="Отправь номер своей группы.",
@@ -112,7 +123,7 @@ def set_KIT_group_number(message):
     if student.students[message.chat.id].get_group_number_for_schedule() is None:
         try:
             student.students[message.chat.id].set_group_number_for_schedule(message.text)
-
+            
             helpers.save_users(student.students)
             
             bot.send_message(
@@ -147,7 +158,7 @@ def set_KIT_group_number(message):
 )
 def set_institute(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
+    
     if message.chat.id in student.students:
         try:
             bot.delete_message(
@@ -156,7 +167,7 @@ def set_institute(message):
             )  # Delete "cancel" message
         except:
             pass
-
+    
     student.students[message.chat.id] = student.Student(institute=constants.INSTITUTES[message.text])
 
     try:
@@ -179,14 +190,14 @@ def set_institute(message):
 )
 def set_year(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
+    
     if student.students[message.chat.id].get_institute() is not None and \
        student.students[message.chat.id].get_year() is None:
         student.students[message.chat.id].set_year(message.text)
-       
+        
         try:
             groups = student.students[message.chat.id].get_dict_of_list(type="p_group")
-           
+            
             if groups:
                 bot.send_message(
                     chat_id=message.chat.id,
@@ -219,14 +230,14 @@ def set_year(message):
 )
 def set_group_number(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
+    
     if student.students[message.chat.id].get_year() is not None and \
        student.students[message.chat.id].get_group_number_for_schedule() is None:
         student.students[message.chat.id].set_group_number_for_score(message.text)
-       
+        
         try:
             names = student.students[message.chat.id].get_dict_of_list(type="p_stud")
-           
+            
             if names:
                 student.students[message.chat.id].set_group_number_for_schedule(message.text)
                 
@@ -260,11 +271,11 @@ def set_group_number(message):
 )
 def set_name(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
+    
     if student.students[message.chat.id].get_group_number_for_schedule() is not None and \
        student.students[message.chat.id].get_name() is None:
         student.students[message.chat.id].set_name(message.text)
-
+        
         bot.send_message(
             chat_id=message.chat.id,
             text="Отправь номер своей зачётки "
@@ -317,11 +328,11 @@ def without_student_card_number(callback):
 )
 def set_student_card_number(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
+    
     if student.students[message.chat.id].get_name() is not None and \
        student.students[message.chat.id].get_student_card_number() is None:
         student.students[message.chat.id].set_student_card_number(message.text)
-
+        
         try:
             bot.delete_message(
                 chat_id=message.chat.id,
@@ -329,7 +340,7 @@ def set_student_card_number(message):
             )  # Delete "skip" message
         except:
             pass
-
+        
         # Because the first semester might be empty
         prelast_semester = int(student.students[message.chat.id].get_year())*2 - 1
         
@@ -349,7 +360,7 @@ def set_student_card_number(message):
                 )
             else:
                 student.students[message.chat.id].set_student_card_number(None)
-            
+                
                 bot.send_message(
                     chat_id=message.chat.id,
                     text="Неверный номер зачётки. Исправляйся."
@@ -387,7 +398,7 @@ def unsetup(callback):
         message = callback.message
     except:
         message = callback
-
+    
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
     bot.send_message(
@@ -399,12 +410,14 @@ def unsetup(callback):
 @bot.message_handler(commands=["lecturers"])
 def lecturers(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
+    
+    metrics["lecturers"] += 1
+    
     bot.send_message(
         chat_id=message.chat.id,
         text="Введи ФИО преподавателя полностью или частично."
     )
-
+    
     student.students[message.chat.id].set_pmt(message.text)
 
 @bot.message_handler(
@@ -414,13 +427,13 @@ def lecturers(message):
 )
 def find_lecturer(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
+    
     # In case kai.ru is down
     try:
         names = helpers.get_lecturers_names(message.text)
     except:
         names = None
-
+    
     if names:
         try:
             bot.send_message(
@@ -463,7 +476,7 @@ def send_lecturers_schedule(callback):
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id
     )
-
+    
     try:
         if "l_c" in callback.data:
             for weekday in constants.WEEK:
@@ -495,7 +508,9 @@ def send_lecturers_schedule(callback):
 @bot.message_handler(commands=["classes"])
 def classes(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
+    
+    metrics["classes"] += 1
+    
     bot.send_message(
         chat_id=message.chat.id,
         text="Тебе нужно расписание на:",
@@ -509,7 +524,7 @@ def classes(message):
 )
 def one_day_schedule(callback):
     todays_weekday = datetime.datetime.today().isoweekday()
-
+    
     try:
         bot.edit_message_text(
             chat_id=callback.message.chat.id,
@@ -560,6 +575,8 @@ def weekly_schedule(callback):
 def exams(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
+    metrics["exams"] += 1
+
     try:
         bot.send_message(
             chat_id=message.chat.id,
@@ -577,6 +594,8 @@ def exams(message):
 def week(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
+    metrics["week"] += 1
+
     bot.send_message(
         chat_id=message.chat.id,
         text=helpers.get_week()
@@ -585,6 +604,8 @@ def week(message):
 @bot.message_handler(commands=["score"])
 def score(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
+    
+    metrics["score"] += 1
     
     if student.students[message.chat.id].get_student_card_number() is None:
         bot.send_message(
@@ -643,9 +664,9 @@ def show_all_score(callback):
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id
     )
-
+    
     callback_data = callback.data[8:].split()
-
+    
     try:
         for subject in range(int(callback_data[0])):
             bot.send_message(
@@ -669,7 +690,7 @@ def show_all_score(callback):
 )
 def show_score(callback):
     callback_data = callback.data[4:].split()
-
+    
     try:
         bot.edit_message_text(
             chat_id=callback.message.chat.id,
@@ -691,7 +712,9 @@ def show_score(callback):
 @bot.message_handler(commands=["locations"])
 def locations(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
+    
+    metrics["locations"] += 1
+    
     bot.send_message(
         chat_id=message.chat.id,
         text="Аж три варианта на выбор:",
@@ -723,7 +746,7 @@ def send_building(callback):
     )
     
     number = callback.data[4:]
-
+    
     bot.send_message(
         chat_id=callback.message.chat.id,
         text=constants.BUILDINGS[number]["description"],
@@ -753,7 +776,7 @@ def l_s(callback):
 )
 def send_library(callback):
     bot.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
-
+    
     bot.delete_message(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id
@@ -791,14 +814,14 @@ def d_s(callback):
 )
 def send_dorm(callback):
     bot.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
-
+    
     bot.delete_message(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id
     )
-
+    
     number = callback.data[4:]
-
+    
     bot.send_message(
         chat_id=callback.message.chat.id,
         text=constants.DORMS[number]["description"],
@@ -813,7 +836,9 @@ def send_dorm(callback):
 @bot.message_handler(commands=["card"])
 def card(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
+    
+    metrics["card"] += 1
+    
     if student.students[message.chat.id].get_student_card_number() is None:
         bot.send_message(
             chat_id=message.chat.id,
@@ -843,6 +868,10 @@ def card(message):
 
 @bot.message_handler(commands=["brs"])
 def brs(message):
+    bot.send_chat_action(chat_id=message.chat.id, action="typing")
+    
+    metrics["brs"] += 1
+    
     bot.send_message(
         chat_id=message.chat.id,
         text=constants.BRS,
@@ -864,12 +893,43 @@ def creators_features(message):
 @bot.message_handler(
     func=lambda message:
         message.chat.id == constants.CREATOR,
+    commands=["metrics"]
+)
+def get_metrics(message):
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="*Metrics*\n\n" \
+             "classes: {}\n" \
+             "score: {}\n" \
+             "lecturers: {}\n" \
+             "week: {}\n" \
+             "exams: {}\n" \
+             "locations: {}\n" \
+             "card: {}\n" \
+             "brs: {}\n\n" \
+             "_since the last #metrics request_".format(
+                 metrics["classes"],
+                 metrics["score"],
+                 metrics["lecturers"],
+                 metrics["week"],
+                 metrics["exams"],
+                 metrics["locations"],
+                 metrics["card"],
+                 metrics["brs"]
+        )
+    )
+
+    metrics = { key: 0 for key in metrics }
+
+@bot.message_handler(
+    func=lambda message:
+        message.chat.id == constants.CREATOR,
     commands=["users"]
 )
 def users(message):
     institutes_statistics = [student.students[user].get_institute() for user in student.students]
     year_statistics = [student.students[user].get_year() for user in student.students]
-
+    
     bot.send_message(
         chat_id=message.chat.id,
         text="*Institutes*\n" \
@@ -913,13 +973,13 @@ def users(message):
 )
 def clear(message):
     is_someone_cleared = False
-
+    
     for user in list(student.students):
         try:
             bot.send_chat_action(chat_id=user, action="upload_document")
         except:
             is_someone_cleared = True
-        
+            
             bot.send_message(
                 chat_id=message.chat.id,
                 text="{first_name} {last_name} (@{user}) stopped using the bot, so was #erased.\n\n" \
@@ -941,7 +1001,7 @@ def clear(message):
             del student.students[user]
 
     helpers.save_users(student.students)
-
+    
     if is_someone_cleared:
         bot.send_message(
             chat_id=message.chat.id,
@@ -961,7 +1021,7 @@ def clear(message):
 def drop(message):
     student.students = dict()
     helpers.save_users(student.students)
-
+    
     bot.send_message(
         chat_id=message.chat.id,
         text="All data was #dropped!"
@@ -1008,7 +1068,7 @@ def reverseweek(message):
 )
 def unknown_command(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
+    
     bot.send_message(
         chat_id=message.chat.id,
         text=random.choice(constants.REPLIES_TO_UNKNOWN_COMMAND),
@@ -1019,7 +1079,7 @@ def unknown_command(message):
 @bot.message_handler(content_types=["text"])
 def unknown_text_message(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
-
+    
     bot.send_message(
         chat_id=message.chat.id,
         text=random.choice(constants.REPLIES_TO_UNKNOWN_MESSAGE),
