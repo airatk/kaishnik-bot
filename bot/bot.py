@@ -888,13 +888,13 @@ def users(message):
              "• 5: {}\n" \
              "• 6: {}\n\n" \
              "*{}* users in total!".format(
-                 institutes_statistics.count(constants.INSTITUTES["ИАНТЭ"]),
-                 institutes_statistics.count(constants.INSTITUTES["ФМФ"]),
-                 institutes_statistics.count(constants.INSTITUTES["ИАЭП"]),
-                 institutes_statistics.count(constants.INSTITUTES["ИКТЗИ"]),
-                 institutes_statistics.count(constants.INSTITUTES["КИТ"]),
-                 institutes_statistics.count(constants.INSTITUTES["ИРЭТ"]),
-                 institutes_statistics.count(constants.INSTITUTES["ИЭУСТ"]),
+                 institutes_statistics.count("1"),
+                 institutes_statistics.count("2"),
+                 institutes_statistics.count("3"),
+                 institutes_statistics.count("4"),
+                 institutes_statistics.count("КИТ"),
+                 institutes_statistics.count("5"),
+                 institutes_statistics.count("28"),
                  year_statistics.count("1"),
                  year_statistics.count("2"),
                  year_statistics.count("3"),
