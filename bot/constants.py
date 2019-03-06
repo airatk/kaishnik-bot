@@ -208,10 +208,10 @@ CREATOR_COMMAND = "*Safe commands*\n" \
                   "/broadcasт _text_ - broadcasting to users\n" \
                   "/reverseweeк - even is not even sometimes for some reason\n" \
                   "\n*Hashtags*\n" \
-                  "#users - /users requests\n" \
-                  "#erased - /clear'ed students' cards\n" \
+                  "#users - users requests\n" \
+                  "#erased - cleared students' cards\n" \
                   "#dropped - data eliminations\n" \
-                  "#ТелеграммаОтРазработчика - /broadcast'ed messages"
+                  "#ТелеграммаОтРазработчика - broadcasted messages"
 
 # Replies to unknow stuff
 REPLIES_TO_UNKNOWN_COMMAND = [
