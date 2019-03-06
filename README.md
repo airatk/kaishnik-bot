@@ -13,8 +13,8 @@ First of all, this is Python 3.
 The bot is written to be launched as a simple script, therefor you only need to type `python3 bot.py` into the console to launch it. 
 
 Before the launch you've got to set 2 environmental variables:
-* **TOKEN** is a unique bot thing given by [@BotFather][3].
-* **CREATOR** is a chat ID (integer type, see [Telegram Bot API][4]) of ~~the creator~~ an admin. This person has access to the /creator command. 
+* **T_TOKEN** is a unique bot thing given by [@BotFather][3].
+* **T_CREATOR** is a chat ID (integer type, see [Telegram Bot API][4]) of ~~the creator~~ an admin. This person has access to the /creator command. 
 
 Also, the requirements.txt file is included to the repository. So, enter `pip3 install -r requirements.txt` to the console to have all necessary stuff.
 
