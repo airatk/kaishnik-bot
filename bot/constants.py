@@ -211,7 +211,7 @@ CREATOR_COMMAND = "*Safe commands*\n" \
                   "#users\n" \
                   "#erased\n" \
                   "#dropped\n" \
-                  "#ТелеграммаОтРазработчика - broadcasted messages"
+                  "#ТелеграммаОтРазработчика"
 
 # Replies to unknow stuff
 REPLIES_TO_UNKNOWN_COMMAND = [
