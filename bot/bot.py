@@ -157,7 +157,7 @@ def set_institute(message):
         except:
             pass
 
-    student.students[message.chat.id] = student.Student(constants.INSTITUTES[message.text])
+    student.students[message.chat.id] = student.Student(institute=constants.INSTITUTES[message.text])
 
     try:
         bot.send_message(
@@ -888,13 +888,13 @@ def users(message):
              "• 5: {}\n" \
              "• 6: {}\n\n" \
              "*{}* users in total!".format(
-                 institutes_statistics.count("1"),
-                 institutes_statistics.count("2"),
-                 institutes_statistics.count("3"),
-                 institutes_statistics.count("4"),
-                 institutes_statistics.count("КИТ"),
-                 institutes_statistics.count("5"),
-                 institutes_statistics.count("28"),
+                 institutes_statistics.count(constants.INSTITUTES["ИАНТЭ"]),
+                 institutes_statistics.count(constants.INSTITUTES["ФМФ"]),
+                 institutes_statistics.count(constants.INSTITUTES["ИАЭП"]),
+                 institutes_statistics.count(constants.INSTITUTES["ИКТЗИ"]),
+                 institutes_statistics.count(constants.INSTITUTES["КИТ"]),
+                 institutes_statistics.count(constants.INSTITUTES["ИРЭТ"]),
+                 institutes_statistics.count(constants.INSTITUTES["ИЭУСТ"]),
                  year_statistics.count("1"),
                  year_statistics.count("2"),
                  year_statistics.count("3"),
@@ -922,11 +922,13 @@ def clear(message):  # Deleting users who doesn't use the bot
         
             bot.send_message(
                 chat_id=message.chat.id,
-                text="{user} stopped using the bot, so was #erased.\n\n" \
+                text="{first_name} {last_name} (@{user}) stopped using the bot, so was #erased.\n\n" \
                      "Institute: {institute}\n" \
                      "Year: {year}\n" \
                      "Student card number: {student_card_number}".format(
-                         user=user,
+                         first_name=bot.get_chat(chat_id=user).first_name,
+                         last_name=bot.get_chat(chat_id=user).last_name,
+                         user=bot.get_chat(chat_id=user).username,
                          institute=student.students[user].get_institute(),
                          year=student.students[user].get_year(),
                          student_card_number=student.students[user].get_student_card_number()
