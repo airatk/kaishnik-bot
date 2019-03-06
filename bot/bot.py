@@ -901,15 +901,15 @@ def get_metrics(message):
     bot.send_message(
         chat_id=message.chat.id,
         text="*Metrics*\n\n" \
-             "classes: {}\n" \
-             "score: {}\n" \
-             "lecturers: {}\n" \
-             "week: {}\n" \
-             "exams: {}\n" \
-             "locations: {}\n" \
-             "card: {}\n" \
-             "brs: {}\n\n" \
-             "_since the last #metrics request_".format(
+             "/classes: {}\n" \
+             "/score: {}\n" \
+             "/lecturers: {}\n" \
+             "/week: {}\n" \
+             "/exams: {}\n" \
+             "/locations: {}\n" \
+             "/card: {}\n" \
+             "/brs: {}\n\n" \
+             "_since the last_ #metrics _request_".format(
                  metrics["classes"],
                  metrics["score"],
                  metrics["lecturers"],
