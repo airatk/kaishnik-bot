@@ -13,7 +13,7 @@ telebot.apihelper.proxy = { "https": "socks5://163.172.152.192:1080" }
 bot = telebot.TeleBot(constants.TOKEN, threaded=False)
 
 metrics = {
-    "weekday":   datetime.datetime.today().isoweekday()
+    "weekday":   datetime.datetime.today().isoweekday(),
     "classes":   0,
     "score":     0,
     "lecturers": 0,
