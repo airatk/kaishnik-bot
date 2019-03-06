@@ -13,6 +13,7 @@ telebot.apihelper.proxy = { "https": "socks5://163.172.152.192:1080" }
 bot = telebot.TeleBot(constants.TOKEN, threaded=False)
 
 metrics = {
+    "weekday":   datetime.datetime.today().isoweekday()
     "classes":   0,
     "score":     0,
     "lecturers": 0,
@@ -898,6 +899,10 @@ def creators_features(message):
 def get_metrics(message):
     global metrics
     
+    if metrics["weekday"] != datetime.datetime.today().isoweekday():
+        metrics = { key: 0 for key in metrics }
+        metrics["weekday"] = datetime.datetime.today().isoweekday()
+    
     bot.send_message(
         chat_id=message.chat.id,
         text="*Metrics*\n\n" \
@@ -909,7 +914,7 @@ def get_metrics(message):
              "/locations: {}\n" \
              "/card: {}\n" \
              "/brs: {}\n\n" \
-             "_all_ #metrics _since the last bot launch_".format(
+             "_daily_ #metrics".format(
                  metrics["classes"],
                  metrics["score"],
                  metrics["lecturers"],
