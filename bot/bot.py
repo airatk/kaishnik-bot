@@ -918,7 +918,8 @@ def get_metrics(message):
                  metrics["locations"],
                  metrics["card"],
                  metrics["brs"]
-        )
+        ),
+        parse_mode="Markdown"
     )
 
     metrics = { key: 0 for key in metrics }
