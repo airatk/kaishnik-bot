@@ -851,13 +851,13 @@ def brs(message):
 
 @bot.message_handler(
     func=lambda message:
-        message.chat.id == constants.CREATOR and \
-        message.text == "What can I do?"
+        message.chat.id == constants.CREATOR,
+    commands=["creator"]
 )
 def creators_features(message):
     bot.send_message(
         chat_id=message.chat.id,
-        text=constants.CREATOR_CAN,
+        text=constants.CREATOR_COMMAND,
         parse_mode="Markdown"
     )
 
@@ -887,7 +887,7 @@ def users(message):
              "• 4: {}\n" \
              "• 5: {}\n" \
              "• 6: {}\n\n" \
-             "*{}* users in total!".format(
+             "*{}* #users in total!".format(
                  institutes_statistics.count("1"),
                  institutes_statistics.count("2"),
                  institutes_statistics.count("3"),
@@ -911,7 +911,7 @@ def users(message):
         message.chat.id == constants.CREATOR,
     commands=["clear"]
 )
-def clear(message):  # Deleting users who doesn't use the bot
+def clear(message):
     is_someone_cleared = False
 
     for user in list(student.students):
@@ -923,15 +923,17 @@ def clear(message):  # Deleting users who doesn't use the bot
             bot.send_message(
                 chat_id=message.chat.id,
                 text="{first_name} {last_name} (@{user}) stopped using the bot, so was #erased.\n\n" \
-                     "Institute: {institute}\n" \
-                     "Year: {year}\n" \
-                     "Student card number: {student_card_number}".format(
+                     "• Institute: {institute}\n" \
+                     "• Year: {year}\n" \
+                     "• Student card number: {student_card_number}\n" \
+                     "• Chat ID: {chat_id}".format(
                          first_name=bot.get_chat(chat_id=user).first_name,
                          last_name=bot.get_chat(chat_id=user).last_name,
                          user=bot.get_chat(chat_id=user).username,
                          institute=student.students[user].get_institute(),
                          year=student.students[user].get_year(),
-                         student_card_number=student.students[user].get_student_card_number()
+                         student_card_number=student.students[user].get_student_card_number(),
+                         chat_id=user
                 ),
                 parse_mode="Markdown"
             )
@@ -957,11 +959,12 @@ def clear(message):  # Deleting users who doesn't use the bot
     commands=["drop"]
 )
 def drop(message):
-    helpers.save_users(dict())
+    student.students = dict()
+    helpers.save_users(student.students)
 
     bot.send_message(
         chat_id=message.chat.id,
-        text="Dropped!"
+        text="All data was #dropped!"
     )
 
 @bot.message_handler(
@@ -974,14 +977,17 @@ def broadcast(message):
         try:
             bot.send_message(
                 chat_id=user,
-                text="*Телеграмма от разработчика*\n\n" +
+                text="*#ТелеграммаОтРазработчика*\n\n" +
                      message.text[11:] +
                      "\n\nНаписать разработчику: @airatk",
                 parse_mode="Markdown",
                 disable_web_page_preview=True
             )
         except:
-            pass  # Do nothing with a user who blocked the bot. Right, just leave him
+            bot.send_message(
+                chat_id=message.chat.id,
+                text="Inactive user occured! /clear?"
+            )
 
 @bot.message_handler(
     func=lambda message:

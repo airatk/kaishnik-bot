@@ -192,7 +192,7 @@ DORMS = {
 # /brs
 BRS = "*БРС*\n" \
       "_балльно-рейтинговая система_\n\n" \
-      "Обычно можно получить *50* баллов за семестр и столько же за экзамен. *100* баллов суммарно.\n\n"\
+      "Обычно можно получить *50* баллов за семестр и столько же за экзамен. *100* баллов всего.\n\n"\
       "• 3ка - от *51* до *70*\n" \
       "• 4ка - от *71* до *85*\n" \
       "• 5ка - от *86* до *100*\n\n" \
@@ -200,13 +200,18 @@ BRS = "*БРС*\n" \
       "_варьируется от преподавателя к преподавателю_"
 
 # Creator's commands
-CREATOR_CAN = "*Safe commands*\n" \
-              "/users - shows statistics of users\n" \
-              "/clear - delete & print out users who blocked the bot\n" \
-              "\n*Unsafe commands*\n" \
-              "/droп - delete all data\n" \
-              "/broadcasт _text_ - broadcasting to users\n" \
-              "/reverseweeк - even is not even sometimes for some reason"
+CREATOR_COMMAND = "*Safe commands*\n" \
+                  "/users - shows statistics of users\n" \
+                  "/clear - delete & print out users who blocked the bot\n" \
+                  "\n*Unsafe commands*\n" \
+                  "/droп - delete all data\n" \
+                  "/broadcasт _text_ - broadcasting to users\n" \
+                  "/reverseweeк - even is not even sometimes for some reason\n" \
+                  "\n*Hashtags*\n" \
+                  "#users - /users requests\n" \
+                  "#erased - /clear'ed students' cards\n" \
+                  "#dropped - data eliminations\n" \
+                  "#ТелеграммаОтРазработчика - /broadcast'ed messages"
 
 # Replies to unknow stuff
 REPLIES_TO_UNKNOWN_COMMAND = [
