@@ -896,6 +896,8 @@ def creators_features(message):
     commands=["metrics"]
 )
 def get_metrics(message):
+    global metrics
+    
     bot.send_message(
         chat_id=message.chat.id,
         text="*Metrics*\n\n" \
