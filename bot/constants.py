@@ -201,16 +201,16 @@ BRS = "*БРС*\n" \
 
 # Creator's commands
 CREATOR_COMMAND = "*Safe commands*\n" \
-                  "/users - shows statistics of users\n" \
-                  "/clear - delete & print out users who blocked the bot\n" \
+                  "/users\n" \
+                  "/clear\n" \
                   "\n*Unsafe commands*\n" \
-                  "/droп - delete all data\n" \
-                  "/broadcasт _text_ - broadcasting to users\n" \
-                  "/reverseweeк - even is not even sometimes for some reason\n" \
+                  "/ drop\n" \
+                  "/ broadcast _text_\n" \
+                  "/ reverseweek\n" \
                   "\n*Hashtags*\n" \
-                  "#users - users requests\n" \
-                  "#erased - cleared students' cards\n" \
-                  "#dropped - data eliminations\n" \
+                  "#users\n" \
+                  "#erased\n" \
+                  "#dropped\n" \
                   "#ТелеграммаОтРазработчика - broadcasted messages"
 
 # Replies to unknow stuff
