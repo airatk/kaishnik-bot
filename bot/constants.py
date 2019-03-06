@@ -209,6 +209,7 @@ CREATOR_COMMAND = "*Safe commands*\n" \
                   "/ broadcast _text_\n" \
                   "/ reverseweek\n" \
                   "\n*Hashtags*\n" \
+                  "#metrics\n" \
                   "#users\n" \
                   "#erased\n" \
                   "#dropped\n" \

@@ -909,7 +909,7 @@ def get_metrics(message):
              "/locations: {}\n" \
              "/card: {}\n" \
              "/brs: {}\n\n" \
-             "_since the last_ #metrics _request_".format(
+             "_all_ #metrics _since the last bot launch_".format(
                  metrics["classes"],
                  metrics["score"],
                  metrics["lecturers"],
@@ -921,8 +921,6 @@ def get_metrics(message):
         ),
         parse_mode="Markdown"
     )
-
-    metrics = { key: 0 for key in metrics }
 
 @bot.message_handler(
     func=lambda message:
