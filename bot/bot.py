@@ -21,7 +21,10 @@ metrics = {
     "exams":     0,
     "locations": 0,
     "card":      0,
-    "brs":       0
+    "brs":       0,
+    "start":     0,
+    "settings":  0,
+    "unknown":   0
 }
 
 @bot.message_handler(
@@ -34,6 +37,8 @@ metrics = {
 def unknown_nontext_message(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
     
+    global metrics; metrics["unknown"] += 1
+    
     bot.send_message(
         chat_id=message.chat.id,
         text=random.choice(constants.REPLIES_TO_UNKNOWN_MESSAGE),
@@ -43,6 +48,8 @@ def unknown_nontext_message(message):
 @bot.message_handler(commands=["start"])
 def start(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
+    
+    global metrics; metrics["start"] += 1
     
     bot.send_message(
         chat_id=message.chat.id,
@@ -57,6 +64,8 @@ def start(message):
 @bot.message_handler(commands=["settings"])
 def settings(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
+    
+    global metrics; metrics["settings"] += 1
     
     bot.send_message(
         chat_id=message.chat.id,
@@ -412,7 +421,7 @@ def unsetup(callback):
 def lecturers(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
     
-    metrics["lecturers"] += 1
+    global metrics; metrics["lecturers"] += 1
     
     bot.send_message(
         chat_id=message.chat.id,
@@ -510,7 +519,7 @@ def send_lecturers_schedule(callback):
 def classes(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
     
-    metrics["classes"] += 1
+    global metrics; metrics["classes"] += 1
     
     bot.send_message(
         chat_id=message.chat.id,
@@ -576,7 +585,7 @@ def weekly_schedule(callback):
 def exams(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    metrics["exams"] += 1
+    global metrics; metrics["exams"] += 1
 
     try:
         bot.send_message(
@@ -595,7 +604,7 @@ def exams(message):
 def week(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    metrics["week"] += 1
+    global metrics; metrics["week"] += 1
 
     bot.send_message(
         chat_id=message.chat.id,
@@ -606,7 +615,7 @@ def week(message):
 def score(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
     
-    metrics["score"] += 1
+    global metrics; metrics["score"] += 1
     
     if student.students[message.chat.id].get_student_card_number() is None:
         bot.send_message(
@@ -714,7 +723,7 @@ def show_score(callback):
 def locations(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
     
-    metrics["locations"] += 1
+    global metrics; metrics["locations"] += 1
     
     bot.send_message(
         chat_id=message.chat.id,
@@ -838,7 +847,7 @@ def send_dorm(callback):
 def card(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
     
-    metrics["card"] += 1
+    global metrics; metrics["card"] += 1
     
     if student.students[message.chat.id].get_student_card_number() is None:
         bot.send_message(
@@ -871,7 +880,7 @@ def card(message):
 def brs(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
     
-    metrics["brs"] += 1
+    global metrics; metrics["brs"] += 1
     
     bot.send_message(
         chat_id=message.chat.id,
@@ -913,7 +922,10 @@ def get_metrics(message):
              "/exams: {}\n" \
              "/locations: {}\n" \
              "/card: {}\n" \
-             "/brs: {}\n\n" \
+             "/brs: {}\n" \
+             "/start: {}\n" \
+             "/settings: {}\n" \
+             "unknown: {}\n\n" \
              "_daily_ #metrics".format(
                  metrics["classes"],
                  metrics["score"],
@@ -922,7 +934,10 @@ def get_metrics(message):
                  metrics["exams"],
                  metrics["locations"],
                  metrics["card"],
-                 metrics["brs"]
+                 metrics["brs"],
+                 metrics["start"],
+                 metrics["settings"],
+                 metrics["unknown"]
         ),
         parse_mode="Markdown"
     )
@@ -1043,9 +1058,10 @@ def broadcast(message):
         try:
             bot.send_message(
                 chat_id=user,
-                text="*#ТелеграммаОтРазработчика*\n\n" +
+                text="*Телеграмма от разработчика*\n" +
+                     "#broadcast\n\n" +
                      message.text[11:] +
-                     "\n\nНаписать разработчику: @airatk",
+                     "\n\n_Написать разработчику:_ @airatk",
                 parse_mode="Markdown",
                 disable_web_page_preview=True
             )
@@ -1075,6 +1091,8 @@ def reverseweek(message):
 def unknown_command(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
     
+    global metrics; metrics["unknown"] += 1
+    
     bot.send_message(
         chat_id=message.chat.id,
         text=random.choice(constants.REPLIES_TO_UNKNOWN_COMMAND),
@@ -1085,6 +1103,8 @@ def unknown_command(message):
 @bot.message_handler(content_types=["text"])
 def unknown_text_message(message):
     bot.send_chat_action(chat_id=message.chat.id, action="typing")
+    
+    global metrics; metrics["unknown"] += 1
     
     bot.send_message(
         chat_id=message.chat.id,

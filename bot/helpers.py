@@ -76,9 +76,9 @@ def beautify_classes(json_response, weekday, next):
         
         # Show if a subject is supposed to be only on certain date (like 21.09 or 07.11 or неч(6) or чет/неч неч/чет)
         if "." in subject["dayDate"] or "/" in subject["dayDate"] or "(" in subject["dayDate"]:
-            date = "\n*[ {date} ]*".format(date=subject["dayDate"])
+            subject_dates = "\n*[ {subjects_dates} ]*".format(subjects_dates=subject["dayDate"])
         else:
-            date = ""
+            subject_dates = ""
         
         subject_name = "\n*{subject_name}*".format(subject_name=subject["disciplName"])
         
@@ -97,10 +97,14 @@ def beautify_classes(json_response, weekday, next):
         department = "\n§  {department}".format(department=subject["orgUnitName"]) if subject["orgUnitName"] else ""
     
         # Concatenate all the stuff above
-        schedule = "".join([schedule, time_place, date, subject_name, subject_type, teacher, department])
-    
+        schedule = "".join([schedule, time_place, subject_dates, subject_name, subject_type, teacher, department])
+        
+    # Date of each day
+    day_date = datetime.today() + timedelta(days=weekday - datetime.today().isoweekday())
+    if next: day_date += timedelta(days=7)
+
     return "".join([
-        "*{weekday}*".format(weekday=WEEK[weekday]),
+        "*{weekday}, {day_date}*".format(weekday=WEEK[weekday], day_date=day_date.strftime("%d/%m/%y")),
         schedule if schedule and not is_day_off else "\n\nВыходной"
     ])
 
