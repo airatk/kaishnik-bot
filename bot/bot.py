@@ -478,39 +478,64 @@ def send_lecturers_schedule(callback):
 
 @bot.callback_query_handler(
     func=lambda callback:
-        "l_c" in callback.data or \
-        "l_e" in callback.data
+        "l_c" in callback.data
 )
-def send_lecturers_schedule(callback):
+def send_lecturers_classes_week_type(callback):
+    bot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="Преподавателево расписание занятий на:",
+        reply_markup=keyboards.lecturer_classes_week_type(callback.data[4:])
+    )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        "c_w" in callback.data
+)
+def send_lecturers_classes(callback):
     bot.delete_message(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id
     )
     
     try:
-        if "l_c" in callback.data:
-            for weekday in constants.WEEK:
-                bot.send_message(
-                    chat_id=callback.message.chat.id,
-                    text=helpers.get_lecturers_schedule(
-                        prepod_login=callback.data[4:],
-                        type=callback.data[:3],
-                        weekday=weekday
-                    ),
-                    parse_mode="Markdown"
-                )
-        else:
+        for weekday in constants.WEEK:
             bot.send_message(
                 chat_id=callback.message.chat.id,
                 text=helpers.get_lecturers_schedule(
-                    prepod_login=callback.data[4:],
-                    type=callback.data[:3]
+                    prepod_login=callback.data[9:],
+                    type="l_c",
+                    weekday=weekday,
+                    next="next" in callback.data
                 ),
                 parse_mode="Markdown"
             )
     except:
         bot.send_message(
             chat_id=callback.message.chat.id,
+            text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+            disable_web_page_preview=True
+        )
+
+@bot.callback_query_handler(
+    func=lambda callback:
+        "l_e" in callback.data
+)
+def send_lecturers_exams(callback):
+    try:
+        bot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text=helpers.get_lecturers_schedule(
+                prepod_login=callback.data[4:],
+                type=callback.data[:3]
+            ),
+            parse_mode="Markdown"
+        )
+    except:
+        bot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
             text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
             disable_web_page_preview=True
         )

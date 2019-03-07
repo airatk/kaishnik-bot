@@ -86,6 +86,14 @@ def lecturer_schedule_type(prepod_login):
 
     return lecturer_schedule_type_keyboard
 
+def lecturer_classes_week_type(prepod_login):
+    week_type_keyboard = InlineKeyboardMarkup()
+
+    week_type_keyboard.row(InlineKeyboardButton(text="текущую неделю", callback_data=" ".join(["c_w", "crnt", prepod_login])))
+    week_type_keyboard.row(InlineKeyboardButton(text="следующую неделю", callback_data=" ".join(["c_w", "next", prepod_login])))
+
+    return week_type_keyboard
+
 # /score
 def semester_dailer(semesters_number):
     semester_dailer_keyboard = InlineKeyboardMarkup(row_width=4)
