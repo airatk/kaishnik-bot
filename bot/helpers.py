@@ -104,7 +104,7 @@ def beautify_classes(json_response, weekday, next):
     if next: day_date += timedelta(days=7)
 
     return "".join([
-        "*{weekday}, {day_date}*".format(weekday=WEEK[weekday], day_date=day_date.strftime("%d/%m/%y")),
+        "*{weekday}, {day_date}*".format(weekday=WEEK[weekday], day_date=day_date.strftime("%d.%m.%y")),
         schedule if schedule and not is_day_off else "\n\nВыходной"
     ])
 
