@@ -93,6 +93,7 @@ def beautify_classes(json_response, weekday, next):
         # Do not show empty strings
         teacher = "\n@ {teacher}".format(teacher=subject["prepodName"].title()) if subject["prepodName"] else ""
         department = "\n§  {department}".format(department=subject["orgUnitName"]) if subject["orgUnitName"] else ""
+        # 2 whitespaces (↑here) are not accident, it's UI
     
         # Concatenate all the stuff above
         schedule = "".join([schedule, time_place, subject_dates, subject_name, subject_type, teacher, department])

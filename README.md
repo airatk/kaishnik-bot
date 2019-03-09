@@ -25,7 +25,7 @@ Also, the requirements.txt file is included to the repository. So, enter `pip3 i
 
 The full process looks like this:
 
-    git clone https://github.com/airatk/kaishnik_bot
+    git clone https://github.com/airatk/kaishnik-bot
     pip3 install -r requirements.txt
     cd bot/
     python3 bot.py
@@ -37,8 +37,8 @@ _Undescribably useful, joyfully cute!_
 
 ![logo][5]
 
-[1]: https://github.com/eternnoir/pyTelegramBotAPI                       "Repository of pyTelegramBotAPI"
-[2]: https://telegram.me/kaishnik_bot                                    "Open bot in Telegram"
-[3]: https://telegram.me/BotFather                                       "Open BotFather in Telegram"
-[4]: https://core.telegram.org/bots/api                                  "Telegram Bot API"
-[5]: https://github.com/AiratK/kaishnik-bot/blob/master/design/logo.png  "kaishnik_bot logo"
+[1]: https://github.com/eternnoir/pyTelegramBotAPI "Repository of pyTelegramBotAPI"
+[2]: https://telegram.me/kaishnik_bot "Open the bot in Telegram"
+[3]: https://telegram.me/BotFather "Open BotFather in Telegram"
+[4]: https://core.telegram.org/bots/api "Telegram Bot API official reference"
+[5]: https://github.com/AiratK/kaishnik-bot/blob/master/design/logo.png "kaishnik-bot logo"

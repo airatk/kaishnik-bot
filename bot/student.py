@@ -8,6 +8,7 @@ from helpers import (
     load_users
 )
 
+from datetime import datetime, timedelta
 from requests import get, post
 from bs4      import BeautifulSoup
 
@@ -101,7 +102,8 @@ class Student:
 
         if type == "classes":
             if weekday == 7:
-                return "*Воскресенье*\n\nОднозначно выходной"
+                day_date = datetime.today() + timedelta(days=weekday - datetime.today().isoweekday())
+                return "*Воскресенье, {day_date}*\n\nОднозначно выходной".format(day_date=day_date.strftime("%d.%m.%y"))
             elif weekday == 8:
                 weekday = 1
                 next = True
