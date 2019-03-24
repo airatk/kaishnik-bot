@@ -1,9 +1,9 @@
-from constants import (
+from bot.constants import (
     SCHEDULE_URL, SCORE_URL,
     WEEK
 )
 
-from helpers import (
+from bot.helpers import (
     beautify_classes, beautify_exams,
     load_users
 )
@@ -183,5 +183,3 @@ class Student:
             self.group_number_for_schedule is None or \
             self.group_number_for_score is None or \
             self.name is None
-
-students = load_users()

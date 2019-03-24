@@ -3,7 +3,7 @@ from telebot.types import (
     ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 )
 
-from constants import (
+from bot.constants import (
     INSTITUTES,
     BUILDINGS, LIBRARIES, DORMS
 )

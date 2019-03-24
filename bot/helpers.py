@@ -1,4 +1,4 @@
-from constants import (
+from bot.constants import (
     WEEK,
     LECTURERS_SCHEDULE_URL
 )
@@ -9,11 +9,11 @@ from requests import get, post
 
 # No user data is lost anymore!
 def save_users(users):
-    with open("users.pkl", "wb") as users_file:
+    with open("data/users.pkl", "wb") as users_file:
         dump(users, users_file, HIGHEST_PROTOCOL)
 
 def load_users():
-    with open("users.pkl", "rb") as users_file:
+    with open("data/users.pkl", "rb") as users_file:
         return load(users_file)
 
 # /week
@@ -24,11 +24,11 @@ def is_even():
     return not is_week_reversed() if datetime.today().isocalendar()[1] % 2 == 0 else is_week_reversed()
 
 def is_week_reversed():
-    with open("is_week_reversed", "r") as week_file:
+    with open("data/is_week_reversed", "r") as week_file:
         return "True" in week_file.read()
 
 def reverse_week_in_file():
-    with open("is_week_reversed", "r+") as week_file:
+    with open("data/is_week_reversed", "r+") as week_file:
         week_file.write("False") if is_week_reversed() else week_file.write("True")
 
 # /classes
