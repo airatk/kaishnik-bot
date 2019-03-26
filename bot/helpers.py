@@ -1,20 +1,27 @@
-from bot.constants import (
-    WEEK,
-    LECTURERS_SCHEDULE_URL
-)
+from bot.constants import LECTURERS_SCHEDULE_URL
+from bot.constants import WEEK
+from bot.constants import MONTHS
 
-from datetime import datetime, timedelta
-from pickle   import dump, load, HIGHEST_PROTOCOL
-from requests import get, post
+from datetime import datetime
+from datetime import timedelta
 
-# No user data is lost anymore!
+from pickle import dump
+from pickle import load
+from pickle import HIGHEST_PROTOCOL
+
+from requests import get
+from requests import post
+
+
+# Save data
 def save_users(users):
-    with open("data/users.pkl", "wb") as users_file:
+    with open("data/users", "wb") as users_file:
         dump(users, users_file, HIGHEST_PROTOCOL)
 
 def load_users():
-    with open("data/users.pkl", "rb") as users_file:
+    with open("data/users", "rb") as users_file:
         return load(users_file)
+
 
 # /week
 def get_week():
@@ -31,48 +38,69 @@ def reverse_week_in_file():
     with open("data/is_week_reversed", "r+") as week_file:
         week_file.write("False") if is_week_reversed() else week_file.write("True")
 
+
 # /classes
 def beautify_classes(json_response, weekday, next):
     schedule = ""
     is_day_off = False
     
-    for subject in json_response:
+    # Date of each day
+    day_date = datetime.today() + timedelta(days=(weekday - datetime.today().isoweekday()) + (7 if next else 0))
+    
+    if weekday == 7:
+        return "*Воскресенье, {day_date}*\n\nОднозначно выходной".format(
+            day_date=" ".join([str(int(day_date.strftime("%d"))), MONTHS[day_date.strftime("%m")]])
+            # This str(int(:string:)) was done to replace "01 апреля" by "1 апреля"
+        )
+    elif weekday == 8:
+        weekday = 1
+        next = True
+    
+    if not json_response:
+        return "*{weekday}, {day_date}*\n\nНет данных".format(
+            weekday=WEEK[weekday],
+            day_date=" ".join([str(int(day_date.strftime("%d"))), MONTHS[day_date.strftime("%m")]])
+        )
+
+    if str(weekday) not in json_response:
+        return "*{weekday}, {day_date}*\n\nВыходной".format(
+            weekday=WEEK[weekday],
+            day_date=" ".join([str(int(day_date.strftime("%d"))), MONTHS[day_date.strftime("%m")]])
+        )
+
+    for subject in json_response[str(weekday)]:
         # No subjects - no schedule. For day-offs
         is_day_off = "День консультаций" in subject["disciplName"] or "Военная подготовка" in subject["disciplName"]
         if is_day_off:
             break
     
         # Removing extraspaces
-        for property in subject:
-            subject[property] = " ".join(subject[property].split())
+        subject = { property: " ".join(value.split()) for property, value in subject.items() }
     
         # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
         if not next:
-            if not is_even() and subject["dayDate"] == "чет" or is_even() and subject["dayDate"] == "неч":
+            if subject["dayDate"] == "неч" if is_even() else subject["dayDate"] == "чет":
                 continue
         else:
-            if is_even() and subject["dayDate"] == "чет" or not is_even() and subject["dayDate"] == "неч":
+            if subject["dayDate"] == "неч" if not is_even() else subject["dayDate"] == "чет":
                 continue
-    
+
         # Make buildings look beautiful
-        if subject["buildNum"] == "КАИ ОЛИМП":
-            building = "СК Олимп"
-        else:
-            building = "".join([subject["buildNum"], "ка"])
+        building = "СК Олимп" if subject["buildNum"] == "КАИ ОЛИМП" else "".join([subject["buildNum"], "ка"])
         
         # Showing time in standart representation & adding the end time
         class_hours, class_minutes = subject["dayTime"].split(":")[0], subject["dayTime"].split(":")[1]
         begin_time = datetime(1, 1, 1, int(class_hours), int(class_minutes))  # Year, month, day are filled with nonsence
-        end_time = begin_time + timedelta(hours=1, minutes=30)  # Class time is 1:30
+        end_time = begin_time + timedelta(hours=1, minutes=30)  # Class time is 1.5h
         
         time_place = "\n\n*[ {begin_time} - {end_time} ][ {building} ]{auditorium}*".format(
             begin_time=begin_time.strftime("%H:%M"),
             end_time=end_time.strftime("%H:%M"),
             building=building,
-            auditorium=("[ " + subject["audNum"] + " ]") if subject["audNum"] else ""
+            auditorium=(" ".join(["[", subject["audNum"], "]"])) if subject["audNum"] else ""
         )
         
-        # Show if a subject is supposed to be only on certain date (like 21.09 or 07.11 or неч(6) or чет/неч неч/чет)
+        # Show if a subject is supposed to be only on certain dates (like 21.09 or неч(6) or чет/неч)
         if "." in subject["dayDate"] or "/" in subject["dayDate"] or "(" in subject["dayDate"]:
             subject_dates = "\n*[ {subjects_dates} ]*".format(subjects_dates=subject["dayDate"])
         else:
@@ -97,23 +125,26 @@ def beautify_classes(json_response, weekday, next):
     
         # Concatenate all the stuff above
         schedule = "".join([schedule, time_place, subject_dates, subject_name, subject_type, teacher, department])
-        
-    # Date of each day
-    day_date = datetime.today() + timedelta(days=weekday - datetime.today().isoweekday())
-    if next: day_date += timedelta(days=7)
-
+    
     return "".join([
-        "*{weekday}, {day_date}*".format(weekday=WEEK[weekday], day_date=day_date.strftime("%d.%m.%y")),
-        schedule if schedule and not is_day_off else "\n\nВыходной"
+        "*{weekday}, {day_date}*".format(
+            weekday=WEEK[weekday],
+            day_date=" ".join([str(int(day_date.strftime("%d"))), MONTHS[day_date.strftime("%m")]])
+        ),
+        schedule if schedule != "" and not is_day_off else "\n\nВыходной"
     ])
 
 # /exams
 def beautify_exams(json_response):
     schedule = ""
-
+    
+    if not json_response:
+        return "Нет данных."
+    
     # Have no data to parse exams-json-response
 
     return schedule
+
 
 # /lecturers
 def get_lecturers_names(name_part):
@@ -130,51 +161,56 @@ def get_lecturers_schedule(prepod_login, type, weekday=None, next=False):
     params = (
         ("p_p_id", "pubLecturerSchedule_WAR_publicLecturerSchedule10"),
         ("p_p_lifecycle", "2"),
-        ("p_p_resource_id", "schedule" if type == "l_c" else "examSchedule")
+        ("p_p_resource_id", "schedule" if type == "l-classes" else "examSchedule")
     )
     data = {
       "prepodLogin": prepod_login
     }
 
-    schedule = post(LECTURERS_SCHEDULE_URL, params=params, data=data).json()
+    response = post(url=LECTURERS_SCHEDULE_URL, params=params, data=data).json()
 
-    if not schedule:
-        return "*{weekday}*\n\nНет данных".format(weekday=WEEK[weekday]) if weekday else "Нет данных."
-
-    if type == "l_c":
-        return beautify_lecturers_classes(schedule, weekday, next)
-    else:
-        return beautify_lecturers_exams(schedule)
+    return beautify_lecturers_classes(response, weekday, next) if type == "l-classes" else beautify_lecturers_exams(response)
 
 def beautify_lecturers_classes(json_response, weekday, next):
     schedule = ""
+    previous_time = ""
     
     # Date of each day
-    day_date = datetime.today() + timedelta(days=weekday - datetime.today().isoweekday())
-    if next: day_date += timedelta(days=7)
+    day_date = datetime.today() + timedelta(days=(weekday - datetime.today().isoweekday()) + (7 if next else 0))
+    
+    if not json_response:
+        return "*{weekday}, {day_date}*\n\nНет данных".format(
+            weekday=WEEK[weekday],
+            day_date=" ".join([str(int(day_date.strftime("%d"))), MONTHS[day_date.strftime("%m")]])
+        )
     
     if str(weekday) not in json_response:
-        return "*{weekday}, {day_date}*\n\nНет занятий".format(weekday=WEEK[weekday], day_date=day_date.strftime("%d.%m.%y"))
+        return "*{weekday}, {day_date}*\n\nНет занятий".format(
+            weekday=WEEK[weekday],
+            day_date=" ".join([str(int(day_date.strftime("%d"))), MONTHS[day_date.strftime("%m")]])
+        )
     
     for subject in json_response[str(weekday)]:
-        # Removing extraspaces, standardizing values to string type
-        for property in subject:
-            subject[property] = str(subject[property])
-            subject[property] = " ".join(subject[property].split())
+        # Removing extraspaces & standardizing values to string type
+        subject = { property: " ".join(str(value).split()) for property, value in subject.items() }
     
         # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
         if not next:
-            if not is_even() and subject["dayDate"] == "чет" or is_even() and subject["dayDate"] == "неч":
+            if subject["dayDate"] == "неч" if is_even() else subject["dayDate"] == "чет":
                 continue
         else:
-            if is_even() and subject["dayDate"] == "чет" or not is_even() and subject["dayDate"] == "неч":
+            if subject["dayDate"] == "неч" if not is_even() else subject["dayDate"] == "чет":
                 continue
-    
+
+        # Gathering same time groups together
+        if previous_time == subject["dayTime"]:
+            schedule = "".join([schedule, "\n# У группы {}".format(subject["group"])])
+            continue
+        else:
+            previous_time = subject["dayTime"]
+
         # Make buildings look beautiful
-        if subject["buildNum"] == "КАИ ОЛИМП":
-            building = "СК Олимп"
-        else:
-            building = "".join([subject["buildNum"], "ка"])
+        building = "СК Олимп" if subject["buildNum"] == "КАИ ОЛИМП" else "".join([subject["buildNum"], "ка"])
 
         # Showing time in standart representation & adding the end time
         class_hours, class_minutes = subject["dayTime"].split(":")[0], subject["dayTime"].split(":")[1]
@@ -188,7 +224,7 @@ def beautify_lecturers_classes(json_response, weekday, next):
             auditorium=("[ " + subject["audNum"] + " ]") if subject["audNum"] else ""
         )
         
-        # Show if a subject is supposed to be only on certain date (like 21.09 or 07.11 or неч(6) or чет/неч неч/чет)
+        # Show if a subject is supposed to be only on certain date (like 21.09 or неч(6) or чет/неч)
         if "." in subject["dayDate"] or "/" in subject["dayDate"] or "(" in subject["dayDate"]:
             subject_dates = "\n*[ {subjects_dates} ]*".format(subjects_dates=subject["dayDate"])
         else:
@@ -206,30 +242,33 @@ def beautify_lecturers_classes(json_response, weekday, next):
         else:
             subject_type = ""
 
-        group = "\n# У группы {group}".format(group=subject["group"])
+        group = "\n# У группы {}".format(subject["group"])
 
         # Concatenate all the stuff above
         schedule = "".join([schedule, time_place, subject_dates, subject_name, subject_type, group])
 
-    if not schedule:
-        schedule = "\n\nНет занятий"
-
-    return "".join(["*{weekday}, {day_date}*".format(weekday=WEEK[weekday], day_date=day_date.strftime("%d.%m.%y")), schedule])
+    return "".join([
+        "*{weekday}, {day_date}*".format(
+            weekday=WEEK[weekday],
+            day_date=" ".join([str(int(day_date.strftime("%d"))), MONTHS[day_date.strftime("%m")]])
+        ),
+        schedule if schedule != "" else "\n\nНет занятий"
+    ])
 
 def beautify_lecturers_exams(json_response):
     schedule = ""
     
+    if not json_response:
+        return "Нет данных."
+    
     for subject in json_response:
         # Removing extraspaces, standardizing values to string type
-        for property in subject:
-            subject[property] = str(subject[property])
-            subject[property] = " ".join(subject[property].split())
-    
+        subject = { property: " ".join(str(value).split()) for property, value in subject.items() }
+        
         time_place = "\n\n*[ {date} ][ {time} ][ {building} ][ {auditorium} ]*".format(
             date=subject["examDate"],
             time=subject["examTime"],
-            # Make buildings look beautiful
-            building="".join([subject["buildNum"], "ка"]),
+            building="".join([subject["buildNum"], "ка"]),  # Make buildings look beautiful
             auditorium=subject["audNum"]
         )
         
@@ -242,18 +281,19 @@ def beautify_lecturers_exams(json_response):
     
     return schedule
 
+
 # /score
-def get_subject_score(score_table, subjects_num):
-    subject = score_table[subjects_num]
+def get_subject_score(scoretable, subjects_num):
+    subject = scoretable[subjects_num]
     
-    title = "*{title}*".format(title=subject[1][:len(subject[1]) - 6])
+    title = "*{title}*".format(title=subject[1][:len(subject[1]) - 6])  # Erase (экз.) & (зач.)
     type = "\n_экзамен_\n" if "экз" in subject[1] else "\n_зачёт_\n"
     
     certification1 = "\n• 1 аттестация: {gained}/{max}".format(gained=subject[2], max=subject[3])
     certification2 = "\n• 2 аттестация: {gained}/{max}".format(gained=subject[4], max=subject[5])
     certification3 = "\n• 3 аттестация: {gained}/{max}".format(gained=subject[6], max=subject[7])
-    preresult      = "\n- За семестр: {preresult}/50".format(preresult=subject[8])
+    semesterSum = "\n◦ За семестр: {}".format(subject[8])
     
-    debts = "\n\nДолги: {gained}".format(gained=subject[10])
+    debts = "\n\nДолги: {}".format(subject[10])
     
-    return "".join([title, type, certification1, certification2, certification3, preresult, debts])
+    return "".join([title, type, certification1, certification2, certification3, semesterSum, debts])

@@ -9,6 +9,7 @@ from bot.keyboards import buildings_dailer
 from bot.keyboards import libraries_dailer
 from bot.keyboards import dorms_dailer
 
+
 @kaishnik.message_handler(commands=["locations"])
 def locations(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -19,9 +20,11 @@ def locations(message):
         reply_markup=choose_location_type()
     )
 
+
+# Buildings
 @kaishnik.callback_query_handler(
     func=lambda callback:
-        callback.data == "buildings"
+        callback.data == "buildings_type"
 )
 def b_s(callback):
     kaishnik.edit_message_text(
@@ -33,7 +36,7 @@ def b_s(callback):
 
 @kaishnik.callback_query_handler(
     func=lambda callback:
-        "b_s" in callback.data
+        "buildings" in callback.data
 )
 def send_building(callback):
     kaishnik.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
@@ -43,7 +46,7 @@ def send_building(callback):
         message_id=callback.message.message_id
     )
     
-    number = callback.data[4:]
+    number = callback.data.replace("buildings ", "")
     
     kaishnik.send_message(
         chat_id=callback.message.chat.id,
@@ -56,9 +59,11 @@ def send_building(callback):
         longitude=BUILDINGS[number]["longitude"]
     )
 
+
+# Libraries
 @kaishnik.callback_query_handler(
     func=lambda callback:
-        callback.data == "libraries"
+        callback.data == "libraries_type"
 )
 def l_s(callback):
     kaishnik.edit_message_text(
@@ -70,7 +75,7 @@ def l_s(callback):
 
 @kaishnik.callback_query_handler(
     func=lambda callback:
-        "l_s" in callback.data
+        "libraries" in callback.data
 )
 def send_library(callback):
     kaishnik.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
@@ -80,7 +85,7 @@ def send_library(callback):
         message_id=callback.message.message_id
     )
     
-    number = callback.data[4:]
+    number = callback.data.replace("libraries ", "")
     building = LIBRARIES[number]["building"]
     
     kaishnik.send_message(
@@ -94,9 +99,11 @@ def send_library(callback):
         longitude=BUILDINGS[building]["longitude"]
     )
 
+
+# Dormitories
 @kaishnik.callback_query_handler(
     func=lambda callback:
-        callback.data == "dorms"
+        callback.data == "dorms_type"
 )
 def d_s(callback):
     kaishnik.edit_message_text(
@@ -108,7 +115,7 @@ def d_s(callback):
 
 @kaishnik.callback_query_handler(
     func=lambda callback:
-        "d_s" in callback.data
+        "dorms" in callback.data
 )
 def send_dorm(callback):
     kaishnik.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
@@ -118,7 +125,7 @@ def send_dorm(callback):
         message_id=callback.message.message_id
     )
     
-    number = callback.data[4:]
+    number = callback.data.replace("dorms ", "")
     
     kaishnik.send_message(
         chat_id=callback.message.chat.id,

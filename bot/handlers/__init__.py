@@ -1,3 +1,10 @@
+"""
+    Order matters. Inside, outside, everywhere
+    Incorrect order will destroy everything
+    Correct order is crucially, essentially, vitally important
+    
+"""
+
 from bot import kaishnik
 
 from bot.constants import REPLIES_TO_UNKNOWN_COMMAND

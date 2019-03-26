@@ -10,10 +10,10 @@ from bot.keyboards import skipper
 def card(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
-    if students[message.chat.id].get_student_card_number() is None:
+    if students[message.chat.id].student_card_number is None:
         kaishnik.send_message(
             chat_id=message.chat.id,
-            text="Отправь номер своей зачётки "
+            text="Номер зачётки не указан, поэтому отправь его "
                  "(интересный факт — номер твоего студенческого и номер твоей зачётки одинаковы!).",
             reply_markup=remove_keyboard()
         )
@@ -25,7 +25,7 @@ def card(message):
                 callback_data="skip"
             )
         )
-    elif students[message.chat.id].get_institute() == "КИТ":
+    elif students[message.chat.id].institute_id == "КИТ":
         kaishnik.send_message(
             chat_id=message.chat.id,
             text="Не доступно :("
@@ -46,4 +46,3 @@ def brs(message):
         text=BRS,
         parse_mode="Markdown"
     )
-

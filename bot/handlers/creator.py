@@ -2,7 +2,6 @@ from bot import kaishnik
 from bot import students
 
 from bot.constants import CREATOR
-from bot.constants import CREATOR_COMMAND
 
 from bot.helpers import save_users
 from bot.helpers import reverse_week_in_file
@@ -17,7 +16,23 @@ from datetime import datetime
 def creator(message):
     kaishnik.send_message(
         chat_id=message.chat.id,
-        text=CREATOR_COMMAND,
+        text=(
+            "*Safe commands*\n"         ### Safe commands
+            "/users\n"
+            "/data\n"
+            "/clear\n"
+            "\n*Unsafe commands*\n"     ### Unsafe commands
+            "/ drop\n"
+            "/ broadcast _text_\n"
+            "/ reverseweek\n"
+            "\n*Hashtags*\n"            ### Hashtags
+            "#users\n"
+            "#data\n"
+            "#erased\n"
+            "#dropped\n"
+            "#broadcast\n"
+            "#update"  # For update notifications, not associated with any command unlike other hashtags
+        ),
         parse_mode="Markdown"
     )
 
@@ -27,8 +42,8 @@ def creator(message):
     commands=["users"]
 )
 def users(message):
-    institutes_stats = [students[user].get_institute() for user in students]
-    years_stats = [students[user].get_year() for user in students]
+    institutes_stats = [ students[user].institute for user in students ]
+    years_stats = [ students[user].year for user in students ]
     
     kaishnik.send_message(
         chat_id=message.chat.id,
@@ -49,13 +64,13 @@ def users(message):
             "• 5: {}\n"
             "• 6: {}\n\n"
             "*{}* #users in total!".format(
-                institutes_stats.count("1"),
-                institutes_stats.count("2"),
-                institutes_stats.count("3"),
-                institutes_stats.count("4"),
+                institutes_stats.count("ИАНТЭ"),
+                institutes_stats.count("ФМФ"),
+                institutes_stats.count("ИАЭП"),
+                institutes_stats.count("♥ ИКТЗИ ♥"),
                 institutes_stats.count("КИТ"),
-                institutes_stats.count("5"),
-                institutes_stats.count("28"),
+                institutes_stats.count("ИРЭТ"),
+                institutes_stats.count("ИЭУСТ"),
                 years_stats.count("1"),
                 years_stats.count("2"),
                 years_stats.count("3"),
@@ -71,6 +86,38 @@ def users(message):
 @kaishnik.message_handler(
     func=lambda message:
         message.chat.id == CREATOR,
+    commands=["data"]
+)
+def data(message):
+    for user in students:
+        kaishnik.send_message(
+            chat_id=message.chat.id,
+            text=(
+                "*{first_name} {last_name}* @{user}\n"
+                "_chat id {chat_id}_\n\n"
+                "• *Institute:* {institute}\n"
+                "• *Year:* {year}\n"
+                "• *Group:* {group_number}\n"
+                "• *Name:* {name}\n"
+                "• *Student card number:* {student_card_number}\n"
+                "\n#data".format(
+                    first_name=kaishnik.get_chat(chat_id=user).first_name,
+                    last_name=kaishnik.get_chat(chat_id=user).last_name,
+                    user=kaishnik.get_chat(chat_id=user).username,
+                    chat_id=user,
+                    institute=students[user].institute,
+                    year=students[user].year,
+                    group_number=students[user].group_number,
+                    name=students[user].name,
+                    student_card_number=students[user].student_card_number
+                )
+            ),
+            parse_mode="Markdown"
+        )
+
+@kaishnik.message_handler(
+    func=lambda message:
+        message.chat.id == CREATOR,
     commands=["clear"]
 )
 def clear(message):
@@ -79,24 +126,29 @@ def clear(message):
     for user in list(students):
         try:
             kaishnik.send_chat_action(chat_id=user, action="upload_document")
-        except:
+        except Exception:
             is_cleared = True
             
             kaishnik.send_message(
                 chat_id=message.chat.id,
                 text=(
-                    "{first_name} {last_name} (@{user}) stopped using the bot, so was #erased.\n\n"
-                    "• Institute: {institute}\n"
-                    "• Year: {year}\n"
-                    "• Student card number: {student_card_number}\n"
-                    "• Chat ID: {chat_id}".format(
+                    "*{first_name} {last_name}* @{user}\n"
+                    "_chat id {chat_id}_\n\n"
+                    "• *Institute:* {institute}\n"
+                    "• *Year:* {year}\n"
+                    "• *Group:* {group_number}\n"
+                    "• *Name:* {name}\n"
+                    "• *Student card number:* {student_card_number}\n"
+                    "\nStopped using the bot, so was #erased.".format(
                         first_name=kaishnik.get_chat(chat_id=user).first_name,
                         last_name=kaishnik.get_chat(chat_id=user).last_name,
                         user=kaishnik.get_chat(chat_id=user).username,
-                        institute=students[user].get_institute(),
-                        year=students[user].get_year(),
-                        student_card_number=students[user].get_student_card_number(),
-                        chat_id=user
+                        chat_id=user,
+                        institute=students[user].institute,
+                        year=students[user].year,
+                        group_number=students[user].group_number,
+                        name=students[user].name,
+                        student_card_number=students[user].student_card_number
                     )
                 ),
                 parse_mode="Markdown"
@@ -152,7 +204,7 @@ def broadcast(message):
                 parse_mode="Markdown",
                 disable_web_page_preview=True
             )
-        except:
+        except Exception:
             kaishnik.send_message(
                 chat_id=message.chat.id,
                 text="Inactive user occured! /clear?"

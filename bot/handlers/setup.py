@@ -17,6 +17,7 @@ from bot.keyboards import name_setter
 from bot.helpers import save_users
 
 from re import fullmatch
+from json.decoder import JSONDecodeError
 
 @kaishnik.message_handler(commands=["start"])
 def start(message):
@@ -89,15 +90,15 @@ def set_KIT(message):
                 chat_id=message.chat.id,
                 message_id=message.message_id - 1
             )
-        except:
+        except Exception:
             pass
 
     students[message.chat.id] = Student(
         institute="КИТ",
+        institute_id="КИТ",
         year="КИТ",
-        group_number_for_score="КИТ",
         name="КИТ",
-        student_card_number="КИТ",
+        student_card_number="КИТ"
     )
     
     kaishnik.send_message(
@@ -108,16 +109,18 @@ def set_KIT(message):
 
 @kaishnik.message_handler(
     func=lambda message:
-        message.chat.id in students and \
-        students[message.chat.id].get_institute() == "КИТ" and \
+        message.chat.id in students and
+        students[message.chat.id].institute_id == "КИТ" and
         fullmatch("[4][1-4][2-5][0-9]", message.text)
 )
 def set_KIT_group_number(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
 
-    if students[message.chat.id].get_group_number_for_schedule() is None:
+    if students[message.chat.id].group_number is None:
         try:
-            students[message.chat.id].set_group_number_for_schedule(message.text)
+            students[message.chat.id].group_number_schedule = message.text
+            students[message.chat.id].group_number = message.text
+            # Reversed order to make sure there is no exception firstly
             
             save_users(students)
             
@@ -135,10 +138,10 @@ def set_KIT_group_number(message):
                 chat_id=message.chat.id,
                 text="Неверный номер группы. Исправляйся."
             )
-        except:
+        except JSONDecodeError:
             kaishnik.send_message(
                 chat_id=message.chat.id,
-                text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+                text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
                 disable_web_page_preview=True
             )
     else:
@@ -161,37 +164,40 @@ def set_institute(message):
                 chat_id=message.chat.id,
                 message_id=message.message_id - 1
             )
-        except:
+        except Exception:
             pass
     
-    students[message.chat.id] = Student(institute=INSTITUTES[message.text])
+    students[message.chat.id] = Student(
+        institute=message.text,
+        institute_id=INSTITUTES[message.text]
+    )
 
     try:
         kaishnik.send_message(
             chat_id=message.chat.id,
             text="Выбери свой курс.",
-            reply_markup=year_setter(students[message.chat.id].get_dict_of_list(type="p_kurs"))
+            reply_markup=year_setter(students[message.chat.id].get_dictionary_of(type="p_kurs"))
         )
-    except:
+    except JSONDecodeError:
         kaishnik.send_message(
             chat_id=message.chat.id,
-            text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+            text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
             disable_web_page_preview=True
         )
 
 @kaishnik.message_handler(
     func=lambda message:
-        message.chat.id in students and \
+        message.chat.id in students and
         fullmatch("[1-6]", message.text)
 )
 def set_year(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
-    if students[message.chat.id].get_institute() is not None and students[message.chat.id].get_year() is None:
-        students[message.chat.id].set_year(message.text)
+    if students[message.chat.id].institute_id is not None and students[message.chat.id].year is None:
+        students[message.chat.id].year = message.text
         
         try:
-            groups = students[message.chat.id].get_dict_of_list(type="p_group")
+            groups = students[message.chat.id].get_dictionary_of(type="p_group")
             
             if groups:
                 kaishnik.send_message(
@@ -205,10 +211,10 @@ def set_year(message):
                     text="Здесь ничего нет. Начни сначала.",
                     reply_markup=make_send("/settings")
                 )
-        except:
+        except JSONDecodeError:
             kaishnik.send_message(
                 chat_id=message.chat.id,
-                text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+                text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
                 disable_web_page_preview=True
             )
     else:
@@ -219,20 +225,21 @@ def set_year(message):
 
 @kaishnik.message_handler(
     func=lambda message:
-        message.chat.id in students and \
-        students[message.chat.id].get_institute() != "КИТ" and \
+        message.chat.id in students and
+        students[message.chat.id].institute_id != "КИТ" and
         fullmatch("[1-59][0-6][0-9][0-9]", message.text)
 )
 def set_group_number(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
-    if students[message.chat.id].get_year() is not None and students[message.chat.id].get_group_number_for_schedule() is None:
+    if students[message.chat.id].year is not None and students[message.chat.id].group_number is None:
         try:
-            students[message.chat.id].set_group_number_for_score(message.text)
-            names = students[message.chat.id].get_dict_of_list(type="p_stud")
+            students[message.chat.id].group_number_score = message.text
+            names = students[message.chat.id].get_dictionary_of(type="p_stud")
             
             if names:
-                students[message.chat.id].set_group_number_for_schedule(message.text)
+                students[message.chat.id].group_number = message.text
+                students[message.chat.id].group_number_schedule = message.text
                 
                 kaishnik.send_message(
                     chat_id=message.chat.id,
@@ -245,10 +252,10 @@ def set_group_number(message):
                     text="Здесь ничего нет. Начни сначала.",
                     reply_markup=make_send("/settings")
                 )
-        except:
+        except JSONDecodeError:
             kaishnik.send_message(
                 chat_id=message.chat.id,
-                text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+                text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
                 disable_web_page_preview=True
             )
     else:
@@ -259,14 +266,15 @@ def set_group_number(message):
 
 @kaishnik.message_handler(
     func=lambda message:
-        message.chat.id in students and \
-        message.text in students[message.chat.id].get_dict_of_list(type="p_stud")
+        message.chat.id in students and
+        message.text in students[message.chat.id].get_dictionary_of(type="p_stud")
 )
 def set_name(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
-    if students[message.chat.id].get_group_number_for_schedule() is not None and students[message.chat.id].get_name() is None:
-        students[message.chat.id].set_name(message.text)
+    if students[message.chat.id].group_number_schedule is not None and students[message.chat.id].name is None:
+        students[message.chat.id].name = message.text
+        students[message.chat.id].name_id = message.text
         
         kaishnik.send_message(
             chat_id=message.chat.id,
@@ -305,7 +313,7 @@ def save_without_student_card_number(callback):
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id - 1
         )
-    except:
+    except Exception:
         pass
     
     kaishnik.send_message(
@@ -321,14 +329,14 @@ def save_without_student_card_number(callback):
 
 @kaishnik.message_handler(
     func=lambda message:
-        message.chat.id in students and \
+        message.chat.id in students and
         fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9][0-9]?", message.text)
 )
 def set_student_card_number(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
-    if students[message.chat.id].get_name() is not None and students[message.chat.id].get_student_card_number() is None:
-        students[message.chat.id].set_student_card_number(message.text)
+    if students[message.chat.id].name is not None and students[message.chat.id].student_card_number is None:
+        students[message.chat.id].student_card_number = message.text
         
         # Delete "skip" message
         try:
@@ -336,14 +344,14 @@ def set_student_card_number(message):
                 chat_id=message.chat.id,
                 message_id=message.message_id - 1
             )
-        except:
+        except Exception:
             pass
         
-        # The first semester might be empty, so check the current one
-        prelast_semester = int(students[message.chat.id].get_year())*2 - 1
+        # The 1st semester might be empty, so check the current one
+        prelast_semester = int(students[message.chat.id].year)*2 - 1
         
         try:
-            if students[message.chat.id].get_score_table(prelast_semester):
+            if students[message.chat.id].get_scoretable(prelast_semester):
                 save_users(students)
                 
                 kaishnik.send_message(
@@ -357,7 +365,7 @@ def set_student_card_number(message):
                     reply_markup=remove_keyboard()
                 )
             else:
-                students[message.chat.id].set_student_card_number(None)
+                students[message.chat.id].student_card_number = None
                 
                 kaishnik.send_message(
                     chat_id=message.chat.id,
@@ -371,10 +379,10 @@ def set_student_card_number(message):
                         callback_data="skip"
                     )
                 )
-        except:
+        except JSONDecodeError:
             kaishnik.send_message(
                 chat_id=message.chat.id,
-                text="Сайт kai.ru не отвечает ¯\_(ツ)_/¯",
+                text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
                 disable_web_page_preview=True
             )
     else:
@@ -394,7 +402,7 @@ def set_student_card_number(message):
 def deny_access_to_unsetup(callback):
     try:
         message = callback.message
-    except:
+    except Exception:
         message = callback
     
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
