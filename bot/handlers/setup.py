@@ -301,6 +301,7 @@ def set_name(message):
         callback.data == "skip"
 )
 def save_without_student_card_number(callback):
+    students[callback.message.chat.id].student_card_number = "unset"
     save_users(students)
     
     # Might be undeleted sometimes for some reason

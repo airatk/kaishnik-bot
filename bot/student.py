@@ -198,4 +198,10 @@ class Student:
 
     # No setup - no conversation
     def is_not_set_up(self):
-        return self.__name is None or self.__group_number is None or self.__year is None or self.__institute_id is None
+        return (
+            self.__name is None or
+            self.__group_number is None or
+            self.__year is None or
+            self.__institute_id is None or
+            self.__student_card_number is None
+        )

@@ -1,7 +1,7 @@
 # kaishnik-bot constants
 from os import environ
-TOKEN = environ["T_TOKEN"]
-CREATOR = int(environ["T_CREATOR"])
+TOKEN = environ["KBOT_TOKEN"]
+CREATOR = int(environ["KBOT_CREATOR"])
 
 # Directions to go for the main data
 SCHEDULE_URL           = "https://kai.ru/raspisanie"

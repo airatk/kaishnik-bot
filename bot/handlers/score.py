@@ -12,7 +12,7 @@ from json.decoder import JSONDecodeError
 def score(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
         
-    if students[message.chat.id].student_card_number is None:
+    if students[message.chat.id].student_card_number == "unset":
         kaishnik.send_message(
             chat_id=message.chat.id,
             text="Номер зачётки не указан, но ты можешь это исправить — отправь /card"

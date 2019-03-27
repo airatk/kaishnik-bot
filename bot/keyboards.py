@@ -8,6 +8,11 @@ from bot.constants import INSTITUTES
 from bot.constants import BUILDINGS
 from bot.constants import LIBRARIES
 from bot.constants import DORMS
+from bot.constants import WEEK
+from bot.constants import MONTHS
+
+from datetime import datetime
+from datetime import timedelta
 
 
 def make_send(command):
@@ -67,14 +72,37 @@ def schedule_type():
     schedule_type_keyboard = InlineKeyboardMarkup()
 
     schedule_type_keyboard.row(
-        InlineKeyboardButton(text="сегодня", callback_data="today"),
-        InlineKeyboardButton(text="завтра", callback_data="tomorrow")
+        InlineKeyboardButton(text="сегодня", callback_data="daily crnt {}".format(datetime.today().isoweekday())),
+        InlineKeyboardButton(text="завтра", callback_data="daily crnt {}".format(datetime.today().isoweekday() + 1))
     )
-    schedule_type_keyboard.row(InlineKeyboardButton(text="определённую дату", callback_data="certain date"))
-    schedule_type_keyboard.row(InlineKeyboardButton(text="текущую неделю", callback_data="weekly crnt"))
-    schedule_type_keyboard.row(InlineKeyboardButton(text="следующую неделю", callback_data="weekly next"))
+    schedule_type_keyboard.row(InlineKeyboardButton(text="текущую неделю", callback_data="weekdays crnt"))
+    schedule_type_keyboard.row(InlineKeyboardButton(text="следующую неделю", callback_data="weekdays next"))
 
     return schedule_type_keyboard
+
+def certain_date_chooser(todays_weekday, type):
+    certain_date_keyboard = InlineKeyboardMarkup()
+    
+    certain_date_keyboard.row(InlineKeyboardButton(text="Показать все", callback_data="weekly {}".format(type)))
+    
+    today = datetime.today()
+    
+    for weekday in WEEK:
+        date = today + timedelta(days=(weekday - todays_weekday) + (7 if type == "next" else 0))
+        
+        certain_date_keyboard.row(
+            InlineKeyboardButton(
+                text="{weekday}, {day} {month}{is_today}".format(
+                    weekday=WEEK[weekday],
+                    day=int(date.strftime("%d")),
+                    month=MONTHS[date.strftime("%m")],
+                    is_today=" *" if today.strftime("%d") == date.strftime("%d") else ""
+                ),
+                callback_data="daily {type} {weekday}".format(type=type, weekday=weekday)
+            )
+        )
+    
+    return certain_date_keyboard
 
 
 # /lecturers

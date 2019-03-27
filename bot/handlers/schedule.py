@@ -7,6 +7,7 @@ from bot.keyboards import choose_lecturer
 from bot.keyboards import lecturer_schedule_type
 from bot.keyboards import lecturer_classes_week_type
 from bot.keyboards import schedule_type
+from bot.keyboards import certain_date_chooser
 
 from bot.helpers import get_lecturers_names
 from bot.helpers import get_lecturers_schedule
@@ -39,14 +40,19 @@ def find_lecturer(message):
         names = get_lecturers_names(message.text)
     except JSONDecodeError:
         names = None
-        
+    
+    if names is None:
         kaishnik.send_message(
             chat_id=message.chat.id,
             text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
             disable_web_page_preview=True
         )
-    
-    if names is not None:
+    elif names == []:
+        kaishnik.send_message(
+            chat_id=message.chat.id,
+            text="Ничего не найдено :("
+        )
+    else:
         try:
             kaishnik.send_message(
                 chat_id=message.chat.id,
@@ -58,11 +64,6 @@ def find_lecturer(message):
                 chat_id=message.chat.id,
                 text="Слишком мало букв, слишком много преподавателей…"
             )
-    else:
-        kaishnik.send_message(
-            chat_id=message.chat.id,
-            text="Ничего не найдено :("
-        )
     
     students[message.chat.id].previous_message = None
 
@@ -154,19 +155,17 @@ def classes(message):
 
 @kaishnik.callback_query_handler(
     func=lambda callback:
-        callback.data == "today" or
-        callback.data == "tomorrow"
+        "daily" in callback.data
 )
 def one_day_schedule(callback):
-    weekday = datetime.today().isoweekday() + (0 if callback.data == "today" else 1)
-    
     try:
         kaishnik.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
             text=students[callback.message.chat.id].get_schedule(
                 type="classes",
-                weekday=weekday
+                weekday=int(callback.data[10:]),
+                next="next" in callback.data
             ),
             parse_mode="Markdown"
         )
@@ -180,10 +179,15 @@ def one_day_schedule(callback):
 
 @kaishnik.callback_query_handler(
     func=lambda callback:
-        callback.data == "certain date"
+        "weekdays" in callback.data
 )
 def certain_date_schedule(callback):
-    pass
+    kaishnik.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="Выбери нужный день:",
+        reply_markup=certain_date_chooser(datetime.today().isoweekday(), callback.data.replace("weekdays ", ""))
+    )
 
 @kaishnik.callback_query_handler(
     func=lambda callback:
