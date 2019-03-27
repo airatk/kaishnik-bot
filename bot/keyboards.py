@@ -96,7 +96,7 @@ def certain_date_chooser(todays_weekday, type):
                     weekday=WEEK[weekday],
                     day=int(date.strftime("%d")),
                     month=MONTHS[date.strftime("%m")],
-                    is_today=" *" if today.strftime("%d") == date.strftime("%d") else ""
+                    is_today=" •" if today.strftime("%d") == date.strftime("%d") else ""
                 ),
                 callback_data="daily {type} {weekday}".format(type=type, weekday=weekday)
             )

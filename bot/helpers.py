@@ -342,7 +342,7 @@ class Metrics:
         self.__settings = 0
         self.__unsetup = 0
         self.__unknown = 0
-
+    
     @property
     def day(self):
         return self.__day
@@ -423,7 +423,7 @@ class Metrics:
             self.__unsetup += 1
         elif command == "unknown":
             self.__unknown += 1
-
+    
     def sum(self):
         return (
             self.__classes +

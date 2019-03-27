@@ -51,15 +51,17 @@ def send_building(callback):
     
     number = callback.data.replace("buildings ", "")
     
+    kaishnik.send_venue(
+        chat_id=callback.message.chat.id,
+        latitude=BUILDINGS[number]["latitude"],
+        longitude=BUILDINGS[number]["longitude"],
+        title=BUILDINGS[number]["title"],
+        address=BUILDINGS[number]["address"]
+    )
     kaishnik.send_message(
         chat_id=callback.message.chat.id,
         text=BUILDINGS[number]["description"],
         parse_mode="Markdown"
-    )
-    kaishnik.send_location(
-        chat_id=callback.message.chat.id,
-        latitude=BUILDINGS[number]["latitude"],
-        longitude=BUILDINGS[number]["longitude"]
     )
 
 
@@ -91,15 +93,17 @@ def send_library(callback):
     number = callback.data.replace("libraries ", "")
     building = LIBRARIES[number]["building"]
     
+    kaishnik.send_venue(
+        chat_id=callback.message.chat.id,
+        latitude=BUILDINGS[building]["latitude"],
+        longitude=BUILDINGS[building]["longitude"],
+        title=LIBRARIES[number]["title"],
+        address=BUILDINGS[building]["address"]
+    )
     kaishnik.send_message(
         chat_id=callback.message.chat.id,
         text=LIBRARIES[number]["description"],
         parse_mode="Markdown"
-    )
-    kaishnik.send_location(
-        chat_id=callback.message.chat.id,
-        latitude=BUILDINGS[building]["latitude"],
-        longitude=BUILDINGS[building]["longitude"]
     )
 
 
@@ -130,13 +134,15 @@ def send_dorm(callback):
     
     number = callback.data.replace("dorms ", "")
     
+    kaishnik.send_venue(
+        chat_id=callback.message.chat.id,
+        latitude=DORMS[number]["latitude"],
+        longitude=DORMS[number]["longitude"],
+        title=DORMS[number]["title"],
+        address=DORMS[number]["address"]
+    )
     kaishnik.send_message(
         chat_id=callback.message.chat.id,
         text=DORMS[number]["description"],
         parse_mode="Markdown"
-    )
-    kaishnik.send_location(
-        chat_id=callback.message.chat.id,
-        latitude=DORMS[number]["latitude"],
-        longitude=DORMS[number]["longitude"]
     )
