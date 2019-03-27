@@ -1,5 +1,6 @@
 from bot import kaishnik
 from bot import students
+from bot import metrics
 
 from bot.constants import BRS
 
@@ -9,6 +10,8 @@ from bot.keyboards import skipper
 @kaishnik.message_handler(commands=["card"])
 def card(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
+    
+    metrics.increment("card")
     
     if students[message.chat.id].student_card_number == "unset":
         kaishnik.send_message(
@@ -40,7 +43,9 @@ def card(message):
 @kaishnik.message_handler(commands=["brs"])
 def brs(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
-        
+    
+    metrics.increment("brs")
+    
     kaishnik.send_message(
         chat_id=message.chat.id,
         text=BRS,

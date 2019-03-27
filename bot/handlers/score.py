@@ -1,5 +1,6 @@
 from bot import kaishnik
 from bot import students
+from bot import metrics
 
 from bot.keyboards import subject_chooser
 from bot.keyboards import semester_dailer
@@ -11,7 +12,9 @@ from json.decoder import JSONDecodeError
 @kaishnik.message_handler(commands=["score"])
 def score(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
-        
+    
+    metrics.increment("score")
+    
     if students[message.chat.id].student_card_number == "unset":
         kaishnik.send_message(
             chat_id=message.chat.id,

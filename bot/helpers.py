@@ -324,3 +324,133 @@ def get_subject_score(scoretable, subjects_num):
     debts = "\n\nДолги: {}".format(subject[10])
     
     return "".join([title, type, certification1, certification2, certification3, semesterSum, debts])
+
+
+# /metrics
+class Metrics:
+    def __init__(self):
+        self.__day = datetime.today().isoweekday()
+        self.__classes = 0
+        self.__score = 0
+        self.__lecturers = 0
+        self.__week = 0
+        self.__exams = 0
+        self.__locations = 0
+        self.__card = 0
+        self.__brs = 0
+        self.__start = 0
+        self.__settings = 0
+        self.__unsetup = 0
+        self.__unknown = 0
+
+    @property
+    def day(self):
+        return self.__day
+    
+    @property
+    def classes(self):
+        return self.__classes
+    
+    @property
+    def score(self):
+        return self.__score
+    
+    @property
+    def lecturers(self):
+        return self.__lecturers
+    
+    @property
+    def week(self):
+        return self.__week
+    
+    @property
+    def exams(self):
+        return self.__exams
+    
+    @property
+    def locations(self):
+        return self.__locations
+    
+    @property
+    def card(self):
+        return self.__card
+    
+    @property
+    def brs(self):
+        return self.__brs
+    
+    @property
+    def start(self):
+        return self.__start
+    
+    @property
+    def settings(self):
+        return self.__settings
+    
+    @property
+    def unsetup(self):
+        return self.__unsetup
+    
+    @property
+    def unknown(self):
+        return self.__unknown
+    
+    def increment(self, command):
+        if self.__day != datetime.today().isoweekday():
+            self.zerofy()
+        
+        if command == "classes":
+            self.__classes += 1
+        elif command == "score":
+            self.__score += 1
+        elif command == "lecturers":
+            self.__lecturers += 1
+        elif command == "week":
+            self.__week += 1
+        elif command == "exams":
+            self.__exams += 1
+        elif command == "locations":
+            self.__locations += 1
+        elif command == "card":
+            self.__card += 1
+        elif command == "brs":
+            self.__brs += 1
+        elif command == "start":
+            self.__start += 1
+        elif command == "settings":
+            self.__settings += 1
+        elif command == "unsetup":
+            self.__unsetup += 1
+        elif command == "unknown":
+            self.__unknown += 1
+
+    def sum(self):
+        return (
+            self.__classes +
+            self.__score +
+            self.__lecturers +
+            self.__week +
+            self.__exams +
+            self.__locations +
+            self.__card +
+            self.__brs +
+            self.__start +
+            self.__settings +
+            self.__unsetup +
+            self.__unknown
+        )
+    
+    def zerofy(self):
+        self.__day = datetime.today().isoweekday()
+        self.__classes = 0
+        self.__score = 0
+        self.__lecturers = 0
+        self.__week = 0
+        self.__exams = 0
+        self.__locations = 0
+        self.__card = 0
+        self.__brs = 0
+        self.__start = 0
+        self.__settings = 0
+        self.__unsetup = 0
+        self.__unknown = 0

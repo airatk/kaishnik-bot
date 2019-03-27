@@ -1,5 +1,6 @@
 from bot import kaishnik
 from bot import students
+from bot import metrics
 
 from bot.constants import CREATOR
 
@@ -17,16 +18,19 @@ def creator(message):
     kaishnik.send_message(
         chat_id=message.chat.id,
         text=(
-            "*Safe commands*\n"         ### Safe commands
+            "*Creator's\ncontrol panel*\n"
+            "\n*safe*\n"                  ### safe
             "/users\n"
+            "/metrics _drop_\n"
             "/data\n"
             "/clear\n"
-            "\n*Unsafe commands*\n"     ### Unsafe commands
+            "\n*unsafe*\n"              ### unsafe
             "/ drop\n"
             "/ broadcast _text_\n"
             "/ reverseweek\n"
-            "\n*Hashtags*\n"            ### Hashtags
+            "\n*hashtags*\n"            ### hashtags
             "#users\n"
+            "#metrics\n"
             "#data\n"
             "#erased\n"
             "#dropped\n"
@@ -48,7 +52,8 @@ def users(message):
     kaishnik.send_message(
         chat_id=message.chat.id,
         text=(
-            "*Institutes*\n"
+            "*Users*\n"
+            "\n*institutes*\n"          ### institutes
             "• ИАНТЭ: {}\n"
             "• ФМФ: {}\n"
             "• ИАЭП: {}\n"
@@ -56,7 +61,7 @@ def users(message):
             "• КИТ: {}\n"
             "• ИРЭТ: {}\n"
             "• ИЭУСТ: {}\n"
-            "\n*Years*\n"
+            "\n*years*\n"               ### years
             "• 1: {}\n"
             "• 2: {}\n"
             "• 3: {}\n"
@@ -78,6 +83,52 @@ def users(message):
                 years_stats.count("5"),
                 years_stats.count("6"),
                 len(students)
+            )
+        ),
+        parse_mode="Markdown"
+    )
+
+@kaishnik.message_handler(
+    func=lambda message:
+        message.chat.id == CREATOR,
+    commands=["metrics"]
+)
+def get_metrics(message):
+    if "drop" in message.text:
+        metrics.zerofy()
+    
+    kaishnik.send_message(
+        chat_id=message.chat.id,
+        text=(
+            "*Metrics*\n"
+            "_daily_ #metrics\n"
+            "\n*usage*\n"               ### usage
+            "/classes: {}\n"
+            "/score: {}\n"
+            "/lecturers: {}\n"
+            "/week: {}\n"
+            "/exams: {}\n"
+            "/locations: {}\n"
+            "/card: {}\n"
+            "/brs: {}\n"
+            "\n*setup*\n"               ### setup
+            "/start: {}\n"
+            "/settings: {}\n"
+            "unsetup: {}\n"
+            "\n*other*\n"               ### other
+            "unknown: {}\n".format(
+                metrics.classes,
+                metrics.score,
+                metrics.lecturers,
+                metrics.week,
+                metrics.exams,
+                metrics.locations,
+                metrics.card,
+                metrics.brs,
+                metrics.start,
+                metrics.settings,
+                metrics.unsetup,
+                metrics.unknown
             )
         ),
         parse_mode="Markdown"
@@ -114,6 +165,12 @@ def data(message):
             ),
             parse_mode="Markdown"
         )
+
+    kaishnik.send_message(
+        chat_id=message.chat.id,
+        text="*{}* users in total!".format(len(students)),
+        parse_mode="Markdown"
+    )
 
 @kaishnik.message_handler(
     func=lambda message:

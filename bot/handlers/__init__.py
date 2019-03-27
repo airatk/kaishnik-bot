@@ -6,6 +6,7 @@
 """
 
 from bot import kaishnik
+from bot import metrics
 
 from bot.constants import REPLIES_TO_UNKNOWN_COMMAND
 from bot.constants import REPLIES_TO_UNKNOWN_MESSAGE
@@ -21,6 +22,8 @@ from random import choice
 )
 def unknown_nontext_message(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
+    
+    metrics.increment("unknown")
     
     kaishnik.send_message(
         chat_id=message.chat.id,
@@ -42,6 +45,8 @@ from bot.handlers import creator
 def unknown_command(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
+    metrics.increment("unknown")
+    
     kaishnik.send_message(
         chat_id=message.chat.id,
         text=choice(REPLIES_TO_UNKNOWN_COMMAND),
@@ -52,6 +57,8 @@ def unknown_command(message):
 @kaishnik.message_handler(content_types=["text"])
 def unknown_text_message(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
+    
+    metrics.increment("unknown")
     
     kaishnik.send_message(
         chat_id=message.chat.id,

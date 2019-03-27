@@ -1,5 +1,6 @@
 from bot import kaishnik
 from bot import students
+from bot import metrics
 
 from bot.student import Student
 
@@ -23,6 +24,8 @@ from json.decoder import JSONDecodeError
 def start(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
+    metrics.increment("start")
+    
     kaishnik.send_message(
         chat_id=message.chat.id,
         text="Йоу!"
@@ -36,7 +39,9 @@ def start(message):
 @kaishnik.message_handler(commands=["settings"])
 def settings(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
-        
+    
+    metrics.increment("settings")
+    
     kaishnik.send_message(
         chat_id=message.chat.id,
         text="Выбери своё подразделение.",
@@ -407,6 +412,8 @@ def deny_access_to_unsetup(callback):
         message = callback
     
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
+
+    metrics.increment("unsetup")
 
     kaishnik.send_message(
         chat_id=message.chat.id,

@@ -1,5 +1,6 @@
 from bot import kaishnik
 from bot import students
+from bot import metrics
 
 from bot.constants import WEEK
 
@@ -19,6 +20,8 @@ from json.decoder import JSONDecodeError
 @kaishnik.message_handler(commands=["lecturers"])
 def lecturers(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
+    
+    metrics.increment("lecturers")
     
     kaishnik.send_message(
         chat_id=message.chat.id,
@@ -147,6 +150,8 @@ def send_lecturers_exams(callback):
 def classes(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
+    metrics.increment("classes")
+    
     kaishnik.send_message(
         chat_id=message.chat.id,
         text="Тебе нужно расписание на:",
@@ -220,7 +225,9 @@ def weekly_schedule(callback):
 @kaishnik.message_handler(commands=["exams"])
 def exams(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
-
+    
+    metrics.increment("exams")
+    
     try:
         kaishnik.send_message(
             chat_id=message.chat.id,
@@ -237,6 +244,8 @@ def exams(message):
 @kaishnik.message_handler(commands=["week"])
 def week(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
+    
+    metrics.increment("week")
     
     kaishnik.send_message(
         chat_id=message.chat.id,

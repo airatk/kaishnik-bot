@@ -1,4 +1,5 @@
 from bot import kaishnik
+from bot import metrics
 
 from bot.constants import BUILDINGS
 from bot.constants import LIBRARIES
@@ -13,7 +14,9 @@ from bot.keyboards import dorms_dailer
 @kaishnik.message_handler(commands=["locations"])
 def locations(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
-        
+    
+    metrics.increment("locations")
+    
     kaishnik.send_message(
         chat_id=message.chat.id,
         text="Аж три варианта на выбор:",
