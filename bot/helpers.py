@@ -14,13 +14,13 @@ from requests import post
 
 
 # Save data
-def save_users(users):
-    with open("data/users", "wb") as users_file:
-        dump(users, users_file, HIGHEST_PROTOCOL)
+def save_to(filename, object):
+    with open(filename, "wb") as file:
+        dump(object, file, HIGHEST_PROTOCOL)
 
-def load_users():
-    with open("data/users", "rb") as users_file:
-        return load(users_file)
+def load_from(filename):
+    with open(filename, "rb") as file:
+        return load(file)
 
 
 # /week
@@ -31,12 +31,7 @@ def is_even():
     return not is_week_reversed() if datetime.today().isocalendar()[1] % 2 == 0 else is_week_reversed()
 
 def is_week_reversed():
-    with open("data/is_week_reversed", "r") as week_file:
-        return "True" in week_file.read()
-
-def reverse_week_in_file():
-    with open("data/is_week_reversed", "r+") as week_file:
-        week_file.write("False") if is_week_reversed() else week_file.write("True")
+    return load_from("data/is_week_reversed")
 
 
 # /classes

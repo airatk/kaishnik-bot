@@ -15,7 +15,7 @@ from bot.keyboards import year_setter
 from bot.keyboards import group_number_setter
 from bot.keyboards import name_setter
 
-from bot.helpers import save_users
+from bot.helpers import save_to
 
 from re import fullmatch
 from json.decoder import JSONDecodeError
@@ -127,7 +127,7 @@ def set_KIT_group_number(message):
             students[message.chat.id].group_number = message.text
             # Reversed order to make sure there is no exception firstly
             
-            save_users(students)
+            save_to(filename="data/users", object=students)
             
             kaishnik.send_message(
                 chat_id=message.chat.id,
@@ -307,7 +307,7 @@ def set_name(message):
 )
 def save_without_student_card_number(callback):
     students[callback.message.chat.id].student_card_number = "unset"
-    save_users(students)
+    save_to(filename="data/users", object=students)
     
     # Might be undeleted sometimes for some reason
     try:
@@ -358,7 +358,7 @@ def set_student_card_number(message):
         
         try:
             if students[message.chat.id].get_scoretable(prelast_semester):
-                save_users(students)
+                save_to(filename="data/users", object=students)
                 
                 kaishnik.send_message(
                     chat_id=message.chat.id,

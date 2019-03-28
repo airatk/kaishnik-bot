@@ -4,8 +4,8 @@ from bot import metrics
 
 from bot.constants import CREATOR
 
-from bot.helpers import save_users
-from bot.helpers import reverse_week_in_file
+from bot.helpers import save_to
+from bot.helpers import load_from
 
 from datetime import datetime
 
@@ -27,7 +27,7 @@ def creator(message):
             "\n*unsafe*\n"              ### unsafe
             "/ drop\n"
             "/ broadcast _text_\n"
-            "/ reverseweek\n"
+            "/ reverse\n"
             "\n*hashtags*\n"            ### hashtags
             "#users\n"
             "#metrics\n"
@@ -213,7 +213,7 @@ def clear(message):
             
             del students[user]
 
-    save_users(students)
+    save_to(filename="data/users", object=students)
     
     if is_cleared:
         kaishnik.send_message(
@@ -235,7 +235,7 @@ def drop(message):
     for user in list(students):
         del students[user]
     
-    save_users(students)
+    save_to(filename="data/users", object=students)
     
     kaishnik.send_message(
         chat_id=message.chat.id,
@@ -270,12 +270,15 @@ def broadcast(message):
 @kaishnik.message_handler(
     func=lambda message:
         message.chat.id == CREATOR,
-    commands=["reverseweek"]
+    commands=["reverse"]
 )
-def reverseweek(message):
-    reverse_week_in_file()
+def reverse(message):
+    if load_from(filename="data/is_week_reversed"):
+        save_to(filename="data/is_week_reversed", object=False)
+    else:
+        save_to(filename="data/is_week_reversed", object=True)
     
     kaishnik.send_message(
         chat_id=message.chat.id,
-        text="Reversed!"
+        text="Week type was reversed!"
     )

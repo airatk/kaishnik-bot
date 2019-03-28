@@ -4,7 +4,6 @@ from bot.constants import WEEK
 
 from bot.helpers import beautify_classes
 from bot.helpers import beautify_exams
-from bot.helpers import load_users
 
 from datetime import datetime
 from datetime import timedelta
