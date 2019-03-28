@@ -4,11 +4,11 @@ from bot import metrics
 
 from bot.constants import WEEK
 
-from bot.keyboards import choose_lecturer
-from bot.keyboards import lecturer_schedule_type
-from bot.keyboards import lecturer_classes_week_type
-from bot.keyboards import schedule_type
-from bot.keyboards import certain_date_chooser
+from bot.keyboards.schedule import choose_lecturer
+from bot.keyboards.schedule import lecturer_schedule_type
+from bot.keyboards.schedule import lecturer_classes_week_type
+from bot.keyboards.schedule import schedule_type
+from bot.keyboards.schedule import certain_date_chooser
 
 from bot.helpers import get_lecturers_names
 from bot.helpers import get_lecturers_schedule

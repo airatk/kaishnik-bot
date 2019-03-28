@@ -7,13 +7,14 @@ from bot.student import Student
 from bot.constants import INSTITUTES
 from bot.constants import REPLIES_TO_UNKNOWN_COMMAND
 
-from bot.keyboards import make_send
-from bot.keyboards import institute_setter
-from bot.keyboards import skipper
-from bot.keyboards import remove_keyboard
-from bot.keyboards import year_setter
-from bot.keyboards import group_number_setter
-from bot.keyboards import name_setter
+from bot.keyboards.others import make_send
+from bot.keyboards.others import skipper
+from bot.keyboards.others import remove_keyboard
+
+from bot.keyboards.setup import institute_setter
+from bot.keyboards.setup import year_setter
+from bot.keyboards.setup import group_number_setter
+from bot.keyboards.setup import name_setter
 
 from bot.helpers import save_to
 

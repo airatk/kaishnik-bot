@@ -2,8 +2,8 @@ from bot import kaishnik
 from bot import students
 from bot import metrics
 
-from bot.keyboards import subject_chooser
-from bot.keyboards import semester_dailer
+from bot.keyboards.score import subject_chooser
+from bot.keyboards.score import semester_dailer
 
 from bot.helpers import get_subject_score
 

@@ -4,8 +4,8 @@ from bot import metrics
 
 from bot.constants import BRS
 
-from bot.keyboards import remove_keyboard
-from bot.keyboards import skipper
+from bot.keyboards.others import remove_keyboard
+from bot.keyboards.others import skipper
 
 @kaishnik.message_handler(commands=["card"])
 def card(message):

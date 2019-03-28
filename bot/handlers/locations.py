@@ -5,10 +5,10 @@ from bot.constants import BUILDINGS
 from bot.constants import LIBRARIES
 from bot.constants import DORMS
 
-from bot.keyboards import choose_location_type
-from bot.keyboards import buildings_dailer
-from bot.keyboards import libraries_dailer
-from bot.keyboards import dorms_dailer
+from bot.keyboards.locations import choose_location_type
+from bot.keyboards.locations import buildings_dailer
+from bot.keyboards.locations import libraries_dailer
+from bot.keyboards.locations import dorms_dailer
 
 
 @kaishnik.message_handler(commands=["locations"])
