@@ -267,6 +267,11 @@ def broadcast(message):
                 text="Inactive user occured! /clear?"
             )
 
+    kaishnik.send_message(
+        chat_id=message.chat.id,
+        text="Done! Sent to each & every user."
+    )
+
 @kaishnik.message_handler(
     func=lambda message:
         message.chat.id == CREATOR,
