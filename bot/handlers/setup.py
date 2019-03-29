@@ -342,7 +342,10 @@ def save_without_student_card_number(callback):
 def set_student_card_number(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
-    if students[message.chat.id].name is not None and students[message.chat.id].student_card_number is None:
+    if students[message.chat.id].name is not None and (
+        students[message.chat.id].student_card_number is None or
+        students[message.chat.id].student_card_number == "unset"
+    ):
         students[message.chat.id].student_card_number = message.text
         
         # Delete "skip" message
