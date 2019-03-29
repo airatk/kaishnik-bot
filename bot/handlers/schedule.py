@@ -9,6 +9,7 @@ from bot.keyboards.schedule import lecturer_schedule_type
 from bot.keyboards.schedule import lecturer_classes_week_type
 from bot.keyboards.schedule import schedule_type
 from bot.keyboards.schedule import certain_date_chooser
+from bot.keyboards.schedule import lecturer_certain_date_chooser
 
 from bot.helpers import get_lecturers_names
 from bot.helpers import get_lecturers_schedule
@@ -16,6 +17,7 @@ from bot.helpers import get_week
 
 from datetime import datetime
 from json.decoder import JSONDecodeError
+
 
 @kaishnik.message_handler(commands=["lecturers"])
 def lecturers(message):
@@ -96,9 +98,50 @@ def lecturers_week_type_classes(callback):
 
 @kaishnik.callback_query_handler(
     func=lambda callback:
+        "l-weekdays" in callback.data
+)
+def certain_date_schedule(callback):
+    kaishnik.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="Выбери нужный день:",
+        reply_markup=lecturer_certain_date_chooser(
+            todays_weekday=datetime.today().isoweekday(),
+            type=callback.data.replace("l-weekdays ", "")[:4],
+            prepod_login=callback.data[16:]
+        )
+    )
+
+@kaishnik.callback_query_handler(
+    func=lambda callback:
+        "l-daily" in callback.data
+)
+def one_day_lecturer_schedule(callback):
+    try:
+        kaishnik.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text=get_lecturers_schedule(
+                    prepod_login=callback.data[15:],
+                    type="l-classes",
+                    weekday=int(callback.data[13:14]),
+                    next="next" in callback.data
+                ),
+            parse_mode="Markdown"
+        )
+    except JSONDecodeError:
+        kaishnik.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
+            disable_web_page_preview=True
+        )
+
+@kaishnik.callback_query_handler(
+    func=lambda callback:
         "l-weekly" in callback.data
 )
-def send_lecturers_classes(callback):
+def weekly_lecturer_schedule(callback):
     kaishnik.delete_message(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id
@@ -146,6 +189,7 @@ def send_lecturers_exams(callback):
             disable_web_page_preview=True
         )
 
+
 @kaishnik.message_handler(commands=["classes"])
 def classes(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -160,6 +204,18 @@ def classes(message):
 
 @kaishnik.callback_query_handler(
     func=lambda callback:
+        "weekdays" in callback.data
+)
+def certain_date_schedule(callback):
+    kaishnik.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="Выбери нужный день:",
+        reply_markup=certain_date_chooser(datetime.today().isoweekday(), callback.data.replace("weekdays ", ""))
+    )
+
+@kaishnik.callback_query_handler(
+    func=lambda callback:
         "daily" in callback.data
 )
 def one_day_schedule(callback):
@@ -169,7 +225,7 @@ def one_day_schedule(callback):
             message_id=callback.message.message_id,
             text=students[callback.message.chat.id].get_schedule(
                 type="classes",
-                weekday=int(callback.data[10:]),
+                weekday=int(callback.data[11:]),
                 next="next" in callback.data
             ),
             parse_mode="Markdown"
@@ -181,18 +237,6 @@ def one_day_schedule(callback):
             text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
             disable_web_page_preview=True
         )
-
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        "weekdays" in callback.data
-)
-def certain_date_schedule(callback):
-    kaishnik.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        text="Выбери нужный день:",
-        reply_markup=certain_date_chooser(datetime.today().isoweekday(), callback.data.replace("weekdays ", ""))
-    )
 
 @kaishnik.callback_query_handler(
     func=lambda callback:
@@ -222,6 +266,7 @@ def weekly_schedule(callback):
             disable_web_page_preview=True
         )
 
+
 @kaishnik.message_handler(commands=["exams"])
 def exams(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -240,6 +285,7 @@ def exams(message):
             text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
             disable_web_page_preview=True
         )
+
 
 @kaishnik.message_handler(commands=["week"])
 def week(message):
