@@ -19,7 +19,7 @@ def creator(message):
         chat_id=message.chat.id,
         text=(
             "*Creator's\ncontrol panel*\n"
-            "\n*safe*\n"                  ### safe
+            "\n*safe*\n"                ### safe
             "/users\n"
             "/metrics _drop_\n"
             "/data\n"
@@ -116,7 +116,8 @@ def get_metrics(message):
             "/settings: {}\n"
             "unsetup: {}\n"
             "\n*other*\n"               ### other
-            "unknown: {}\n".format(
+            "unknown: {}\n"
+            "\n*{}* requests in total!".format(
                 metrics.classes,
                 metrics.score,
                 metrics.lecturers,
@@ -128,7 +129,8 @@ def get_metrics(message):
                 metrics.start,
                 metrics.settings,
                 metrics.unsetup,
-                metrics.unknown
+                metrics.unknown,
+                metrics.sum
             )
         ),
         parse_mode="Markdown"

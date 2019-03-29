@@ -12,7 +12,7 @@ class Subject:
         hours, minutes = time.split(":")[0], time.split(":")[1]
         
         begin_time = datetime(1, 1, 1, int(hours), int(minutes))  # Year, month, day are filled with nonsence
-        end_time = begin_time + timedelta(hours=1, minutes=30)  # Class time is 1.5h
+        end_time = begin_time + timedelta(hours=1, minutes=30)  # Class duration is 1.5h
 
         building = "СК Олимп" if building == "КАИ ОЛИМП" else "{building}ка".format(building=building)
         
