@@ -1,7 +1,10 @@
+from abc import ABC
+from abc import abstractmethod
+
 from datetime import datetime
 from datetime import timedelta
 
-class Subject:
+class Subject(ABC):
     def __init__(self):
         self._time_place = "\n\n*[ {begin_time} - {end_time} ][ {building} ]{auditorium}*"
         self._dates      = "\n*[ {dates} ]*"
@@ -43,6 +46,10 @@ class Subject:
             self._type = "\n_лабораторная работа_"
         else:
             self._type = ""
+
+    @abstractmethod
+    def get(self):
+        pass
 
 class StudentSubject(Subject):
     def __init__(self):

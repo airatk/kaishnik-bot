@@ -19,24 +19,19 @@ class Student:
         institute=None,
         institute_id=None,
         year=None,
-        group_number=None,
-        group_number_schedule=None,
-        group_number_score=None,
         name=None,
-        name_id=None,
-        student_card_number=None,
-        previous_message=None  # Used to recognize user's message sent after a command
+        student_card_number=None
     ):
         self._institute = institute
         self._institute_id = institute_id
         self._year = year
-        self._group_number = group_number
-        self._group_number_schedule = group_number_schedule
-        self._group_number_score = group_number_score
+        self._group_number = None
+        self._group_number_schedule = None
+        self._group_number_score = None
         self._name = name
-        self._name_id = name_id
+        self._name_id = None
         self._student_card_number = student_card_number
-        self._previous_message = previous_message
+        self._previous_message = None  # Used to recognize user's message sent after a command
     
     @property
     def institute(self):
