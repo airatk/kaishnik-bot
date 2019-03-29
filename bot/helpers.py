@@ -1,3 +1,6 @@
+from bot.subject import StudentSubject
+from bot.subject import LecturerSubject
+
 from bot.constants import LECTURERS_SCHEDULE_URL
 from bot.constants import WEEK
 from bot.constants import MONTHS
@@ -66,15 +69,17 @@ def beautify_classes(json_response, weekday, next):
             month=MONTHS[date.strftime("%m")]
         )
 
+    # Removing extraspaces
+    json_response[str(weekday)] = [
+        { key: " ".join(value.split()) for key, value in subject.items() } for subject in json_response[str(weekday)]
+    ]
+
     for subject in json_response[str(weekday)]:
         # No subjects - no schedule. For day-offs
         is_day_off = "День консультаций" in subject["disciplName"] or "Военная подготовка" in subject["disciplName"]
         if is_day_off:
             break
-    
-        # Removing extraspaces
-        subject = { property: " ".join(value.split()) for property, value in subject.items() }
-    
+        
         # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
         if not next:
             if subject["dayDate"] == "неч" if is_even() else subject["dayDate"] == "чет":
@@ -86,47 +91,17 @@ def beautify_classes(json_response, weekday, next):
         # Do not show subjects with certain dates (21.09) on other dates (28 сентября)
         if "." in subject["dayDate"] and date.strftime("%d.%m") not in subject["dayDate"]:
             continue
+        
+        studentSubject = StudentSubject()
+        
+        studentSubject.set_time_place(subject["dayTime"], subject["buildNum"], subject["audNum"])
+        studentSubject.set_dates(subject["dayDate"])
+        studentSubject.set_title(subject["disciplName"])
+        studentSubject.set_type(subject["disciplType"])
+        studentSubject.set_teacher(subject["prepodName"])
+        studentSubject.set_department(subject["orgUnitName"])
 
-        # Make buildings look beautiful
-        building = "СК Олимп" if subject["buildNum"] == "КАИ ОЛИМП" else "".join([subject["buildNum"], "ка"])
-        
-        # Showing time in standart representation & adding the end time
-        class_hours, class_minutes = subject["dayTime"].split(":")[0], subject["dayTime"].split(":")[1]
-        begin_time = datetime(1, 1, 1, int(class_hours), int(class_minutes))  # Year, month, day are filled with nonsence
-        end_time = begin_time + timedelta(hours=1, minutes=30)  # Class time is 1.5h
-        
-        time_place = "\n\n*[ {begin_time} - {end_time} ][ {building} ]{auditorium}*".format(
-            begin_time=begin_time.strftime("%H:%M"),
-            end_time=end_time.strftime("%H:%M"),
-            building=building,
-            auditorium=(" ".join(["[", subject["audNum"], "]"])) if subject["audNum"] else ""
-        )
-        
-        # Show if a subject is supposed to be only on certain dates (like 21.09 or неч(6) or чет/неч)
-        if "." in subject["dayDate"] or "/" in subject["dayDate"] or "(" in subject["dayDate"]:
-            subject_dates = "\n*[ {subjects_dates} ]*".format(subjects_dates=subject["dayDate"])
-        else:
-            subject_dates = ""
-        
-        subject_name = "\n*{subject_name}*".format(subject_name=subject["disciplName"])
-        
-        # Make subject types look beautiful
-        if subject["disciplType"] == "лек":
-            subject_type = "\n_лекция_"
-        elif subject["disciplType"] == "пр":
-            subject_type = "\n_практика_"
-        elif subject["disciplType"] == "л.р.":
-            subject_type = "\n_лабораторная работа_"
-        else:
-            subject_type = ""
-
-        # Do not show empty strings
-        teacher = "\n@ {teacher}".format(teacher=subject["prepodName"].title()) if subject["prepodName"] else ""
-        department = "\n§  {department}".format(department=subject["orgUnitName"]) if subject["orgUnitName"] else ""
-        # 2 whitespaces (↑here) are not accident, it's UI
-    
-        # Concatenate all the stuff above
-        schedule = "".join([schedule, time_place, subject_dates, subject_name, subject_type, teacher, department])
+        schedule = "".join([schedule, studentSubject.get()])
     
     return "".join([
         "*{weekday}, {day} {month}*".format(
@@ -144,10 +119,12 @@ def beautify_exams(json_response):
     if not json_response:
         return "Нет данных."
     
+    # Removing extraspaces & standardizing values to string type
+    json_response = [
+        { key: " ".join(str(value).split()) for key, value in subject.items() } for subject in json_response
+    ]
+    
     for subject in json_response:
-        # Removing extraspaces, standardizing values to string type
-        subject = { property: " ".join(str(value).split()) for property, value in subject.items() }
-        
         time_place = "\n\n*[ {date} ][ {time} ][ {building} ][ {auditorium} ]*".format(
             date=subject["examDate"],
             time=subject["examTime"],
@@ -211,62 +188,40 @@ def beautify_lecturers_classes(json_response, weekday, next):
             month=MONTHS[date.strftime("%m")]
         )
     
-    for subject in json_response[str(weekday)]:
-        # Removing extraspaces & standardizing values to string type
-        subject = { property: " ".join(str(value).split()) for property, value in subject.items() }
+    # Removing extraspaces & standardizing values to string type
+    json_response[str(weekday)] = [
+        { key: " ".join(str(value).split()) for key, value in subject.items() } for subject in json_response[str(weekday)]
+    ]
     
+    # Getting rid of subjects which are not needed
+    for subject in list(json_response[str(weekday)]):
         # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
         if not next:
             if subject["dayDate"] == "неч" if is_even() else subject["dayDate"] == "чет":
-                continue
+                json_response[str(weekday)].remove(subject)
         else:
             if subject["dayDate"] == "неч" if not is_even() else subject["dayDate"] == "чет":
-                continue
-
-        # Gathering same time groups together
+                json_response[str(weekday)].remove(subject)
+    
+    # Finnaly, setting subjects themselves
+    for subject in json_response[str(weekday)]:
         if previous_time == subject["dayTime"]:
-            schedule = "".join([schedule, "\n• У группы {}".format(subject["group"])])
             continue
-        else:
-            previous_time = subject["dayTime"]
-
-        # Make buildings look beautiful
-        building = "СК Олимп" if subject["buildNum"] == "КАИ ОЛИМП" else "".join([subject["buildNum"], "ка"])
-
-        # Showing time in standart representation & adding the end time
-        class_hours, class_minutes = subject["dayTime"].split(":")[0], subject["dayTime"].split(":")[1]
-        begin_time = datetime(1, 1, 1, int(class_hours), int(class_minutes))  # Year, month, day are filled with nonsence
-        end_time = begin_time + timedelta(hours=1, minutes=30)  # Class time is 1:30
-
-        time_place = "\n\n*[ {begin_time} - {end_time} ][ {building} ]{auditorium}*".format(
-            begin_time=begin_time.strftime("%H:%M"),
-            end_time=end_time.strftime("%H:%M"),
-            building=building,
-            auditorium=("[ " + subject["audNum"] + " ]") if subject["audNum"] else ""
-        )
         
-        # Show if a subject is supposed to be only on certain date (like 21.09 or неч(6) or чет/неч)
-        if "." in subject["dayDate"] or "/" in subject["dayDate"] or "(" in subject["dayDate"]:
-            subject_dates = "\n*[ {subjects_dates} ]*".format(subjects_dates=subject["dayDate"])
-        else:
-            subject_dates = ""
+        lecturerSubject = LecturerSubject()
 
-        subject_name = "\n*{subject_name}*".format(subject_name=subject["disciplName"])
+        lecturerSubject.set_time_place(subject["dayTime"], subject["buildNum"], subject["audNum"])
+        lecturerSubject.set_dates(subject["dayDate"])
+        lecturerSubject.set_title(subject["disciplName"])
+        lecturerSubject.set_type(subject["disciplType"])
         
-        # Make subject types look beautiful
-        if subject["disciplType"] == "лек":
-            subject_type = "\n_лекция_"
-        elif subject["disciplType"] == "пр":
-            subject_type = "\n_практика_"
-        elif subject["disciplType"] == "л.р.":
-            subject_type = "\n_лабораторная работа_"
-        else:
-            subject_type = ""
+        previous_time = subject["dayTime"]
+        
+        for another_subject in json_response[str(weekday)]:
+            if previous_time == another_subject["dayTime"]:
+                lecturerSubject.groups.append(another_subject["group"])
 
-        group = "\n• У группы {}".format(subject["group"])
-
-        # Concatenate all the stuff above
-        schedule = "".join([schedule, time_place, subject_dates, subject_name, subject_type, group])
+        schedule = "".join([schedule, lecturerSubject.get()])
 
     return "".join([
         "*{weekday}, {day} {month}*".format(
@@ -282,11 +237,13 @@ def beautify_lecturers_exams(json_response):
     
     if not json_response:
         return "Нет данных."
-    
+
+    # Removing extraspaces & standardizing values to string type
+    json_response = [
+        { key: " ".join(str(value).split()) for key, value in subject.items() } for subject in json_response
+    ]
+
     for subject in json_response:
-        # Removing extraspaces, standardizing values to string type
-        subject = { property: " ".join(str(value).split()) for property, value in subject.items() }
-        
         time_place = "\n\n*[ {date} ][ {time} ][ {building} ][ {auditorium} ]*".format(
             date=subject["examDate"],
             time=subject["examTime"],
@@ -324,128 +281,128 @@ def get_subject_score(scoretable, subjects_num):
 # /metrics
 class Metrics:
     def __init__(self):
-        self.__day = datetime.today().isoweekday()
-        self.__classes = 0
-        self.__score = 0
-        self.__lecturers = 0
-        self.__week = 0
-        self.__exams = 0
-        self.__locations = 0
-        self.__card = 0
-        self.__brs = 0
-        self.__start = 0
-        self.__settings = 0
-        self.__unsetup = 0
-        self.__unknown = 0
+        self._day = datetime.today().isoweekday()
+        self._classes = 0
+        self._score = 0
+        self._lecturers = 0
+        self._week = 0
+        self._exams = 0
+        self._locations = 0
+        self._card = 0
+        self._brs = 0
+        self._start = 0
+        self._settings = 0
+        self._unsetup = 0
+        self._unknown = 0
     
     @property
     def day(self):
-        return self.__day
+        return self._day
     
     @property
     def classes(self):
-        return self.__classes
+        return self._classes
     
     @property
     def score(self):
-        return self.__score
+        return self._score
     
     @property
     def lecturers(self):
-        return self.__lecturers
+        return self._lecturers
     
     @property
     def week(self):
-        return self.__week
+        return self._week
     
     @property
     def exams(self):
-        return self.__exams
+        return self._exams
     
     @property
     def locations(self):
-        return self.__locations
+        return self._locations
     
     @property
     def card(self):
-        return self.__card
+        return self._card
     
     @property
     def brs(self):
-        return self.__brs
+        return self._brs
     
     @property
     def start(self):
-        return self.__start
+        return self._start
     
     @property
     def settings(self):
-        return self.__settings
+        return self._settings
     
     @property
     def unsetup(self):
-        return self.__unsetup
+        return self._unsetup
     
     @property
     def unknown(self):
-        return self.__unknown
+        return self._unknown
     
     def increment(self, command):
-        if self.__day != datetime.today().isoweekday():
+        if self._day != datetime.today().isoweekday():
             self.zerofy()
         
         if command == "classes":
-            self.__classes += 1
+            self._classes += 1
         elif command == "score":
-            self.__score += 1
+            self._score += 1
         elif command == "lecturers":
-            self.__lecturers += 1
+            self._lecturers += 1
         elif command == "week":
-            self.__week += 1
+            self._week += 1
         elif command == "exams":
-            self.__exams += 1
+            self._exams += 1
         elif command == "locations":
-            self.__locations += 1
+            self._locations += 1
         elif command == "card":
-            self.__card += 1
+            self._card += 1
         elif command == "brs":
-            self.__brs += 1
+            self._brs += 1
         elif command == "start":
-            self.__start += 1
+            self._start += 1
         elif command == "settings":
-            self.__settings += 1
+            self._settings += 1
         elif command == "unsetup":
-            self.__unsetup += 1
+            self._unsetup += 1
         elif command == "unknown":
-            self.__unknown += 1
+            self._unknown += 1
     
     def sum(self):
         return (
-            self.__classes +
-            self.__score +
-            self.__lecturers +
-            self.__week +
-            self.__exams +
-            self.__locations +
-            self.__card +
-            self.__brs +
-            self.__start +
-            self.__settings +
-            self.__unsetup +
-            self.__unknown
+            self._classes +
+            self._score +
+            self._lecturers +
+            self._week +
+            self._exams +
+            self._locations +
+            self._card +
+            self._brs +
+            self._start +
+            self._settings +
+            self._unsetup +
+            self._unknown
         )
     
     def zerofy(self):
-        self.__day = datetime.today().isoweekday()
-        self.__classes = 0
-        self.__score = 0
-        self.__lecturers = 0
-        self.__week = 0
-        self.__exams = 0
-        self.__locations = 0
-        self.__card = 0
-        self.__brs = 0
-        self.__start = 0
-        self.__settings = 0
-        self.__unsetup = 0
-        self.__unknown = 0
+        self._day = datetime.today().isoweekday()
+        self._classes = 0
+        self._score = 0
+        self._lecturers = 0
+        self._week = 0
+        self._exams = 0
+        self._locations = 0
+        self._card = 0
+        self._brs = 0
+        self._start = 0
+        self._settings = 0
+        self._unsetup = 0
+        self._unknown = 0

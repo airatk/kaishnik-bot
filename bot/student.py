@@ -27,72 +27,72 @@ class Student:
         student_card_number=None,
         previous_message=None  # Used to recognize user's message sent after a command
     ):
-        self.__institute = institute
-        self.__institute_id = institute_id
-        self.__year = year
-        self.__group_number = group_number
-        self.__group_number_schedule = group_number_schedule
-        self.__group_number_score = group_number_score
-        self.__name = name
-        self.__name_id = name_id
-        self.__student_card_number = student_card_number
-        self.__previous_message = previous_message
+        self._institute = institute
+        self._institute_id = institute_id
+        self._year = year
+        self._group_number = group_number
+        self._group_number_schedule = group_number_schedule
+        self._group_number_score = group_number_score
+        self._name = name
+        self._name_id = name_id
+        self._student_card_number = student_card_number
+        self._previous_message = previous_message
     
     @property
     def institute(self):
-        return self.__institute
+        return self._institute
     
     @property
     def institute_id(self):
-        return self.__institute_id
+        return self._institute_id
     
     @property
     def year(self):
-        return self.__year
+        return self._year
     
     @property
     def group_number(self):
-        return self.__group_number
+        return self._group_number
     
     @property
     def group_number_schedule(self):
-        return self.__group_number_schedule
+        return self._group_number_schedule
     
     @property
     def group_number_score(self):
-        return self.__group_number_score
+        return self._group_number_score
     
     @property
     def name(self):
-        return self.__name
+        return self._name
     
     @property
     def name_id(self):
-        return self.__name_id
+        return self._name_id
     
     @property
     def student_card_number(self):
-        return self.__student_card_number
+        return self._student_card_number
     
     @property
     def previous_message(self):
-        return self.__previous_message
+        return self._previous_message
     
     @institute.setter
     def institute(self, institute):
-        self.__institute = institute
+        self._institute = institute
     
     @institute_id.setter
     def institute_id(self, institute):
-        self.__institute_id = institute_id
+        self._institute_id = institute_id
     
     @year.setter
     def year(self, year):
-        self.__year = year
+        self._year = year
     
     @group_number.setter
     def group_number(self, group_number):
-        self.__group_number = group_number
+        self._group_number = group_number
     
     @group_number_schedule.setter
     def group_number_schedule(self, group_number):
@@ -103,27 +103,27 @@ class Student:
             ("query", group_number)
         )
     
-        self.__group_number_schedule = get(url=SCHEDULE_URL, params=params).json()[0]["id"]
+        self._group_number_schedule = get(url=SCHEDULE_URL, params=params).json()[0]["id"]
     
     @group_number_score.setter
     def group_number_score(self, group_number):
-        self.__group_number_score = self.get_dictionary_of(type="p_group")[group_number]
+        self._group_number_score = self.get_dictionary_of(type="p_group")[group_number]
     
     @name.setter
     def name(self, name):
-        self.__name = name
+        self._name = name
     
     @name_id.setter
     def name_id(self, name):
-        self.__name_id = self.get_dictionary_of(type="p_stud")[name]
+        self._name_id = self.get_dictionary_of(type="p_stud")[name]
     
     @student_card_number.setter
     def student_card_number(self, card):
-        self.__student_card_number = card
+        self._student_card_number = card
     
     @previous_message.setter
     def previous_message(self, message):
-        self.__previous_message = message
+        self._previous_message = message
 
 
     # /classes & /exams
@@ -134,7 +134,7 @@ class Student:
             ("p_p_resource_id", "schedule" if type == "classes" else "examSchedule")
         )
         data = {
-            "groupId": self.__group_number_schedule
+            "groupId": self._group_number_schedule
         }
         
         response = post(url=SCHEDULE_URL, params=params, data=data).json()
@@ -144,9 +144,9 @@ class Student:
     # /score & associated stuff
     def get_dictionary_of(self, type):
         params = (
-            ("p_fac", self.__institute_id),
-            ("p_kurs", self.__year),
-            ("p_group", self.__group_number_score)
+            ("p_fac", self._institute_id),
+            ("p_kurs", self._year),
+            ("p_group", self._group_number_score)
         )
     
         page = get(url=SCORE_URL, params=params).content.decode("CP1251")
@@ -165,11 +165,11 @@ class Student:
     def get_scoretable(self, semester):
         data = {
             "p_sub":   "",  # Unknown nonsense thing which is necessary
-            "p_fac":   self.__institute_id,
-            "p_kurs":  self.__year,
-            "p_group": self.__group_number_score,
-            "p_stud":  self.__name_id,
-            "p_zach":  self.__student_card_number,
+            "p_fac":   self._institute_id,
+            "p_kurs":  self._year,
+            "p_group": self._group_number_score,
+            "p_stud":  self._name_id,
+            "p_zach":  self._student_card_number,
             "semestr": semester
         }
         
@@ -193,14 +193,14 @@ class Student:
 
     # /card
     def get_card(self):
-        return "Номер твоего студенческого билета и твоей зачётной книжки: *{card}*".format(card=self.__student_card_number)
+        return "Номер твоего студенческого билета и твоей зачётной книжки: *{card}*".format(card=self._student_card_number)
 
     # No setup - no conversation
     def is_not_set_up(self):
         return (
-            self.__name is None or
-            self.__group_number is None or
-            self.__year is None or
-            self.__institute_id is None or
-            self.__student_card_number is None
+            self._name is None or
+            self._group_number is None or
+            self._year is None or
+            self._institute_id is None or
+            self._student_card_number is None
         )
