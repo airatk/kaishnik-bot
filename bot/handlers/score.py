@@ -1,6 +1,7 @@
 from bot import kaishnik
 from bot import students
 from bot import metrics
+from bot import on_callback_query
 
 from bot.keyboards.score import subject_chooser
 from bot.keyboards.score import semester_dailer
@@ -32,10 +33,7 @@ def score(message):
             reply_markup=semester_dailer(int(students[message.chat.id].year)*2 + 1)
         )
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        "semester" in callback.data
-)
+@kaishnik.callback_query_handler(func=lambda callback: "semester" in callback.data)
 def semester_subjects(callback):
     semester_number = callback.data.replace("semester ", "")
     
@@ -65,10 +63,9 @@ def semester_subjects(callback):
             disable_web_page_preview=True
         )
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        "scoretable all" in callback.data
-)
+    on_callback_query(id=callback.id)
+
+@kaishnik.callback_query_handler(func=lambda callback: "scoretable all" in callback.data)
 def show_all_score(callback):
     kaishnik.delete_message(
         chat_id=callback.message.chat.id,
@@ -94,10 +91,9 @@ def show_all_score(callback):
             disable_web_page_preview=True
         )
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        "scoretable" in callback.data
-)
+    on_callback_query(id=callback.id)
+
+@kaishnik.callback_query_handler(func=lambda callback: "scoretable" in callback.data)
 def show_score(callback):
     callback_data = callback.data.replace("scoretable ", "").split()
     
@@ -118,3 +114,5 @@ def show_score(callback):
             text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
             disable_web_page_preview=True
         )
+
+    on_callback_query(id=callback.id)

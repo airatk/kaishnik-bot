@@ -1,6 +1,7 @@
 from bot import kaishnik
 from bot import students
 from bot import metrics
+from bot import on_callback_query
 
 from bot.constants import WEEK
 
@@ -32,11 +33,7 @@ def lecturers(message):
     
     students[message.chat.id].previous_message = message.text
 
-@kaishnik.message_handler(
-    func=lambda message:
-        students[message.chat.id].previous_message == "/lecturers",
-    content_types=["text"]
-)
+@kaishnik.message_handler(func=lambda message: students[message.chat.id].previous_message == "/lecturers")
 def find_lecturer(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
@@ -72,10 +69,7 @@ def find_lecturer(message):
     
     students[message.chat.id].previous_message = None
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        "lecturer" in callback.data
-)
+@kaishnik.callback_query_handler(func=lambda callback: "lecturer" in callback.data)
 def lecturers_schedule_type(callback):
     kaishnik.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -84,10 +78,9 @@ def lecturers_schedule_type(callback):
         reply_markup=lecturer_schedule_type(callback.data.replace("lecturer ", ""))
     )
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        "l-classes" in callback.data
-)
+    on_callback_query(id=callback.id)
+
+@kaishnik.callback_query_handler(func=lambda callback: "l-classes" in callback.data)
 def lecturers_week_type_classes(callback):
     kaishnik.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -96,10 +89,9 @@ def lecturers_week_type_classes(callback):
         reply_markup=lecturer_classes_week_type(callback.data.replace("l-classes ", ""))
     )
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        "l-weekdays" in callback.data
-)
+    on_callback_query(id=callback.id)
+
+@kaishnik.callback_query_handler(func=lambda callback: "l-weekdays" in callback.data)
 def certain_date_schedule(callback):
     kaishnik.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -112,10 +104,9 @@ def certain_date_schedule(callback):
         )
     )
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        "l-daily" in callback.data
-)
+    on_callback_query(id=callback.id)
+
+@kaishnik.callback_query_handler(func=lambda callback: "l-daily" in callback.data)
 def one_day_lecturer_schedule(callback):
     try:
         kaishnik.edit_message_text(
@@ -137,10 +128,9 @@ def one_day_lecturer_schedule(callback):
             disable_web_page_preview=True
         )
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        "l-weekly" in callback.data
-)
+    on_callback_query(id=callback.id)
+
+@kaishnik.callback_query_handler(func=lambda callback: "l-weekly" in callback.data)
 def weekly_lecturer_schedule(callback):
     kaishnik.delete_message(
         chat_id=callback.message.chat.id,
@@ -166,10 +156,9 @@ def weekly_lecturer_schedule(callback):
             disable_web_page_preview=True
         )
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        "l-exams" in callback.data
-)
+    on_callback_query(id=callback.id)
+
+@kaishnik.callback_query_handler(func=lambda callback: "l-exams" in callback.data)
 def send_lecturers_exams(callback):
     try:
         kaishnik.edit_message_text(
@@ -189,6 +178,8 @@ def send_lecturers_exams(callback):
             disable_web_page_preview=True
         )
 
+    on_callback_query(id=callback.id)
+
 
 @kaishnik.message_handler(commands=["classes"])
 def classes(message):
@@ -202,10 +193,7 @@ def classes(message):
         reply_markup=schedule_type()
     )
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        "weekdays" in callback.data
-)
+@kaishnik.callback_query_handler(func=lambda callback: "weekdays" in callback.data)
 def certain_date_schedule(callback):
     kaishnik.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -214,10 +202,9 @@ def certain_date_schedule(callback):
         reply_markup=certain_date_chooser(datetime.today().isoweekday(), callback.data.replace("weekdays ", ""))
     )
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        "daily" in callback.data
-)
+    on_callback_query(id=callback.id)
+
+@kaishnik.callback_query_handler(func=lambda callback: "daily" in callback.data)
 def one_day_schedule(callback):
     try:
         kaishnik.edit_message_text(
@@ -238,10 +225,9 @@ def one_day_schedule(callback):
             disable_web_page_preview=True
         )
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        "weekly" in callback.data
-)
+    on_callback_query(id=callback.id)
+
+@kaishnik.callback_query_handler(func=lambda callback: "weekly" in callback.data)
 def weekly_schedule(callback):
     kaishnik.delete_message(
         chat_id=callback.message.chat.id,
@@ -265,6 +251,8 @@ def weekly_schedule(callback):
             text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
             disable_web_page_preview=True
         )
+
+    on_callback_query(id=callback.id)
 
 
 @kaishnik.message_handler(commands=["exams"])

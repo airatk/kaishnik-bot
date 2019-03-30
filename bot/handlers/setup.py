@@ -1,6 +1,7 @@
 from bot import kaishnik
 from bot import students
 from bot import metrics
+from bot import on_callback_query
 
 from bot.student import Student
 
@@ -60,10 +61,7 @@ def settings(message):
             )
         )
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        callback.data == "cancel"
-)
+@kaishnik.callback_query_handler(func=lambda callback: callback.data == "cancel")
 def cancel_setting_process(callback):
     kaishnik.send_chat_action(chat_id=callback.message.chat.id, action="typing")
     
@@ -82,10 +80,9 @@ def cancel_setting_process(callback):
         reply_markup=remove_keyboard()
     )
 
-@kaishnik.message_handler(
-    func=lambda message:
-        message.text == "КИТ"
-)
+    on_callback_query(id=callback.id)
+
+@kaishnik.message_handler(func=lambda message: message.text == "КИТ")
 def set_KIT(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
@@ -156,10 +153,7 @@ def set_KIT_group_number(message):
             text="Если хочешь изменить настройки, начни с соответствующей команды - отправь /settings"
         )
 
-@kaishnik.message_handler(
-    func=lambda message:
-        message.text in INSTITUTES
-)
+@kaishnik.message_handler(func=lambda message: message.text in INSTITUTES)
 def set_institute(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
@@ -302,15 +296,12 @@ def set_name(message):
             text="Если хочешь изменить настройки, начни с соответствующей команды — отправь /settings",
         )
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        callback.data == "skip"
-)
+@kaishnik.callback_query_handler(func=lambda callback: callback.data == "skip")
 def save_without_student_card_number(callback):
     students[callback.message.chat.id].student_card_number = "unset"
     save_to(filename="data/users", object=students)
     
-    # Might be undeleted sometimes for some reason
+    # Might be undeleted sometimes
     try:
         kaishnik.delete_message(
             chat_id=callback.message.chat.id,
@@ -333,6 +324,8 @@ def save_without_student_card_number(callback):
         parse_mode="Markdown",
         reply_markup=remove_keyboard()
     )
+
+    on_callback_query(id=callback.id)
 
 @kaishnik.message_handler(
     func=lambda message:
@@ -402,12 +395,10 @@ def set_student_card_number(message):
         )
 
 @kaishnik.message_handler(
-    func=lambda message:
-        students[message.chat.id].is_not_set_up() if message.chat.id in students else True
+    func=lambda message: students[message.chat.id].is_not_set_up() if message.chat.id in students else True
 )
 @kaishnik.callback_query_handler(
-    func=lambda callback:
-        students[callback.message.chat.id].is_not_set_up() if callback.message.chat.id in students else True
+    func=lambda callback: students[callback.message.chat.id].is_not_set_up() if callback.message.chat.id in students else True
 )
 def deny_access_to_unsetup(callback):
     try:

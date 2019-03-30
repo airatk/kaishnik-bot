@@ -9,6 +9,8 @@ from bot.helpers import Metrics
 from sys import argv
 
 apihelper.proxy = { "https": "socks5://163.172.152.192:1080" }
+on_callback_query = lambda id: apihelper.answer_callback_query(token=TOKEN, callback_query_id=id, cache_time=0)
+
 kaishnik = TeleBot(TOKEN, threaded=False)
 students = load_from(filename="data/users")
 metrics = Metrics()

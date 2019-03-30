@@ -1,5 +1,6 @@
 from bot import kaishnik
 from bot import metrics
+from bot import on_callback_query
 
 from bot.constants import BUILDINGS
 from bot.constants import LIBRARIES
@@ -25,10 +26,7 @@ def locations(message):
 
 
 # Buildings
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        callback.data == "buildings_type"
-)
+@kaishnik.callback_query_handler(func=lambda callback: callback.data == "buildings_type")
 def b_s(callback):
     kaishnik.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -37,13 +35,12 @@ def b_s(callback):
         reply_markup=buildings_dailer()
     )
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        "buildings" in callback.data
-)
+    on_callback_query(id=callback.id)
+
+@kaishnik.callback_query_handler(func=lambda callback: "buildings" in callback.data)
 def send_building(callback):
     kaishnik.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
-
+    
     kaishnik.delete_message(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id
@@ -64,12 +61,11 @@ def send_building(callback):
         parse_mode="Markdown"
     )
 
+    on_callback_query(id=callback.id)
+
 
 # Libraries
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        callback.data == "libraries_type"
-)
+@kaishnik.callback_query_handler(func=lambda callback: callback.data == "libraries_type")
 def l_s(callback):
     kaishnik.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -78,10 +74,9 @@ def l_s(callback):
         reply_markup=libraries_dailer()
     )
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        "libraries" in callback.data
-)
+    on_callback_query(id=callback.id)
+
+@kaishnik.callback_query_handler(func=lambda callback: "libraries" in callback.data)
 def send_library(callback):
     kaishnik.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
     
@@ -106,12 +101,11 @@ def send_library(callback):
         parse_mode="Markdown"
     )
 
+    on_callback_query(id=callback.id)
+
 
 # Dormitories
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        callback.data == "dorms_type"
-)
+@kaishnik.callback_query_handler(func=lambda callback: callback.data == "dorms_type")
 def d_s(callback):
     kaishnik.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -120,10 +114,9 @@ def d_s(callback):
         reply_markup=dorms_dailer()
     )
 
-@kaishnik.callback_query_handler(
-    func=lambda callback:
-        "dorms" in callback.data
-)
+    on_callback_query(id=callback.id)
+
+@kaishnik.callback_query_handler(func=lambda callback: "dorms" in callback.data)
 def send_dorm(callback):
     kaishnik.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
     
@@ -146,3 +139,5 @@ def send_dorm(callback):
         text=DORMS[number]["description"],
         parse_mode="Markdown"
     )
+
+    on_callback_query(id=callback.id)
