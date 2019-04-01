@@ -11,24 +11,33 @@ Mobile-unfriendly ugly inconvenient website had to be replaced by something usea
 
 ### Environment setup
 Before the launch you've got to set 2 environmental variables:
-* **T_TOKEN** is a unique bot thing given by [@BotFather][3].
-* **T_CREATOR** is a chat ID (integer type, see [Telegram Bot API][4]) of ~~the creator~~ an admin. This person has access to the /creator command.
+* `KBOT_TOKEN` is a unique bot thing given by [@BotFather][3].
+* `KBOT_CREATOR` is a chat ID (integer type, see [Telegram Bot API][4]) of ~~the creator~~ an admin. This person has access to the /creator command.
 
 The time zone should be set to Europe/Moscow as well (since the university's located in Kazan in Moscow time zone).
 
 ### Launch setup
 First of all, this is Python 3.
 
-The bot is written to be launched as a simple script, therefor you only need to type `python3 bot.py` into the console to launch it.
+The bot is written to be launched as a simple script, therefor you only need to type `python3 startup.py` into the console to launch it.
 
 Also, the requirements.txt file is included to the repository. So, enter `pip3 install -r requirements.txt` to the console to have all necessary stuff.
+
+### Data
+There should be `data/` folder in the root directory of the bot. It should contant `users` file with dictionary, and `is_week_reversed` with boolean value.
 
 The full process looks like this:
 
     git clone https://github.com/airatk/kaishnik-bot
     pip3 install -r requirements.txt
-    cd bot/
-    python3 bot.py
+    python3 startup.py
+
+## Other stuff
+### Rubbish
+`rubbish/` folder is for stuff which shouldn't be implemented because of oversized complexity & therefore wasn't, I just couldn't find effort to delete those :(
+
+### Update logs
+`update-logs/` folder is for notes which were sent to users as update announcements.
 
 ## Design
 The logo was drawn using Pixelmator Pro. 
