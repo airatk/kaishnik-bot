@@ -1,6 +1,5 @@
 from bot.constants import SCHEDULE_URL
 from bot.constants import SCORE_URL
-from bot.constants import WEEK
 
 from bot.helpers import beautify_classes
 from bot.helpers import beautify_exams
@@ -31,6 +30,7 @@ class Student:
         self._name = name
         self._name_id = None
         self._student_card_number = student_card_number
+        
         self._previous_message = None  # Used to recognize user's message sent after a command
     
     @property
@@ -72,7 +72,7 @@ class Student:
     @property
     def previous_message(self):
         return self._previous_message
-    
+
     @institute.setter
     def institute(self, institute):
         self._institute = institute

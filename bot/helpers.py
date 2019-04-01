@@ -2,7 +2,7 @@ from bot.subject import StudentSubject
 from bot.subject import LecturerSubject
 
 from bot.constants import LECTURERS_SCHEDULE_URL
-from bot.constants import WEEK
+from bot.constants import WEEKDAYS
 from bot.constants import MONTHS
 
 from datetime import datetime
@@ -57,14 +57,14 @@ def beautify_classes(json_response, weekday, next):
     
     if not json_response:
         return "*{weekday}, {day} {month}*\n\nНет данных".format(
-            weekday=WEEK[weekday],
+            weekday=WEEKDAYS[weekday],
             date=int(date.strftime("%d")),
             month=MONTHS[date.strftime("%m")]
         )
 
     if str(weekday) not in json_response:
         return "*{weekday}, {day} {month}*\n\nВыходной".format(
-            weekday=WEEK[weekday],
+            weekday=WEEKDAYS[weekday],
             day=int(date.strftime("%d")),
             month=MONTHS[date.strftime("%m")]
         )
@@ -91,10 +91,12 @@ def beautify_classes(json_response, weekday, next):
         # Do not show subjects with certain dates (21.09) on other dates (28 сентября)
         if "." in subject["dayDate"] and date.strftime("%d.%m") not in subject["dayDate"]:
             continue
-        
+
         studentSubject = StudentSubject()
         
-        studentSubject.set_time_place(subject["dayTime"], subject["buildNum"], subject["audNum"])
+        studentSubject.set_time(subject["dayTime"])
+        studentSubject.set_building(subject["buildNum"])
+        studentSubject.set_auditorium(subject["audNum"])
         studentSubject.set_dates(subject["dayDate"])
         studentSubject.set_title(subject["disciplName"])
         studentSubject.set_type(subject["disciplType"])
@@ -105,7 +107,7 @@ def beautify_classes(json_response, weekday, next):
     
     return "".join([
         "*{weekday}, {day} {month}*".format(
-            weekday=WEEK[weekday],
+            weekday=WEEKDAYS[weekday],
             day=int(date.strftime("%d")),
             month=MONTHS[date.strftime("%m")]
         ),
@@ -176,14 +178,14 @@ def beautify_lecturers_classes(json_response, weekday, next):
     
     if not json_response:
         return "*{weekday}, {day} {month}*\n\nНет данных".format(
-            weekday=WEEK[weekday],
+            weekday=WEEKDAYS[weekday],
             day=int(date.strftime("%d")),
             month=MONTHS[date.strftime("%m")]
         )
     
     if str(weekday) not in json_response:
         return "*{weekday}, {day} {month}*\n\nНет занятий".format(
-            weekday=WEEK[weekday],
+            weekday=WEEKDAYS[weekday],
             day=int(date.strftime("%d")),
             month=MONTHS[date.strftime("%m")]
         )
@@ -210,7 +212,9 @@ def beautify_lecturers_classes(json_response, weekday, next):
         
         lecturerSubject = LecturerSubject()
 
-        lecturerSubject.set_time_place(subject["dayTime"], subject["buildNum"], subject["audNum"])
+        lecturerSubject.set_time(subject["dayTime"])
+        lecturerSubject.set_building(subject["buildNum"])
+        lecturerSubject.set_auditorium(subject["audNum"])
         lecturerSubject.set_dates(subject["dayDate"])
         lecturerSubject.set_title(subject["disciplName"])
         lecturerSubject.set_type(subject["disciplType"])
@@ -225,7 +229,7 @@ def beautify_lecturers_classes(json_response, weekday, next):
 
     return "".join([
         "*{weekday}, {day} {month}*".format(
-            weekday=WEEK[weekday],
+            weekday=WEEKDAYS[weekday],
             day=int(date.strftime("%d")),
             month=MONTHS[date.strftime("%m")]
         ),

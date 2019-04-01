@@ -6,27 +6,33 @@ from datetime import timedelta
 
 class Subject(ABC):
     def __init__(self):
-        self._time_place = "\n\n*[ {begin_time} - {end_time} ][ {building} ]{auditorium}*"
+        self._time       = "\n\n*[ {begin_time} - {end_time} ]"
+        self._building   = "[ {building} ]"
+        self._auditorium = "{auditorium}*"
         self._dates      = "\n*[ {dates} ]*"
         self._title      = "\n*{title}*"
         self._type       = "\n_{type}_"
 
-    def set_time_place(self, time, building, auditorium=""):
+    def set_time(self, time):
         hours, minutes = time.split(":")[0], time.split(":")[1]
         
         begin_time = datetime(1, 1, 1, int(hours), int(minutes))  # Year, month, day are filled with nonsence
         end_time = begin_time + timedelta(hours=1, minutes=30)  # Class duration is 1.5h
-
-        building = "СК Олимп" if building == "КАИ ОЛИМП" else "{building}ка".format(building=building)
-        
+    
+        self._time = self._time.format(
+            begin_time=begin_time.strftime("%H:%M"),
+            end_time=end_time.strftime("%H:%M")
+        )
+    
+    def set_building(self, building):
+        building = "СК Олимп" if building == "КАИ ОЛИМП" or building == "СК Олимп" else "{building}ка".format(building=building)
+    
+        self._building = self._building.format(building=building)
+    
+    def set_auditorium(self, auditorium):
         auditorium = "[ {auditorium} ]".format(auditorium=auditorium) if auditorium else ""
         
-        self._time_place = self._time_place.format(
-            begin_time=begin_time.strftime("%H:%M"),
-            end_time=end_time.strftime("%H:%M"),
-            building=building,
-            auditorium=auditorium
-        )
+        self._auditorium = self._auditorium.format(auditorium=auditorium)
 
     def set_dates(self, dates):
         if "." in dates or "/" in dates or "(" in dates:
@@ -66,7 +72,9 @@ class StudentSubject(Subject):
 
     def get(self):
         return "".join([
-            self._time_place,
+            self._time,
+            self._building,
+            self._auditorium,
             self._dates,
             self._title,
             self._type,
@@ -91,7 +99,9 @@ class LecturerSubject(Subject):
             groups_output = "".join([groups_output, "\n• У группы {}".format(group)])
     
         return "".join([
-            self._time_place,
+            self._time,
+            self._building,
+            self._auditorium,
             self._dates,
             self._title,
             self._type,

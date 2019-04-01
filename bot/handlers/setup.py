@@ -51,7 +51,7 @@ def settings(message):
     )
     
     # Show cancel option for old users
-    if message.chat.id in students:
+    if message.chat.id in students and not students[message.chat.id].is_not_set_up():
         kaishnik.send_message(
             chat_id=message.chat.id,
             text="Или не выбирай:",
@@ -87,7 +87,7 @@ def set_KIT(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
     # Delete "cancel" message
-    if message.chat.id in students:
+    if message.chat.id in students and not students[message.chat.id].is_not_set_up():
         try:
             kaishnik.delete_message(
                 chat_id=message.chat.id,

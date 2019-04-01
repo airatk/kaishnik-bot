@@ -3,7 +3,7 @@ from bot import students
 from bot import metrics
 from bot import on_callback_query
 
-from bot.constants import WEEK
+from bot.constants import WEEKDAYS
 
 from bot.keyboards.schedule import choose_lecturer
 from bot.keyboards.schedule import lecturer_schedule_type
@@ -138,7 +138,7 @@ def weekly_lecturer_schedule(callback):
     )
     
     try:
-        for weekday in WEEK:
+        for weekday in WEEKDAYS:
             kaishnik.send_message(
                 chat_id=callback.message.chat.id,
                 text=get_lecturers_schedule(
@@ -235,7 +235,7 @@ def weekly_schedule(callback):
     )
     
     try:
-        for weekday in WEEK:
+        for weekday in WEEKDAYS:
             kaishnik.send_message(
                 chat_id=callback.message.chat.id,
                 text=students[callback.message.chat.id].get_schedule(

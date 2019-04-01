@@ -38,10 +38,7 @@ from bot.handlers import locations
 from bot.handlers import others
 from bot.handlers import creator
 
-@kaishnik.message_handler(
-    func=lambda message:
-        message.text[0] == "/"
-)
+@kaishnik.message_handler(func=lambda message: message.text[0] == "/")
 def unknown_command(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     

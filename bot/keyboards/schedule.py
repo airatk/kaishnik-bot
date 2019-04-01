@@ -1,7 +1,7 @@
 from telebot.types import InlineKeyboardMarkup
 from telebot.types import InlineKeyboardButton
 
-from bot.constants import WEEK
+from bot.constants import WEEKDAYS
 from bot.constants import MONTHS
 
 from datetime import datetime
@@ -52,13 +52,13 @@ def lecturer_certain_date_chooser(todays_weekday, type, prepod_login):
     
     today = datetime.today()
     
-    for weekday in WEEK:
+    for weekday in WEEKDAYS:
         date = today + timedelta(days=(weekday - todays_weekday) + (7 if type == "next" else 0))
         
         certain_date_keyboard.row(
             InlineKeyboardButton(
                 text="{weekday}, {day} {month}{is_today}".format(
-                    weekday=WEEK[weekday],
+                    weekday=WEEKDAYS[weekday],
                     day=int(date.strftime("%d")),
                     month=MONTHS[date.strftime("%m")],
                     is_today=" •" if today.strftime("%d") == date.strftime("%d") else ""
@@ -94,13 +94,13 @@ def certain_date_chooser(todays_weekday, type):
     
     today = datetime.today()
     
-    for weekday in WEEK:
+    for weekday in WEEKDAYS:
         date = today + timedelta(days=(weekday - todays_weekday) + (7 if type == "next" else 0))
         
         certain_date_keyboard.row(
             InlineKeyboardButton(
                 text="{weekday}, {day} {month}{is_today}".format(
-                    weekday=WEEK[weekday],
+                    weekday=WEEKDAYS[weekday],
                     day=int(date.strftime("%d")),
                     month=MONTHS[date.strftime("%m")],
                     is_today=" •" if today.strftime("%d") == date.strftime("%d") else ""

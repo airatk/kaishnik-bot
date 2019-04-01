@@ -10,39 +10,37 @@ from bot.helpers import load_from
 from datetime import datetime
 
 @kaishnik.message_handler(
-    func=lambda message:
-        message.chat.id == CREATOR,
+    func=lambda message: message.chat.id == CREATOR,
     commands=["creator"]
 )
 def creator(message):
     kaishnik.send_message(
         chat_id=message.chat.id,
         text=(
-            "*Creator's\ncontrol panel*\n"
+            "*Control panel*\n"
+            "_creator access only_\n"
             "\n*safe*\n"                ### safe
             "/users\n"
-            "/metrics _drop_\n"
+            "/metrics \[ drop ]\n"
             "/data\n"
             "/clear\n"
             "\n*unsafe*\n"              ### unsafe
-            "/ drop\n"
-            "/ broadcast _text_\n"
+            "/ broadcast { text }\n"
             "/ reverse\n"
+            "/ drop\n"
             "\n*hashtags*\n"            ### hashtags
             "#users\n"
             "#metrics\n"
             "#data\n"
             "#erased\n"
-            "#dropped\n"
             "#broadcast\n"
-            "#update"  # For update notifications, not associated with any command unlike other hashtags
+            "#dropped"
         ),
         parse_mode="Markdown"
     )
 
 @kaishnik.message_handler(
-    func=lambda message:
-        message.chat.id == CREATOR,
+    func=lambda message: message.chat.id == CREATOR,
     commands=["users"]
 )
 def users(message):
@@ -53,6 +51,7 @@ def users(message):
         chat_id=message.chat.id,
         text=(
             "*Users*\n"
+            "_stats of_ #users\n"
             "\n*institutes*\n"          ### institutes
             "• ИАНТЭ: {}\n"
             "• ФМФ: {}\n"
@@ -68,7 +67,7 @@ def users(message):
             "• 4: {}\n"
             "• 5: {}\n"
             "• 6: {}\n\n"
-            "*{}* #users in total!".format(
+            "*{}* users in total!".format(
                 institutes_stats.count("ИАНТЭ"),
                 institutes_stats.count("ФМФ"),
                 institutes_stats.count("ИАЭП"),
@@ -89,8 +88,7 @@ def users(message):
     )
 
 @kaishnik.message_handler(
-    func=lambda message:
-        message.chat.id == CREATOR,
+    func=lambda message: message.chat.id == CREATOR,
     commands=["metrics"]
 )
 def get_metrics(message):
@@ -137,8 +135,7 @@ def get_metrics(message):
     )
 
 @kaishnik.message_handler(
-    func=lambda message:
-        message.chat.id == CREATOR,
+    func=lambda message: message.chat.id == CREATOR,
     commands=["data"]
 )
 def data(message):
@@ -175,8 +172,7 @@ def data(message):
     )
 
 @kaishnik.message_handler(
-    func=lambda message:
-        message.chat.id == CREATOR,
+    func=lambda message: message.chat.id == CREATOR,
     commands=["clear"]
 )
 def clear(message):
@@ -229,24 +225,7 @@ def clear(message):
         )
 
 @kaishnik.message_handler(
-    func=lambda message:
-        message.chat.id == CREATOR,
-    commands=["drop"]
-)
-def drop(message):
-    for user in list(students):
-        del students[user]
-    
-    save_to(filename="data/users", object=students)
-    
-    kaishnik.send_message(
-        chat_id=message.chat.id,
-        text="All data was #dropped!"
-    )
-
-@kaishnik.message_handler(
-    func=lambda message:
-        message.chat.id == CREATOR,
+    func=lambda message: message.chat.id == CREATOR,
     commands=["broadcast"]
 )
 def broadcast(message):
@@ -275,17 +254,28 @@ def broadcast(message):
     )
 
 @kaishnik.message_handler(
-    func=lambda message:
-        message.chat.id == CREATOR,
+    func=lambda message: message.chat.id == CREATOR,
     commands=["reverse"]
 )
 def reverse(message):
-    if load_from(filename="data/is_week_reversed"):
-        save_to(filename="data/is_week_reversed", object=False)
-    else:
-        save_to(filename="data/is_week_reversed", object=True)
+    save_to(filename="data/is_week_reversed", object=False if load_from(filename="data/is_week_reversed") else True)
     
     kaishnik.send_message(
         chat_id=message.chat.id,
         text="Week type was reversed!"
+    )
+
+@kaishnik.message_handler(
+    func=lambda message: message.chat.id == CREATOR,
+    commands=["drop"]
+)
+def drop(message):
+    for user in list(students):
+        del students[user]
+
+    save_to(filename="data/users", object=students)
+
+    kaishnik.send_message(
+        chat_id=message.chat.id,
+        text="All data was #dropped!"
     )
