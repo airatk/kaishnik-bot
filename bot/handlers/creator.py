@@ -115,6 +115,7 @@ def get_metrics(message):
             "/settings: {}\n"
             "unsetup: {}\n"
             "\n*other*\n"               ### other
+            "/donate: {}\n"
             "unknown: {}\n"
             "\n*{}* requests in total!".format(
                 metrics.classes,
@@ -129,6 +130,7 @@ def get_metrics(message):
                 metrics.start,
                 metrics.settings,
                 metrics.unsetup,
+                metrics.donate,
                 metrics.unknown,
                 metrics.sum
             )

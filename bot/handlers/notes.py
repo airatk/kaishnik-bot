@@ -31,7 +31,7 @@ def show_all_notes(callback):
     if len(students[callback.message.chat.id].notes) == 0:
         kaishnik.send_message(
             chat_id=callback.message.chat.id,
-            text="Заметок нет. Прям совсем."
+            text="Заметок нет."
         )
     else:
         number = 0
@@ -96,6 +96,7 @@ def add_note_hint(callback):
 
 @kaishnik.message_handler(func=lambda message: students[message.chat.id].previous_message == "/edit")
 def add_note(message):
+    students[message.chat.id].previous_message = None
     students[message.chat.id].notes.append(message.text)
     
     save_to(filename="data/users", object=students)
@@ -104,8 +105,6 @@ def add_note(message):
         chat_id=message.chat.id,
         text="Запомнено!"
     )
-
-    students[message.chat.id].previous_message = None
 
 @kaishnik.callback_query_handler(func=lambda callback: "delete-note-" in callback.data)
 def delete_note(callback):
@@ -137,7 +136,7 @@ def delete_all_notes(callback):
         kaishnik.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
-            text="Заметок нет. Прям совсем."
+            text="Заметок нет."
         )
     else:
         students[callback.message.chat.id].notes = []
@@ -147,7 +146,7 @@ def delete_all_notes(callback):
         kaishnik.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
-            text="Удалено! Прям полностью!"
+            text="Удалено!"
         )
 
     on_callback_query(id=callback.id)

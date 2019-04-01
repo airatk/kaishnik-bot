@@ -298,6 +298,7 @@ class Metrics:
         self._start = 0
         self._settings = 0
         self._unsetup = 0
+        self._donate = 0
         self._unknown = 0
     
     @property
@@ -353,6 +354,10 @@ class Metrics:
         return self._unsetup
     
     @property
+    def donate(self):
+        return self._donate
+    
+    @property
     def unknown(self):
         return self._unknown
     
@@ -371,6 +376,7 @@ class Metrics:
             self._start +
             self._settings +
             self._unsetup +
+            self._donate +
             self._unknown
         )
     
@@ -388,6 +394,7 @@ class Metrics:
         self._start = 0
         self._settings = 0
         self._unsetup = 0
+        self._donate = 0
         self._unknown = 0
     
     def increment(self, command):
@@ -418,5 +425,7 @@ class Metrics:
             self._settings += 1
         elif command == "unsetup":
             self._unsetup += 1
+        elif command == "donate":
+            self._donate += 1
         elif command == "unknown":
             self._unknown += 1

@@ -3,6 +3,7 @@ from bot import students
 from bot import metrics
 
 from bot.constants import BRS
+from bot.constants import DONATE
 
 from bot.keyboards.others import remove_keyboard
 from bot.keyboards.others import skipper
@@ -50,4 +51,17 @@ def brs(message):
         chat_id=message.chat.id,
         text=BRS,
         parse_mode="Markdown"
+    )
+
+@kaishnik.message_handler(commands=["donate"])
+def donate(message):
+    kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
+    
+    metrics.increment("donate")
+    
+    kaishnik.send_message(
+        chat_id=message.chat.id,
+        text=DONATE,
+        parse_mode="Markdown",
+        disable_web_page_preview=True
     )
