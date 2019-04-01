@@ -62,7 +62,7 @@ class StudentSubject(Subject):
         super().__init__()
         
         self._teacher    = "\n@ {teacher}"
-        self._department = "\n§  {department}"  # 2 whitespaces are not accident. It's UI
+        self._department = "\n§ {department}"
 
     def set_teacher(self, teacher):
         self._teacher = self._teacher.format(teacher=teacher.title()) if teacher else ""

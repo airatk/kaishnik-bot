@@ -33,6 +33,7 @@ def unknown_nontext_message(message):
 
 from bot.handlers import setup
 from bot.handlers import schedule
+from bot.handlers import notes
 from bot.handlers import score
 from bot.handlers import locations
 from bot.handlers import others

@@ -290,6 +290,7 @@ class Metrics:
         self._score = 0
         self._lecturers = 0
         self._week = 0
+        self._notes = 0
         self._exams = 0
         self._locations = 0
         self._card = 0
@@ -318,6 +319,10 @@ class Metrics:
     @property
     def week(self):
         return self._week
+    
+    @property
+    def notes(self):
+        return self._notes
     
     @property
     def exams(self):
@@ -358,6 +363,7 @@ class Metrics:
             self._score +
             self._lecturers +
             self._week +
+            self._notes +
             self._exams +
             self._locations +
             self._card +
@@ -374,6 +380,7 @@ class Metrics:
         self._score = 0
         self._lecturers = 0
         self._week = 0
+        self._notes = 0
         self._exams = 0
         self._locations = 0
         self._card = 0
@@ -395,6 +402,8 @@ class Metrics:
             self._lecturers += 1
         elif command == "week":
             self._week += 1
+        elif command == "notes":
+            self._notes += 1
         elif command == "exams":
             self._exams += 1
         elif command == "locations":

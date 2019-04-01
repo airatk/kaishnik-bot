@@ -33,6 +33,8 @@ class Student:
         
         self._previous_message = None  # Used to recognize user's message sent after a command
     
+        self._notes = []
+    
     @property
     def institute(self):
         return self._institute
@@ -72,7 +74,11 @@ class Student:
     @property
     def previous_message(self):
         return self._previous_message
-
+    
+    @property
+    def notes(self):
+        return self._notes
+    
     @institute.setter
     def institute(self, institute):
         self._institute = institute
@@ -119,8 +125,12 @@ class Student:
     @previous_message.setter
     def previous_message(self, message):
         self._previous_message = message
-
-
+    
+    @notes.setter
+    def notes(self, new_notes_list):
+        self._notes = new_notes_list
+    
+    
     # /classes & /exams
     def get_schedule(self, type, weekday=None, next=False):
         params = (

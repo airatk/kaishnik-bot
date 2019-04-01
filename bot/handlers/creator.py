@@ -105,6 +105,7 @@ def get_metrics(message):
             "/score: {}\n"
             "/lecturers: {}\n"
             "/week: {}\n"
+            "/notes: {}\n"
             "/exams: {}\n"
             "/locations: {}\n"
             "/card: {}\n"
@@ -120,6 +121,7 @@ def get_metrics(message):
                 metrics.score,
                 metrics.lecturers,
                 metrics.week,
+                metrics.notes,
                 metrics.exams,
                 metrics.locations,
                 metrics.card,
