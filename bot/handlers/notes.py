@@ -3,6 +3,8 @@ from bot import students
 from bot import metrics
 from bot import on_callback_query
 
+from bot.constants import NOTES_MAX_NUMBER
+
 from bot.keyboards.notes import notes_chooser
 from bot.keyboards.notes import notes_list_dailer
 
@@ -16,7 +18,7 @@ def notes(message):
     
     kaishnik.send_message(
         chat_id=message.chat.id,
-        text="Заметок всего: *{}/32*".format(len(students[message.chat.id].notes)),
+        text="Заметок всего: *{current}/{max}*".format(current=len(students[message.chat.id].notes), max=NOTES_MAX_NUMBER),
         reply_markup=notes_chooser(),
         parse_mode="Markdown"
     )
@@ -34,36 +36,39 @@ def show_all_notes(callback):
             text="Заметок нет."
         )
     else:
-        number = 0
-        
         for note in students[callback.message.chat.id].notes:
-            number += 1
-            
             kaishnik.send_message(
                 chat_id=callback.message.chat.id,
-                text=(
-                    "Заметка №{number}\n\n"
-                    "{note}".format(number=number, note=note)
-                )
+                text="{note}".format(note=note)
             )
+
+        kaishnik.send_message(
+            chat_id=callback.message.chat.id,
+            text="_Заметок всего: {current}/{max}_".format(
+                current=len(students[callback.message.chat.id].notes),
+                max=NOTES_MAX_NUMBER
+            ),
+            parse_mode="Markdown"
+        )
     
     on_callback_query(id=callback.id)
 
 @kaishnik.callback_query_handler(func=lambda callback: "show-note-" in callback.data)
 def show_note(callback):
-    number = int(callback.data.replace("show-note-", ""))
-    
-    kaishnik.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        text=(
-            "Заметка №{number}\n\n"
-            "{note}".format(
-                number=number + 1,
-                note=students[callback.message.chat.id].notes[number]
-            )
+    if len(students[callback.message.chat.id].notes) == 0:
+        kaishnik.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Заметок нет."
         )
-    )
+    else:
+        number = int(callback.data.replace("show-note-", ""))
+        
+        kaishnik.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="{note}".format(note=students[callback.message.chat.id].notes[number])
+        )
 
     on_callback_query(id=callback.id)
 
@@ -76,10 +81,10 @@ def add_note_hint(callback):
     
     number = len(students[callback.message.chat.id].notes) + 1
     
-    if number > 32:
+    if number > NOTES_MAX_NUMBER:
         kaishnik.send_message(
             chat_id=callback.message.chat.id,
-            text="Лимит в 32 заметки уже достигнут."
+            text="Лимит в {max} заметки уже достигнут.".format(max=NOTES_MAX_NUMBER)
         )
     else:
         kaishnik.send_message(
@@ -109,24 +114,24 @@ def add_note(message):
 
 @kaishnik.callback_query_handler(func=lambda callback: "delete-note-" in callback.data)
 def delete_note(callback):
-    number = int(callback.data.replace("delete-note-", ""))
-    
-    kaishnik.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        text=(
-            "Заметка №{number} удалена!\n"
-            "В ней было:\n\n"
-            "{note}\n\n".format(
-                number=number + 1,
-                note=students[callback.message.chat.id].notes[number]
-            )
+    if len(students[callback.message.chat.id].notes) == 0:
+        kaishnik.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Заметок нет."
         )
-    )
-    
-    del students[callback.message.chat.id].notes[number]
-    
-    save_to(filename="data/users", object=students)
+    else:
+        number = int(callback.data.replace("delete-note-", ""))
+        
+        kaishnik.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Заметка удалена! В ней было:\n\n{note}".format(note=students[callback.message.chat.id].notes[number])
+        )
+        
+        del students[callback.message.chat.id].notes[number]
+        
+        save_to(filename="data/users", object=students)
 
     on_callback_query(id=callback.id)
 
@@ -151,21 +156,21 @@ def delete_all_notes(callback):
 
     on_callback_query(id=callback.id)
 
-@kaishnik.callback_query_handler( func=lambda callback: callback.data == "show-note" or callback.data == "delete-note")
+@kaishnik.callback_query_handler(func=lambda callback: callback.data == "show-note" or callback.data == "delete-note")
 def note_dailing(callback):
     if len(students[callback.message.chat.id].notes) == 0:
         kaishnik.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
-            text="Заметок нет. Прям совсем."
+            text="Заметок нет."
         )
     else:
         kaishnik.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
-            text="{Action} заметку №".format(Action="Показать" if "show" in callback.data else "Удалить"),
+            text="Выбери, какую заметку {action}:".format(action="показать" if "show" in callback.data else "удалить"),
             reply_markup=notes_list_dailer(
-                notes_number=len(students[callback.message.chat.id].notes),
+                notes=students[callback.message.chat.id].notes,
                 action=callback.data
             )
         )

@@ -8,6 +8,9 @@ SCHEDULE_URL           = "https://kai.ru/raspisanie"
 LECTURERS_SCHEDULE_URL = "https://kai.ru/for-staff/raspisanie"
 SCORE_URL              = "http://old.kai.ru/info/students/brs.php"
 
+# /notes
+NOTES_MAX_NUMBER = 40
+
 # Week
 WEEKDAYS = {
     1: "Понедельник",
@@ -285,6 +288,7 @@ REPLIES_TO_UNKNOWN_MESSAGE = [
     "Ставь класс, если при первой настройке бота тоже появилось неистовое желание сравнить номер студеческого и номер зачётки.",
     "Целовались студееенты, распускались тюльпаааны, чикчири-ка-ло там и тут... Ой, ты ещё здесь?",
     "Монеточка — лучшая исполнительница современной музыкальной культуры.",
+    "_«Чудо нельзя в своих подвалах скрывать. Сложилось — надо на свет выпускать.»_",
     REPLIES_TO_UNKNOWN_COMMAND[0],
     REPLIES_TO_UNKNOWN_COMMAND[2]
 ]
