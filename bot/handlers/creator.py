@@ -147,16 +147,16 @@ def data(message):
         kaishnik.send_message(
             chat_id=message.chat.id,
             text=(
-                "*{first_name} {last_name}* @{user}\n"
-                "_chat id {chatid}_\n\n"
-                "• *Institute:* {institute}\n"
-                "• *Year:* {year}\n"
-                "• *Group:* {group_number}\n"
-                "• *Name:* {name}\n"
-                "• *Student card number:* {card}\n"
+                "{firstname} {lastname} @{user}\n"
+                "chat id {chatid}\n\n"
+                "• Institute: {institute}\n"
+                "• Year: {year}\n"
+                "• Group: {group_number}\n"
+                "• Name: {name}\n"
+                "• Student card number: {card}\n"
                 "\n#data".format(
-                    first_name=kaishnik.get_chat(chat_id=user).first_name,
-                    last_name=kaishnik.get_chat(chat_id=user).last_name,
+                    firstname=kaishnik.get_chat(chat_id=user).first_name,
+                    lastname=kaishnik.get_chat(chat_id=user).last_name,
                     user=kaishnik.get_chat(chat_id=user).username,
                     chatid=user,
                     institute=students[user].institute,
@@ -165,8 +165,7 @@ def data(message):
                     name=students[user].name,
                     card=students[user].student_card_number
                 )
-            ),
-            parse_mode="Markdown"
+            )
         )
 
     kaishnik.send_message(
