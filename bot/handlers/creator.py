@@ -148,22 +148,22 @@ def data(message):
             chat_id=message.chat.id,
             text=(
                 "*{first_name} {last_name}* @{user}\n"
-                "_chat id {chat_id}_\n\n"
+                "_chat id {chatid}_\n\n"
                 "• *Institute:* {institute}\n"
                 "• *Year:* {year}\n"
                 "• *Group:* {group_number}\n"
                 "• *Name:* {name}\n"
-                "• *Student card number:* {student_card_number}\n"
+                "• *Student card number:* {card}\n"
                 "\n#data".format(
                     first_name=kaishnik.get_chat(chat_id=user).first_name,
                     last_name=kaishnik.get_chat(chat_id=user).last_name,
                     user=kaishnik.get_chat(chat_id=user).username,
-                    chat_id=user,
+                    chatid=user,
                     institute=students[user].institute,
                     year=students[user].year,
                     group_number=students[user].group_number,
                     name=students[user].name,
-                    student_card_number=students[user].student_card_number
+                    card=students[user].student_card_number
                 )
             ),
             parse_mode="Markdown"
