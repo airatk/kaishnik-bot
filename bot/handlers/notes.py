@@ -42,10 +42,9 @@ def show_all_notes(callback):
             kaishnik.send_message(
                 chat_id=callback.message.chat.id,
                 text=(
-                    "*Заметка №{number}*\n\n"
+                    "Заметка №{number}\n\n"
                     "{note}".format(number=number, note=note)
-                ),
-                parse_mode="Markdown"
+                )
             )
     
     on_callback_query(id=callback.id)
@@ -58,13 +57,12 @@ def show_note(callback):
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text=(
-            "*Заметка №{number}*\n\n"
+            "Заметка №{number}\n\n"
             "{note}".format(
                 number=number + 1,
                 note=students[callback.message.chat.id].notes[number]
             )
-        ),
-        parse_mode="HTML"
+        )
     )
 
     on_callback_query(id=callback.id)
@@ -88,15 +86,12 @@ def add_note_hint(callback):
             chat_id=callback.message.chat.id,
             text=(
                 "Добавляемая заметка будет *{number}* по счёту.\n\n"
-                "Текст можно форматировать:\n"
-                "• <b>*жирный текст*</b>\n"
-                "• <i>_текст курсивом_</i>\n\n"
                 "Напиши заметку и отправь решительно.".format(number=number)
             ),
             parse_mode="Markdown"
         )
     
-    students[callback.message.chat.id].previous_message = "/edit"
+        students[callback.message.chat.id].previous_message = "/edit"
 
     on_callback_query(id=callback.id)
 
@@ -120,14 +115,13 @@ def delete_note(callback):
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text=(
-            "Заметка *№{number}* удалена!\n"
+            "Заметка №{number} удалена!\n"
             "В ней было:\n\n"
             "{note}\n\n".format(
                 number=number + 1,
                 note=students[callback.message.chat.id].notes[number]
             )
-        ),
-        parse_mode="Markdown"
+        )
     )
     
     del students[callback.message.chat.id].notes[number]
