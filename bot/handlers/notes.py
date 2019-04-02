@@ -16,7 +16,7 @@ def notes(message):
     
     kaishnik.send_message(
         chat_id=message.chat.id,
-        text="Заметок всего: *{}*".format(len(students[message.chat.id].notes)),
+        text="Заметок всего: *{}/32*".format(len(students[message.chat.id].notes)),
         reply_markup=notes_chooser(),
         parse_mode="Markdown"
     )
@@ -64,7 +64,7 @@ def show_note(callback):
                 note=students[callback.message.chat.id].notes[number]
             )
         ),
-        parse_mode="Markdown"
+        parse_mode="HTML"
     )
 
     on_callback_query(id=callback.id)
@@ -76,19 +76,25 @@ def add_note_hint(callback):
         message_id=callback.message.message_id
     )
     
-    kaishnik.send_message(
-        chat_id=callback.message.chat.id,
-        text=(
-            "Добавляемая заметка будет *{number}* по счёту.\n\n"
-            "• Используй звёздочки для выделения \**жирным*\*\n"
-            "• Используй нижнее подчёркивание для выделения \__курсивом_\_\n"
-            "• \[[Ссылки](https://example.com)](https://example.com) можно спрятать в текст, используя скобки.\n\n"
-            "Напиши заметку и отправь решительно.".format(
-                number=len(students[callback.message.chat.id].notes) + 1
-            )
-        ),
-        parse_mode="Markdown"
-    )
+    number = len(students[callback.message.chat.id].notes) + 1
+    
+    if number > 32:
+        kaishnik.send_message(
+            chat_id=callback.message.chat.id,
+            text="Лимит в 32 заметки уже достигнут."
+        )
+    else:
+        kaishnik.send_message(
+            chat_id=callback.message.chat.id,
+            text=(
+                "Добавляемая заметка будет *{number}* по счёту.\n\n"
+                "Текст можно форматировать:\n"
+                "• <b>*жирный текст*</b>\n"
+                "• <i>_текст курсивом_</i>\n\n"
+                "Напиши заметку и отправь решительно.".format(number=number)
+            ),
+            parse_mode="Markdown"
+        )
     
     students[callback.message.chat.id].previous_message = "/edit"
 
