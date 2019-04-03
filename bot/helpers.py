@@ -89,7 +89,8 @@ def beautify_classes(json_response, weekday, next):
                 continue
 
         # Do not show subjects with certain dates (21.09) on other dates (28 сентября)
-        if "." in subject["dayDate"] and date.strftime("%d.%m") not in subject["dayDate"]:
+        day_month = "{}.{}".format(int(date.strftime("%d")), date.strftime("%m"))
+        if "." in subject["dayDate"] and day_month not in subject["dayDate"]:
             continue
 
         studentSubject = StudentSubject()
