@@ -20,7 +20,10 @@ def notes_list_dailer(notes, action):
     
     notes_list_dailer_keyboard.add(*[
         InlineKeyboardButton(
-            text=notes[number][:120],
+            text="{note}{ellipsis}".format(
+                note=notes[number][:60],
+                ellipsis="…" if len(notes[number]) > 60 else ""
+            ),
             callback_data="{action}-{number}".format(
                 number=number,
                 action=action
