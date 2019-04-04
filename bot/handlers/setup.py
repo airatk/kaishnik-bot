@@ -54,7 +54,7 @@ def settings(message):
     if message.chat.id in students and not students[message.chat.id].is_not_set_up():
         kaishnik.send_message(
             chat_id=message.chat.id,
-            text="Или не выбирай:",
+            text="Текущие данные будут стёрты, включая заметки и номер зачётки.",
             reply_markup=skipper(
                 text="отменить",
                 callback_data="cancel"
