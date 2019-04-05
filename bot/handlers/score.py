@@ -8,8 +8,6 @@ from bot.keyboards.score import semester_dailer
 
 from bot.helpers import get_subject_score
 
-from json.decoder import JSONDecodeError
-
 @kaishnik.message_handler(commands=["score"])
 def score(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -55,7 +53,7 @@ def semester_subjects(callback):
                 message_id=callback.message.message_id,
                 text="Нет данных."
             )
-    except JSONDecodeError:
+    except Exception:
         kaishnik.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
@@ -84,7 +82,7 @@ def show_all_score(callback):
                 ),
                 parse_mode="Markdown"
             )
-    except JSONDecodeError:
+    except Exception:
         kaishnik.send_message(
             chat_id=callback.message.chat.id,
             text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
@@ -107,7 +105,7 @@ def show_score(callback):
             ),
             parse_mode="Markdown"
         )
-    except JSONDecodeError:
+    except Exception:
         kaishnik.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,

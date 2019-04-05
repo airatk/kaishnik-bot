@@ -17,7 +17,6 @@ from bot.helpers import get_lecturers_schedule
 from bot.helpers import get_week
 
 from datetime import datetime
-from json.decoder import JSONDecodeError
 
 
 @kaishnik.message_handler(commands=["lecturers"])
@@ -40,7 +39,7 @@ def find_lecturer(message):
     # In case kai.ru is down
     try:
         names = get_lecturers_names(message.text)
-    except JSONDecodeError:
+    except Exception:
         names = None
     
     if names is None:
@@ -120,7 +119,7 @@ def one_day_lecturer_schedule(callback):
                 ),
             parse_mode="Markdown"
         )
-    except JSONDecodeError:
+    except Exception:
         kaishnik.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
@@ -149,7 +148,7 @@ def weekly_lecturer_schedule(callback):
                 ),
                 parse_mode="Markdown"
             )
-    except JSONDecodeError:
+    except Exception:
         kaishnik.send_message(
             chat_id=callback.message.chat.id,
             text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
@@ -170,7 +169,7 @@ def send_lecturers_exams(callback):
             ),
             parse_mode="Markdown"
         )
-    except JSONDecodeError:
+    except Exception:
         kaishnik.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
@@ -217,7 +216,7 @@ def one_day_schedule(callback):
             ),
             parse_mode="Markdown"
         )
-    except JSONDecodeError:
+    except Exception:
         kaishnik.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
@@ -245,7 +244,7 @@ def weekly_schedule(callback):
                 ),
                 parse_mode="Markdown"
             )
-    except JSONDecodeError:
+    except Exception:
         kaishnik.send_message(
             chat_id=callback.message.chat.id,
             text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
@@ -267,7 +266,7 @@ def exams(message):
             text=students[message.chat.id].get_schedule(type="exams"),
             parse_mode="Markdown"
         )
-    except JSONDecodeError:
+    except Exception:
         kaishnik.send_message(
             chat_id=message.chat.id,
             text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",

@@ -20,7 +20,6 @@ from bot.keyboards.setup import name_setter
 from bot.helpers import save_to
 
 from re import fullmatch
-from json.decoder import JSONDecodeError
 
 @kaishnik.message_handler(commands=["start"])
 def start(message):
@@ -141,7 +140,7 @@ def set_KIT_group_number(message):
                 chat_id=message.chat.id,
                 text="Неверный номер группы. Исправляйся."
             )
-        except JSONDecodeError:
+        except Exception:
             kaishnik.send_message(
                 chat_id=message.chat.id,
                 text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
@@ -178,7 +177,7 @@ def set_institute(message):
             text="Выбери свой курс.",
             reply_markup=year_setter(students[message.chat.id].get_dictionary_of(type="p_kurs"))
         )
-    except JSONDecodeError:
+    except Exception:
         kaishnik.send_message(
             chat_id=message.chat.id,
             text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
@@ -211,7 +210,7 @@ def set_year(message):
                     text="Здесь ничего нет. Начни сначала.",
                     reply_markup=make_send("/settings")
                 )
-        except JSONDecodeError:
+        except Exception:
             kaishnik.send_message(
                 chat_id=message.chat.id,
                 text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
@@ -252,7 +251,7 @@ def set_group_number(message):
                     text="Здесь ничего нет. Начни сначала.",
                     reply_markup=make_send("/settings")
                 )
-        except JSONDecodeError:
+        except Exception:
             kaishnik.send_message(
                 chat_id=message.chat.id,
                 text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
@@ -382,7 +381,7 @@ def set_student_card_number(message):
                         callback_data="skip"
                     )
                 )
-        except JSONDecodeError:
+        except Exception:
             kaishnik.send_message(
                 chat_id=message.chat.id,
                 text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
