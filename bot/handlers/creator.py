@@ -17,12 +17,12 @@ def creator(message):
     kaishnik.send_message(
         chat_id=message.chat.id,
         text=(
-            "*Control panel*\n"
+            "*Control panel*\n"         # {} - required, [] - optional
             "_creator access only_\n"
             "\n*safe*\n"                ### safe
             "/users\n"
             "/metrics \[ drop ]\n"
-            "/data\n"
+            "/data { users number }\n"
             "/clear\n"
             "\n*unsafe*\n"              ### unsafe
             "/ broadcast { text }\n"
@@ -143,7 +143,9 @@ def get_metrics(message):
     commands=["data"]
 )
 def data(message):
-    for user in students:
+    asked_users_number = int(message.text.replace("/data ", "")) if message.text.replace("/data ", "") != "" else 0
+    
+    for user in list(students)[:asked_users_number]:
         kaishnik.send_message(
             chat_id=message.chat.id,
             text=(
