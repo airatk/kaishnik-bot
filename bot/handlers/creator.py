@@ -175,7 +175,7 @@ def data(message):
 
     kaishnik.send_message(
         chat_id=message.chat.id,
-        text="*{}* users in total!".format(len(students)),
+        text="*{}* users were shown!".format(asked_users_number),
         parse_mode="Markdown"
     )
 

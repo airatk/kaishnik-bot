@@ -44,7 +44,7 @@ def show_all_notes(callback):
 
         kaishnik.send_message(
             chat_id=callback.message.chat.id,
-            text="_Заметок всего: {current}/{max}_".format(
+            text="Заметок всего: *{current}/{max}*".format(
                 current=len(students[callback.message.chat.id].notes),
                 max=NOTES_MAX_NUMBER
             ),
