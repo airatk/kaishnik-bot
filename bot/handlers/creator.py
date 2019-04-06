@@ -147,8 +147,9 @@ def data(message):
         asked_users_number = int(message.text.replace("/data ", ""))
     except Exception:
         asked_users_number = 0
-    
-    for user in list(students)[:asked_users_number]:
+
+    # Reversing list of students to show new users first
+    for user in list(students)[::-1][:asked_users_number]:
         kaishnik.send_message(
             chat_id=message.chat.id,
             text=(
