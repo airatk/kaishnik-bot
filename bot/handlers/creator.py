@@ -143,7 +143,10 @@ def get_metrics(message):
     commands=["data"]
 )
 def data(message):
-    asked_users_number = int(message.text.replace("/data ", "")) if message.text.replace("/data ", "") != "" else 0
+    try:
+        asked_users_number = int(message.text.replace("/data ", ""))
+    except Exception:
+        asked_users_number = 0
     
     for user in list(students)[:asked_users_number]:
         kaishnik.send_message(
