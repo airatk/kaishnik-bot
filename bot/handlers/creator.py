@@ -280,8 +280,25 @@ def reverse(message):
 )
 def drop(message):
     for user in list(students):
+        kaishnik.send_message(
+            chat_id=user,
+            text="Текущие настройки сброшены, потому что нужно обновить данные. Отправь /settings"
+        )
+        
+        if students[user].notes != []:
+            kaishnik.send_message(
+                chat_id=user,
+                text="Держи свои заметки, чтобы ничего не потерялось:"
+            )
+            
+            for note in students[user].notes:
+                kaishnik.send_message(
+                    chat_id=user,
+                    text=note
+                )
+    
         del students[user]
-
+    
     save_to(filename="data/users", object=students)
 
     kaishnik.send_message(

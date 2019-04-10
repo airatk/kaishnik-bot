@@ -27,9 +27,6 @@ def load_from(filename):
 
 
 # /week
-def get_week():
-    return "Текущая неделя чётная." if is_even() else "Текущая неделя нечётная."
-
 def is_even():
     return not is_week_reversed() if datetime.today().isocalendar()[1] % 2 == 0 else is_week_reversed()
 

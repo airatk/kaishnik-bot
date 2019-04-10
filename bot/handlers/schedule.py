@@ -14,7 +14,7 @@ from bot.keyboards.schedule import lecturer_certain_date_chooser
 
 from bot.helpers import get_lecturers_names
 from bot.helpers import get_lecturers_schedule
-from bot.helpers import get_week
+from bot.helpers import is_even
 
 from datetime import datetime
 
@@ -112,11 +112,11 @@ def one_day_lecturer_schedule(callback):
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
             text=get_lecturers_schedule(
-                    prepod_login=callback.data[15:],
-                    type="l-classes",
-                    weekday=int(callback.data[13:14]),
-                    next="next" in callback.data
-                ),
+                prepod_login=callback.data[15:],
+                type="l-classes",
+                weekday=int(callback.data[13:14]),
+                next="next" in callback.data
+            ),
             parse_mode="Markdown"
         )
     except Exception:
@@ -282,5 +282,5 @@ def week(message):
     
     kaishnik.send_message(
         chat_id=message.chat.id,
-        text=get_week()
+        text="Текущая неделя {type}.".format(type="чётная" if is_even() else "нечётная")
     )
