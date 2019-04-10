@@ -8,7 +8,7 @@ from bot.helpers import Metrics
 
 from sys import argv
 
-# Because Telegram is official blocked in Russia
+# Because Telegram is officially blocked in Russia
 apihelper.proxy = { "https": "socks5://163.172.152.192:1080" }
 
 # Used to get rid of "Loading..." notification on the top
