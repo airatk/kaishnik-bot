@@ -1,5 +1,3 @@
-from telebot import apihelper
-
 from bot import kaishnik
 from bot import students
 from bot import metrics
@@ -11,7 +9,6 @@ from bot.helpers import save_to
 from bot.helpers import load_from
 
 from datetime import datetime
-from requests import get
 
 @kaishnik.message_handler(
     func=lambda message: message.chat.id == CREATOR,
@@ -192,19 +189,13 @@ def clear(message):
     is_cleared = False
     
     for user in list(students):
-        is_launched = get(
-            url="https://api.telegram.org/bot{token}/getChat".format(token=TOKEN),
-            params={ "chat_id": user },
-            proxies=apihelper.proxy
-        ).json()['ok']
+        try: kaishnik.get_chat(chat_id=user)
+        except: is_launched = False
+        else: is_launched = True
         
-        is_used = get(
-            url="https://api.telegram.org/bot{token}/sendChatAction".format(token=TOKEN),
-            params={ "chat_id": user, "action": "typing" },
-            proxies=apihelper.proxy
-        ).json()['ok']
-            
-        if not is_launched or not is_used:
+        try:
+            kaishnik.send_chat_action(chat_id=user, action="typing")
+        except Exception:
             is_cleared = True
             
             kaishnik.send_message(
