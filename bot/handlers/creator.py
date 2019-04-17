@@ -25,6 +25,7 @@ def creator(message):
             "/metrics \[ drop ]\n"
             "/data { users number }\n"
             "/clear\n"
+            "/erase { chat ID }\n"
             "\n*unsafe*\n"              ### unsafe
             "/ broadcast { text }\n"
             "/ reverse\n"
@@ -236,6 +237,29 @@ def clear(message):
         kaishnik.send_message(
             chat_id=message.chat.id,
             text="No one has stopped using the bot!"
+        )
+
+@kaishnik.message_handler(
+    func=lambda message: message.chat.id == CREATOR,
+    commands=["erase"]
+)
+def erase(message):
+    try: chat_id = int(message.text.replace("/erase ", ""))
+    except ValueError: chat_id = 0
+
+    try:
+        del students[chat_id]
+    except KeyError:
+        kaishnik.send_message(
+            chat_id=message.chat.id,
+            text="There is no such a chat ID!"
+        )
+    else:
+        save_to(filename="data/users", object=students)
+        
+        kaishnik.send_message(
+            chat_id=message.chat.id,
+            text="{chat_id} was #erased!".format(chat_id=chat_id)
         )
 
 @kaishnik.message_handler(
