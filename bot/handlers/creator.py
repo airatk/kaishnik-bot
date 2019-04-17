@@ -1,13 +1,17 @@
+from telebot import apihelper
+
 from bot import kaishnik
 from bot import students
 from bot import metrics
 
 from bot.constants import CREATOR
+from bot.constants import TOKEN
 
 from bot.helpers import save_to
 from bot.helpers import load_from
 
 from datetime import datetime
+from requests import get
 
 @kaishnik.message_handler(
     func=lambda message: message.chat.id == CREATOR,
@@ -145,7 +149,7 @@ def get_metrics(message):
 def data(message):
     try:
         asked_users_number = int(message.text.replace("/data ", ""))
-    except Exception:
+    except ValueError:
         asked_users_number = 0
 
     # Reversing list of students to show new users first
@@ -188,9 +192,19 @@ def clear(message):
     is_cleared = False
     
     for user in list(students):
-        try:
-            kaishnik.send_chat_action(chat_id=user, action="upload_document")
-        except Exception:
+        is_launched = get(
+            url="https://api.telegram.org/bot{token}/getChat".format(token=TOKEN),
+            params={ "chat_id": user },
+            proxies=apihelper.proxy
+        ).json()['ok']
+        
+        is_used = get(
+            url="https://api.telegram.org/bot{token}/sendChatAction".format(token=TOKEN),
+            params={ "chat_id": user, "action": "typing" },
+            proxies=apihelper.proxy
+        ).json()['ok']
+            
+        if not is_launched or not is_used:
             is_cleared = True
             
             kaishnik.send_message(
@@ -204,9 +218,9 @@ def clear(message):
                     "• *Name:* {name}\n"
                     "• *Student card number:* {student_card_number}\n"
                     "\nStopped using the bot, so was #erased.".format(
-                        first_name=kaishnik.get_chat(chat_id=user).first_name,
-                        last_name=kaishnik.get_chat(chat_id=user).last_name,
-                        user=kaishnik.get_chat(chat_id=user).username,
+                        first_name=kaishnik.get_chat(chat_id=user).first_name if is_launched else "None",
+                        last_name=kaishnik.get_chat(chat_id=user).last_name if is_launched else "None",
+                        user=kaishnik.get_chat(chat_id=user).username if is_launched else "None",
                         chat_id=user,
                         institute=students[user].institute,
                         year=students[user].year,
@@ -239,23 +253,17 @@ def clear(message):
 )
 def broadcast(message):
     for user in students:
-        try:
-            kaishnik.send_message(
-                chat_id=user,
-                text=(
-                    "*Телеграмма от разработчика*\n"
-                    "#broadcast\n\n"
-                    "{}"
-                    "\n\nНаписать разработчику: @airatk".format(message.text[11:])
-                ),
-                parse_mode="Markdown",
-                disable_web_page_preview=True
-            )
-        except Exception:
-            kaishnik.send_message(
-                chat_id=message.chat.id,
-                text="Inactive user occured! /clear?"
-            )
+        kaishnik.send_message(
+            chat_id=user,
+            text=(
+                "*Телеграмма от разработчика*\n"
+                "#broadcast\n\n"
+                "{}"
+                "\n\nНаписать разработчику: @airatk".format(message.text[11:])
+            ),
+            parse_mode="Markdown",
+            disable_web_page_preview=True
+        )
 
     kaishnik.send_message(
         chat_id=message.chat.id,
