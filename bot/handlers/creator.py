@@ -23,7 +23,7 @@ def creator(message):
             "\n*safe*\n"                ### safe
             "/users\n"
             "/metrics \[ drop ]\n"
-            "/data { users number }\n"
+            "/data { \[ number:{} ]\[ name:{} ] }\n"
             "/clear\n"
             "/erase { chat ID }\n"
             "\n*unsafe*\n"              ### unsafe
@@ -145,40 +145,54 @@ def get_metrics(message):
     commands=["data"]
 )
 def data(message):
-    try:
-        asked_users_number = int(message.text.replace("/data ", ""))
-    except ValueError:
-        asked_users_number = 0
-
-    # Reversing list of students to show new users first
-    for user in list(students)[::-1][:asked_users_number]:
+    def send():
         kaishnik.send_message(
-            chat_id=message.chat.id,
-            text=(
-                "{firstname} {lastname} @{user}\n"
-                "chat id {chatid}\n\n"
-                "• Institute: {institute}\n"
-                "• Year: {year}\n"
-                "• Group: {group_number}\n"
-                "• Name: {name}\n"
-                "• Student card number: {card}\n"
-                "\n#data".format(
-                    firstname=kaishnik.get_chat(chat_id=user).first_name,
-                    lastname=kaishnik.get_chat(chat_id=user).last_name,
-                    user=kaishnik.get_chat(chat_id=user).username,
-                    chatid=user,
-                    institute=students[user].institute,
-                    year=students[user].year,
-                    group_number=students[user].group_number,
-                    name=students[user].name,
-                    card=students[user].student_card_number
+                chat_id=message.chat.id,
+                text=(
+                    "{firstname} {lastname} @{user}\n"
+                    "chat id {chatid}\n\n"
+                    "• Institute: {institute}\n"
+                    "• Year: {year}\n"
+                    "• Group: {group_number}\n"
+                    "• Name: {name}\n"
+                    "• Student card number: {card}\n"
+                    "\n#data".format(
+                        firstname=kaishnik.get_chat(chat_id=user).first_name,
+                        lastname=kaishnik.get_chat(chat_id=user).last_name,
+                        user=kaishnik.get_chat(chat_id=user).username,
+                        chatid=user,
+                        institute=students[user].institute,
+                        year=students[user].year,
+                        group_number=students[user].group_number,
+                        name=students[user].name,
+                        card=students[user].student_card_number
+                    )
                 )
             )
+    
+    text = message.text.replace("/data ", "")
+    counter = 0
+    
+    if "number" in text:
+        asked_users_number = int(text.replace("number:", ""))
+
+        # Reversing list of students to show new users first
+        for user in list(students)[::-1][:asked_users_number]: send(); counter += 1
+    elif "name" in text:
+        asked_users_name = text.replace("name:", " ")
+        
+        # Reversing list of students to show new users first
+        for user in list(students)[::-1]:
+            if asked_users_name in students[user].name: send(); counter += 1
+    else:
+        kaishnik.send_message(
+            chat_id=message.chat.id,
+            text="Incorrect options!".format(asked_users_number)
         )
 
     kaishnik.send_message(
         chat_id=message.chat.id,
-        text="*{}* users were shown!".format(asked_users_number),
+        text="*{}* users were shown!".format(counter),
         parse_mode="Markdown"
     )
 
