@@ -10,7 +10,8 @@ from bot.constants import REPLIES_TO_UNKNOWN_COMMAND
 
 from bot.keyboards.others import make_send
 from bot.keyboards.others import skipper
-from bot.keyboards.others import remove_keyboard
+
+from telebot.types import ReplyKeyboardRemove
 
 from bot.keyboards.setup import institute_setter
 from bot.keyboards.setup import year_setter
@@ -53,7 +54,7 @@ def settings(message):
     if message.chat.id in students and not students[message.chat.id].is_not_set_up():
         kaishnik.send_message(
             chat_id=message.chat.id,
-            text="Текущие данные будут стёрты, включая заметки и номер зачётки.",
+            text="Все текущие данные, включая заметки и номер зачётки, будут стёрты.",
             reply_markup=skipper(
                 text="отменить",
                 callback_data="cancel"
@@ -76,7 +77,7 @@ def cancel_setting_process(callback):
     kaishnik.send_message(
         chat_id=callback.message.chat.id,
         text="Отменено!",
-        reply_markup=remove_keyboard()
+        reply_markup=ReplyKeyboardRemove()
     )
 
     on_callback_query(id=callback.id)
@@ -98,15 +99,15 @@ def set_KIT(message):
     students[message.chat.id] = Student(
         institute="КИТ",
         institute_id="КИТ",
-        year="КИТ",
-        name="КИТ",
-        student_card_number="КИТ"
+        year="unknown",
+        name="unknown",
+        student_card_number="unknown"
     )
     
     kaishnik.send_message(
         chat_id=message.chat.id,
         text="Отправь номер своей группы.",
-        reply_markup=remove_keyboard()
+        reply_markup=ReplyKeyboardRemove()
     )
 
 @kaishnik.message_handler(
@@ -121,8 +122,19 @@ def set_KIT_group_number(message):
     if students[message.chat.id].group_number is None:
         try:
             students[message.chat.id].group_number_schedule = message.text
+        except IndexError:
+            kaishnik.send_message(
+                chat_id=message.chat.id,
+                text="Неверный номер группы. Исправляйся."
+            )
+        except Exception:
+            kaishnik.send_message(
+                chat_id=message.chat.id,
+                text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
+                disable_web_page_preview=True
+            )
+        else:
             students[message.chat.id].group_number = message.text
-            # Reversed order to make sure there is no exception firstly
             
             save_to(filename="data/users", object=students)
             
@@ -134,17 +146,6 @@ def set_KIT_group_number(message):
                 chat_id=message.chat.id,
                 text=REPLIES_TO_UNKNOWN_COMMAND[0],
                 parse_mode="Markdown"
-            )
-        except IndexError:
-            kaishnik.send_message(
-                chat_id=message.chat.id,
-                text="Неверный номер группы. Исправляйся."
-            )
-        except Exception:
-            kaishnik.send_message(
-                chat_id=message.chat.id,
-                text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
-                disable_web_page_preview=True
             )
     else:
         kaishnik.send_message(
@@ -197,7 +198,13 @@ def set_year(message):
         
         try:
             groups = students[message.chat.id].get_dictionary_of(type="p_group")
-            
+        except Exception:
+            kaishnik.send_message(
+                chat_id=message.chat.id,
+                text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
+                disable_web_page_preview=True
+            )
+        else:
             if groups:
                 kaishnik.send_message(
                     chat_id=message.chat.id,
@@ -210,12 +217,6 @@ def set_year(message):
                     text="Здесь ничего нет. Начни сначала.",
                     reply_markup=make_send("/settings")
                 )
-        except Exception:
-            kaishnik.send_message(
-                chat_id=message.chat.id,
-                text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
-                disable_web_page_preview=True
-            )
     else:
         kaishnik.send_message(
             chat_id=message.chat.id,
@@ -235,7 +236,13 @@ def set_group_number(message):
         try:
             students[message.chat.id].group_number_score = message.text
             names = students[message.chat.id].get_dictionary_of(type="p_stud")
-            
+        except Exception:
+            kaishnik.send_message(
+                chat_id=message.chat.id,
+                text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
+                disable_web_page_preview=True
+            )
+        else:
             if names:
                 students[message.chat.id].group_number = message.text
                 students[message.chat.id].group_number_schedule = message.text
@@ -251,12 +258,6 @@ def set_group_number(message):
                     text="Здесь ничего нет. Начни сначала.",
                     reply_markup=make_send("/settings")
                 )
-        except Exception:
-            kaishnik.send_message(
-                chat_id=message.chat.id,
-                text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
-                disable_web_page_preview=True
-            )
     else:
         kaishnik.send_message(
             chat_id=message.chat.id,
@@ -279,7 +280,7 @@ def set_name(message):
             chat_id=message.chat.id,
             text="Отправь номер своей зачётки "
                  "(интересный факт — номер твоего студенческого и номер твоей зачётки одинаковы!).",
-            reply_markup=remove_keyboard()
+            reply_markup=ReplyKeyboardRemove()
         )
         kaishnik.send_message(
             chat_id=message.chat.id,
@@ -321,7 +322,7 @@ def save_without_student_card_number(callback):
         chat_id=callback.message.chat.id,
         text=REPLIES_TO_UNKNOWN_COMMAND[0],
         parse_mode="Markdown",
-        reply_markup=remove_keyboard()
+        reply_markup=ReplyKeyboardRemove()
     )
 
     on_callback_query(id=callback.id)
@@ -340,7 +341,7 @@ def set_student_card_number(message):
     ):
         students[message.chat.id].student_card_number = message.text
         
-        # Delete "skip" message
+        # Delete skip-message
         try:
             kaishnik.delete_message(
                 chat_id=message.chat.id,
@@ -364,7 +365,7 @@ def set_student_card_number(message):
                     chat_id=message.chat.id,
                     text=REPLIES_TO_UNKNOWN_COMMAND[0],
                     parse_mode="Markdown",
-                    reply_markup=remove_keyboard()
+                    reply_markup=ReplyKeyboardRemove()
                 )
             else:
                 students[message.chat.id].student_card_number = None

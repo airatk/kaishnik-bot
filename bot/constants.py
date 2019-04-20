@@ -1,6 +1,6 @@
 # kaishnik-bot constants
 from os import environ
-TOKEN = environ["KBOT_TOKEN"]
+TOKEN   = environ["KBOT_TOKEN"]
 CREATOR = int(environ["KBOT_CREATOR"])
 
 # Directions to go for the main data

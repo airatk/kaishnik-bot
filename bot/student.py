@@ -97,12 +97,12 @@ class Student:
     
     @group_number_schedule.setter
     def group_number_schedule(self, group_number):
-        params = (
-            ("p_p_id", "pubStudentSchedule_WAR_publicStudentSchedule10"),
-            ("p_p_lifecycle", "2"),
-            ("p_p_resource_id", "getGroupsURL"),
-            ("query", group_number)
-        )
+        params = {
+            "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
+            "p_p_lifecycle": "2",
+            "p_p_resource_id": "getGroupsURL",
+            "query": group_number
+        }
     
         self._group_number_schedule = get(url=SCHEDULE_URL, params=params).json()[0]["id"]
     
@@ -133,11 +133,11 @@ class Student:
     
     # /classes & /exams
     def get_schedule(self, type, weekday=None, next=False):
-        params = (
-            ("p_p_id", "pubStudentSchedule_WAR_publicStudentSchedule10"),
-            ("p_p_lifecycle", "2"),
-            ("p_p_resource_id", "schedule" if type == "classes" else "examSchedule")
-        )
+        params = {
+            "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
+            "p_p_lifecycle": "2",
+            "p_p_resource_id": "schedule" if type == "classes" else "examSchedule"
+        }
         data = {
             "groupId": self._group_number_schedule
         }
@@ -148,33 +148,33 @@ class Student:
     
     # /score & associated stuff
     def get_dictionary_of(self, type):
-        params = (
-            ("p_fac", self._institute_id),
-            ("p_kurs", self._year),
-            ("p_group", self._group_number_score)
-        )
+        params = {
+            "p_fac": self._institute_id,
+            "p_kurs": self._year,
+            "p_group": self._group_number_score
+        }
     
         page = get(url=SCORE_URL, params=params).content.decode("CP1251")
         soup = BeautifulSoup(page, "html.parser")
         selector = soup.find(name="select", attrs={ "name": type })
 
-        keys = [option.text for option in selector.find_all("option")][1:]
-        values = [option["value"] for option in selector.find_all("option")][1:]
+        keys = [ option.text for option in selector.find_all("option") ][1:]
+        values = [ option["value"] for option in selector.find_all("option") ][1:]
 
         # Fixing bad quality response
-        for i in range(1, len(keys)): keys[i - 1] = keys[i - 1][:keys[i - 1].find(keys[i])]
-        for i in range(len(keys)): keys[i] = keys[i][:-1] if keys[i][-1] == " " else keys[i]
-
+        for i in range(1, len(keys)): keys[i - 1] = keys[i - 1].replace(keys[i], "")
+        for i in range(len(keys)): keys[i] = keys[i][:-1] if keys[i].endswith(" ") else keys[i]
+        
         return dict(zip(keys, values))
 
     def get_scoretable(self, semester):
         data = {
-            "p_sub":   "",  # Unknown nonsense thing which is necessary
-            "p_fac":   self._institute_id,
-            "p_kurs":  self._year,
+            "p_sub": "",  # Unknown nonsense thing which is necessary
+            "p_fac": self._institute_id,
+            "p_kurs": self._year,
             "p_group": self._group_number_score,
-            "p_stud":  self._name_id,
-            "p_zach":  self._student_card_number,
+            "p_stud": self._name_id,
+            "p_zach": self._student_card_number,
             "semestr": semester
         }
         
@@ -195,11 +195,7 @@ class Student:
         subjects = subjects[2:]
 
         return subjects
-
-    # /card
-    def get_card(self):
-        return "Номер твоего студенческого билета и твоей зачётной книжки: *{card}*".format(card=self._student_card_number)
-
+    
     # No setup - no conversation
     def is_not_set_up(self):
         return (

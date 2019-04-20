@@ -12,7 +12,10 @@ def choose_lecturer(names):
     choose_lecturer_keyboard = InlineKeyboardMarkup(row_width=1)
 
     choose_lecturer_keyboard.add(*[
-        InlineKeyboardButton(text=name["lecturer"], callback_data="lecturer {}".format(name["id"])) for name in names
+        InlineKeyboardButton(
+            text=name["lecturer"],
+            callback_data="lecturer {}".format(name["id"])
+        ) for name in names
     ])
 
     return choose_lecturer_keyboard

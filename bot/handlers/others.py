@@ -5,8 +5,9 @@ from bot import metrics
 from bot.constants import BRS
 from bot.constants import DONATE
 
-from bot.keyboards.others import remove_keyboard
 from bot.keyboards.others import skipper
+
+from telebot.types import ReplyKeyboardRemove
 
 @kaishnik.message_handler(commands=["card"])
 def card(message):
@@ -17,9 +18,11 @@ def card(message):
     if students[message.chat.id].student_card_number == "unset":
         kaishnik.send_message(
             chat_id=message.chat.id,
-            text="Номер зачётки не указан, поэтому отправь его "
-                 "(интересный факт — номер твоего студенческого и номер твоей зачётки одинаковы!).",
-            reply_markup=remove_keyboard()
+            text=(
+                "Номер зачётки не указан, поэтому отправь его "
+                "(интересный факт — номер твоего студенческого и номер твоей зачётки одинаковы!)."
+            ),
+            reply_markup=ReplyKeyboardRemove()
         )
         kaishnik.send_message(
             chat_id=message.chat.id,
@@ -37,7 +40,9 @@ def card(message):
     else:
         kaishnik.send_message(
             chat_id=message.chat.id,
-            text=students[message.chat.id].get_card(),
+            text="Номер твоего студенческого билета и твоей зачётной книжки: *{card}*".format(
+                card=students[message.chat.id].student_card_number
+            ),
             parse_mode="Markdown"
         )
 

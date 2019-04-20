@@ -262,8 +262,10 @@ def clear(message):
     commands=["erase"]
 )
 def erase(message):
-    try: chat_id = int(message.text.replace("/erase ", ""))
-    except ValueError: chat_id = 0
+    try:
+        chat_id = int(message.text.replace("/erase ", ""))
+    except ValueError:
+        chat_id = 0
 
     try:
         del students[chat_id]

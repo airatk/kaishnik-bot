@@ -144,21 +144,21 @@ def beautify_exams(json_response):
 
 # /lecturers
 def get_lecturers_names(name_part):
-    params = (
-        ("p_p_id", "pubLecturerSchedule_WAR_publicLecturerSchedule10"),
-        ("p_p_lifecycle", "2"),
-        ("p_p_resource_id", "getLecturersURL"),
-        ("query", name_part)
-    )
+    params = {
+        "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
+        "p_p_lifecycle": "2",
+        "p_p_resource_id": "getLecturersURL",
+        "query": name_part
+    }
 
     return get(LECTURERS_SCHEDULE_URL, params=params).json()
 
 def get_lecturers_schedule(prepod_login, type, weekday=None, next=False):
-    params = (
-        ("p_p_id", "pubLecturerSchedule_WAR_publicLecturerSchedule10"),
-        ("p_p_lifecycle", "2"),
-        ("p_p_resource_id", "schedule" if type == "l-classes" else "examSchedule")
-    )
+    params = {
+        "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
+        "p_p_lifecycle": "2",
+        "p_p_resource_id": "schedule" if type == "l-classes" else "examSchedule"
+    }
     data = {
       "prepodLogin": prepod_login
     }

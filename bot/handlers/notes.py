@@ -134,7 +134,7 @@ def delete_note(callback):
         kaishnik.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
-            text="Заметка удалена! В ней было:\n\n{note}".format(note=students[callback.message.chat.id].notes[number]),
+            text="Заметка удалена!\nВ ней было:\n\n{note}".format(note=students[callback.message.chat.id].notes[number]),
             parse_mode="Markdown"
         )
         

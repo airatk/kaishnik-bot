@@ -13,10 +13,12 @@ def notes_chooser():
 def notes_list_dailer(notes, action):
     notes_list_dailer_keyboard = InlineKeyboardMarkup(row_width=1)
     
-    notes_list_dailer_keyboard.row(InlineKeyboardButton(
-        text="{} все".format("Показать" if "show" in action else "Удалить"),
-        callback_data="{}-all-notes".format("show" if "show" in action else "delete")
-    ))
+    notes_list_dailer_keyboard.row(
+        InlineKeyboardButton(
+            text="{} все".format("Показать" if "show" in action else "Удалить"),
+            callback_data="{}-all-notes".format("show" if "show" in action else "delete")
+        )
+    )
     
     notes_list_dailer_keyboard.add(*[
         InlineKeyboardButton(
