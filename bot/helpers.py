@@ -280,6 +280,18 @@ def get_subject_score(scoretable, subjects_num):
     return "".join([title, type, certification1, certification2, certification3, semesterSum, debts])
 
 
+# /notes
+def clarify_markdown(string):
+    is_single = False
+    
+    for letter_index in range(len(string)):
+        if string[letter_index] in "*_":
+            index = letter_index
+            is_single = not is_single
+    
+    return "".join([string[:index], "\\", string[index:]]) if is_single else string
+
+
 # /metrics
 class Metrics:
     def __init__(self):

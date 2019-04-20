@@ -9,6 +9,7 @@ from bot.keyboards.notes import notes_chooser
 from bot.keyboards.notes import notes_list_dailer
 
 from bot.helpers import save_to
+from bot.helpers import clarify_markdown
 
 @kaishnik.message_handler(commands=["notes"])
 def notes(message):
@@ -18,7 +19,10 @@ def notes(message):
     
     kaishnik.send_message(
         chat_id=message.chat.id,
-        text="Заметок всего: *{current}/{max}*".format(current=len(students[message.chat.id].notes), max=NOTES_MAX_NUMBER),
+        text="Заметок всего: *{current}/{max}*".format(
+            current=len(students[message.chat.id].notes),
+            max=NOTES_MAX_NUMBER
+        ),
         reply_markup=notes_chooser(),
         parse_mode="Markdown"
     )
@@ -39,7 +43,8 @@ def show_all_notes(callback):
         for note in students[callback.message.chat.id].notes:
             kaishnik.send_message(
                 chat_id=callback.message.chat.id,
-                text="{note}".format(note=note)
+                text="{note}".format(note=note),
+                parse_mode="Markdown"
             )
 
         kaishnik.send_message(
@@ -67,7 +72,8 @@ def show_note(callback):
         kaishnik.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
-            text="{note}".format(note=students[callback.message.chat.id].notes[number])
+            text="{note}".format(note=students[callback.message.chat.id].notes[number]),
+            parse_mode="Markdown"
         )
 
     on_callback_query(id=callback.id)
@@ -91,6 +97,8 @@ def add_note_hint(callback):
             chat_id=callback.message.chat.id,
             text=(
                 "Добавляемая заметка будет *{number}* по счёту.\n\n"
+                "• Используй звёздочки, чтобы выделить \**жирным*\*\n"
+                "• Используй нижнее подчёркивание, чтобы выделить \__курсивом_\_\n\n"
                 "Напиши заметку и отправь решительно.".format(number=number)
             ),
             parse_mode="Markdown"
@@ -103,7 +111,7 @@ def add_note_hint(callback):
 @kaishnik.message_handler(func=lambda message: students[message.chat.id].previous_message == "/edit")
 def add_note(message):
     students[message.chat.id].previous_message = None
-    students[message.chat.id].notes.append(message.text)
+    students[message.chat.id].notes.append(clarify_markdown(message.text))
     
     save_to(filename="data/users", object=students)
     
@@ -126,7 +134,8 @@ def delete_note(callback):
         kaishnik.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
-            text="Заметка удалена! В ней было:\n\n{note}".format(note=students[callback.message.chat.id].notes[number])
+            text="Заметка удалена! В ней было:\n\n{note}".format(note=students[callback.message.chat.id].notes[number]),
+            parse_mode="Markdown"
         )
         
         del students[callback.message.chat.id].notes[number]

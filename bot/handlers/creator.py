@@ -177,13 +177,17 @@ def data(message):
         asked_users_number = int(text.replace("number:", ""))
 
         # Reversing list of students to show new users first
-        for user in list(students)[::-1][:asked_users_number]: send(); counter += 1
+        for user in list(students)[::-1][:asked_users_number]:
+            send()
+            counter += 1
     elif "name" in text:
         asked_users_name = text.replace("name:", " ")
         
         # Reversing list of students to show new users first
         for user in list(students)[::-1]:
-            if asked_users_name in students[user].name: send(); counter += 1
+            if asked_users_name in students[user].name:
+                send()
+                counter += 1
     else:
         kaishnik.send_message(
             chat_id=message.chat.id,
