@@ -23,7 +23,11 @@ def creator(message):
             "\n*safe*\n"                ### safe
             "/users\n"
             "/metrics \[ drop ]\n"
-            "/data { \[ number:{} ]\[ name:{} ] }\n"
+            "/data {\n"
+                "\t\t\t\[ number:{} ]\n"
+                "\t\t\t\[ group:{} ]\n"
+                "\t\t\t\[ name:{} ]\n"
+            "}\n"
             "/clear\n"
             "/erase { chat ID }\n"
             "\n*unsafe*\n"              ### unsafe
@@ -173,17 +177,23 @@ def data(message):
     text = message.text.replace("/data ", "")
     counter = 0
     
+    # Reversing list of students to show new users first
     if "number" in text:
         asked_users_number = int(text.replace("number:", ""))
-
-        # Reversing list of students to show new users first
+        
         for user in list(students)[::-1][:asked_users_number]:
             send()
             counter += 1
-    elif "name" in text:
-        asked_users_name = text.replace("name:", " ")
+    elif "group" in text:
+        asked_users_group = text.replace("group:", "")
         
-        # Reversing list of students to show new users first
+        for user in list(students)[::-1]:
+            if students[user].group_number == asked_users_group:
+                send()
+                counter += 1
+    elif "name" in text:
+        asked_users_name = text.replace("name:", "")
+        
         for user in list(students)[::-1]:
             if asked_users_name in students[user].name:
                 send()
@@ -191,7 +201,7 @@ def data(message):
     else:
         kaishnik.send_message(
             chat_id=message.chat.id,
-            text="Incorrect options!".format(asked_users_number)
+            text="Incorrect options!"
         )
 
     kaishnik.send_message(
@@ -208,9 +218,12 @@ def clear(message):
     is_cleared = False
     
     for user in list(students):
-        try: kaishnik.get_chat(chat_id=user)
-        except: is_launched = False
-        else: is_launched = True
+        try:
+            kaishnik.get_chat(chat_id=user)
+        except:
+            is_launched = False
+        else:
+            is_launched = True
         
         try:
             kaishnik.send_chat_action(chat_id=user, action="typing")

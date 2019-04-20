@@ -199,9 +199,9 @@ class Student:
     # No setup - no conversation
     def is_not_set_up(self):
         return (
-            self._name is None or
-            self._group_number is None or
+            self._institute is None or
             self._year is None or
-            self._institute_id is None or
+            self._group_number is None or
+            self._name is None or
             self._student_card_number is None
         )
