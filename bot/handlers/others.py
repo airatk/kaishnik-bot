@@ -20,13 +20,13 @@ def card(message):
             chat_id=message.chat.id,
             text=(
                 "Номер зачётки не указан, поэтому отправь его "
-                "(интересный факт — номер твоего студенческого и номер твоей зачётки одинаковы!)."
+                "(интересный факт — студенческий билет и зачётка имеют одинаковый номер!)."
             ),
             reply_markup=ReplyKeyboardRemove()
         )
         kaishnik.send_message(
             chat_id=message.chat.id,
-            text="Можешь не указывать, если не хочешь, но баллы показать не смогу.",
+            text="Либо пропусти, но баллы показать не смогу.",
             reply_markup=skipper(
                 text="пропустить",
                 callback_data="skip"

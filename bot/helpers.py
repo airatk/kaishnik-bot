@@ -270,9 +270,9 @@ def get_subject_score(scoretable, subjects_num):
     title = "*{title}*".format(title=subject[1][:len(subject[1]) - 6])  # Erase (экз.) & (зач.)
     type = "\n_экзамен_\n" if "экз" in subject[1] else "\n_зачёт_\n"
     
-    certification1 = "\n• 1 аттестация: {gained}/{max}".format(gained=subject[2], max=subject[3])
-    certification2 = "\n• 2 аттестация: {gained}/{max}".format(gained=subject[4], max=subject[5])
-    certification3 = "\n• 3 аттестация: {gained}/{max}".format(gained=subject[6], max=subject[7])
+    certification1 = "\n• 1 аттестация: {gained} / {max}".format(gained=subject[2], max=subject[3])
+    certification2 = "\n• 2 аттестация: {gained} / {max}".format(gained=subject[4], max=subject[5])
+    certification3 = "\n• 3 аттестация: {gained} / {max}".format(gained=subject[6], max=subject[7])
     semesterSum = "\n◦ За семестр: {}".format(subject[8])
     
     debts = "\n\nДолги: {}".format(subject[10])

@@ -278,13 +278,15 @@ def set_name(message):
         
         kaishnik.send_message(
             chat_id=message.chat.id,
-            text="Отправь номер своей зачётки "
-                 "(интересный факт — номер твоего студенческого и номер твоей зачётки одинаковы!).",
+            text=(
+                "Отправь номер своей зачётки "
+                "(интересный факт — студенческий билет и зачётка имеют одинаковый номер!)."
+            ),
             reply_markup=ReplyKeyboardRemove()
         )
         kaishnik.send_message(
             chat_id=message.chat.id,
-            text="Можешь не указывать, если не хочешь, но баллы показать не смогу.",
+            text="Либо пропусти, но баллы показать не смогу.",
             reply_markup=skipper(
                 text="пропустить",
                 callback_data="skip"
@@ -376,7 +378,7 @@ def set_student_card_number(message):
                 )
                 kaishnik.send_message(
                     chat_id=message.chat.id,
-                    text="Можешь не указывать, если не хочешь, но баллы показать не смогу.",
+                    text="Либо пропусти, но баллы показать не смогу.",
                     reply_markup=skipper(
                         text="пропустить",
                         callback_data="skip"
