@@ -10,6 +10,7 @@ from bot.helpers import load_from
 
 from datetime import datetime
 
+
 @kaishnik.message_handler(
     func=lambda message: message.chat.id == CREATOR,
     commands=["creator"]
@@ -20,30 +21,31 @@ def creator(message):
         text=(
             "*Control panel*\n"         # {} - required, [] - optional
             "_creator access only_\n"
-            "\n*safe*\n"                ### safe
+            "\n*stats*\n"               ### stats
             "/users\n"
             "/metrics \[ drop ]\n"
             "/data {\n"
-                "\t\t\t\[ number:{} ]\n"
-                "\t\t\t\[ group:{} ]\n"
+                "\t\t\t\[ number:{} ]\[ group:{} ]\n"
                 "\t\t\t\[ name:{} ]\n"
             "}\n"
+            "\n*data*\n"                ### data
             "/clear\n"
-            "/erase { chat ID }\n"
-            "\n*unsafe*\n"              ### unsafe
-            "/ broadcast { text }\n"
-            "/ reverse\n"
-            "/ drop\n"
+            "/erase { :chat ID: }\n"
+            "/drop { all }\n"
+            "\n*others*\n"              ### others
+            "/broadcast { :message: }\n"
+            "/reverse { week }\n"
             "\n*hashtags*\n"            ### hashtags
-            "#users\n"
-            "#metrics\n"
-            "#data\n"
-            "#erased\n"
-            "#broadcast\n"
-            "#dropped"
+            "# users\n"
+            "# metrics\n"
+            "# data\n"
+            "# erased\n"
+            "# broadcast\n"
+            "# dropped"
         ),
         parse_mode="Markdown"
     )
+
 
 @kaishnik.message_handler(
     func=lambda message: message.chat.id == CREATOR,
@@ -179,7 +181,10 @@ def data(message):
     
     # Reversing list of students to show new users first
     if "number" in text:
-        asked_users_number = int(text.replace("number:", ""))
+        try:
+            asked_users_number = int(text.replace("number:", ""))
+        except Exception:
+            asked_users_number = 0
         
         for user in list(students)[::-1][:asked_users_number]:
             send()
@@ -209,6 +214,7 @@ def data(message):
         text="*{}* users were shown!".format(counter),
         parse_mode="Markdown"
     )
+
 
 @kaishnik.message_handler(
     func=lambda message: message.chat.id == CREATOR,
@@ -297,67 +303,92 @@ def erase(message):
 
 @kaishnik.message_handler(
     func=lambda message: message.chat.id == CREATOR,
+    commands=["drop"]
+)
+def drop(message):
+    if "all" not in message.text:
+        kaishnik.send_message(
+            chat_id=message.chat.id,
+            text="If you are sure to drop all users' data, type */drop all*",
+            parse_mode="Markdown"
+        )
+    else:
+        for user in list(students):
+            kaishnik.send_message(
+                chat_id=user,
+                text="Текущие настройки сброшены, потому что нужно обновить данные. Отправь /settings"
+            )
+            
+            if students[user].notes != []:
+                kaishnik.send_message(
+                    chat_id=user,
+                    text="Держи свои заметки, чтобы ничего не потерялось:"
+                )
+                
+                for note in students[user].notes:
+                    kaishnik.send_message(
+                        chat_id=user,
+                        text=note,
+                        parse_mode="Markdown"
+                    )
+        
+            del students[user]
+        
+        save_to(filename="data/users", object=students)
+
+        kaishnik.send_message(
+            chat_id=message.chat.id,
+            text="All data was #dropped!"
+        )
+
+
+@kaishnik.message_handler(
+    func=lambda message: message.chat.id == CREATOR,
     commands=["broadcast"]
 )
 def broadcast(message):
-    for user in students:
+    broadcast_message = message.text[11:]
+    
+    if broadcast_message == "":
         kaishnik.send_message(
-            chat_id=user,
-            text=(
-                "*Телеграмма от разработчика*\n"
-                "#broadcast\n\n"
-                "{}"
-                "\n\nНаписать разработчику: @airatk".format(message.text[11:])
-            ),
-            parse_mode="Markdown",
-            disable_web_page_preview=True
+            chat_id=message.chat.id,
+            text="No broadcast message was found! It's supposed to be right after the */broadcast* command.",
+            parse_mode="Markdown"
         )
+    else:
+        for user in students:
+            kaishnik.send_message(
+                chat_id=user,
+                text=(
+                    "*Телеграмма от разработчика*\n"
+                    "#broadcast\n\n"
+                    "{}"
+                    "\n\nНаписать разработчику: @airatk".format(broadcast_message)
+                ),
+                parse_mode="Markdown",
+                disable_web_page_preview=True
+            )
 
-    kaishnik.send_message(
-        chat_id=message.chat.id,
-        text="Done! Sent to each & every user."
-    )
+        kaishnik.send_message(
+            chat_id=message.chat.id,
+            text="Done! Sent to each & every user."
+        )
 
 @kaishnik.message_handler(
     func=lambda message: message.chat.id == CREATOR,
     commands=["reverse"]
 )
 def reverse(message):
-    save_to(filename="data/is_week_reversed", object=False if load_from(filename="data/is_week_reversed") else True)
-    
-    kaishnik.send_message(
-        chat_id=message.chat.id,
-        text="Week type was reversed!"
-    )
-
-@kaishnik.message_handler(
-    func=lambda message: message.chat.id == CREATOR,
-    commands=["drop"]
-)
-def drop(message):
-    for user in list(students):
+    if "week" not in message.text:
         kaishnik.send_message(
-            chat_id=user,
-            text="Текущие настройки сброшены, потому что нужно обновить данные. Отправь /settings"
+            chat_id=message.chat.id,
+            text="If you are sure to reverse type of a week, type */reverse week*",
+            parse_mode="Markdown"
         )
+    else:
+        save_to(filename="data/is_week_reversed", object=False if load_from(filename="data/is_week_reversed") else True)
         
-        if students[user].notes != []:
-            kaishnik.send_message(
-                chat_id=user,
-                text="Держи свои заметки, чтобы ничего не потерялось:"
-            )
-            
-            for note in students[user].notes:
-                kaishnik.send_message(
-                    chat_id=user,
-                    text=note
-                )
-    
-        del students[user]
-    
-    save_to(filename="data/users", object=students)
-
-    kaishnik.send_message(
-        chat_id=message.chat.id,
-        text="All data was #dropped!"
-    )
+        kaishnik.send_message(
+            chat_id=message.chat.id,
+            text="Week type was reversed!"
+        )
