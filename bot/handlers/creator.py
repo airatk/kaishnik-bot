@@ -185,7 +185,7 @@ def data(message):
     if "number" in text:
         try:
             asked_users_number = int(text.replace("number:", ""))
-        except Exception:
+        except ValueError:
             asked_users_number = 0
         
         for user in list(students)[::-1][:asked_users_number]:
@@ -238,20 +238,23 @@ def clear(message):
             
             if not is_launched:
                 raise Exception()
+            
+            if students[user].is_not_set_up():
+                raise Exception()
         except Exception:
             is_cleared = True
             
             kaishnik.send_message(
                 chat_id=message.chat.id,
                 text=(
-                    "*{first_name} {last_name}* @{user}\n"
-                    "_chat id {chat_id}_\n\n"
-                    "• *Institute:* {institute}\n"
-                    "• *Year:* {year}\n"
-                    "• *Group:* {group_number}\n"
-                    "• *Name:* {name}\n"
-                    "• *Student card number:* {student_card_number}\n"
-                    "\nStopped using the bot, so was #erased.".format(
+                    "{first_name} {last_name} @{user}\n"
+                    "chat id {chat_id}\n\n"
+                    "• Institute: {institute}\n"
+                    "• Year: {year}\n"
+                    "• Group: {group_number}\n"
+                    "• Name: {name}\n"
+                    "• Student card number: {student_card_number}\n"
+                    "\n#erased".format(
                         first_name=kaishnik.get_chat(chat_id=user).first_name if is_launched else "None",
                         last_name=kaishnik.get_chat(chat_id=user).last_name if is_launched else "None",
                         user=kaishnik.get_chat(chat_id=user).username if is_launched else "None",
@@ -278,7 +281,7 @@ def clear(message):
     else:
         kaishnik.send_message(
             chat_id=message.chat.id,
-            text="No one has stopped using the bot!"
+            text="No one has been cleared!"
         )
 
 @kaishnik.message_handler(
