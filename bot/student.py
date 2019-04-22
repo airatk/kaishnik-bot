@@ -26,6 +26,7 @@ class Student:
         self._year = year
         self._group_number = None
         self._group_number_schedule = None
+        self._another_group_number_schedule = None
         self._group_number_score = None
         self._name = name
         self._name_id = None
@@ -54,6 +55,10 @@ class Student:
     @property
     def group_number_schedule(self):
         return self._group_number_schedule
+    
+    @property
+    def another_group_number_schedule(self):
+        return self._another_group_number_schedule
     
     @property
     def group_number_score(self):
@@ -106,6 +111,17 @@ class Student:
     
         self._group_number_schedule = get(url=SCHEDULE_URL, params=params).json()[0]["id"]
     
+    @another_group_number_schedule.setter
+    def another_group_number_schedule(self, group_number):
+        params = {
+            "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
+            "p_p_lifecycle": "2",
+            "p_p_resource_id": "getGroupsURL",
+            "query": group_number
+        }
+    
+        self._another_group_number_schedule = get(url=SCHEDULE_URL, params=params).json()[0]["id"]
+    
     @group_number_score.setter
     def group_number_score(self, group_number):
         self._group_number_score = self.get_dictionary_of(type="p_group")[group_number]
@@ -139,8 +155,9 @@ class Student:
             "p_p_resource_id": "schedule" if type == "classes" else "examSchedule"
         }
         data = {
-            "groupId": self._group_number_schedule
+            "groupId": self._group_number_schedule if self._another_group_number_schedule is None else self._another_group_number_schedule
         }
+        self._another_group_number_schedule = None  # Schedule of another group should be shown only once - when asked
         
         response = post(url=SCHEDULE_URL, params=params, data=data).json()
 

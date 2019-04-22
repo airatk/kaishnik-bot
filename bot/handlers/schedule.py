@@ -17,6 +17,7 @@ from bot.helpers import get_lecturers_schedule
 from bot.helpers import is_even
 
 from datetime import datetime
+from re import fullmatch
 
 
 @kaishnik.message_handler(commands=["lecturers"])
@@ -186,6 +187,9 @@ def classes(message):
     
     metrics.increment("classes")
     
+    if fullmatch("[1-59][0-6][0-9][0-9]", message.text.replace("/classes ", "")):
+        students[message.chat.id].another_group_number_schedule = message.text.replace("/classes ", "")
+    
     kaishnik.send_message(
         chat_id=message.chat.id,
         text="Тебе нужно расписание на:",
@@ -259,6 +263,9 @@ def exams(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
     metrics.increment("exams")
+    
+    if fullmatch("[1-59][0-6][0-9][0-9]", message.text.replace("/exams ", "")):
+        students[message.chat.id].another_group_number_schedule = message.text.replace("/exams ", "")
     
     try:
         kaishnik.send_message(
