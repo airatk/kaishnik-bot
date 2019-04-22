@@ -227,7 +227,9 @@ def one_day_schedule(callback):
             text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
             disable_web_page_preview=True
         )
-
+    
+    students[callback.message.chat.id].another_group_number_schedule = None
+    
     on_callback_query(id=callback.id)
 
 @kaishnik.callback_query_handler(func=lambda callback: "weekly" in callback.data)
@@ -254,7 +256,9 @@ def weekly_schedule(callback):
             text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
             disable_web_page_preview=True
         )
-
+    
+    students[callback.message.chat.id].another_group_number_schedule = None
+    
     on_callback_query(id=callback.id)
 
 
@@ -279,6 +283,8 @@ def exams(message):
             text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
             disable_web_page_preview=True
         )
+
+    students[message.chat.id].another_group_number_schedule = None
 
 
 @kaishnik.message_handler(commands=["week"])
