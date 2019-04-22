@@ -3,6 +3,7 @@ from bot import students
 from bot import metrics
 
 from bot.constants import BRS
+from bot.constants import HELP
 from bot.constants import DONATE
 
 from bot.keyboards.others import skipper
@@ -55,6 +56,18 @@ def brs(message):
     kaishnik.send_message(
         chat_id=message.chat.id,
         text=BRS,
+        parse_mode="Markdown"
+    )
+
+@kaishnik.message_handler(commands=["help"])
+def help(message):
+    kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
+    
+    metrics.increment("help")
+    
+    kaishnik.send_message(
+        chat_id=message.chat.id,
+        text=HELP,
         parse_mode="Markdown"
     )
 

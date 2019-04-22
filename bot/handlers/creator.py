@@ -123,6 +123,7 @@ def get_metrics(message):
             "/settings: {}\n"
             "unsetup: {}\n"
             "\n*other*\n"               ### other
+            "/help: {}\n"
             "/donate: {}\n"
             "unknown: {}\n"
             "\n*{}* requests in total!".format(
@@ -138,6 +139,7 @@ def get_metrics(message):
                 metrics.start,
                 metrics.settings,
                 metrics.unsetup,
+                metrics.help,
                 metrics.donate,
                 metrics.unknown,
                 metrics.sum
@@ -233,6 +235,9 @@ def clear(message):
         
         try:
             kaishnik.send_chat_action(chat_id=user, action="typing")
+            
+            if not is_launched:
+                raise Exception()
         except Exception:
             is_cleared = True
             
@@ -316,20 +321,23 @@ def drop(message):
         for user in list(students):
             kaishnik.send_message(
                 chat_id=user,
-                text="Текущие настройки сброшены, потому что нужно обновить данные. Отправь /settings"
+                text="Текущие настройки сброшены, нужно обновить данные. Отправь /settings",
+                disable_notification=True
             )
             
             if students[user].notes != []:
                 kaishnik.send_message(
                     chat_id=user,
-                    text="Держи свои заметки, чтобы ничего не потерялось:"
+                    text="Держи свои заметки, чтобы ничего не потерялось:",
+                    disable_notification=True
                 )
                 
                 for note in students[user].notes:
                     kaishnik.send_message(
                         chat_id=user,
                         text=note,
-                        parse_mode="Markdown"
+                        parse_mode="Markdown",
+                        disable_notification=True
                     )
         
             del students[user]
