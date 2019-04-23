@@ -20,7 +20,11 @@ from datetime import datetime
 from re import fullmatch
 
 
-@kaishnik.message_handler(commands=["lecturers"])
+@kaishnik.message_handler(
+    commands=["lecturers"],
+    func=lambda message: students[message.chat.id].previous_message == None
+    # Making all the commands uncallable when a users adds a note
+)
 def lecturers(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
@@ -181,7 +185,10 @@ def send_lecturers_exams(callback):
     on_callback_query(id=callback.id)
 
 
-@kaishnik.message_handler(commands=["classes"])
+@kaishnik.message_handler(
+    commands=["classes"],
+    func=lambda message: students[message.chat.id].previous_message == None
+)
 def classes(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
@@ -262,7 +269,10 @@ def weekly_schedule(callback):
     on_callback_query(id=callback.id)
 
 
-@kaishnik.message_handler(commands=["exams"])
+@kaishnik.message_handler(
+    commands=["exams"],
+    func=lambda message: students[message.chat.id].previous_message == None
+)
 def exams(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     
@@ -287,7 +297,10 @@ def exams(message):
     students[message.chat.id].another_group_number_schedule = None
 
 
-@kaishnik.message_handler(commands=["week"])
+@kaishnik.message_handler(
+    commands=["week"],
+    func=lambda message: students[message.chat.id].previous_message == None
+)
 def week(message):
     kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
     

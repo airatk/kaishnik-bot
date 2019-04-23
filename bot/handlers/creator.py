@@ -202,7 +202,7 @@ def data(message):
         asked_users_name = text.replace("name:", "")
         
         for user in list(students)[::-1]:
-            if asked_users_name in students[user].name:
+            if students[user].name is not None and asked_users_name in students[user].name:
                 send()
                 counter += 1
     else:
