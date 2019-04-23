@@ -131,7 +131,8 @@ def set_KIT_group_number(message):
             kaishnik.send_message(
                 chat_id=message.chat.id,
                 text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
-                disable_web_page_preview=True
+                disable_web_page_preview=True,
+                reply_markup=ReplyKeyboardRemove()
             )
         else:
             students[message.chat.id].group_number = message.text
@@ -182,7 +183,8 @@ def set_institute(message):
         kaishnik.send_message(
             chat_id=message.chat.id,
             text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
-            disable_web_page_preview=True
+            disable_web_page_preview=True,
+            reply_markup=ReplyKeyboardRemove()
         )
 
 @kaishnik.message_handler(
@@ -202,7 +204,8 @@ def set_year(message):
             kaishnik.send_message(
                 chat_id=message.chat.id,
                 text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
-                disable_web_page_preview=True
+                disable_web_page_preview=True,
+                reply_markup=ReplyKeyboardRemove()
             )
         else:
             if groups:
@@ -236,13 +239,7 @@ def set_group_number(message):
         try:
             students[message.chat.id].group_number_score = message.text
             names = students[message.chat.id].get_dictionary_of(type="p_stud")
-        except Exception:
-            kaishnik.send_message(
-                chat_id=message.chat.id,
-                text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
-                disable_web_page_preview=True
-            )
-        else:
+        
             if names:
                 students[message.chat.id].group_number = message.text
                 students[message.chat.id].group_number_schedule = message.text
@@ -258,6 +255,13 @@ def set_group_number(message):
                     text="Здесь ничего нет. Начни сначала.",
                     reply_markup=make_send("/settings")
                 )
+        except Exception:
+            kaishnik.send_message(
+                chat_id=message.chat.id,
+                text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
+                disable_web_page_preview=True,
+                reply_markup=ReplyKeyboardRemove()
+            )
     else:
         kaishnik.send_message(
             chat_id=message.chat.id,
@@ -388,7 +392,8 @@ def set_student_card_number(message):
             kaishnik.send_message(
                 chat_id=message.chat.id,
                 text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
-                disable_web_page_preview=True
+                disable_web_page_preview=True,
+                reply_markup=ReplyKeyboardRemove()
             )
     else:
         kaishnik.send_message(
