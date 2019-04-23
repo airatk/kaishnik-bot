@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:/Users/airatk/Documents/kaishnik-bot/startup.py">
+   </FileRef>
+   <Group
+      location = "container:"
+      name = "bot">
+      <FileRef
+         location = "group:/Users/airatk/Documents/kaishnik-bot/bot/__init__.py">
+      </FileRef>
+      <Group
+         location = "container:"
+         name = "handlers">
+         <FileRef
+            location = "group:bot/handlers/__init__.py">
+         </FileRef>
+         <FileRef
+            location = "group:bot/handlers/setup.py">
+         </FileRef>
+         <FileRef
+            location = "group:bot/handlers/schedule.py">
+         </FileRef>
+         <FileRef
+            location = "group:bot/handlers/score.py">
+         </FileRef>
+         <FileRef
+            location = "group:bot/handlers/notes.py">
+         </FileRef>
+         <FileRef
+            location = "group:bot/handlers/locations.py">
+         </FileRef>
+         <FileRef
+            location = "group:bot/handlers/others.py">
+         </FileRef>
+         <FileRef
+            location = "group:bot/handlers/creator.py">
+         </FileRef>
+      </Group>
+      <Group
+         location = "container:"
+         name = "keyboards">
+         <FileRef
+            location = "group:bot/keyboards/__init__.py">
+         </FileRef>
+         <FileRef
+            location = "group:bot/keyboards/setup.py">
+         </FileRef>
+         <FileRef
+            location = "group:bot/keyboards/schedule.py">
+         </FileRef>
+         <FileRef
+            location = "group:bot/keyboards/score.py">
+         </FileRef>
+         <FileRef
+            location = "group:bot/keyboards/notes.py">
+         </FileRef>
+         <FileRef
+            location = "group:bot/keyboards/locations.py">
+         </FileRef>
+         <FileRef
+            location = "group:bot/keyboards/others.py">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:bot/constants.py">
+      </FileRef>
+      <FileRef
+         location = "group:bot/helpers.py">
+      </FileRef>
+      <FileRef
+         location = "group:bot/student.py">
+      </FileRef>
+      <FileRef
+         location = "group:bot/subject.py">
+      </FileRef>
+   </Group>
+   <FileRef
+      location = "container:README.md">
+   </FileRef>
+   <FileRef
+      location = "group:LICENSE">
+   </FileRef>
+</Workspace>

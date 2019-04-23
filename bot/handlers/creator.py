@@ -265,8 +265,7 @@ def clear(message):
                         name=students[user].name,
                         student_card_number=students[user].student_card_number
                     )
-                ),
-                parse_mode="Markdown"
+                )
             )
             
             del students[user]
