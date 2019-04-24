@@ -29,7 +29,6 @@ Secondly, the `requirements.txt` file is included to the repository. So, enter `
 Finally, type `python3 startup.py` to launch.
 
 ## Other stuff
-* `rubbish/` folder is for implemented or partialy implemented stuff which was not included in the launch version.
 * `update-logs/` folder is for notes which were sent to users as update announcements.
 
 ## Design
