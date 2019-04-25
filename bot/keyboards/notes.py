@@ -23,8 +23,8 @@ def notes_list_dailer(notes, action):
     notes_list_dailer_keyboard.add(*[
         InlineKeyboardButton(
             text="{note}{ellipsis}".format(
-                note=notes[number][:40].replace("*", "").replace("_", "").replace("\\", ""),
-                ellipsis="…" if len(notes[number]) > 40 else ""
+                note=notes[number][:25].replace("*", "").replace("_", "").replace("\\", ""),
+                ellipsis="…" if len(notes[number]) > 25 else ""
             ),
             callback_data="{action}-{number}".format(
                 number=number,

@@ -96,7 +96,7 @@ class LecturerSubject(Subject):
         groups_output = ""
         
         for group in self._groups:
-            groups_output = "".join([groups_output, "\n• У группы {}".format(group)])
+            groups_output = "".join([ groups_output, "\n• У группы {}".format(group) ])
     
         return "".join([
             self._time,

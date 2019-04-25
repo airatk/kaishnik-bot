@@ -8,10 +8,10 @@ from bot.helpers import Metrics
 
 from sys import argv
 
-# Because Telegram is officially blocked in Russia
+# Because Telegram is officially blocked in Russia, that's why
 apihelper.proxy = { "https": "socks5://163.172.152.192:1080" }
 
-# Used to get rid of "Loading..." notification on the top
+# Used to show "Loading..." notification on the top in a cleverer way
 on_callback_query = lambda id: apihelper.answer_callback_query(token=TOKEN, callback_query_id=id, cache_time=0)
 
 kaishnik = TeleBot(TOKEN, threaded=False)

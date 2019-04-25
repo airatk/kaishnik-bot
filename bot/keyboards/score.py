@@ -23,7 +23,7 @@ def subject_chooser(scoretable, semester):
     subject_chooser_keyboard.add(*[
         InlineKeyboardButton(
             text=subject[1][:len(subject[1]) - 6],  # (экз.) or (зач.) are 6 last charachters of a subject title
-            callback_data="scoretable {n} {s}".format(n=int(subject[0]) - 1, s=semester)  # begin counting with 0, not with 1
+            callback_data="scoretable {n} {s}".format(n=int(subject[0]) - 1, s=semester)  # begin counting from 0, not from 1
         ) for subject in scoretable
     ])
 

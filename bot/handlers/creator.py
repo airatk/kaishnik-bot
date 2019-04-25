@@ -155,28 +155,28 @@ def get_metrics(message):
 def data(message):
     def send():
         kaishnik.send_message(
-                chat_id=message.chat.id,
-                text=(
-                    "{firstname} {lastname} @{user}\n"
-                    "chat id {chatid}\n\n"
-                    "• Institute: {institute}\n"
-                    "• Year: {year}\n"
-                    "• Group: {group_number}\n"
-                    "• Name: {name}\n"
-                    "• Student card number: {card}\n"
-                    "\n#data".format(
-                        firstname=kaishnik.get_chat(chat_id=user).first_name,
-                        lastname=kaishnik.get_chat(chat_id=user).last_name,
-                        user=kaishnik.get_chat(chat_id=user).username,
-                        chatid=user,
-                        institute=students[user].institute,
-                        year=students[user].year,
-                        group_number=students[user].group_number,
-                        name=students[user].name,
-                        card=students[user].student_card_number
-                    )
+            chat_id=message.chat.id,
+            text=(
+                "{firstname} {lastname} @{user}\n"
+                "chat id {chatid}\n\n"
+                "• Institute: {institute}\n"
+                "• Year: {year}\n"
+                "• Group: {group_number}\n"
+                "• Name: {name}\n"
+                "• Student card number: {card}\n"
+                "\n#data".format(
+                    firstname=kaishnik.get_chat(chat_id=user).first_name,
+                    lastname=kaishnik.get_chat(chat_id=user).last_name,
+                    user=kaishnik.get_chat(chat_id=user).username,
+                    chatid=user,
+                    institute=students[user].institute,
+                    year=students[user].year,
+                    group_number=students[user].group_number,
+                    name=students[user].name,
+                    card=students[user].student_card_number
                 )
             )
+        )
     
     text = message.text.replace("/data ", "")
     counter = 0
@@ -213,7 +213,7 @@ def data(message):
 
     kaishnik.send_message(
         chat_id=message.chat.id,
-        text="*{}* users were shown!".format(counter),
+        text="*{shown}/{total}* users were shown!".format(shown=counter, total=len(students)),
         parse_mode="Markdown"
     )
 
@@ -372,8 +372,8 @@ def broadcast(message):
                 text=(
                     "*Телеграмма от разработчика*\n"
                     "#broadcast\n\n"
-                    "{}"
-                    "\n\nНаписать разработчику: @airatk".format(broadcast_message)
+                    "{broadcast_message}\n\n"
+                    "Написать разработчику: @airatk".format(broadcast_message=broadcast_message)
                 ),
                 parse_mode="Markdown",
                 disable_web_page_preview=True

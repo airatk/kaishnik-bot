@@ -285,7 +285,7 @@ def clarify_markdown(string):
     is_single = False
     
     for letter_index in range(len(string)):
-        if string[letter_index] in "*_":
+        if string[letter_index] in [ "*", "_" ]:
             index = letter_index
             is_single = not is_single
     
