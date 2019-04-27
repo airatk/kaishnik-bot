@@ -10,17 +10,17 @@ def notes_chooser():
     
     return notes_chooser_keyboard
 
-def notes_list_dailer(notes, action):
-    notes_list_dailer_keyboard = InlineKeyboardMarkup(row_width=1)
+def notes_list_dialer(notes, action):
+    notes_list_dialer_keyboard = InlineKeyboardMarkup(row_width=1)
     
-    notes_list_dailer_keyboard.row(
+    notes_list_dialer_keyboard.row(
         InlineKeyboardButton(
             text="{} все".format("Показать" if "show" in action else "Удалить"),
             callback_data="{}-all-notes".format("show" if "show" in action else "delete")
         )
     )
     
-    notes_list_dailer_keyboard.add(*[
+    notes_list_dialer_keyboard.add(*[
         InlineKeyboardButton(
             text="{note}{ellipsis}".format(
                 note=notes[number][:25].replace("*", "").replace("_", "").replace("\\", ""),
@@ -33,4 +33,4 @@ def notes_list_dailer(notes, action):
         ) for number in range(len(notes))
     ])
     
-    return notes_list_dailer_keyboard
+    return notes_list_dialer_keyboard

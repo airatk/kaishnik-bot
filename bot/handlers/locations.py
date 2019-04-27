@@ -7,9 +7,9 @@ from bot.constants import LIBRARIES
 from bot.constants import DORMS
 
 from bot.keyboards.locations import choose_location_type
-from bot.keyboards.locations import buildings_dailer
-from bot.keyboards.locations import libraries_dailer
-from bot.keyboards.locations import dorms_dailer
+from bot.keyboards.locations import buildings_dialer
+from bot.keyboards.locations import libraries_dialer
+from bot.keyboards.locations import dorms_dialer
 
 
 @kaishnik.message_handler(commands=["locations"])
@@ -32,7 +32,7 @@ def b_s(callback):
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="У родного КАИ 8 учебных зданий и 1 спортивный комплекс:",
-        reply_markup=buildings_dailer()
+        reply_markup=buildings_dialer()
     )
 
     on_callback_query(id=callback.id)
@@ -71,7 +71,7 @@ def l_s(callback):
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="У родного КАИ 5 библиотек:",
-        reply_markup=libraries_dailer()
+        reply_markup=libraries_dialer()
     )
 
     on_callback_query(id=callback.id)
@@ -111,7 +111,7 @@ def d_s(callback):
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="У родного КАИ 7 общежитий:",
-        reply_markup=dorms_dailer()
+        reply_markup=dorms_dialer()
     )
 
     on_callback_query(id=callback.id)

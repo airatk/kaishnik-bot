@@ -14,38 +14,38 @@ def choose_location_type():
 
     return location_type_keyboard
 
-def buildings_dailer():
-    buildings_dailer_keyboard = InlineKeyboardMarkup(row_width=4)
+def buildings_dialer():
+    buildings_dialer_keyboard = InlineKeyboardMarkup(row_width=4)
     
-    buildings_dailer_keyboard.add(*[
+    buildings_dialer_keyboard.add(*[
         InlineKeyboardButton(
             text=building,
             callback_data="buildings {}".format(building)
         ) for building in BUILDINGS
     ])
 
-    return buildings_dailer_keyboard
+    return buildings_dialer_keyboard
 
-def libraries_dailer():
-    libraries_dailer_keyboard = InlineKeyboardMarkup(row_width=4)
+def libraries_dialer():
+    libraries_dialer_keyboard = InlineKeyboardMarkup(row_width=4)
     
-    libraries_dailer_keyboard.add(*[
+    libraries_dialer_keyboard.add(*[
         InlineKeyboardButton(
             text=library,
             callback_data="libraries {}".format(library)
         ) for library in LIBRARIES
     ])
 
-    return libraries_dailer_keyboard
+    return libraries_dialer_keyboard
 
-def dorms_dailer():
-    dorms_dailer_keyboard = InlineKeyboardMarkup(row_width=4)
+def dorms_dialer():
+    dorms_dialer_keyboard = InlineKeyboardMarkup(row_width=4)
     
-    dorms_dailer_keyboard.add(*[
+    dorms_dialer_keyboard.add(*[
         InlineKeyboardButton(
             text=dorm,
             callback_data="dorms {}".format(dorm)
         ) for dorm in DORMS
     ])
 
-    return dorms_dailer_keyboard
+    return dorms_dialer_keyboard

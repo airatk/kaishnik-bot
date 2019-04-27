@@ -6,7 +6,7 @@ from bot import on_callback_query
 from bot.constants import NOTES_MAX_NUMBER
 
 from bot.keyboards.notes import notes_chooser
-from bot.keyboards.notes import notes_list_dailer
+from bot.keyboards.notes import notes_list_dialer
 
 from bot.helpers import save_to
 from bot.helpers import clarify_markdown
@@ -182,7 +182,7 @@ def note_dailing(callback):
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
             text="Выбери, какую заметку {action}:".format(action="показать" if "show" in callback.data else "удалить"),
-            reply_markup=notes_list_dailer(
+            reply_markup=notes_list_dialer(
                 notes=students[callback.message.chat.id].notes,
                 action=callback.data
             )

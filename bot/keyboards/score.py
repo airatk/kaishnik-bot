@@ -1,17 +1,17 @@
 from telebot.types import InlineKeyboardMarkup
 from telebot.types import InlineKeyboardButton
 
-def semester_dailer(semesters_number):
-    semester_dailer_keyboard = InlineKeyboardMarkup(row_width=4)
+def semester_dialer(semesters_number):
+    semester_dialer_keyboard = InlineKeyboardMarkup(row_width=4)
     
-    semester_dailer_keyboard.add(*[
+    semester_dialer_keyboard.add(*[
         InlineKeyboardButton(
             text=str(semester),
             callback_data="semester {}".format(semester)
         ) for semester in range(1, semesters_number)
     ])
 
-    return semester_dailer_keyboard
+    return semester_dialer_keyboard
 
 def subject_chooser(scoretable, semester):
     subject_chooser_keyboard = InlineKeyboardMarkup(row_width=1)

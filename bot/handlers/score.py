@@ -4,7 +4,7 @@ from bot import metrics
 from bot import on_callback_query
 
 from bot.keyboards.score import subject_chooser
-from bot.keyboards.score import semester_dailer
+from bot.keyboards.score import semester_dialer
 
 from bot.helpers import get_subject_score
 
@@ -28,7 +28,7 @@ def score(message):
         kaishnik.send_message(
             chat_id=message.chat.id,
             text="Выбери номер семестра:",
-            reply_markup=semester_dailer(int(students[message.chat.id].year)*2 + 1)
+            reply_markup=semester_dialer(int(students[message.chat.id].year)*2 + 1)
         )
 
 @kaishnik.callback_query_handler(func=lambda callback: "semester" in callback.data)
