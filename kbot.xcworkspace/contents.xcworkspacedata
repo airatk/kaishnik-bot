@@ -17,10 +17,19 @@
             location = "group:bot/handlers/__init__.py">
          </FileRef>
          <FileRef
-            location = "group:bot/handlers/setup.py">
+            location = "group:bot/handlers/creator.py">
          </FileRef>
          <FileRef
-            location = "group:bot/handlers/schedule.py">
+            location = "group:bot/handlers/start.py">
+         </FileRef>
+         <FileRef
+            location = "group:/Users/airatk/Documents/kaishnik-bot/bot/handlers/settings.py">
+         </FileRef>
+         <FileRef
+            location = "group:bot/handlers/classes.py">
+         </FileRef>
+         <FileRef
+            location = "group:/Users/airatk/Documents/kaishnik-bot/bot/handlers/lecturers.py">
          </FileRef>
          <FileRef
             location = "group:bot/handlers/score.py">
@@ -29,13 +38,16 @@
             location = "group:bot/handlers/notes.py">
          </FileRef>
          <FileRef
+            location = "group:bot/handlers/edit.py">
+         </FileRef>
+         <FileRef
             location = "group:bot/handlers/locations.py">
          </FileRef>
          <FileRef
             location = "group:bot/handlers/others.py">
          </FileRef>
          <FileRef
-            location = "group:bot/handlers/creator.py">
+            location = "group:bot/handlers/unknown.py">
          </FileRef>
       </Group>
       <Group
@@ -45,10 +57,13 @@
             location = "group:bot/keyboards/__init__.py">
          </FileRef>
          <FileRef
-            location = "group:bot/keyboards/setup.py">
+            location = "group:/Users/airatk/Documents/kaishnik-bot/bot/keyboards/settings.py">
          </FileRef>
          <FileRef
-            location = "group:bot/keyboards/schedule.py">
+            location = "group:bot/keyboards/classes.py">
+         </FileRef>
+         <FileRef
+            location = "group:/Users/airatk/Documents/kaishnik-bot/bot/keyboards/lecturers.py">
          </FileRef>
          <FileRef
             location = "group:bot/keyboards/score.py">
@@ -57,10 +72,10 @@
             location = "group:bot/keyboards/notes.py">
          </FileRef>
          <FileRef
-            location = "group:bot/keyboards/locations.py">
+            location = "group:bot/keyboards/edit.py">
          </FileRef>
          <FileRef
-            location = "group:bot/keyboards/others.py">
+            location = "group:bot/keyboards/locations.py">
          </FileRef>
       </Group>
       <FileRef

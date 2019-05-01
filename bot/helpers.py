@@ -15,6 +15,8 @@ from pickle import HIGHEST_PROTOCOL
 from requests import get
 from requests import post
 
+from requests.exceptions import ConnectionError
+
 
 # Save data
 def save_to(filename, object):
@@ -35,12 +37,8 @@ def is_week_reversed():
 
 
 # /classes
-def beautify_classes(json_response, weekday, next):
-    schedule = ""
-    is_day_off = False
-    
-    # Date of each day
-    date = datetime.today() + timedelta(days=(weekday - datetime.today().isoweekday()) + (7 if next else 0))
+def beautify_classes(json_response, weekday, next, edited_subjects):
+    date = datetime.today() + timedelta(days=(weekday - datetime.today().isoweekday()) + (7 if next else 0))  # Date of each day
     
     if weekday == 7:
         return "*Воскресенье, {day} {month}*\n\nОднозначно выходной".format(
@@ -52,56 +50,68 @@ def beautify_classes(json_response, weekday, next):
         weekday = 1
         next = True
     
+    # No data - no schedule
     if not json_response:
         return "*{weekday}, {day} {month}*\n\nНет данных".format(
             weekday=WEEKDAYS[weekday],
-            date=int(date.strftime("%d")),
+            day=int(date.strftime("%d")),
             month=MONTHS[date.strftime("%m")]
         )
-
+    
     if str(weekday) not in json_response:
         return "*{weekday}, {day} {month}*\n\nВыходной".format(
             weekday=WEEKDAYS[weekday],
             day=int(date.strftime("%d")),
             month=MONTHS[date.strftime("%m")]
         )
-
+    
     # Removing extraspaces
     json_response[str(weekday)] = [
         { key: " ".join(value.split()) for key, value in subject.items() } for subject in json_response[str(weekday)]
     ]
 
+    is_day_off = False
+    subjects_list = []
+    
+    # Adding appropriate edited classes to schedule
+    for subject in edited_subjects:
+        if subject.weekday == weekday and (subject.is_even != is_even() if next else subject.is_even == is_even()):
+            subjects_list.append((subject.begin_hour, subject))
+    
     for subject in json_response[str(weekday)]:
-        # No subjects - no schedule. For day-offs
         is_day_off = "День консультаций" in subject["disciplName"] or "Военная подготовка" in subject["disciplName"]
-        if is_day_off:
-            break
+        if is_day_off: break  # No subjects - no schedule. For day-offs
         
         # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
         if not next:
-            if subject["dayDate"] == "неч" if is_even() else subject["dayDate"] == "чет":
-                continue
+            if subject["dayDate"] == "неч" if is_even() else subject["dayDate"] == "чет": continue
         else:
-            if subject["dayDate"] == "неч" if not is_even() else subject["dayDate"] == "чет":
-                continue
+            if subject["dayDate"] == "неч" if not is_even() else subject["dayDate"] == "чет": continue
 
         # Do not show subjects with certain dates (21.09) on other dates (28 сентября)
         day_month = "{}.{}".format(int(date.strftime("%d")), date.strftime("%m"))
-        if "." in subject["dayDate"] and day_month not in subject["dayDate"]:
-            continue
+        if "." in subject["dayDate"] and day_month not in subject["dayDate"]: continue
 
         studentSubject = StudentSubject()
-        
-        studentSubject.set_time(subject["dayTime"])
-        studentSubject.set_building(subject["buildNum"])
-        studentSubject.set_auditorium(subject["audNum"])
-        studentSubject.set_dates(subject["dayDate"])
-        studentSubject.set_title(subject["disciplName"])
-        studentSubject.set_type(subject["disciplType"])
-        studentSubject.set_teacher(subject["prepodName"])
-        studentSubject.set_department(subject["orgUnitName"])
 
-        schedule = "".join([schedule, studentSubject.get()])
+        studentSubject.time = subject["dayTime"]
+        
+        # Do not show if there is an edited alternative
+        if studentSubject.begin_hour in [ begin_hour for begin_hour, _ in subjects_list ]: continue
+        
+        studentSubject.building = subject["buildNum"]
+        studentSubject.auditorium = subject["audNum"]
+        studentSubject.dates = subject["dayDate"]
+        studentSubject.title = subject["disciplName"]
+        studentSubject.type = subject["disciplType"]
+        studentSubject.teacher = subject["prepodName"]
+        studentSubject.department = subject["orgUnitName"]
+        
+        subjects_list.append((studentSubject.begin_hour, studentSubject))
+    
+    subjects_list.sort(key=lambda subject: subject[0])  # Sort by begin_hour
+    
+    schedule = "".join([ subject.get() for _, subject in subjects_list ])
     
     return "".join([
         "*{weekday}, {day} {month}*".format(
@@ -128,7 +138,7 @@ def beautify_exams(json_response):
         time_place = "\n\n*[ {date} ][ {time} ][ {building} ][ {auditorium} ]*".format(
             date=subject["examDate"],
             time=subject["examTime"],
-            building="".join([subject["buildNum"], "ка"]),  # Make buildings look beautiful
+            building="{}ка".format(subject["buildNum"]),  # Make buildings look beautiful
             auditorium=subject["audNum"]
         )
         
@@ -144,26 +154,27 @@ def beautify_exams(json_response):
 
 # /lecturers
 def get_lecturers_names(name_part):
-    params = {
-        "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
-        "p_p_lifecycle": "2",
-        "p_p_resource_id": "getLecturersURL",
-        "query": name_part
-    }
-
-    return get(LECTURERS_SCHEDULE_URL, params=params).json()
+    try:
+        return get(LECTURERS_SCHEDULE_URL, params={
+            "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
+            "p_p_lifecycle": "2",
+            "p_p_resource_id": "getLecturersURL",
+            "query": name_part
+        }).json()
+    except ConnectionError:
+        return None
 
 def get_lecturers_schedule(prepod_login, type, weekday=None, next=False):
-    params = {
-        "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
-        "p_p_lifecycle": "2",
-        "p_p_resource_id": "schedule" if type == "l-classes" else "examSchedule"
-    }
-    data = {
-      "prepodLogin": prepod_login
-    }
-
-    response = post(url=LECTURERS_SCHEDULE_URL, params=params, data=data).json()
+    try:
+        response = post(url=LECTURERS_SCHEDULE_URL, params={
+            "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
+            "p_p_lifecycle": "2",
+            "p_p_resource_id": "schedule" if type == "l-classes" else "examSchedule"
+        }, data={
+            "prepodLogin": prepod_login
+        }).json()
+    except ConnectionError:
+        return "Сайт kai.ru не отвечает🤷🏼‍♀️"
 
     return beautify_lecturers_classes(response, weekday, next) if type == "l-classes" else beautify_lecturers_exams(response)
 
@@ -205,17 +216,16 @@ def beautify_lecturers_classes(json_response, weekday, next):
     
     # Finnaly, setting subjects themselves
     for subject in json_response[str(weekday)]:
-        if previous_time == subject["dayTime"]:
-            continue
+        if previous_time == subject["dayTime"]: continue
         
         lecturerSubject = LecturerSubject()
 
-        lecturerSubject.set_time(subject["dayTime"])
-        lecturerSubject.set_building(subject["buildNum"])
-        lecturerSubject.set_auditorium(subject["audNum"])
-        lecturerSubject.set_dates(subject["dayDate"])
-        lecturerSubject.set_title(subject["disciplName"])
-        lecturerSubject.set_type(subject["disciplType"])
+        lecturerSubject.time = subject["dayTime"]
+        lecturerSubject.building = subject["buildNum"]
+        lecturerSubject.auditorium = subject["audNum"]
+        lecturerSubject.dates = subject["dayDate"]
+        lecturerSubject.title = subject["disciplName"]
+        lecturerSubject.type = subject["disciplType"]
         
         previous_time = subject["dayTime"]
         
@@ -224,7 +234,7 @@ def beautify_lecturers_classes(json_response, weekday, next):
                 lecturerSubject.groups.append(another_subject["group"])
 
         schedule = "".join([schedule, lecturerSubject.get()])
-
+    
     return "".join([
         "*{weekday}, {day} {month}*".format(
             weekday=WEEKDAYS[weekday],
@@ -239,7 +249,7 @@ def beautify_lecturers_exams(json_response):
     
     if not json_response:
         return "Нет данных."
-
+    
     # Removing extraspaces & standardizing values to string type
     json_response = [
         { key: " ".join(str(value).split()) for key, value in subject.items() } for subject in json_response
@@ -249,7 +259,7 @@ def beautify_lecturers_exams(json_response):
         time_place = "\n\n*[ {date} ][ {time} ][ {building} ][ {auditorium} ]*".format(
             date=subject["examDate"],
             time=subject["examTime"],
-            building="".join([subject["buildNum"], "ка"]),  # Make buildings look beautiful
+            building="{}ка".format(subject["buildNum"]),  # Make buildings look beautiful
             auditorium=subject["audNum"]
         )
         
@@ -284,9 +294,9 @@ def get_subject_score(scoretable, subjects_num):
 def clarify_markdown(string):
     is_single = False
     
-    for letter_index in range(len(string)):
-        if string[letter_index] in [ "*", "_" ]:
-            index = letter_index
+    for index, letter in enumerate(string):
+        if letter in [ "*", "_" ]:
+            index = index
             is_single = not is_single
     
     return "".join([string[:index], "\\", string[index:]]) if is_single else string
@@ -308,6 +318,7 @@ class Metrics:
         self._start = 0
         self._settings = 0
         self._unsetup = 0
+        self._edit = 0
         self._help = 0
         self._donate = 0
         self._unknown = 0
@@ -365,6 +376,10 @@ class Metrics:
         return self._unsetup
     
     @property
+    def edit(self):
+        return self._edit
+    
+    @property
     def help(self):
         return self._help
     
@@ -391,8 +406,9 @@ class Metrics:
             self._start +
             self._settings +
             self._unsetup +
-            self._donate +
+            self._edit +
             self._help +
+            self._donate +
             self._unknown
         )
     
@@ -410,6 +426,7 @@ class Metrics:
         self._start = 0
         self._settings = 0
         self._unsetup = 0
+        self._edit = 0
         self._help = 0
         self._donate = 0
         self._unknown = 0
@@ -442,6 +459,8 @@ class Metrics:
             self._settings += 1
         elif command == "unsetup":
             self._unsetup += 1
+        elif command == "edit":
+            self._edit += 1
         elif command == "help":
             self._help += 1
         elif command == "donate":

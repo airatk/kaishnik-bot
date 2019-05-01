@@ -4,9 +4,9 @@ from telebot.types import InlineKeyboardButton
 def notes_chooser():
     notes_chooser_keyboard = InlineKeyboardMarkup()
     
-    notes_chooser_keyboard.row(InlineKeyboardButton(text="Показать", callback_data="show-note"))
-    notes_chooser_keyboard.row(InlineKeyboardButton(text="Добавить", callback_data="add-note"))
-    notes_chooser_keyboard.row(InlineKeyboardButton(text="Удалить", callback_data="delete-note"))
+    notes_chooser_keyboard.row(InlineKeyboardButton(text="показать", callback_data="show-note"))
+    notes_chooser_keyboard.row(InlineKeyboardButton(text="добавить", callback_data="add-note"))
+    notes_chooser_keyboard.row(InlineKeyboardButton(text="удалить", callback_data="delete-note"))
     
     return notes_chooser_keyboard
 
@@ -23,14 +23,14 @@ def notes_list_dialer(notes, action):
     notes_list_dialer_keyboard.add(*[
         InlineKeyboardButton(
             text="{note}{ellipsis}".format(
-                note=notes[number][:25].replace("*", "").replace("_", "").replace("\\", ""),
-                ellipsis="…" if len(notes[number]) > 25 else ""
+                note=note[:25].replace("*", "").replace("_", "").replace("\\", ""),
+                ellipsis="…" if len(note) > 25 else ""
             ),
             callback_data="{action}-{number}".format(
                 number=number,
                 action=action
             )
-        ) for number in range(len(notes))
+        ) for number, note in enumerate(notes)
     ])
     
     return notes_list_dialer_keyboard

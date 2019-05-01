@@ -7,11 +7,11 @@ from bot.constants import DORMS
 
 def choose_location_type():
     location_type_keyboard = InlineKeyboardMarkup()
-
+    
     location_type_keyboard.row(InlineKeyboardButton(text="Учебные здания и СК", callback_data="buildings_type"))
     location_type_keyboard.row(InlineKeyboardButton(text="Библиотеки", callback_data="libraries_type"))
     location_type_keyboard.row(InlineKeyboardButton(text="Общежития", callback_data="dorms_type"))
-
+    
     return location_type_keyboard
 
 def buildings_dialer():
@@ -23,7 +23,7 @@ def buildings_dialer():
             callback_data="buildings {}".format(building)
         ) for building in BUILDINGS
     ])
-
+    
     return buildings_dialer_keyboard
 
 def libraries_dialer():
@@ -35,7 +35,7 @@ def libraries_dialer():
             callback_data="libraries {}".format(library)
         ) for library in LIBRARIES
     ])
-
+    
     return libraries_dialer_keyboard
 
 def dorms_dialer():
@@ -47,5 +47,5 @@ def dorms_dialer():
             callback_data="dorms {}".format(dorm)
         ) for dorm in DORMS
     ])
-
+    
     return dorms_dialer_keyboard

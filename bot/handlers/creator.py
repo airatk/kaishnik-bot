@@ -1,4 +1,4 @@
-from bot import kaishnik
+from bot import kbot
 from bot import students
 from bot import metrics
 
@@ -11,12 +11,12 @@ from bot.helpers import load_from
 from datetime import datetime
 
 
-@kaishnik.message_handler(
+@kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
     commands=["creator"]
 )
 def creator(message):
-    kaishnik.send_message(
+    kbot.send_message(
         chat_id=message.chat.id,
         text=(
             "*Control panel*\n"         # {} - required, [] - optional
@@ -47,7 +47,7 @@ def creator(message):
     )
 
 
-@kaishnik.message_handler(
+@kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
     commands=["users"]
 )
@@ -55,7 +55,7 @@ def users(message):
     institutes_stats = [ students[user].institute for user in students ]
     years_stats = [ students[user].year for user in students ]
     
-    kaishnik.send_message(
+    kbot.send_message(
         chat_id=message.chat.id,
         text=(
             "*Users*\n"
@@ -95,7 +95,7 @@ def users(message):
         parse_mode="Markdown"
     )
 
-@kaishnik.message_handler(
+@kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
     commands=["metrics"]
 )
@@ -103,7 +103,7 @@ def get_metrics(message):
     if "drop" in message.text:
         metrics.zerofy()
     
-    kaishnik.send_message(
+    kbot.send_message(
         chat_id=message.chat.id,
         text=(
             "*Metrics*\n"
@@ -123,6 +123,7 @@ def get_metrics(message):
             "/settings: {}\n"
             "unsetup: {}\n"
             "\n*other*\n"               ### other
+            "/edit: {}\n"
             "/help: {}\n"
             "/donate: {}\n"
             "unknown: {}\n"
@@ -139,6 +140,7 @@ def get_metrics(message):
                 metrics.start,
                 metrics.settings,
                 metrics.unsetup,
+                metrics.edit,
                 metrics.help,
                 metrics.donate,
                 metrics.unknown,
@@ -148,13 +150,13 @@ def get_metrics(message):
         parse_mode="Markdown"
     )
 
-@kaishnik.message_handler(
+@kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
     commands=["data"]
 )
 def data(message):
     def send():
-        kaishnik.send_message(
+        kbot.send_message(
             chat_id=message.chat.id,
             text=(
                 "{firstname} {lastname} @{user}\n"
@@ -165,9 +167,9 @@ def data(message):
                 "• Name: {name}\n"
                 "• Student card number: {card}\n"
                 "\n#data".format(
-                    firstname=kaishnik.get_chat(chat_id=user).first_name,
-                    lastname=kaishnik.get_chat(chat_id=user).last_name,
-                    user=kaishnik.get_chat(chat_id=user).username,
+                    firstname=kbot.get_chat(chat_id=user).first_name,
+                    lastname=kbot.get_chat(chat_id=user).last_name,
+                    user=kbot.get_chat(chat_id=user).username,
                     chatid=user,
                     institute=students[user].institute,
                     year=students[user].year,
@@ -206,19 +208,19 @@ def data(message):
                 send()
                 counter += 1
     else:
-        kaishnik.send_message(
+        kbot.send_message(
             chat_id=message.chat.id,
             text="Incorrect options!"
         )
-
-    kaishnik.send_message(
+    
+    kbot.send_message(
         chat_id=message.chat.id,
         text="*{shown}/{total}* users were shown!".format(shown=counter, total=len(students)),
         parse_mode="Markdown"
     )
 
 
-@kaishnik.message_handler(
+@kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
     commands=["clear"]
 )
@@ -227,14 +229,14 @@ def clear(message):
     
     for user in list(students):
         try:
-            kaishnik.get_chat(chat_id=user)
+            kbot.get_chat(chat_id=user)
         except:
             is_launched = False
         else:
             is_launched = True
         
         try:
-            kaishnik.send_chat_action(chat_id=user, action="typing")
+            kbot.send_chat_action(chat_id=user, action="typing")
             
             if not is_launched:
                 raise Exception()
@@ -244,7 +246,7 @@ def clear(message):
         except Exception:
             is_cleared = True
             
-            kaishnik.send_message(
+            kbot.send_message(
                 chat_id=message.chat.id,
                 text=(
                     "{first_name} {last_name} @{user}\n"
@@ -255,9 +257,9 @@ def clear(message):
                     "• Name: {name}\n"
                     "• Student card number: {student_card_number}\n"
                     "\n#erased".format(
-                        first_name=kaishnik.get_chat(chat_id=user).first_name if is_launched else "None",
-                        last_name=kaishnik.get_chat(chat_id=user).last_name if is_launched else "None",
-                        user=kaishnik.get_chat(chat_id=user).username if is_launched else "None",
+                        first_name=kbot.get_chat(chat_id=user).first_name if is_launched else "None",
+                        last_name=kbot.get_chat(chat_id=user).last_name if is_launched else "None",
+                        user=kbot.get_chat(chat_id=user).username if is_launched else "None",
                         chat_id=user,
                         institute=students[user].institute,
                         year=students[user].year,
@@ -273,17 +275,17 @@ def clear(message):
     save_to(filename="data/users", object=students)
     
     if is_cleared:
-        kaishnik.send_message(
+        kbot.send_message(
             chat_id=message.chat.id,
             text="Cleared!"
         )
     else:
-        kaishnik.send_message(
+        kbot.send_message(
             chat_id=message.chat.id,
             text="No one has been cleared!"
         )
 
-@kaishnik.message_handler(
+@kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
     commands=["erase"]
 )
@@ -292,50 +294,51 @@ def erase(message):
         chat_id = int(message.text.replace("/erase ", ""))
     except ValueError:
         chat_id = 0
-
+    
     try:
         del students[chat_id]
     except KeyError:
-        kaishnik.send_message(
+        kbot.send_message(
             chat_id=message.chat.id,
-            text="There is no such a chat ID!"
+            text="There is *{}* chat ID!".format(chat_id),
+            parse_mode="Markdown"
         )
     else:
         save_to(filename="data/users", object=students)
         
-        kaishnik.send_message(
+        kbot.send_message(
             chat_id=message.chat.id,
             text="{chat_id} was #erased!".format(chat_id=chat_id)
         )
 
-@kaishnik.message_handler(
+@kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
     commands=["drop"]
 )
 def drop(message):
     if "all" not in message.text:
-        kaishnik.send_message(
+        kbot.send_message(
             chat_id=message.chat.id,
             text="If you are sure to drop all users' data, type */drop all*",
             parse_mode="Markdown"
         )
     else:
         for user in list(students):
-            kaishnik.send_message(
+            kbot.send_message(
                 chat_id=user,
                 text="Текущие настройки сброшены, нужно обновить данные. Отправь /settings",
                 disable_notification=True
             )
             
             if students[user].notes != []:
-                kaishnik.send_message(
+                kbot.send_message(
                     chat_id=user,
                     text="Держи свои заметки, чтобы ничего не потерялось:",
                     disable_notification=True
                 )
                 
                 for note in students[user].notes:
-                    kaishnik.send_message(
+                    kbot.send_message(
                         chat_id=user,
                         text=note,
                         parse_mode="Markdown",
@@ -346,13 +349,13 @@ def drop(message):
         
         save_to(filename="data/users", object=students)
 
-        kaishnik.send_message(
+        kbot.send_message(
             chat_id=message.chat.id,
             text="All data was #dropped!"
         )
 
 
-@kaishnik.message_handler(
+@kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
     commands=["broadcast"]
 )
@@ -360,14 +363,14 @@ def broadcast(message):
     broadcast_message = message.text[11:]
     
     if broadcast_message == "":
-        kaishnik.send_message(
+        kbot.send_message(
             chat_id=message.chat.id,
             text="No broadcast message was found! It's supposed to be right after the */broadcast* command.",
             parse_mode="Markdown"
         )
     else:
         for user in students:
-            kaishnik.send_message(
+            kbot.send_message(
                 chat_id=user,
                 text=(
                     "*Телеграмма от разработчика*\n"
@@ -378,19 +381,19 @@ def broadcast(message):
                 parse_mode="Markdown",
                 disable_web_page_preview=True
             )
-
-        kaishnik.send_message(
+        
+        kbot.send_message(
             chat_id=message.chat.id,
             text="Done! Sent to each & every user."
         )
 
-@kaishnik.message_handler(
+@kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
     commands=["reverse"]
 )
 def reverse(message):
     if "week" not in message.text:
-        kaishnik.send_message(
+        kbot.send_message(
             chat_id=message.chat.id,
             text="If you are sure to reverse type of a week, type */reverse week*",
             parse_mode="Markdown"
@@ -398,7 +401,7 @@ def reverse(message):
     else:
         save_to(filename="data/is_week_reversed", object=False if load_from(filename="data/is_week_reversed") else True)
         
-        kaishnik.send_message(
+        kbot.send_message(
             chat_id=message.chat.id,
             text="Week type was reversed!"
         )

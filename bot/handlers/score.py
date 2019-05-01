@@ -1,116 +1,151 @@
-from bot import kaishnik
+from bot import kbot
 from bot import students
 from bot import metrics
-from bot import on_callback_query
+from bot import hide_loading_notification
 
 from bot.keyboards.score import subject_chooser
 from bot.keyboards.score import semester_dialer
 
 from bot.helpers import get_subject_score
 
-@kaishnik.message_handler(commands=["score"])
+
+@kbot.message_handler(
+    commands=["score"],
+    func=lambda message: students[message.chat.id].previous_message is None
+)
 def score(message):
-    kaishnik.send_chat_action(chat_id=message.chat.id, action="typing")
+    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
     
     metrics.increment("score")
     
+    students[message.chat.id].previous_message = "/score"  # Gate System (GS)
+    
     if students[message.chat.id].student_card_number == "unset":
-        kaishnik.send_message(
+        kbot.send_message(
             chat_id=message.chat.id,
             text="Номер зачётки не указан, но ты можешь это исправить — отправь /card"
         )
+    
+        students[message.chat.id].previous_message = None  # Gate System (GS)
     elif students[message.chat.id].institute_id == "КИТ":
-        kaishnik.send_message(
+        kbot.send_message(
             chat_id=message.chat.id,
             text="Не доступно :("
         )
+
+        students[message.chat.id].previous_message = None  # Gate System (GS)
     else:
-        kaishnik.send_message(
+        kbot.send_message(
             chat_id=message.chat.id,
             text="Выбери номер семестра:",
             reply_markup=semester_dialer(int(students[message.chat.id].year)*2 + 1)
         )
 
-@kaishnik.callback_query_handler(func=lambda callback: "semester" in callback.data)
+@kbot.callback_query_handler(
+    func=lambda callback:
+        students[callback.message.chat.id].previous_message == "/score" and
+        "semester" in callback.data
+)
 def semester_subjects(callback):
     semester_number = callback.data.replace("semester ", "")
+    scoretable = students[callback.message.chat.id].get_scoretable(semester_number)
     
-    try:
-        # There might be no data for the asked semester
-        if students[callback.message.chat.id].get_scoretable(semester_number) is not None:
-            kaishnik.edit_message_text(
-                chat_id=callback.message.chat.id,
-                message_id=callback.message.message_id,
-                text="Выбери предмет:",
-                reply_markup=subject_chooser(
-                    scoretable=students[callback.message.chat.id].get_scoretable(semester_number),
-                    semester=semester_number
-                )
-            )
-        else:
-            kaishnik.edit_message_text(
-                chat_id=callback.message.chat.id,
-                message_id=callback.message.message_id,
-                text="Нет данных."
-            )
-    except Exception:
-        kaishnik.edit_message_text(
+    if scoretable is None:
+        kbot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
-            text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
+            text="Сайт kai.ru не отвечает🤷🏼‍♀️",
             disable_web_page_preview=True
         )
-
-    on_callback_query(id=callback.id)
-
-@kaishnik.callback_query_handler(func=lambda callback: "scoretable all" in callback.data)
-def show_all_score(callback):
-    kaishnik.delete_message(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id
-    )
     
+        students[callback.message.chat.id].previous_message = None  # Gate System (GS)
+    elif scoretable != []:
+        kbot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Выбери предмет:",
+            reply_markup=subject_chooser(scoretable=scoretable, semester=semester_number)
+        )
+    else:
+        kbot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Нет данных."
+        )
+        
+        students[callback.message.chat.id].previous_message = None  # Gate System (GS)
+    
+    hide_loading_notification(id=callback.id)
+
+@kbot.callback_query_handler(
+    func=lambda callback:
+        students[callback.message.chat.id].previous_message == "/score" and
+        "scoretable all" in callback.data
+)
+def show_all_score(callback):
     callback_data = callback.data.replace("scoretable all ", "").split()
     
-    try:
-        for subject in range(int(callback_data[0])):
-            kaishnik.send_message(
+    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+    
+    for subject in range(int(callback_data[0])):
+        scoretable = students[callback.message.chat.id].get_scoretable(callback_data[1])
+        
+        if scoretable is None:
+            kbot.send_message(
                 chat_id=callback.message.chat.id,
-                text=get_subject_score(
-                    scoretable=students[callback.message.chat.id].get_scoretable(callback_data[1]),
-                    subjects_num=subject
-                ),
+                text="Сайт kai.ru не отвечает🤷🏼‍♀️",
+                disable_web_page_preview=True
+            )
+        elif scoretable != []:
+            kbot.send_message(
+                chat_id=callback.message.chat.id,
+                text=get_subject_score(scoretable=scoretable, subjects_num=subject),
                 parse_mode="Markdown"
             )
-    except Exception:
-        kaishnik.send_message(
-            chat_id=callback.message.chat.id,
-            text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
-            disable_web_page_preview=True
-        )
+        else:
+            kbot.send_message(
+                chat_id=callback.message.chat.id,
+                text="Нет данных."
+            )
+    
+    students[callback.message.chat.id].previous_message = None  # Gate System (GS)
+    
+    hide_loading_notification(id=callback.id)
 
-    on_callback_query(id=callback.id)
-
-@kaishnik.callback_query_handler(func=lambda callback: "scoretable" in callback.data)
+@kbot.callback_query_handler(
+    func=lambda callback:
+        students[callback.message.chat.id].previous_message == "/score" and
+        "scoretable" in callback.data
+)
 def show_score(callback):
     callback_data = callback.data.replace("scoretable ", "").split()
+    scoretable = students[callback.message.chat.id].get_scoretable(callback_data[1])
     
-    try:
-        kaishnik.edit_message_text(
+    if scoretable is not None:
+        kbot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
-            text=get_subject_score(
-                scoretable=students[callback.message.chat.id].get_scoretable(callback_data[1]),
-                subjects_num=int(callback_data[0])
-            ),
+            text=get_subject_score(scoretable=scoretable, subjects_num=int(callback_data[0])),
             parse_mode="Markdown"
         )
-    except Exception:
-        kaishnik.edit_message_text(
+    elif scoretable != []:
+        kbot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
-            text="Сайт kai.ru не отвечает ¯\\_(ツ)_/¯",
+            text="Сайт kai.ru не отвечает🤷🏼‍♀️",
             disable_web_page_preview=True
         )
+    else:
+        kbot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Нет данных."
+        )
+    
+    students[callback.message.chat.id].previous_message = None  # Gate System (GS)
+    
+    hide_loading_notification(id=callback.id)
 
-    on_callback_query(id=callback.id)
+
+@kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/score")
+def gs_score(message): kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)

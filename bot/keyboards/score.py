@@ -10,7 +10,7 @@ def semester_dialer(semesters_number):
             callback_data="semester {}".format(semester)
         ) for semester in range(1, semesters_number)
     ])
-
+    
     return semester_dialer_keyboard
 
 def subject_chooser(scoretable, semester):
@@ -26,5 +26,5 @@ def subject_chooser(scoretable, semester):
             callback_data="scoretable {n} {s}".format(n=int(subject[0]) - 1, s=semester)  # begin counting from 0, not from 1
         ) for subject in scoretable
     ])
-
+    
     return subject_chooser_keyboard
