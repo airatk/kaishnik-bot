@@ -86,9 +86,11 @@ def set_kit(callback):
     
     kbot.send_message(
         chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
         text="Отправь номер своей группы."
     )
+
+    hide_loading_notification(id=callback.id)
+
 
 @kbot.message_handler(
     func=lambda message:
@@ -126,7 +128,7 @@ def set_kit_group_number(message):
                 disable_web_page_preview=True
             )
             
-            students[message.chat.id].previous_message = None  # Gates System (GS)
+            students[message.chat.id] = Student()  # Drop all entered data
     else:
         kbot.send_message(
             chat_id=message.chat.id,
@@ -167,7 +169,7 @@ def set_institute(callback):
             disable_web_page_preview=True
         )
 
-        students[callback.message.chat.id].previous_message = None  # Gates System (GS)
+        students[callback.message.chat.id] = Student()  # Drop all entered data
 
     hide_loading_notification(id=callback.id)
 
@@ -190,7 +192,7 @@ def set_year(callback):
             disable_web_page_preview=True
         )
     
-        students[callback.message.chat.id].previous_message = None  # Gates System (GS)
+        students[callback.message.chat.id] = Student()  # Drop all entered data
     elif groups != {}:
         kbot.send_message(
             chat_id=callback.message.chat.id,
@@ -225,7 +227,7 @@ def set_group_number(callback):
                 disable_web_page_preview=True
             )
         
-            students[callback.message.chat.id].previous_message = None  # Gates System (GS)
+            students[callback.message.chat.id] = Student()  # Drop all entered data
         elif names != {}:
             students[callback.message.chat.id].names = { name_id: name for name, name_id in names.items() }
             
@@ -240,7 +242,7 @@ def set_group_number(callback):
                 text="Здесь ничего нет. Начни сначала."
             )
 
-            students[callback.message.chat.id].previous_message = None  # Gates System (GS)
+            students[callback.message.chat.id] = Student()  # Drop all entered data
     else:
         kbot.send_message(
             chat_id=callback.message.chat.id,
@@ -248,7 +250,7 @@ def set_group_number(callback):
             disable_web_page_preview=True
         )
 
-        students[callback.message.chat.id].previous_message = None  # Gates System (GS)
+        students[callback.message.chat.id] = Student()  # Drop all entered data
 
     hide_loading_notification(id=callback.id)
 
@@ -281,7 +283,7 @@ def set_name(callback):
             disable_web_page_preview=True
         )
 
-        students[callback.message.chat.id].previous_message = None  # Gates System (GS)
+        students[callback.message.chat.id] = Student()  # Drop all entered data
 
     hide_loading_notification(id=callback.id)
 
@@ -323,15 +325,13 @@ def set_student_card_number(message):
         scoretable = students[message.chat.id].get_scoretable(prelast_semester)
         
         if scoretable is None:
-            students[message.chat.id].student_card_number = None
-            
             kbot.send_message(
                 chat_id=message.chat.id,
                 text="Сайт kai.ru не отвечает🤷🏼‍♀️",
                 disable_web_page_preview=True
             )
         
-            students[message.chat.id].previous_message = None  # Gates System (GS)
+            students[message.chat.id] = Student()  # Drop all entered data
         elif scoretable != []:
             students[message.chat.id].previous_message = None  # Gates System (GS)
             
@@ -349,7 +349,6 @@ def set_student_card_number(message):
         else:
             students[message.chat.id].student_card_number = None
             incorrect_card()
-
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -381,6 +380,7 @@ def save_without_student_card_number(callback):
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/settings")
 def gs_settings(message): kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].is_not_set_up())
 @kbot.callback_query_handler(func=lambda callback: students[callback.message.chat.id].is_not_set_up())
