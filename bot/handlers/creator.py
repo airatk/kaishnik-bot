@@ -165,7 +165,10 @@ def data(message):
                 "• Year: {year}\n"
                 "• Group: {group_number}\n"
                 "• Name: {name}\n"
-                "• Student card number: {card}\n"
+                "• Student card number: {card}\n\n"
+                "• Number of notes: {notes_number}\n"
+                "• Number of edited classes: {edited_classes_number}\n"
+                "• Number of fellow students: {fellow_students_number}\n"
                 "\n#data".format(
                     firstname=kbot.get_chat(chat_id=user).first_name,
                     lastname=kbot.get_chat(chat_id=user).last_name,
@@ -175,7 +178,10 @@ def data(message):
                     year=students[user].year,
                     group_number=students[user].group_number,
                     name=students[user].name,
-                    card=students[user].student_card_number
+                    card=students[user].student_card_number,
+                    notes_number=len(students[user].notes),
+                    edited_classes_number=len(students[user].edited_subjects),
+                    fellow_students_number=len(students[user].names)
                 )
             )
         )
