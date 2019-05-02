@@ -2,6 +2,8 @@ from bot import kbot
 from bot import students
 from bot import metrics
 
+from bot.student import Student
+
 from bot.constants import CREATOR
 from bot.constants import TOKEN
 
@@ -351,7 +353,7 @@ def drop(message):
                         disable_notification=True
                     )
         
-            del students[user]
+            students[user] = Student()
         
         save_to(filename="data/users", object=students)
 
