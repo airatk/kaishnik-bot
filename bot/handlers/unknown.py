@@ -14,16 +14,7 @@ from random import choice
         "voice", "video_note", "location", "contact"
     ]
 )
-def unknown(non_text_message):
-    kbot.send_chat_action(chat_id=non_text_message.chat.id, action="typing")
-    
-    metrics.increment("unknown")
-    
-    kbot.send_message(
-        chat_id=non_text_message.chat.id,
-        text=choice(REPLIES_TO_UNKNOWN_MESSAGE),
-        parse_mode="Markdown"
-    )
+def unknown(non_text_message): kbot.delete_message(chat_id=non_text_message.chat.id, message_id=non_text_message.message_id)
 
 @kbot.message_handler(func=lambda message: message.text.startswith("/"))
 def unknown(command):

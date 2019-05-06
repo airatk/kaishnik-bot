@@ -176,13 +176,6 @@ class Student:
         self._previous_message = message
     
     
-    # /edit
-    def add_edited_class(self):
-        self._edited_subjects.append(self._edited_class)
-        
-        self._edited_class = None
-        self._previous_message = None  # Gate System (GS)
-    
     # /classes & /exams
     def get_schedule(self, type, weekday=None, next=False):
         try:
@@ -238,7 +231,7 @@ class Student:
         soup = BeautifulSoup(page, features="html.parser")
         table = soup.html.find("table", { "id": "reyt" })
         
-        if not table: return list()  # Returns empty list if student card number is incorrect
+        if not table: return []  # Returns empty list if student card number is incorrect
         
         subjects = []
         for row in table.find_all("tr"):

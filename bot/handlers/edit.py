@@ -228,7 +228,10 @@ def finish_edit(callback):
         
         students[message.chat.id].edited_class.department = ""
 
-    students[message.chat.id].add_edited_class()  # Gate System (GS) thing is inside
+    students[message.chat.id].edited_subjects.append(students[message.chat.id].edited_class)
+    students[message.chat.id].edited_class = None
+    
+    students[message.chat.id].previous_message = None  # Gate System (GS)
     
     save_to(filename="data/users", object=students)
     
@@ -266,7 +269,7 @@ def delete_edit(callback):
         students[callback.message.chat.id].previous_message == "/edit" and
         "delete-edit-" in callback.data
 )
-def delete_one_edited(callback):
+def delete_edited(callback):
     kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     
     if "all" in callback.data:
