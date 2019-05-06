@@ -80,7 +80,7 @@ def set_kit(callback):
         student_card_number="unknown"
     )
     
-    students[callback.message.chat.id].previous_message = "/settings"  # Gate System (GS)
+    students[callback.message.chat.id].previous_message = "/settings set-kit-group"  # Gate System (GS)
     
     kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     
@@ -92,11 +92,7 @@ def set_kit(callback):
     hide_loading_notification(id=callback.id)
 
 
-@kbot.message_handler(
-    func=lambda message:
-        students[message.chat.id].previous_message == "/settings" and
-        students[message.chat.id].institute_id == "КИТ" and students[message.chat.id].group_number is None
-)
+@kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/settings set-kit-group")
 def set_kit_group_number(message):
     kbot.send_chat_action(chat_id=message.chat.id, action="typing")
     
@@ -274,6 +270,8 @@ def set_name(callback):
             ),
             reply_markup=set_card_skipper()
         )
+    
+        students[callback.message.chat.id].previous_message = "/settings student-card-number"  # Gate System (GS)
     else:
         kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     
@@ -289,13 +287,8 @@ def set_name(callback):
 
 @kbot.message_handler(
     func=lambda message:
-        (
-            students[message.chat.id].previous_message == "/settings" and
-            students[message.chat.id].name is not None and students[message.chat.id].student_card_number is None
-        ) or (
-            students[message.chat.id].previous_message == "/card" and
-            students[message.chat.id].student_card_number == "unset"
-        )
+        students[message.chat.id].previous_message == "/settings student-card-number" or
+        students[message.chat.id].previous_message == "/card" and students[message.chat.id].student_card_number == "unset"
 )
 def set_student_card_number(message):
     def incorrect_card():

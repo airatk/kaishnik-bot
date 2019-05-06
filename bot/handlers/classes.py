@@ -52,7 +52,8 @@ def one_day_schedule(callback):
         message_id=callback.message.message_id,
         text=students[callback.message.chat.id].get_schedule(
             type="classes",
-            weekday=int(callback.data[11:])
+            weekday=int(callback.data[11:]),
+            next="next" in callback.data
         ),
         parse_mode="Markdown",
         disable_web_page_preview=True
