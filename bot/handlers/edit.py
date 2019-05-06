@@ -86,7 +86,7 @@ def edit_weekday(callback):
         "edit-weekday-" in callback.data
 )
 def edit_time(callback):
-    students[callback.message.chat.id].edited_class.weekday = callback.data.replace("edit-weekday-", "")
+    students[callback.message.chat.id].edited_class.weekday = int(callback.data.replace("edit-weekday-", ""))
     
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
