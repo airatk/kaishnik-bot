@@ -32,19 +32,17 @@ def settings(message):
     
     students[message.chat.id].previous_message = "/settings"  # Gate System (GS)
     
-    # Show "cancel" option for old users
-    is_old = not students[message.chat.id].is_not_set_up()
-    
     kbot.send_message(
         chat_id=message.chat.id,
         text="{warning}Выбери своё подразделение:".format(
+            # Show warning for old users
             warning=(
                 "Все текущие данные, включая "
                 "заметки, изменённое расписание и номер зачётки, "
-                "будут стёрты.\n\n" if is_old else ""
+                "будут стёрты.\n\n" if not students[message.chat.id].is_not_set_up() else ""
             )
         ),
-        reply_markup=institute_setter(is_old)
+        reply_markup=institute_setter()
     )
 
 

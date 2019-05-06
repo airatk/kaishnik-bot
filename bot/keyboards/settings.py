@@ -3,11 +3,10 @@ from telebot.types import InlineKeyboardButton
 
 from bot.constants import INSTITUTES
 
-def institute_setter(is_old):
+def institute_setter():
     institute_setter_keyboard = InlineKeyboardMarkup(row_width=1)
     
-    # Show "cancel" option to old users
-    if is_old: institute_setter_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-settings"))
+    institute_setter_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-settings"))
     
     institute_setter_keyboard.add(*[
         InlineKeyboardButton(
@@ -21,6 +20,8 @@ def institute_setter(is_old):
 def year_setter(years):
     year_setter_keyboard = InlineKeyboardMarkup(row_width=2)
     
+    year_setter_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-settings"))
+    
     year_setter_keyboard.add(*[
         InlineKeyboardButton(
             text=year,
@@ -32,6 +33,8 @@ def year_setter(years):
 
 def group_number_setter(groups):
     group_number_setter_keyboard = InlineKeyboardMarkup(row_width=2)
+    
+    group_number_setter_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-settings"))
     
     group_number_setter_keyboard.add(*[
         InlineKeyboardButton(
@@ -45,6 +48,8 @@ def group_number_setter(groups):
 def name_setter(names):
     name_setter_keyboard = InlineKeyboardMarkup(row_width=1)
     
+    name_setter_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-settings"))
+    
     name_setter_keyboard.add(*[
         InlineKeyboardButton(
             text=name,
@@ -56,6 +61,8 @@ def name_setter(names):
 
 def set_card_skipper():
     set_card_skipper_keyboard = InlineKeyboardMarkup()
+    
+    set_card_skipper_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-settings"))
     
     set_card_skipper_keyboard.row(InlineKeyboardButton(text="пропустить", callback_data="skip-set-card"))
     
