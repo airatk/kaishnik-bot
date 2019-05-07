@@ -26,8 +26,6 @@ from re import fullmatch
         students[message.chat.id].previous_message is None
 )
 def settings(message):
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     metrics.increment("settings")
     
     students[message.chat.id].previous_message = "/settings"  # Gate System (GS)
@@ -35,8 +33,7 @@ def settings(message):
     kbot.send_message(
         chat_id=message.chat.id,
         text="{warning}Выбери своё подразделение:".format(
-            # Show warning for old users
-            warning=(
+            warning=(  # Show warning for old users
                 "Все текущие данные, включая "
                 "заметки, изменённое расписание и номер зачётки, "
                 "будут стёрты.\n\n" if not students[message.chat.id].is_not_set_up() else ""
@@ -48,13 +45,13 @@ def settings(message):
 
 @kbot.callback_query_handler(
     func=lambda callback:
+        students[callback.message.chat.id].previous_message is not None and
         students[callback.message.chat.id].previous_message.startswith("/settings") and
         callback.data == "cancel-settings"
 )
 def cancel_setting_process(callback):
-    kbot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    
     kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+    
     kbot.send_message(chat_id=callback.message.chat.id, text="Отменено!")
     
     students[callback.message.chat.id].previous_message = None  # Gates System (GS)
@@ -68,8 +65,6 @@ def cancel_setting_process(callback):
         callback.data == "set-institute-КИТ"
 )
 def set_kit(callback):
-    kbot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    
     students[callback.message.chat.id] = Student(
         institute="КИТ",
         institute_id="КИТ",
@@ -92,8 +87,6 @@ def set_kit(callback):
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/settings set-kit-group")
 def set_kit_group_number(message):
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     # Cleanning the chat
     kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
@@ -143,7 +136,7 @@ def set_institute(callback):
         institute_id=institute_id
     )
     
-    students[callback.message.chat.id].previous_message = "/settings"  # Gate System (GS)
+    students[callback.message.chat.id].previous_message = "/settings"  # Gates System (GS)
     
     years = students[callback.message.chat.id].get_dictionary_of(type="p_kurs")
     
@@ -209,10 +202,10 @@ def set_year(callback):
 def set_group_number(callback):
     students[callback.message.chat.id].group_number = callback.data.replace("set-group-", "")
     
-    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    
     if students[callback.message.chat.id].group_number is not None:
         names = students[callback.message.chat.id].get_dictionary_of(type="p_stud")
+        
+        kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
         
         if names is None:
             kbot.send_message(
@@ -238,6 +231,8 @@ def set_group_number(callback):
 
             students[callback.message.chat.id] = Student()  # Drop all entered data
     else:
+        kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+        
         kbot.send_message(
             chat_id=callback.message.chat.id,
             text="Сайт kai.ru не отвечает🤷🏼‍♀️",
@@ -300,13 +295,11 @@ def set_student_card_number(message):
             reply_markup=set_card_skipper()
         )
     
-    # Cleanning the chat
-    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-    
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     if not fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9][0-9]?", message.text):
+        # Cleanning the chat
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+        
         incorrect_card()
     else:
         students[message.chat.id].student_card_number = message.text
@@ -314,6 +307,10 @@ def set_student_card_number(message):
         # The very 1st semester might be empty, so check the 1st one of the current year
         prelast_semester = int(students[message.chat.id].year)*2 - 1
         scoretable = students[message.chat.id].get_scoretable(prelast_semester)
+        
+        # Cleanning the chat
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
         
         if scoretable is None:
             kbot.send_message(
@@ -369,7 +366,11 @@ def save_without_student_card_number(callback):
     hide_loading_notification(id=callback.id)
 
 
-@kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/settings")
+@kbot.message_handler(
+    func=lambda message:
+        students[message.chat.id].previous_message is not None and
+        students[message.chat.id].previous_message.startswith("/settings")
+)
 def gs_settings(message): kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
@@ -380,8 +381,6 @@ def deny_access_to_unsetup(callback):
         message = callback.message
     except Exception:
         message = callback
-    
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
 
     metrics.increment("unsetup")
 
