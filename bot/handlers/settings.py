@@ -48,7 +48,7 @@ def settings(message):
 
 @kbot.callback_query_handler(
     func=lambda callback:
-        students[callback.message.chat.id].previous_message == "/settings" and
+        students[callback.message.chat.id].previous_message.startswith("/settings") and
         callback.data == "cancel-settings"
 )
 def cancel_setting_process(callback):
@@ -344,7 +344,7 @@ def set_student_card_number(message):
 @kbot.callback_query_handler(
     func=lambda callback:
         (
-            students[callback.message.chat.id].previous_message == "/settings" or
+            students[callback.message.chat.id].previous_message == "/settings student-card-number" or
             students[callback.message.chat.id].previous_message == "/card"
         ) and callback.data == "skip-set-card"
 )

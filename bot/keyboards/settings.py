@@ -62,8 +62,6 @@ def name_setter(names):
 def set_card_skipper():
     set_card_skipper_keyboard = InlineKeyboardMarkup()
     
-    set_card_skipper_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-settings"))
-    
     set_card_skipper_keyboard.row(InlineKeyboardButton(text="пропустить", callback_data="skip-set-card"))
     
     return set_card_skipper_keyboard
