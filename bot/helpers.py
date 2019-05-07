@@ -58,68 +58,61 @@ def beautify_classes(json_response, weekday, next, edited_subjects):
             month=MONTHS[date.strftime("%m")]
         )
     
-    if str(weekday) not in json_response:
-        return "*{weekday}, {day} {month}*\n\nВыходной".format(
-            weekday=WEEKDAYS[weekday],
-            day=int(date.strftime("%d")),
-            month=MONTHS[date.strftime("%m")]
-        )
-    
-    # Removing extraspaces
-    json_response[str(weekday)] = [
-        { key: " ".join(value.split()) for key, value in subject.items() } for subject in json_response[str(weekday)]
-    ]
-
-    is_day_off = False
     subjects_list = []
     
     # Adding appropriate edited classes to schedule
     for subject in edited_subjects:
         if subject.weekday == weekday and subject.is_even == (not is_even() if next else is_even()):
             subjects_list.append((subject.begin_hour, subject))
-    
-    for subject in json_response[str(weekday)]:
-        is_day_off = "День консультаций" in subject["disciplName"] or "Военная подготовка" in subject["disciplName"]
-        if is_day_off: break  # No subjects - no schedule. For day-offs
-        
-        # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
-        if not next:
-            if subject["dayDate"] == "неч" if is_even() else subject["dayDate"] == "чет": continue
-        else:
-            if subject["dayDate"] == "неч" if not is_even() else subject["dayDate"] == "чет": continue
 
-        # Do not show subjects with certain dates (21.09) on other dates (28 сентября)
-        day_month = "{}.{}".format(int(date.strftime("%d")), date.strftime("%m"))
-        if "." in subject["dayDate"] and day_month not in subject["dayDate"]: continue
+    if str(weekday) in json_response:
+        # Removing extraspaces
+        json_response[str(weekday)] = [
+            { key: " ".join(value.split()) for key, value in subject.items() } for subject in json_response[str(weekday)]
+        ]
+        
+        for subject in json_response[str(weekday)]:
+            # No subjects - no schedule. For day-offs
+            if "День консультаций" in subject["disciplName"] or "Военная подготовка" in subject["disciplName"]: break
+            
+            # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
+            if not next:
+                if subject["dayDate"] == "неч" if is_even() else subject["dayDate"] == "чет": continue
+            else:
+                if subject["dayDate"] == "неч" if not is_even() else subject["dayDate"] == "чет": continue
 
-        studentSubject = StudentSubject()
+            # Do not show subjects with certain dates (21.09) on other dates (28 сентября)
+            day_month = "{}.{}".format(int(date.strftime("%d")), date.strftime("%m"))
+            if "." in subject["dayDate"] and day_month not in subject["dayDate"]: continue
 
-        studentSubject.time = subject["dayTime"]
-        
-        # Do not show if there is an edited alternative
-        if studentSubject.begin_hour in [ begin_hour for begin_hour, _ in subjects_list ]: continue
-        
-        studentSubject.building = subject["buildNum"]
-        studentSubject.auditorium = subject["audNum"]
-        studentSubject.dates = subject["dayDate"]
-        studentSubject.title = subject["disciplName"]
-        studentSubject.type = subject["disciplType"]
-        studentSubject.teacher = subject["prepodName"]
-        studentSubject.department = subject["orgUnitName"]
-        
-        subjects_list.append((studentSubject.begin_hour, studentSubject))
+            studentSubject = StudentSubject()
+
+            studentSubject.time = subject["dayTime"]
+            
+            # Do not show if there is an edited alternative
+            if studentSubject.begin_hour in [ begin_hour for begin_hour, _ in subjects_list ]: continue
+            
+            studentSubject.building = subject["buildNum"]
+            studentSubject.auditorium = subject["audNum"]
+            studentSubject.dates = subject["dayDate"]
+            studentSubject.title = subject["disciplName"]
+            studentSubject.type = subject["disciplType"]
+            studentSubject.teacher = subject["prepodName"]
+            studentSubject.department = subject["orgUnitName"]
+            
+            subjects_list.append((studentSubject.begin_hour, studentSubject))
     
     subjects_list.sort(key=lambda subject: subject[0])  # Sort by begin_hour
     
     schedule = "".join([ subject.get() for _, subject in subjects_list ])
-    
+
     return "".join([
         "*{weekday}, {day} {month}*".format(
             weekday=WEEKDAYS[weekday],
             day=int(date.strftime("%d")),
             month=MONTHS[date.strftime("%m")]
         ),
-        schedule if schedule != "" and not is_day_off else "\n\nВыходной"
+        schedule if schedule != "" else "\n\nВыходной"
     ])
 
 # /exams

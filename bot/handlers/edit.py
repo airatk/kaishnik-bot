@@ -26,8 +26,6 @@ from bot.helpers import save_to
     func=lambda message: students[message.chat.id].previous_message is None
 )
 def edit(message):
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     metrics.increment("edit")
     
     students[message.chat.id].previous_message = "/edit"  # Gate System (GS)

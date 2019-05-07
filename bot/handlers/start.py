@@ -9,8 +9,6 @@ from bot.helpers import save_to
 
 @kbot.message_handler(func=lambda message: message.chat.id not in students)
 def start(message):
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     metrics.increment("start")
     
     students[message.chat.id] = Student()

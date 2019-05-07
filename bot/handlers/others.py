@@ -16,8 +16,6 @@ from bot.helpers import is_even
     func=lambda message: students[message.chat.id].previous_message is None
 )
 def week(message):
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     metrics.increment("week")
     
     kbot.send_message(
@@ -31,8 +29,6 @@ def week(message):
     func=lambda message: students[message.chat.id].previous_message is None
 )
 def card(message):
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     metrics.increment("card")
     
     if students[message.chat.id].student_card_number == "unset":
@@ -68,8 +64,6 @@ def card(message):
     func=lambda message: students[message.chat.id].previous_message is None
 )
 def brs(message):
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     metrics.increment("brs")
     
     kbot.send_message(
@@ -84,8 +78,6 @@ def brs(message):
     func=lambda message: students[message.chat.id].previous_message is None
 )
 def help(message):
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     metrics.increment("help")
     
     kbot.send_message(
@@ -100,8 +92,6 @@ def help(message):
     func=lambda message: students[message.chat.id].previous_message is None
 )
 def donate(message):
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     metrics.increment("donate")
     
     kbot.send_message(

@@ -18,8 +18,6 @@ from bot.keyboards.locations import dorms_dialer
     func=lambda message: students[message.chat.id].previous_message is None
 )
 def locations(message):
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     metrics.increment("locations")
     
     students[message.chat.id].previous_message = "/locations"  # Gates System (GS)

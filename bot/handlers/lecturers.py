@@ -21,8 +21,6 @@ from datetime import datetime
     func=lambda message: students[message.chat.id].previous_message is None
 )
 def lecturers(message):
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     metrics.increment("lecturers")
     
     students[message.chat.id].previous_message = "/lecturers name"  # Gate System (GS)
@@ -34,8 +32,6 @@ def lecturers(message):
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/lecturers name")
 def find_lecturer(message):
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     names = get_lecturers_names(message.text)
     
     if names is None:

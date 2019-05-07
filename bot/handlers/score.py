@@ -14,8 +14,6 @@ from bot.helpers import get_subject_score
     func=lambda message: students[message.chat.id].previous_message is None
 )
 def score(message):
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     metrics.increment("score")
     
     students[message.chat.id].previous_message = "/score"  # Gate System (GS)

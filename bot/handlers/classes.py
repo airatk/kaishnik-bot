@@ -17,8 +17,6 @@ from re import fullmatch
     func=lambda message: students[message.chat.id].previous_message is None
 )
 def classes(message):
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     metrics.increment("classes")
     
     students[message.chat.id].previous_message = "/classes"  # Gate System (GS)
@@ -29,7 +27,8 @@ def classes(message):
         if students[message.chat.id].another_group_number_schedule is None:
             kbot.send_message(
                 chat_id=message.chat.id,
-                text="Сайт kai.ru не отвечает🤷🏼‍♀️"
+                text="Сайт kai.ru не отвечает🤷🏼‍♀️",
+                disable_web_page_preview=True
             )
             
             students[message.chat.id].previous_message = None  # Gate System (GS)
@@ -116,8 +115,6 @@ def gs_classes(message): kbot.delete_message(chat_id=message.chat.id, message_id
     func=lambda message: students[message.chat.id].previous_message is None
 )
 def exams(message):
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     metrics.increment("exams")
     
     if fullmatch("[1-59][0-6][0-9][0-9]", message.text.replace("/classes ", "")):
@@ -126,7 +123,8 @@ def exams(message):
         if students[message.chat.id].another_group_number_schedule is None:
             kbot.send_message(
                 chat_id=message.chat.id,
-                text="Сайт kai.ru не отвечает🤷🏼‍♀️"
+                text="Сайт kai.ru не отвечает🤷🏼‍♀️",
+                disable_web_page_preview=True
             )
             
             students[message.chat.id].previous_message = None  # Gate System (GS)

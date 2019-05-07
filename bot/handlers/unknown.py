@@ -18,8 +18,6 @@ def unknown(non_text_message): kbot.delete_message(chat_id=non_text_message.chat
 
 @kbot.message_handler(func=lambda message: message.text.startswith("/"))
 def unknown(command):
-    kbot.send_chat_action(chat_id=command.chat.id, action="typing")
-    
     metrics.increment("unknown")
     
     kbot.send_message(
@@ -31,8 +29,6 @@ def unknown(command):
 
 @kbot.message_handler(content_types=["text"])
 def unknown(message):
-    kbot.send_chat_action(chat_id=message.chat.id, action="typing")
-    
     metrics.increment("unknown")
     
     kbot.send_message(
