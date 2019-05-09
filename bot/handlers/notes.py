@@ -85,7 +85,7 @@ def show_note(callback):
         kbot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
-            text="{note}".format(note=students[callback.message.chat.id].notes[number]),
+            text=students[callback.message.chat.id].notes[number],
             parse_mode="Markdown"
         )
     
