@@ -3,10 +3,10 @@ from telebot.types import InlineKeyboardButton
 
 from bot.constants import INSTITUTES
 
-def institute_setter():
+def institute_setter(is_old):
     institute_setter_keyboard = InlineKeyboardMarkup(row_width=1)
     
-    institute_setter_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-settings"))
+    if is_old: institute_setter_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-settings"))
     
     institute_setter_keyboard.add(*[
         InlineKeyboardButton(

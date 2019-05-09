@@ -49,7 +49,7 @@ def settings(message):
                 "будут стёрты.\n\n" if not students[message.chat.id].is_not_set_up() else ""
             )  # Show warning to old users
         ),
-        reply_markup=institute_setter()
+        reply_markup=institute_setter(is_old=not students[message.chat.id].is_not_set_up())
     )
 
 
@@ -60,9 +60,11 @@ def settings(message):
         callback.data == "cancel-settings"
 )
 def cancel_setting_process(callback):
-    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    
-    kbot.send_message(chat_id=callback.message.chat.id, text="Отменено!")
+    kbot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="Отменено!"
+    )
     
     students[callback.message.chat.id].previous_message = None  # Gates System (GS)
     
@@ -85,10 +87,9 @@ def set_kit(callback):
     
     students[callback.message.chat.id].previous_message = "/settings set-kit-group"  # Gate System (GS)
     
-    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    
-    kbot.send_message(
+    kbot.edit_message_text(
         chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
         text="Отправь номер своей группы."
     )
 
