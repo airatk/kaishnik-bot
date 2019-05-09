@@ -76,11 +76,8 @@ def beautify_classes(json_response, weekday, next, edited_subjects):
             if "День консультаций" in subject["disciplName"] or "Военная подготовка" in subject["disciplName"]: break
             
             # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
-            if not next:
-                if subject["dayDate"] == "неч" if is_even() else subject["dayDate"] == "чет": continue
-            else:
-                if subject["dayDate"] == "неч" if not is_even() else subject["dayDate"] == "чет": continue
-
+            if subject["dayDate"] == "неч" if (not is_even() if next else is_even()) else subject["dayDate"] == "чет": continue
+            
             # Do not show subjects with certain dates (21.09) on other dates (28 сентября)
             day_month = "{}.{}".format(int(date.strftime("%d")), date.strftime("%m"))
             if "." in subject["dayDate"] and day_month not in subject["dayDate"]: continue
@@ -89,7 +86,7 @@ def beautify_classes(json_response, weekday, next, edited_subjects):
 
             studentSubject.time = subject["dayTime"]
             
-            # Do not show if there is an edited alternative
+            # Do not show subject if there is its edited alternative
             if studentSubject.begin_hour in [ begin_hour for begin_hour, _ in subjects_list ]: continue
             
             studentSubject.building = subject["buildNum"]
@@ -117,15 +114,15 @@ def beautify_classes(json_response, weekday, next, edited_subjects):
 
 # /exams
 def beautify_exams(json_response):
-    schedule = ""
-    
-    if not json_response:
-        return "Нет данных."
+    if not json_response: return "Нет данных."
     
     # Removing extraspaces & standardizing values to string type
-    json_response = [
-        { key: " ".join(str(value).split()) for key, value in subject.items() } for subject in json_response
+    json_response = [ {
+            key: " ".join(str(value).split()) for key, value in subject.items()
+        } for subject in json_response
     ]
+    
+    schedule = ""
     
     for subject in json_response:
         time_place = "\n\n*[ {date} ][ {time} ][ {building} ][ {auditorium} ]*".format(
@@ -193,19 +190,16 @@ def beautify_lecturers_classes(json_response, weekday, next):
         )
     
     # Removing extraspaces & standardizing values to string type
-    json_response[str(weekday)] = [
-        { key: " ".join(str(value).split()) for key, value in subject.items() } for subject in json_response[str(weekday)]
+    json_response[str(weekday)] = [ {
+            key: " ".join(str(value).split()) for key, value in subject.items()
+        } for subject in json_response[str(weekday)]
     ]
     
     # Getting rid of subjects which are not needed
     for subject in list(json_response[str(weekday)]):
         # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
-        if not next:
-            if subject["dayDate"] == "неч" if is_even() else subject["dayDate"] == "чет":
-                json_response[str(weekday)].remove(subject)
-        else:
-            if subject["dayDate"] == "неч" if not is_even() else subject["dayDate"] == "чет":
-                json_response[str(weekday)].remove(subject)
+        if subject["dayDate"] == "неч" if (not is_even() if next else is_even()) else subject["dayDate"] == "чет":
+            json_response[str(weekday)].remove(subject)
     
     # Finnaly, setting subjects themselves
     for subject in json_response[str(weekday)]:
@@ -238,16 +232,16 @@ def beautify_lecturers_classes(json_response, weekday, next):
     ])
 
 def beautify_lecturers_exams(json_response):
-    schedule = ""
-    
-    if not json_response:
-        return "Нет данных."
+    if not json_response: return "Нет данных."
     
     # Removing extraspaces & standardizing values to string type
-    json_response = [
-        { key: " ".join(str(value).split()) for key, value in subject.items() } for subject in json_response
+    json_response = [ {
+            key: " ".join(str(value).split()) for key, value in subject.items()
+        } for subject in json_response
     ]
-
+    
+    schedule = ""
+    
     for subject in json_response:
         time_place = "\n\n*[ {date} ][ {time} ][ {building} ][ {auditorium} ]*".format(
             date=subject["examDate"],
@@ -270,7 +264,7 @@ def beautify_lecturers_exams(json_response):
 def get_subject_score(scoretable, subjects_num):
     subject = scoretable[subjects_num]
     
-    title = "*{title}*".format(title=subject[1][:len(subject[1]) - 6])  # Erase (экз.) & (зач.)
+    title = "*{title}*".format(title=subject[1][:len(subject[1]) - 6])  # Erase (экз.) & (зач.) stuff
     type = "\n_экзамен_\n" if "экз" in subject[1] else "\n_зачёт_\n"
     
     certification1 = "\n• 1 аттестация: {gained} / {max}".format(gained=subject[2], max=subject[3])

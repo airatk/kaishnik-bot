@@ -8,9 +8,9 @@ class Subject(ABC):
     def __init__(self):
         self._time       = "\n\n*[ {begin_time} - {end_time} ]"
         self._building   = "[ {building} ]"
-        self._auditorium = "{auditorium}*"
-        self._dates      = "\n*[ {dates} ]*"
-        self._title      = "\n*{title}*"
+        self._auditorium = "[ {auditorium} ]"
+        self._dates      = "\n[ {dates} ]"
+        self._title      = "\n{title}*"
         self._type       = "\n_{type}_"
     
     @property
@@ -53,22 +53,17 @@ class Subject(ABC):
     
     @building.setter
     def building(self, building):
-        building = "СК Олимп" if building == "КАИ ОЛИМП" or building == "СК Олимп" else "{building}ка".format(building=building)
-        
-        self._building = self._building.format(building=building)
+        self._building = self._building.format(
+            building="СК Олимп" if building in [ "КАИ ОЛИМП", "СК Олимп" ] else "{}ка".format(building)
+        )
     
     @auditorium.setter
     def auditorium(self, auditorium):
-        auditorium = "[ {auditorium} ]".format(auditorium=auditorium) if auditorium else ""
-        
-        self._auditorium = self._auditorium.format(auditorium=auditorium)
+        self._auditorium = self._auditorium.format(auditorium=auditorium) if auditorium else ""
     
     @dates.setter
     def dates(self, dates):
-        if "." in dates or "/" in dates or "(" in dates:
-            self._dates = self._dates.format(dates=dates)
-        else:
-            self._dates = ""
+        self._dates = self._dates.format(dates=dates) if "." in dates or "/" in dates or "(" in dates else ""
 
     @title.setter
     def title(self, title):

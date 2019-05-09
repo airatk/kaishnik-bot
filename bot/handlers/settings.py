@@ -19,6 +19,16 @@ from bot.helpers import save_to
 from re import fullmatch
 
 
+@kbot.callback_query_handler(func=lambda callback: callback.data == "first-setup")
+def first_setup(callback):
+    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id - 1)
+    
+    settings(callback.message)
+
+    hide_loading_notification(id=callback.id)
+
+
 @kbot.message_handler(
     commands=["settings"],
     func=lambda message:
@@ -33,11 +43,11 @@ def settings(message):
     kbot.send_message(
         chat_id=message.chat.id,
         text="{warning}Выбери своё подразделение:".format(
-            warning=(  # Show warning for old users
+            warning=(
                 "Все текущие данные, включая "
                 "заметки, изменённое расписание и номер зачётки, "
                 "будут стёрты.\n\n" if not students[message.chat.id].is_not_set_up() else ""
-            )
+            )  # Show warning to old users
         ),
         reply_markup=institute_setter()
     )
@@ -374,17 +384,20 @@ def save_without_student_card_number(callback):
 def gs_settings(message): kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
-@kbot.message_handler(func=lambda message: students[message.chat.id].is_not_set_up())
 @kbot.callback_query_handler(func=lambda callback: students[callback.message.chat.id].is_not_set_up())
-def deny_access_to_unsetup(callback):
-    try:
-        message = callback.message
-    except Exception:
-        message = callback
+def deny_access_to_unsetup_callback(callback):
+    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+    
+    deny_access_to_unsetup_message(callback.message)
 
+@kbot.message_handler(func=lambda message: students[message.chat.id].is_not_set_up())
+def deny_access_to_unsetup_message(message):
     metrics.increment("unsetup")
 
     kbot.send_message(
         chat_id=message.chat.id,
-        text="Настройка пройдена не полностью, исправляйся — /settings"
+        text=(
+            "Настройка пройдена не полностью, исправляйся —\n"
+            "/settings"
+        )
     )

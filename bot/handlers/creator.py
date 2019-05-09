@@ -7,6 +7,8 @@ from bot.student import Student
 from bot.constants import CREATOR
 from bot.constants import TOKEN
 
+from bot.keyboards.start import make_setup
+
 from bot.helpers import save_to
 from bot.helpers import load_from
 
@@ -27,12 +29,14 @@ def creator(message):
             "/users\n"
             "/metrics \[ drop ]\n"
             "/data {\n"
-                "\t\t\t\[ number:{} ]\[ group:{} ]\n"
-                "\t\t\t\[ name:{} ]\n"
+                "\t\t\t\[ number:{} ]\[ name:{} ]\n"
+                "\t\t\t\[ group:{} ]\[ year:{} ]\n"
             "}\n"
             "\n*data*\n"                ### data
             "/clear\n"
-            "/erase { :chat ID: }\n"
+            "/erase {\n"
+                "\t\t\t\[ all ]\[ :chat ID 1:, … ]\n"
+            "}\n"
             "/drop { all }\n"
             "\n*others*\n"              ### others
             "/broadcast { :message: }\n"
@@ -156,75 +160,80 @@ def get_metrics(message):
     commands=["data"]
 )
 def data(message):
-    def send():
-        kbot.send_message(
-            chat_id=message.chat.id,
-            text=(
-                "{firstname} {lastname} @{username}\n"
-                "chat id {chat_id}\n\n"
-                "• Institute: {institute}\n"
-                "• Year: {year}\n"
-                "• Group: {group_number}\n"
-                "• Name: {name}\n"
-                "• Student card number: {card}\n\n"
-                "• Number of notes: {notes_number}\n"
-                "• Number of edited classes: {edited_classes_number}\n"
-                "• Number of fellow students: {fellow_students_number}\n"
-                "\n#data".format(
-                    firstname=kbot.get_chat(chat_id=chat_id).first_name,
-                    lastname=kbot.get_chat(chat_id=chat_id).last_name,
-                    username=kbot.get_chat(chat_id=chat_id).username,
-                    chat_id=chat_id,
-                    institute=students[chat_id].institute,
-                    year=students[chat_id].year,
-                    group_number=students[chat_id].group_number,
-                    name=students[chat_id].name,
-                    card=students[chat_id].student_card_number,
-                    notes_number=len(students[chat_id].notes),
-                    edited_classes_number=len(students[chat_id].edited_subjects),
-                    fellow_students_number=len(students[chat_id].names)
-                )
-            )
-        )
-    
     option = message.text.replace("/data ", "")
-    counter = 0
+    is_correct = True
     
-    # Reversing list of students to show new users first
-    students_list = list(students)[::-1]
+    asked_users_list = []
+    full_users_list = list(students)[::-1]  # Reversing list of students to show new users first
     
     if option.startswith("number:"):
         try: asked_users_number = int(option.replace("number:", ""))
         except ValueError: asked_users_number = 0
         
-        for chat_id in students_list[:asked_users_number]:
-            send()
-            counter += 1
-    elif option.startswith("group:"):
-        asked_users_group = option.replace("group:", "")
-        
-        for chat_id in students_list:
-            if students[chat_id].group_number == asked_users_group:
-                send()
-                counter += 1
+        asked_users_list = full_users_list[:asked_users_number]
     elif option.startswith("name:"):
         asked_users_name = option.replace("name:", "")
         
-        for chat_id in students_list:
-            if students[chat_id].name is not None and asked_users_name in students[chat_id].name:
-                send()
-                counter += 1
+        asked_users_list = [
+            chat_id for chat_id in full_users_list if (
+                students[chat_id].name is not None and asked_users_name in students[chat_id].name
+            )
+        ]
+    elif option.startswith("group:"):
+        asked_users_group = option.replace("group:", "")
+        
+        asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].group_number == asked_users_group ]
+    elif option.startswith("year:"):
+        asked_users_year = option.replace("year:", "")
+        
+        asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].year == asked_users_year ]
     else:
+        is_correct = False
+        
         kbot.send_message(
             chat_id=message.chat.id,
             text="Incorrect options!"
         )
     
-    kbot.send_message(
-        chat_id=message.chat.id,
-        text="*{shown}/{total}* users were shown!".format(shown=counter, total=len(students)),
-        parse_mode="Markdown"
-    )
+    if is_correct:
+        for chat_id in asked_users_list:
+            chat = kbot.get_chat(chat_id=chat_id)
+            
+            kbot.send_message(
+                chat_id=message.chat.id,
+                text=(
+                    "{firstname} {lastname} @{username}\n"
+                    "chat id {chat_id}\n\n"
+                    "• Institute: {institute}\n"
+                    "• Year: {year}\n"
+                    "• Group: {group_number}\n"
+                    "• Name: {name}\n"
+                    "• Student card number: {card}\n\n"
+                    "• Number of notes: {notes_number}\n"
+                    "• Number of edited classes: {edited_classes_number}\n"
+                    "• Number of fellow students: {fellow_students_number}\n"
+                    "\n#data".format(
+                        firstname=chat.first_name,
+                        lastname=chat.last_name,
+                        username=chat.username,
+                        chat_id=chat_id,
+                        institute=students[chat_id].institute,
+                        year=students[chat_id].year,
+                        group_number=students[chat_id].group_number,
+                        name=students[chat_id].name,
+                        card=students[chat_id].student_card_number,
+                        notes_number=len(students[chat_id].notes),
+                        edited_classes_number=len(students[chat_id].edited_subjects),
+                        fellow_students_number=len(students[chat_id].names)
+                    )
+                )
+            )
+        
+        kbot.send_message(
+            chat_id=message.chat.id,
+            text="*{shown}/{total}* users were shown!".format(shown=len(asked_users_list), total=len(students)),
+            parse_mode="Markdown"
+        )
 
 
 @kbot.message_handler(
@@ -290,30 +299,44 @@ def clear(message):
     commands=["erase"]
 )
 def erase(message):
-    try: chat_id = int(message.text.replace("/erase ", ""))
-    except ValueError: chat_id = 0
+    to_erase = message.text.replace("/erase ", "")
     
-    try: del students[chat_id]
-    except KeyError:
+    if to_erase == "/erase":
         kbot.send_message(
             chat_id=message.chat.id,
-            text="There is not *{}* chat ID!".format(chat_id),
-            parse_mode="Markdown"
+            text="Incorrect options!"
         )
-    else:
+    elif to_erase == "all":
+        for chat_id in list(students): del students[chat_id]
         save_to(filename="data/users", object=students)
         
         kbot.send_message(
             chat_id=message.chat.id,
-            text="{} was #erased!".format(chat_id)
+            text="All users were #erased!"
         )
+    else:
+        for chat_id in to_erase.split():
+            try: del students[int(chat_id)]
+            except Exception:
+                kbot.send_message(
+                    chat_id=message.chat.id,
+                    text="There is no *{}* chat ID!".format(chat_id),
+                    parse_mode="Markdown"
+                )
+            else:
+                kbot.send_message(
+                    chat_id=message.chat.id,
+                    text="{} was #erased!".format(chat_id)
+                )
+
+        save_to(filename="data/users", object=students)
 
 @kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
     commands=["drop"]
 )
 def drop(message):
-    if "all" not in message.text:
+    if message.text.replace("/drop ", "") != "all":
         kbot.send_message(
             chat_id=message.chat.id,
             text="If you are sure to drop all users' data, type */drop all*",
@@ -321,19 +344,7 @@ def drop(message):
         )
     else:
         for chat_id in list(students):
-            kbot.send_message(
-                chat_id=chat_id,
-                text="Текущие настройки сброшены, нужно обновить данные. Отправь /settings",
-                disable_notification=True
-            )
-            
             if students[chat_id].notes != []:
-                kbot.send_message(
-                    chat_id=chat_id,
-                    text="Держи свои заметки, чтобы ничего не потерялось:",
-                    disable_notification=True
-                )
-                
                 for note in students[chat_id].notes:
                     kbot.send_message(
                         chat_id=chat_id,
@@ -341,8 +352,28 @@ def drop(message):
                         parse_mode="Markdown",
                         disable_notification=True
                     )
-        
+
+                kbot.send_message(
+                    chat_id=chat_id,
+                    text="Твои заметки, чтобы ничего не потерялось.",
+                    disable_notification=True
+                )
+            
             students[chat_id] = Student()
+            
+            students[message.chat.id].previous_message = "/start"  # Gate System (GS)
+        
+            kbot.send_message(
+                chat_id=chat_id,
+                text="Текущие настройки сброшены.",
+                disable_notification=True
+            )
+            kbot.send_message(
+                chat_id=chat_id,
+                text="Обнови данные:",
+                reply_markup=make_setup(),
+                disable_notification=True
+            )
         
         save_to(filename="data/users", object=students)
 
@@ -357,9 +388,9 @@ def drop(message):
     commands=["broadcast"]
 )
 def broadcast(message):
-    broadcast_message = message.text[11:]
+    broadcast_message = message.text.replace("/broadcast ", "")
     
-    if broadcast_message == "":
+    if broadcast_message == "/broadcast":
         kbot.send_message(
             chat_id=message.chat.id,
             text="No broadcast message was found! It's supposed to be right after the */broadcast* command.",

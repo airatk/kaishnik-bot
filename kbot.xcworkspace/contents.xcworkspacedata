@@ -57,6 +57,9 @@
             location = "group:bot/keyboards/__init__.py">
          </FileRef>
          <FileRef
+            location = "group:bot/keyboards/start.py">
+         </FileRef>
+         <FileRef
             location = "group:/Users/airatk/Documents/kaishnik-bot/bot/keyboards/settings.py">
          </FileRef>
          <FileRef

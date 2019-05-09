@@ -27,6 +27,12 @@ def main():
     if len(argv) == 1:
         print("Launched in test mode")
         kbot.polling()
-    else:
-        print("Launched in infinite mode")
+    elif argv[1] == "i":
+        print("Launched in infinity mode")
         kbot.infinity_polling(True)
+    else:
+        print(
+            "\n  Incorrect options!\n\n"
+              "- python3 startup.py     - to launch in test mode\n"
+              "- python3 startup.py i   - to launch in infinity mode\n"
+        )

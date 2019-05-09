@@ -4,6 +4,8 @@ from bot import metrics
 
 from bot.student import Student
 
+from bot.keyboards.start import make_setup
+
 from bot.helpers import save_to
 
 
@@ -12,10 +14,9 @@ def start(message):
     metrics.increment("start")
     
     students[message.chat.id] = Student()
+    save_to(filename="data/users", object=students)
     
     students[message.chat.id].previous_message = "/start"  # Gate System (GS)
-    
-    save_to(filename="data/users", object=students)
     
     kbot.send_message(
         chat_id=message.chat.id,
@@ -23,15 +24,14 @@ def start(message):
     )
     kbot.send_message(
         chat_id=message.chat.id,
-        text=(
-            "Для начала настрой меня на общение с тобой😏"
-            "\n\n"
-            "Отправь /settings"
-        )
+        text="Для начала настрой меня на общение с тобой😏",
+        reply_markup=make_setup()
     )
+
 
 @kbot.callback_query_handler(lambda callback: callback.message.chat.id not in students)
 def unknown_user(callback): kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
 
-@kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/start" and message.text != "/settings")
+
+@kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/start")
 def gs_start(message): kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
