@@ -147,10 +147,7 @@ def one_day_lecturer_schedule(callback):
         "l-weekly" in callback.data
 )
 def weekly_lecturer_schedule(callback):
-    kbot.delete_message(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id
-    )
+    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     
     for weekday in WEEKDAYS:
         kbot.send_message(

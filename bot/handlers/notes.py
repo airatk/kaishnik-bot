@@ -38,21 +38,19 @@ def notes(message):
         callback.data == "show-all-notes"
 )
 def show_all_notes(callback):
-    kbot.delete_message(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id
-    )
-    
     if len(students[callback.message.chat.id].notes) == 0:
-        kbot.send_message(
+        kbot.edit_message_text(
             chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
             text="Заметок нет."
         )
     else:
+        kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+        
         for note in students[callback.message.chat.id].notes:
             kbot.send_message(
                 chat_id=callback.message.chat.id,
-                text="{note}".format(note=note),
+                text=note,
                 parse_mode="Markdown"
             )
         
@@ -102,18 +100,18 @@ def show_note(callback):
         callback.data == "add-note"
 )
 def add_note_hint(callback):
-    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    
     number = len(students[callback.message.chat.id].notes) + 1
     
     if number > NOTES_MAX_NUMBER:
-        kbot.send_message(
+        kbot.edit_message_text(
             chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
             text="{max}-заметковый лимит уже достигнут.".format(max=NOTES_MAX_NUMBER)
         )
     else:
-        kbot.send_message(
+        kbot.edit_message_text(
             chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
             text=(
                 "Добавляемая заметка будет *{number}* по счёту.\n\n"
                 "• Используй звёздочки, чтобы выделить \**жирным*\*\n"

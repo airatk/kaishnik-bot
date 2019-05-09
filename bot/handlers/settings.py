@@ -159,10 +159,9 @@ def set_institute(callback):
             reply_markup=year_setter(years)
         )
     else:
-        kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-        
-        kbot.send_message(
+        kbot.edit_message_text(
             chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
             text="Сайт kai.ru не отвечает🤷🏼‍♀️",
             disable_web_page_preview=True
         )
@@ -181,25 +180,26 @@ def set_year(callback):
     
     groups = students[callback.message.chat.id].get_dictionary_of(type="p_group")
     
-    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    
     if groups is None:
-        kbot.send_message(
+        kbot.edit_message_text(
             chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
             text="Сайт kai.ru не отвечает🤷🏼‍♀️",
             disable_web_page_preview=True
         )
     
         students[callback.message.chat.id] = Student()  # Drop all entered data
     elif groups != {}:
-        kbot.send_message(
+        kbot.edit_message_text(
             chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
             text="Выбери свою группу:",
             reply_markup=group_number_setter(groups)
         )
     else:
-        kbot.send_message(
+        kbot.edit_message_text(
             chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
             text="Здесь ничего нет. Начни сначала."
         )
 
@@ -216,11 +216,10 @@ def set_group_number(callback):
     if students[callback.message.chat.id].group_number is not None:
         names = students[callback.message.chat.id].get_dictionary_of(type="p_stud")
         
-        kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-        
         if names is None:
-            kbot.send_message(
+            kbot.edit_message_text(
                 chat_id=callback.message.chat.id,
+                message_id=callback.message.message_id,
                 text="Сайт kai.ru не отвечает🤷🏼‍♀️",
                 disable_web_page_preview=True
             )
@@ -229,23 +228,24 @@ def set_group_number(callback):
         elif names != {}:
             students[callback.message.chat.id].names = { name_id: name for name, name_id in names.items() }
             
-            kbot.send_message(
+            kbot.edit_message_text(
                 chat_id=callback.message.chat.id,
+                message_id=callback.message.message_id,
                 text="Выбери себя:",
                 reply_markup=name_setter(names)
             )
         else:
-            kbot.send_message(
+            kbot.edit_message_text(
                 chat_id=callback.message.chat.id,
+                message_id=callback.message.message_id,
                 text="Здесь ничего нет. Начни сначала."
             )
 
             students[callback.message.chat.id] = Student()  # Drop all entered data
     else:
-        kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-        
-        kbot.send_message(
+        kbot.edit_message_text(
             chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
             text="Сайт kai.ru не отвечает🤷🏼‍♀️",
             disable_web_page_preview=True
         )
@@ -277,10 +277,9 @@ def set_name(callback):
     
         students[callback.message.chat.id].previous_message = "/settings student-card-number"  # Gate System (GS)
     else:
-        kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    
-        kbot.send_message(
+        kbot.edit_message_text(
             chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
             text="Сайт kai.ru не отвечает🤷🏼‍♀️",
             disable_web_page_preview=True
         )

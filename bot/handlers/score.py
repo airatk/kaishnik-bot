@@ -83,26 +83,27 @@ def semester_subjects(callback):
 def show_all_score(callback):
     callback_data = callback.data.replace("scoretable all ", "").split()
     
-    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    
     for subject in range(int(callback_data[0])):
         scoretable = students[callback.message.chat.id].get_scoretable(callback_data[1])
         
         if scoretable is None:
-            kbot.send_message(
+            kbot.edit_message_text(
                 chat_id=callback.message.chat.id,
+                message_id=callback.message.message_id,
                 text="Сайт kai.ru не отвечает🤷🏼‍♀️",
                 disable_web_page_preview=True
             )
         elif scoretable != []:
-            kbot.send_message(
+            kbot.edit_message_text(
                 chat_id=callback.message.chat.id,
+                message_id=callback.message.message_id,
                 text=get_subject_score(scoretable=scoretable, subjects_num=subject),
                 parse_mode="Markdown"
             )
         else:
-            kbot.send_message(
+            kbot.edit_message_text(
                 chat_id=callback.message.chat.id,
+                message_id=callback.message.message_id,
                 text="Нет данных."
             )
     
