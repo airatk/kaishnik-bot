@@ -231,7 +231,7 @@ class Student:
         soup = BeautifulSoup(page, features="html.parser")
         table = soup.html.find("table", { "id": "reyt" })
         
-        if not table: return []  # Returns empty list if student card number is incorrect
+        if not table: return []
         
         subjects = []
         for row in table.find_all("tr"):

@@ -83,29 +83,30 @@ def semester_subjects(callback):
 def show_all_score(callback):
     callback_data = callback.data.replace("scoretable all ", "").split()
     
-    for subject in range(int(callback_data[0])):
-        scoretable = students[callback.message.chat.id].get_scoretable(callback_data[1])
+    scoretable = students[callback.message.chat.id].get_scoretable(callback_data[1])
+    
+    if scoretable is None:
+        kbot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Сайт kai.ru не отвечает🤷🏼‍♀️",
+            disable_web_page_preview=True
+        )
+    elif scoretable != []:
+        kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
         
-        if scoretable is None:
-            kbot.edit_message_text(
+        for subject in range(int(callback_data[0])):
+            kbot.send_message(
                 chat_id=callback.message.chat.id,
-                message_id=callback.message.message_id,
-                text="Сайт kai.ru не отвечает🤷🏼‍♀️",
-                disable_web_page_preview=True
-            )
-        elif scoretable != []:
-            kbot.edit_message_text(
-                chat_id=callback.message.chat.id,
-                message_id=callback.message.message_id,
                 text=get_subject_score(scoretable=scoretable, subjects_num=subject),
                 parse_mode="Markdown"
             )
-        else:
-            kbot.edit_message_text(
-                chat_id=callback.message.chat.id,
-                message_id=callback.message.message_id,
-                text="Нет данных."
-            )
+    else:
+        kbot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Нет данных."
+        )
     
     students[callback.message.chat.id].previous_message = None  # Gate System (GS)
     
@@ -120,19 +121,19 @@ def show_score(callback):
     callback_data = callback.data.replace("scoretable ", "").split()
     scoretable = students[callback.message.chat.id].get_scoretable(callback_data[1])
     
-    if scoretable is not None:
-        kbot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
-            text=get_subject_score(scoretable=scoretable, subjects_num=int(callback_data[0])),
-            parse_mode="Markdown"
-        )
-    elif scoretable != []:
+    if scoretable is None:
         kbot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
             text="Сайт kai.ru не отвечает🤷🏼‍♀️",
             disable_web_page_preview=True
+        )
+    elif scoretable != []:
+        kbot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text=get_subject_score(scoretable=scoretable, subjects_num=int(callback_data[0])),
+            parse_mode="Markdown"
         )
     else:
         kbot.edit_message_text(
