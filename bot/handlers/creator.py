@@ -6,6 +6,7 @@ from bot.student import Student
 
 from bot.constants import CREATOR
 from bot.constants import TOKEN
+from bot.constants import INSTITUTES
 
 from bot.keyboards.start import make_setup
 
@@ -37,7 +38,7 @@ def creator(message):
             "/clear\n"
             "/erase {\n"
                 "\t\t\t\[ all ]\[ unsetup ]\n"
-                "\t\t\t\[ :chat ID 1:, … ]\n"
+                "\t\t\t\[ :chat ID 1: … … ]\n"
             "}\n"
             "/drop { all }\n"
             "\n*others*\n"              ### others
@@ -62,6 +63,7 @@ def creator(message):
 def users(message):
     institutes_stats = [ student.institute for _, student in students.items() ]
     years_stats = [ student.year for _, student in students.items() ]
+    institutes_names = list(INSTITUTES.values())
     
     kbot.send_message(
         chat_id=message.chat.id,
@@ -84,13 +86,13 @@ def users(message):
             "• 5: {}\n"
             "• 6: {}\n\n"
             "*{}* users in total!".format(
-                institutes_stats.count("ИАНТЭ"),
-                institutes_stats.count("ФМФ"),
-                institutes_stats.count("ИАЭП"),
-                institutes_stats.count("♥ ИКТЗИ ♥"),
-                institutes_stats.count("КИТ"),
-                institutes_stats.count("ИРЭТ"),
-                institutes_stats.count("ИЭУСТ"),
+                institutes_stats.count(institutes_names[0]),
+                institutes_stats.count(institutes_names[1]),
+                institutes_stats.count(institutes_names[2]),
+                institutes_stats.count(institutes_names[3]),
+                institutes_stats.count(institutes_names[4]),
+                institutes_stats.count(institutes_names[5]),
+                institutes_stats.count(institutes_names[6]),
                 years_stats.count("1"),
                 years_stats.count("2"),
                 years_stats.count("3"),
@@ -169,15 +171,18 @@ def data(message):
     full_users_list = list(students)[::-1]  # Reversing list of students to show new users first
     
     if option.startswith("number:"):
-        try: asked_users_number = int(option.replace("number:", ""))
-        except ValueError: asked_users_number = 0
-        
-        asked_users_list = full_users_list[:asked_users_number]
+        try:
+            asked_users_number = int(option.replace("number:", ""))
+        except ValueError:
+            asked_users_number = 0
+        finally:
+            asked_users_list = full_users_list[:asked_users_number]
     elif option.startswith("index:"):
         try:
             asked_users_index = int(option.replace("index:", ""))
             asked_users_list.append(full_users_list[asked_users_index])
-        except Exception: pass
+        except Exception:
+            pass
     elif option.startswith("name:"):
         asked_users_name = option.replace("name:", "")
         
@@ -189,11 +194,19 @@ def data(message):
     elif option.startswith("group:"):
         asked_users_group = option.replace("group:", "")
         
-        asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].group_number == asked_users_group ]
+        asked_users_list = [
+            chat_id for chat_id in full_users_list if (
+                students[chat_id].group_number == asked_users_group
+            )
+        ]
     elif option.startswith("year:"):
         asked_users_year = option.replace("year:", "")
         
-        asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].year == asked_users_year ]
+        asked_users_list = [
+            chat_id for chat_id in full_users_list if (
+                students[chat_id].year == asked_users_year
+            )
+        ]
     else:
         is_option_correct = False
         
@@ -404,8 +417,6 @@ def drop(message):
             
             students[chat_id] = Student()
             
-            students[message.chat.id].previous_message = "/start"  # Gate System (GS)
-        
             kbot.send_message(
                 chat_id=chat_id,
                 text="Текущие настройки сброшены.",
