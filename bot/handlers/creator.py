@@ -29,8 +29,9 @@ def creator(message):
             "/users\n"
             "/metrics \[ drop ]\n"
             "/data {\n"
-                "\t\t\t\[ number:{} ]\[ name:{} ]\n"
-                "\t\t\t\[ group:{} ]\[ year:{} ]\n"
+                "\t\t\t\[ number:{} ]\[ index:{} ]\n"
+                "\t\t\t\[ name:{} ]\[ group:{} ]\n"
+                "\t\t\t\[ year:{} ]\n"
             "}\n"
             "\n*data*\n"                ### data
             "/clear\n"
@@ -161,7 +162,7 @@ def get_metrics(message):
 )
 def data(message):
     option = message.text.replace("/data ", "")
-    is_correct = True
+    is_option_correct = True
     
     asked_users_list = []
     full_users_list = list(students)[::-1]  # Reversing list of students to show new users first
@@ -171,6 +172,11 @@ def data(message):
         except ValueError: asked_users_number = 0
         
         asked_users_list = full_users_list[:asked_users_number]
+    elif option.startswith("index:"):
+        try:
+            asked_users_index = int(option.replace("index:", ""))
+            asked_users_list.append(full_users_list[asked_users_index])
+        except Exception: pass
     elif option.startswith("name:"):
         asked_users_name = option.replace("name:", "")
         
@@ -188,14 +194,14 @@ def data(message):
         
         asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].year == asked_users_year ]
     else:
-        is_correct = False
+        is_option_correct = False
         
         kbot.send_message(
             chat_id=message.chat.id,
-            text="Incorrect options!"
+            text="Incorrect option!"
         )
     
-    if is_correct:
+    if is_option_correct:
         for chat_id in asked_users_list:
             chat = kbot.get_chat(chat_id=chat_id)
             
