@@ -21,8 +21,10 @@ from re import fullmatch
 
 @kbot.callback_query_handler(func=lambda callback: callback.data == "first-setup")
 def first_setup(callback):
+    # Cleanning the chat
     kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id - 1)
+    try: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception: pass
     
     settings(callback.message)
 
@@ -100,16 +102,17 @@ def set_kit(callback):
 def set_kit_group_number(message):
     # Cleanning the chat
     kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    try: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception: pass
     
     if fullmatch("[4][1-4][2-5][0-9]", message.text):
         students[message.chat.id].group_number = message.text
     
         if students[message.chat.id].group_number is not None:
             students[message.chat.id].previous_message = None  # Gates System (GS)
-            
+
             save_to(filename="data/users", object=students)
-            
+
             kbot.send_message(
                 chat_id=message.chat.id,
                 text="Запомнено!"
@@ -125,7 +128,7 @@ def set_kit_group_number(message):
                 text="Сайт kai.ru не отвечает🤷🏼‍♀️",
                 disable_web_page_preview=True
             )
-            
+
             students[message.chat.id] = Student()  # Drop all entered data
     else:
         kbot.send_message(
@@ -294,24 +297,7 @@ def set_name(callback):
         students[message.chat.id].previous_message == "/card" and students[message.chat.id].student_card_number == "unset"
 )
 def set_student_card_number(message):
-    def incorrect_card():
-        kbot.send_message(
-            chat_id=message.chat.id,
-            text=(
-                "Неверный номер зачётки. Исправляйся."
-                "\n\n"
-                "Либо пропусти, но баллы показать не смогу."
-            ),
-            reply_markup=set_card_skipper()
-        )
-    
-    if not fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9][0-9]?", message.text):
-        # Cleanning the chat
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-        
-        incorrect_card()
-    else:
+    if fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9][0-9]?", message.text):
         students[message.chat.id].student_card_number = message.text
         
         # The very 1st semester might be empty, so check the 1st one of the current year
@@ -320,7 +306,8 @@ def set_student_card_number(message):
         
         # Cleanning the chat
         kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+        try: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+        except Exception: pass
         
         if scoretable is None:
             kbot.send_message(
@@ -330,6 +317,8 @@ def set_student_card_number(message):
             )
         
             students[message.chat.id] = Student()  # Drop all entered data
+            
+            return
         elif scoretable != []:
             students[message.chat.id].previous_message = None  # Gates System (GS)
             
@@ -344,9 +333,25 @@ def set_student_card_number(message):
                 text=REPLIES_TO_UNKNOWN_COMMAND[0],
                 parse_mode="Markdown"
             )
+
+            return
         else:
             students[message.chat.id].student_card_number = None
-            incorrect_card()
+    else:
+        # Cleanning the chat
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        try: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+        except Exception: pass
+    
+    kbot.send_message(
+        chat_id=message.chat.id,
+        text=(
+            "Неверный номер зачётки. Исправляйся."
+            "\n\n"
+            "Либо пропусти, но баллы показать не смогу."
+        ),
+        reply_markup=set_card_skipper()
+    )
 
 @kbot.callback_query_handler(
     func=lambda callback:

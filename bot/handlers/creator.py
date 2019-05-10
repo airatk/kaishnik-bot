@@ -315,21 +315,27 @@ def erase(message):
             text="All users were #erased!"
         )
     elif to_erase == "me":
-        del students[message.chat.id]
-        save_to(filename="data/users", object=students)
-        
-        kbot.send_message(
-            chat_id=message.chat.id,
-            text="You, {}, was #erased!".format(message.chat.id)
-        )
+        if message.chat.id in students:
+            del students[message.chat.id]
+            save_to(filename="data/users", object=students)
+            
+            kbot.send_message(
+                chat_id=message.chat.id,
+                text="You, {}, was #erased!".format(message.chat.id)
+            )
+        else:
+            kbot.send_message(
+                chat_id=message.chat.id,
+                text="There is no {} chat ID!".format(message.chat.id),
+            )
     else:
         for chat_id in to_erase.split():
-            try: del students[int(chat_id)]
+            try:
+                del students[int(chat_id)]
             except Exception:
                 kbot.send_message(
                     chat_id=message.chat.id,
-                    text="There is no *{}* chat ID!".format(chat_id),
-                    parse_mode="Markdown"
+                    text="There is no {} chat ID!".format(chat_id)
                 )
             else:
                 kbot.send_message(
