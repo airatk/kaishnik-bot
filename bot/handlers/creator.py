@@ -314,6 +314,14 @@ def erase(message):
             chat_id=message.chat.id,
             text="All users were #erased!"
         )
+    elif to_erase == "me":
+        del students[message.chat.id]
+        save_to(filename="data/users", object=students)
+        
+        kbot.send_message(
+            chat_id=message.chat.id,
+            text="You, {}, was #erased!".format(message.chat.id)
+        )
     else:
         for chat_id in to_erase.split():
             try: del students[int(chat_id)]
