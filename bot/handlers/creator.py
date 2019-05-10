@@ -36,7 +36,8 @@ def creator(message):
             "\n*data*\n"                ### data
             "/clear\n"
             "/erase {\n"
-                "\t\t\t\[ all ]\[ :chat ID 1:, … ]\n"
+                "\t\t\t\[ all ]\[ unsetup ]\n"
+                "\t\t\t\[ :chat ID 1:, … ]\n"
             "}\n"
             "/drop { all }\n"
             "\n*others*\n"              ### others
@@ -310,20 +311,42 @@ def erase(message):
     if to_erase == "/erase":
         kbot.send_message(
             chat_id=message.chat.id,
-            text="Incorrect options!"
+            text="No options were found!"
         )
     elif to_erase == "all":
         for chat_id in list(students): del students[chat_id]
-        save_to(filename="data/users", object=students)
         
         kbot.send_message(
             chat_id=message.chat.id,
             text="All users were #erased!"
         )
+    elif to_erase == "unsetup":
+        counter = 0
+        
+        for chat_id in list(students):
+            if students[chat_id].is_not_set_up():
+                del students[chat_id]
+                
+                kbot.send_message(
+                    chat_id=message.chat.id,
+                    text="{} was #erased!".format(chat_id)
+                )
+
+                counter += 1
+        
+        if counter > 1:
+            kbot.send_message(
+                chat_id=message.chat.id,
+                text="{} users were #erased!".format(counter)
+            )
+        elif counter == 0:
+            kbot.send_message(
+                chat_id=message.chat.id,
+                text="There is no single unsetup!"
+            )
     elif to_erase == "me":
         if message.chat.id in students:
             del students[message.chat.id]
-            save_to(filename="data/users", object=students)
             
             kbot.send_message(
                 chat_id=message.chat.id,
@@ -349,7 +372,7 @@ def erase(message):
                     text="{} was #erased!".format(chat_id)
                 )
 
-        save_to(filename="data/users", object=students)
+    save_to(filename="data/users", object=students)
 
 @kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
