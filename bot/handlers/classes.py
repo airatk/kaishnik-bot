@@ -21,7 +21,7 @@ def classes(message):
     
     students[message.chat.id].previous_message = "/classes"  # Gate System (GS)
     
-    if fullmatch("[1-59][0-6][0-9][0-9]", message.text.replace("/classes ", "")):
+    if fullmatch("[1-59][1-6][0-9][0-9]", message.text.replace("/classes ", "")):
         students[message.chat.id].another_group_number_schedule = message.text.replace("/classes ", "")
         
         if students[message.chat.id].another_group_number_schedule is None:
@@ -117,8 +117,8 @@ def gs_classes(message): kbot.delete_message(chat_id=message.chat.id, message_id
 def exams(message):
     metrics.increment("exams")
     
-    if fullmatch("[1-59][0-6][0-9][0-9]", message.text.replace("/classes ", "")):
-        students[message.chat.id].another_group_number_schedule = message.text.replace("/classes ", "")
+    if fullmatch("[1-59][1-6][0-9][0-9]", message.text.replace("/exams ", "")):
+        students[message.chat.id].another_group_number_schedule = message.text.replace("/exams ", "")
         
         if students[message.chat.id].another_group_number_schedule is None:
             kbot.send_message(
