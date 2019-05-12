@@ -1,7 +1,7 @@
 from bot import kbot
 from bot import students
 from bot import metrics
-from bot import hide_loading_notification
+from bot import top_notification
 
 from bot.constants import NOTES_MAX_NUMBER
 
@@ -65,7 +65,7 @@ def show_all_notes(callback):
     
     students[callback.message.chat.id].previous_message = None  # Gates System (GS)
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -91,7 +91,7 @@ def show_note(callback):
     
     students[callback.message.chat.id].previous_message = None  # Gates System (GS)
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 
 @kbot.callback_query_handler(
@@ -123,7 +123,7 @@ def add_note_hint(callback):
         
         students[callback.message.chat.id].previous_message = "/notes add-new"
 
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/notes add-new")
 def add_note(message):
@@ -134,8 +134,11 @@ def add_note(message):
     save_to(filename="data/users", object=students)
     
     # Cleanning the chat
-    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    try:
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception:
+        pass
     
     kbot.send_message(
         chat_id=message.chat.id,
@@ -177,7 +180,7 @@ def delete_note(callback):
         
         save_to(filename="data/users", object=students)
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -206,7 +209,7 @@ def delete_all_notes(callback):
             text="Удалено!"
         )
 
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 
 @kbot.callback_query_handler(
@@ -234,7 +237,7 @@ def note_dailing(callback):
             )
         )
 
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/notes")

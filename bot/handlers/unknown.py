@@ -1,6 +1,6 @@
 from bot import kbot
 from bot import metrics
-from bot import hide_loading_notification
+from bot import top_notification
 
 from bot.constants import REPLIES_TO_UNKNOWN_COMMAND
 from bot.constants import REPLIES_TO_UNKNOWN_MESSAGE
@@ -43,4 +43,4 @@ def unknown(callback):
     
     kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)

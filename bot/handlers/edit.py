@@ -1,7 +1,7 @@
 from bot import kbot
 from bot import students
 from bot import metrics
-from bot import hide_loading_notification
+from bot import top_notification
 
 from bot.subject import StudentSubject
 
@@ -59,7 +59,7 @@ def add_edit(callback):
         reply_markup=weektype_dialer()
     )
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -76,7 +76,7 @@ def edit_weekday(callback):
         reply_markup=weekday_dialer()
     )
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -93,7 +93,7 @@ def edit_time(callback):
         reply_markup=hours_dialer()
     )
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -110,7 +110,7 @@ def edit_building(callback):
         reply_markup=buildings_dialer()
     )
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -129,15 +129,18 @@ def edit_auditorium(callback):
     
     students[callback.message.chat.id].previous_message = "/edit auditorium"  # Gate System (GS)
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/edit auditorium")
 def edit_subject_title(message):
     students[message.chat.id].edited_class.auditorium = message.text
     
     # Cleanning the chat
-    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    try:
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception:
+        pass
     
     kbot.send_message(
         chat_id=message.chat.id,
@@ -152,8 +155,11 @@ def edit_subject_type(message):
     students[message.chat.id].edited_class.title = message.text
     
     # Cleanning the chat
-    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    try:
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception:
+        pass
     
     kbot.send_message(
         chat_id=message.chat.id,
@@ -180,7 +186,7 @@ def edit_lecturer_name(callback):
     
     students[callback.message.chat.id].previous_message = "/edit teacher-name"  # Gate System (GS)
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/edit teacher-name")
 @kbot.callback_query_handler(func=lambda callback: callback.data == "edit-teacher-name-")
@@ -191,8 +197,11 @@ def edit_department(callback):
         message = callback
         
         # Cleanning the chat
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+        try:
+            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+        except Exception:
+            pass
         
         students[message.chat.id].edited_class.teacher = message.text
     else:
@@ -217,8 +226,11 @@ def finish_edit(callback):
         message = callback
         
         # Cleanning the chat
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+        try:
+            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+        except Exception:
+            pass
         
         students[message.chat.id].edited_class.department = message.text
     else:
@@ -302,7 +314,7 @@ def cancel_edit(callback):
     
     students[callback.message.chat.id].previous_message = None  # Gate System (GS)
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/edit")
 def gs_edit(message): kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)

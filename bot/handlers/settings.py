@@ -1,7 +1,7 @@
 from bot import kbot
 from bot import students
 from bot import metrics
-from bot import hide_loading_notification
+from bot import top_notification
 
 from bot.student import Student
 
@@ -22,13 +22,15 @@ from re import fullmatch
 @kbot.callback_query_handler(func=lambda callback: callback.data == "first-setup")
 def first_setup(callback):
     # Cleanning the chat
-    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    try: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-    except Exception: pass
+    try:
+        kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception:
+        pass
     
     settings(callback.message)
 
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 
 @kbot.message_handler(
@@ -70,7 +72,7 @@ def cancel_setting_process(callback):
     
     students[callback.message.chat.id].previous_message = None  # Gates System (GS)
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 
 @kbot.callback_query_handler(
@@ -95,15 +97,17 @@ def set_kit(callback):
         text="Отправь номер своей группы."
     )
 
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/settings set-kit-group")
 def set_kit_group_number(message):
     # Cleanning the chat
-    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-    try: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-    except Exception: pass
+    try:
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception:
+        pass
     
     if fullmatch("[4][1-4][2-5][0-9]", message.text):
         students[message.chat.id].group_number = message.text
@@ -171,7 +175,7 @@ def set_institute(callback):
 
         students[callback.message.chat.id] = Student()  # Drop all entered data
 
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -206,7 +210,7 @@ def set_year(callback):
             text="Здесь ничего нет. Начни сначала."
         )
 
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -255,7 +259,7 @@ def set_group_number(callback):
 
         students[callback.message.chat.id] = Student()  # Drop all entered data
 
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -289,7 +293,7 @@ def set_name(callback):
 
         students[callback.message.chat.id] = Student()  # Drop all entered data
 
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.message_handler(
     func=lambda message:
@@ -305,9 +309,11 @@ def set_student_card_number(message):
         scoretable = students[message.chat.id].get_scoretable(prelast_semester)
         
         # Cleanning the chat
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        try: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-        except Exception: pass
+        try:
+            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+        except Exception:
+            pass
         
         if scoretable is None:
             kbot.send_message(
@@ -339,9 +345,11 @@ def set_student_card_number(message):
             students[message.chat.id].student_card_number = None
     else:
         # Cleanning the chat
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        try: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-        except Exception: pass
+        try:
+            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+        except Exception:
+            pass
     
     kbot.send_message(
         chat_id=message.chat.id,
@@ -378,7 +386,7 @@ def save_without_student_card_number(callback):
         parse_mode="Markdown"
     )
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 
 @kbot.message_handler(

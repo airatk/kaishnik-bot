@@ -1,7 +1,7 @@
 from bot import kbot
 from bot import students
 from bot import metrics
-from bot import hide_loading_notification
+from bot import top_notification
 
 from bot.constants import WEEKDAYS
 
@@ -62,7 +62,7 @@ def one_day_schedule(callback):
     
     students[callback.message.chat.id].previous_message = None  # Gate System (GS)
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -77,7 +77,7 @@ def certain_date_schedule(callback):
         reply_markup=certain_date_chooser(datetime.today().isoweekday(), callback.data.replace("weekdays ", ""))
     )
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -103,7 +103,7 @@ def weekly_schedule(callback):
     
     students[callback.message.chat.id].previous_message = None  # Gate System (GS)
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/classes")

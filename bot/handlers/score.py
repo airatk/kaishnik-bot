@@ -1,7 +1,7 @@
 from bot import kbot
 from bot import students
 from bot import metrics
-from bot import hide_loading_notification
+from bot import top_notification
 
 from bot.keyboards.score import subject_chooser
 from bot.keyboards.score import semester_dialer
@@ -73,7 +73,7 @@ def semester_subjects(callback):
         
         students[callback.message.chat.id].previous_message = None  # Gate System (GS)
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -110,7 +110,7 @@ def show_all_score(callback):
     
     students[callback.message.chat.id].previous_message = None  # Gate System (GS)
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -144,7 +144,7 @@ def show_score(callback):
     
     students[callback.message.chat.id].previous_message = None  # Gate System (GS)
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/score")

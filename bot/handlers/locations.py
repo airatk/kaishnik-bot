@@ -1,7 +1,7 @@
 from bot import kbot
 from bot import students
 from bot import metrics
-from bot import hide_loading_notification
+from bot import top_notification
 
 from bot.constants import BUILDINGS
 from bot.constants import LIBRARIES
@@ -42,7 +42,7 @@ def b_s(callback):
         reply_markup=buildings_dialer()
     )
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -73,7 +73,7 @@ def send_building(callback):
     
     students[callback.message.chat.id].previous_message = None  # Gates System (GS)
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 
 @kbot.callback_query_handler(
@@ -89,7 +89,7 @@ def l_s(callback):
         reply_markup=libraries_dialer()
     )
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -121,7 +121,7 @@ def send_library(callback):
     
     students[callback.message.chat.id].previous_message = None  # Gates System (GS)
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 
 @kbot.callback_query_handler(
@@ -137,7 +137,7 @@ def d_s(callback):
         reply_markup=dorms_dialer()
     )
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -168,7 +168,7 @@ def send_dorm(callback):
     
     students[callback.message.chat.id].previous_message = None  # Gates System (GS)
     
-    hide_loading_notification(id=callback.id)
+    top_notification(id=callback.id)
 
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/locations")
