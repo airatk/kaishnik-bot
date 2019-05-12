@@ -36,6 +36,7 @@ def notes(message):
         students[callback.message.chat.id].previous_message == "/notes" and
         callback.data == "show-all-notes"
 )
+@top_notification
 def show_all_notes(callback):
     if len(students[callback.message.chat.id].notes) == 0:
         kbot.edit_message_text(
@@ -63,14 +64,13 @@ def show_all_notes(callback):
         )
     
     students[callback.message.chat.id].previous_message = None  # Gates System (GS)
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/notes" and
         "show-note-" in callback.data
 )
+@top_notification
 def show_note(callback):
     if len(students[callback.message.chat.id].notes) == 0:
         kbot.edit_message_text(
@@ -89,8 +89,6 @@ def show_note(callback):
         )
     
     students[callback.message.chat.id].previous_message = None  # Gates System (GS)
-    
-    top_notification(id=callback.id)
 
 
 @kbot.callback_query_handler(
@@ -98,6 +96,7 @@ def show_note(callback):
         students[callback.message.chat.id].previous_message == "/notes" and
         callback.data == "add-note"
 )
+@top_notification
 def add_note_hint(callback):
     number = len(students[callback.message.chat.id].notes) + 1
     
@@ -121,8 +120,6 @@ def add_note_hint(callback):
         )
         
         students[callback.message.chat.id].previous_message = "/notes add-new"
-
-    top_notification(id=callback.id)
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/notes add-new")
 def add_note(message):
@@ -150,6 +147,7 @@ def add_note(message):
         students[callback.message.chat.id].previous_message == "/notes" and
         "delete-note-" in callback.data
 )
+@top_notification
 def delete_note(callback):
     if len(students[callback.message.chat.id].notes) == 0:
         kbot.edit_message_text(
@@ -178,14 +176,13 @@ def delete_note(callback):
         students[callback.message.chat.id].previous_message = None  # Gates System (GS)
         
         save_to(filename="data/users", object=students)
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/notes" and
         callback.data == "delete-all-notes"
 )
+@top_notification
 def delete_all_notes(callback):
     if len(students[callback.message.chat.id].notes) == 0:
         kbot.edit_message_text(
@@ -208,14 +205,13 @@ def delete_all_notes(callback):
             text="Удалено!"
         )
 
-    top_notification(id=callback.id)
-
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/notes" and
         callback.data == "show-note" or callback.data == "delete-note"
 )
+@top_notification
 def note_dailing(callback):
     if len(students[callback.message.chat.id].notes) == 0:
         kbot.edit_message_text(
@@ -235,8 +231,6 @@ def note_dailing(callback):
                 action=callback.data
             )
         )
-
-    top_notification(id=callback.id)
 
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/notes")

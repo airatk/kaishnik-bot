@@ -1,6 +1,7 @@
 from bot import kbot
 from bot import students
 from bot import metrics
+from bot import top_notification
 
 from bot.student import Student
 
@@ -29,6 +30,7 @@ def start(message):
 
 
 @kbot.callback_query_handler(lambda callback: callback.message.chat.id not in students)
+@top_notification
 def unknown_user(callback): kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
 
 

@@ -2,7 +2,6 @@ from telebot import TeleBot
 from telebot import apihelper
 
 from bot.constants import TOKEN
-from bot.constants import TOP_NOTIFICATION_MESSAGES
 
 from bot.helpers import load_from
 from bot.helpers import Metrics
@@ -14,21 +13,28 @@ from random import choice
 # Because Telegram is officially blocked in Russia, that's why
 apihelper.proxy = { "https": "socks5://163.172.152.192:1080" }
 
+
+# Main data setup
 kbot = TeleBot(TOKEN, threaded=False)
 students = load_from(filename="data/users")
 metrics = Metrics()
 
 
 # Used to show "Loading..." notification on the top in a cleverer way
-def top_notification(id, is_long=False):
-    apihelper.answer_callback_query(
-        token=TOKEN,
-        callback_query_id=id,
-        text=choice(TOP_NOTIFICATION_MESSAGES) if is_long else None,
-        cache_time=144 if is_long else 0
-    )
+def top_notification(callback_handler):
+    def wrapper(callback):
+        callback_handler(callback)
+        
+        apihelper.answer_callback_query(
+            token=TOKEN,
+            callback_query_id=callback.id,
+            cache_time=0
+        )
+    
+    return wrapper
 
 
+# Polling launcher
 def main():
     if len(argv) == 1:
         print("Launched in test mode")
@@ -44,4 +50,5 @@ def main():
         )
 
 
+# All the commands & other stuff handlers
 from bot import handlers

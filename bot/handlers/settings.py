@@ -20,6 +20,7 @@ from re import fullmatch
 
 
 @kbot.callback_query_handler(func=lambda callback: callback.data == "first-setup")
+@top_notification
 def first_setup(callback):
     # Cleanning the chat
     try:
@@ -29,8 +30,6 @@ def first_setup(callback):
         pass
     
     settings(callback.message)
-
-    top_notification(id=callback.id)
 
 
 @kbot.message_handler(
@@ -46,11 +45,12 @@ def settings(message):
     kbot.send_message(
         chat_id=message.chat.id,
         text="{warning}Выбери своё подразделение:".format(
+            # Show the warning to the old users
             warning=(
                 "Все текущие данные, включая "
                 "заметки, изменённое расписание и номер зачётки, "
                 "будут стёрты.\n\n" if not students[message.chat.id].is_not_set_up() else ""
-            )  # Show warning to old users
+            )
         ),
         reply_markup=institute_setter(is_old=not students[message.chat.id].is_not_set_up())
     )
@@ -62,6 +62,7 @@ def settings(message):
         students[callback.message.chat.id].previous_message.startswith("/settings") and
         callback.data == "cancel-settings"
 )
+@top_notification
 def cancel_setting_process(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -70,8 +71,6 @@ def cancel_setting_process(callback):
     )
     
     students[callback.message.chat.id].previous_message = None  # Gates System (GS)
-    
-    top_notification(id=callback.id)
 
 
 @kbot.callback_query_handler(
@@ -79,6 +78,7 @@ def cancel_setting_process(callback):
         students[callback.message.chat.id].previous_message == "/settings" and
         callback.data == "set-institute-КИТ"
 )
+@top_notification
 def set_kit(callback):
     students[callback.message.chat.id] = Student(
         institute="КИТ",
@@ -95,8 +95,6 @@ def set_kit(callback):
         message_id=callback.message.message_id,
         text="Отправь номер своей группы."
     )
-
-    top_notification(id=callback.id)
 
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/settings set-kit-group")
@@ -145,6 +143,7 @@ def set_kit_group_number(message):
         students[callback.message.chat.id].previous_message == "/settings" and
         "set-institute-" in callback.data
 )
+@top_notification
 def set_institute(callback):
     institute_id = callback.data.replace("set-institute-", "")
     
@@ -174,13 +173,12 @@ def set_institute(callback):
 
         students[callback.message.chat.id] = Student()  # Drop all entered data
 
-    top_notification(id=callback.id)
-
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/settings" and
         "set-year-" in callback.data
 )
+@top_notification
 def set_year(callback):
     students[callback.message.chat.id].year = callback.data.replace("set-year-", "")
     
@@ -209,13 +207,12 @@ def set_year(callback):
             text="Здесь ничего нет. Начни сначала."
         )
 
-    top_notification(id=callback.id)
-
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/settings" and
         "set-group-" in callback.data
 )
+@top_notification
 def set_group_number(callback):
     students[callback.message.chat.id].group_number = callback.data.replace("set-group-", "")
     
@@ -258,13 +255,12 @@ def set_group_number(callback):
 
         students[callback.message.chat.id] = Student()  # Drop all entered data
 
-    top_notification(id=callback.id)
-
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/settings" and
         "set-name-" in callback.data
 )
+@top_notification
 def set_name(callback):
     students[callback.message.chat.id].name = students[callback.message.chat.id].names[callback.data.replace("set-name-", "")]
     
@@ -291,8 +287,6 @@ def set_name(callback):
         )
 
         students[callback.message.chat.id] = Student()  # Drop all entered data
-
-    top_notification(id=callback.id)
 
 @kbot.message_handler(
     func=lambda message:
@@ -367,6 +361,7 @@ def set_student_card_number(message):
             students[callback.message.chat.id].previous_message == "/card"
         ) and callback.data == "skip-set-card"
 )
+@top_notification
 def save_without_student_card_number(callback):
     students[callback.message.chat.id].student_card_number = "unset"
     
@@ -384,8 +379,6 @@ def save_without_student_card_number(callback):
         text=REPLIES_TO_UNKNOWN_COMMAND[0],
         parse_mode="Markdown"
     )
-    
-    top_notification(id=callback.id)
 
 
 @kbot.message_handler(
@@ -397,6 +390,7 @@ def gs_settings(message): kbot.delete_message(chat_id=message.chat.id, message_i
 
 
 @kbot.callback_query_handler(func=lambda callback: students[callback.message.chat.id].is_not_set_up())
+@top_notification
 def deny_access_to_unsetup_callback(callback):
     kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     

@@ -37,7 +37,5 @@ def unknown(message):
 
 @kbot.callback_query_handler(func=lambda callback: True)
 @metrics.increment("unknown")
-def unknown(callback):
-    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    
-    top_notification(id=callback.id)
+@top_notification
+def unknown(callback): kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)

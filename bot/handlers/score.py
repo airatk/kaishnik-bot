@@ -43,6 +43,7 @@ def score(message):
         students[callback.message.chat.id].previous_message == "/score" and
         "semester" in callback.data
 )
+@top_notification
 def semester_subjects(callback):
     semester_number = callback.data.replace("semester ", "")
     scoretable = students[callback.message.chat.id].get_scoretable(semester_number)
@@ -71,14 +72,13 @@ def semester_subjects(callback):
         )
         
         students[callback.message.chat.id].previous_message = None  # Gate System (GS)
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/score" and
         "scoretable all" in callback.data
 )
+@top_notification
 def show_all_score(callback):
     callback_data = callback.data.replace("scoretable all ", "").split()
     
@@ -108,14 +108,13 @@ def show_all_score(callback):
         )
     
     students[callback.message.chat.id].previous_message = None  # Gate System (GS)
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/score" and
         "scoretable" in callback.data
 )
+@top_notification
 def show_score(callback):
     callback_data = callback.data.replace("scoretable ", "").split()
     scoretable = students[callback.message.chat.id].get_scoretable(callback_data[1])
@@ -142,8 +141,6 @@ def show_score(callback):
         )
     
     students[callback.message.chat.id].previous_message = None  # Gate System (GS)
-    
-    top_notification(id=callback.id)
 
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/score")

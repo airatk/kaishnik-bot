@@ -440,6 +440,6 @@ class Metrics:
                 elif command == "donate": self._donate += 1
                 elif command == "unknown": self._unknown += 1
                 
-                return func(arg)
+                func(arg)
             return wrapper
         return decorator

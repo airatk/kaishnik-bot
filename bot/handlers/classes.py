@@ -44,6 +44,7 @@ def classes(message):
         students[callback.message.chat.id].previous_message == "/classes" and
         "daily" in callback.data
 )
+@top_notification
 def one_day_schedule(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -60,14 +61,13 @@ def one_day_schedule(callback):
     students[callback.message.chat.id].another_group_number_schedule = None
     
     students[callback.message.chat.id].previous_message = None  # Gate System (GS)
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/classes" and
         "weekdays" in callback.data
 )
+@top_notification
 def certain_date_schedule(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -75,14 +75,13 @@ def certain_date_schedule(callback):
         text="Выбери нужный день:",
         reply_markup=certain_date_chooser(datetime.today().isoweekday(), callback.data.replace("weekdays ", ""))
     )
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/classes" and
         "weekly" in callback.data
 )
+@top_notification
 def weekly_schedule(callback):
     kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     
@@ -101,8 +100,6 @@ def weekly_schedule(callback):
     students[callback.message.chat.id].another_group_number_schedule = None
     
     students[callback.message.chat.id].previous_message = None  # Gate System (GS)
-    
-    top_notification(id=callback.id)
 
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/classes")

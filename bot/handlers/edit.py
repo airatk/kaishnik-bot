@@ -47,6 +47,7 @@ def edit(message):
         students[callback.message.chat.id].previous_message == "/edit" and
         callback.data == "add-edit"
 )
+@top_notification
 def add_edit(callback):
     students[callback.message.chat.id].edited_class = StudentSubject()
     students[callback.message.chat.id].edited_class.dates = ""
@@ -57,14 +58,13 @@ def add_edit(callback):
         text="Выбери тип недели:",
         reply_markup=weektype_dialer()
     )
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/edit" and
         "edit-weektype-" in callback.data
 )
+@top_notification
 def edit_weekday(callback):
     students[callback.message.chat.id].edited_class.is_even = callback.data.replace("edit-weektype-", "") == "even"
     
@@ -74,14 +74,13 @@ def edit_weekday(callback):
         text="Выбери день:",
         reply_markup=weekday_dialer()
     )
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/edit" and
         "edit-weekday-" in callback.data
 )
+@top_notification
 def edit_time(callback):
     students[callback.message.chat.id].edited_class.weekday = int(callback.data.replace("edit-weekday-", ""))
     
@@ -91,14 +90,13 @@ def edit_time(callback):
         text="Выбери время начала пары:",
         reply_markup=hours_dialer()
     )
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/edit" and
         "edit-time-" in callback.data
 )
+@top_notification
 def edit_building(callback):
     students[callback.message.chat.id].edited_class.time = callback.data.replace("edit-time-", "")
     
@@ -108,14 +106,13 @@ def edit_building(callback):
         text="Выбери учебное здание:",
         reply_markup=buildings_dialer()
     )
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/edit" and
         "edit-building-" in callback.data
 )
+@top_notification
 def edit_auditorium(callback):
     students[callback.message.chat.id].edited_class.building = callback.data.replace("edit-building-", "")
     
@@ -127,8 +124,6 @@ def edit_auditorium(callback):
     )
     
     students[callback.message.chat.id].previous_message = "/edit auditorium"  # Gate System (GS)
-    
-    top_notification(id=callback.id)
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/edit auditorium")
 def edit_subject_title(message):
@@ -173,6 +168,7 @@ def edit_subject_type(message):
         students[callback.message.chat.id].previous_message == "/edit" and
         "edit-subject-type-" in callback.data
 )
+@top_notification
 def edit_lecturer_name(callback):
     students[callback.message.chat.id].edited_class.type = callback.data.replace("edit-subject-type-", "")
     
@@ -184,8 +180,6 @@ def edit_lecturer_name(callback):
     )
     
     students[callback.message.chat.id].previous_message = "/edit teacher-name"  # Gate System (GS)
-    
-    top_notification(id=callback.id)
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/edit teacher-name")
 @kbot.callback_query_handler(func=lambda callback: callback.data == "edit-teacher-name-")
@@ -216,27 +210,26 @@ def edit_department(callback):
 
     students[message.chat.id].previous_message = "/edit department"  # Gate System (GS)
 
-@kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/edit department")
 @kbot.callback_query_handler(func=lambda callback: callback.data == "edit-department-")
-def finish_edit(callback):
-    try:
-        message = callback.message
-    except Exception:
-        message = callback
-        
-        # Cleanning the chat
-        try:
-            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-        except Exception:
-            pass
-        
-        students[message.chat.id].edited_class.department = message.text
-    else:
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        
-        students[message.chat.id].edited_class.department = ""
+@top_notification
+def finish_edit_without_department(callback):
+    students[callback.message.chat.id].edited_class.department = ""
+    
+    finish_edit(callback.message)
 
+@kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/edit department")
+def finish_edit(message):
+    # Cleanning the chat & setting department
+    try:
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    
+        if students[message.chat.id].edited_class.department != "":
+            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+        
+            students[message.chat.id].edited_class.department = message.text
+    except Exception:
+        pass
+    
     students[message.chat.id].edited_subjects.append(students[message.chat.id].edited_class)
     students[message.chat.id].edited_class = None
     
@@ -256,6 +249,7 @@ def finish_edit(callback):
         students[callback.message.chat.id].previous_message == "/edit" and
         callback.data == "delete-edit"
 )
+@top_notification
 def delete_edit(callback):
     kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     
@@ -278,6 +272,7 @@ def delete_edit(callback):
         students[callback.message.chat.id].previous_message == "/edit" and
         "delete-edit-" in callback.data
 )
+@top_notification
 def delete_edited(callback):
     kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     
@@ -302,6 +297,7 @@ def delete_edited(callback):
         students[callback.message.chat.id].previous_message == "/edit" and
         callback.data == "cancel-edit"
 )
+@top_notification
 def cancel_edit(callback):
     students[callback.message.chat.id].edited_class = None
     
@@ -312,8 +308,7 @@ def cancel_edit(callback):
     )
     
     students[callback.message.chat.id].previous_message = None  # Gate System (GS)
-    
-    top_notification(id=callback.id)
+
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/edit")
 def gs_edit(message): kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)

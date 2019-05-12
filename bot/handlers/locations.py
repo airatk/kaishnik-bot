@@ -33,6 +33,7 @@ def locations(message):
         students[callback.message.chat.id].previous_message == "/locations" and
         callback.data == "buildings_type"
 )
+@top_notification
 def b_s(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -40,14 +41,13 @@ def b_s(callback):
         text="У родного КАИ 8 учебных зданий и 1 спортивный комплекс:",
         reply_markup=buildings_dialer()
     )
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/locations" and
         "buildings" in callback.data
 )
+@top_notification
 def send_building(callback):
     kbot.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
     
@@ -71,8 +71,6 @@ def send_building(callback):
     )
     
     students[callback.message.chat.id].previous_message = None  # Gates System (GS)
-    
-    top_notification(id=callback.id)
 
 
 @kbot.callback_query_handler(
@@ -80,6 +78,7 @@ def send_building(callback):
         students[callback.message.chat.id].previous_message == "/locations" and
         callback.data == "libraries_type"
 )
+@top_notification
 def l_s(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -87,14 +86,13 @@ def l_s(callback):
         text="У родного КАИ 5 библиотек:",
         reply_markup=libraries_dialer()
     )
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/locations" and
         "libraries" in callback.data
 )
+@top_notification
 def send_library(callback):
     kbot.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
     
@@ -119,8 +117,6 @@ def send_library(callback):
     )
     
     students[callback.message.chat.id].previous_message = None  # Gates System (GS)
-    
-    top_notification(id=callback.id)
 
 
 @kbot.callback_query_handler(
@@ -128,6 +124,7 @@ def send_library(callback):
         students[callback.message.chat.id].previous_message == "/locations" and
         callback.data == "dorms_type"
 )
+@top_notification
 def d_s(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -135,14 +132,13 @@ def d_s(callback):
         text="У родного КАИ 7 общежитий:",
         reply_markup=dorms_dialer()
     )
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/locations" and
         "dorms" in callback.data
 )
+@top_notification
 def send_dorm(callback):
     kbot.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
     
@@ -166,8 +162,6 @@ def send_dorm(callback):
     )
     
     students[callback.message.chat.id].previous_message = None  # Gates System (GS)
-    
-    top_notification(id=callback.id)
 
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/locations")

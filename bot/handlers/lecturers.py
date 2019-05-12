@@ -77,6 +77,7 @@ def find_lecturer(message):
         students[callback.message.chat.id].previous_message == "/lecturers" and
         "lecturer" in callback.data
 )
+@top_notification
 def lecturers_schedule_type(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -84,14 +85,13 @@ def lecturers_schedule_type(callback):
         text="Тебе нужно преподавателево расписание:",
         reply_markup=lecturer_schedule_type(callback.data.replace("lecturer ", ""))
     )
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/lecturers" and
         "l-classes" in callback.data
 )
+@top_notification
 def lecturers_week_type_classes(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -99,14 +99,13 @@ def lecturers_week_type_classes(callback):
         text="Преподавателево расписание занятий на:",
         reply_markup=lecturer_classes_week_type(callback.data.replace("l-classes ", ""))
     )
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/lecturers" and
         "l-weekdays" in callback.data
 )
+@top_notification
 def certain_date_schedule(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -118,14 +117,13 @@ def certain_date_schedule(callback):
             prepod_login=callback.data[16:]
         )
     )
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/lecturers" and
         "l-daily" in callback.data
 )
+@top_notification
 def one_day_lecturer_schedule(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -140,14 +138,13 @@ def one_day_lecturer_schedule(callback):
     )
     
     students[callback.message.chat.id].previous_message = None
-    
-    top_notification(id=callback.id)
 
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/lecturers" and
         "l-weekly" in callback.data
 )
+@top_notification
 def weekly_lecturer_schedule(callback):
     kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     
@@ -164,8 +161,6 @@ def weekly_lecturer_schedule(callback):
         )
     
     students[callback.message.chat.id].previous_message = None
-    
-    top_notification(id=callback.id)
 
 
 @kbot.callback_query_handler(
@@ -173,6 +168,7 @@ def weekly_lecturer_schedule(callback):
         students[callback.message.chat.id].previous_message == "/lecturers" and
         "l-exams" in callback.data
 )
+@top_notification
 def send_lecturers_exams(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -185,8 +181,6 @@ def send_lecturers_exams(callback):
     )
     
     students[callback.message.chat.id].previous_message = None
-    
-    top_notification(id=callback.id)
 
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/lecturers")
