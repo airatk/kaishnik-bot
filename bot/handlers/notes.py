@@ -16,9 +16,8 @@ from bot.helpers import clarify_markdown
     commands=["notes"],
     func=lambda message: students[message.chat.id].previous_message is None
 )
+@metrics.increment("notes")
 def notes(message):
-    metrics.increment("notes")
-    
     students[message.chat.id].previous_message = "/notes"  # Gates System (GS)
     
     kbot.send_message(

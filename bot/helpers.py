@@ -419,38 +419,27 @@ class Metrics:
         self._unknown = 0
     
     def increment(self, command):
-        if self._day != datetime.today().isoweekday():
-            self.zerofy()
-        
-        if command == "classes":
-            self._classes += 1
-        elif command == "score":
-            self._score += 1
-        elif command == "lecturers":
-            self._lecturers += 1
-        elif command == "week":
-            self._week += 1
-        elif command == "notes":
-            self._notes += 1
-        elif command == "exams":
-            self._exams += 1
-        elif command == "locations":
-            self._locations += 1
-        elif command == "card":
-            self._card += 1
-        elif command == "brs":
-            self._brs += 1
-        elif command == "start":
-            self._start += 1
-        elif command == "settings":
-            self._settings += 1
-        elif command == "unsetup":
-            self._unsetup += 1
-        elif command == "edit":
-            self._edit += 1
-        elif command == "help":
-            self._help += 1
-        elif command == "donate":
-            self._donate += 1
-        elif command == "unknown":
-            self._unknown += 1
+        def decorator(func):
+            def wrapper(arg):
+                if self._day != datetime.today().isoweekday(): self.zerofy()
+                
+                if command == "classes": self._classes += 1
+                elif command == "score": self._score += 1
+                elif command == "lecturers": self._lecturers += 1
+                elif command == "week": self._week += 1
+                elif command == "notes": self._notes += 1
+                elif command == "exams": self._exams += 1
+                elif command == "locations": self._locations += 1
+                elif command == "card": self._card += 1
+                elif command == "brs": self._brs += 1
+                elif command == "start": self._start += 1
+                elif command == "settings": self._settings += 1
+                elif command == "unsetup": self._unsetup += 1
+                elif command == "edit": self._edit += 1
+                elif command == "help": self._help += 1
+                elif command == "donate": self._donate += 1
+                elif command == "unknown": self._unknown += 1
+                
+                return func(arg)
+            return wrapper
+        return decorator

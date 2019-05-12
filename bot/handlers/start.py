@@ -10,9 +10,8 @@ from bot.helpers import save_to
 
 
 @kbot.message_handler(func=lambda message: message.chat.id not in students)
+@metrics.increment("start")
 def start(message):
-    metrics.increment("start")
-    
     students[message.chat.id] = Student()
     save_to(filename="data/users", object=students)
     

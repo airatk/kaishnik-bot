@@ -13,9 +13,8 @@ from bot.helpers import get_subject_score
     commands=["score"],
     func=lambda message: students[message.chat.id].previous_message is None
 )
+@metrics.increment("score")
 def score(message):
-    metrics.increment("score")
-    
     students[message.chat.id].previous_message = "/score"  # Gate System (GS)
     
     if students[message.chat.id].student_card_number == "unset":

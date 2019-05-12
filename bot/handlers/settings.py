@@ -39,9 +39,8 @@ def first_setup(callback):
         students[message.chat.id].previous_message == "/start" or
         students[message.chat.id].previous_message is None
 )
+@metrics.increment("settings")
 def settings(message):
-    metrics.increment("settings")
-    
     students[message.chat.id].previous_message = "/settings"  # Gate System (GS)
     
     kbot.send_message(
@@ -404,9 +403,8 @@ def deny_access_to_unsetup_callback(callback):
     deny_access_to_unsetup_message(callback.message)
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].is_not_set_up())
+@metrics.increment("unsetup")
 def deny_access_to_unsetup_message(message):
-    metrics.increment("unsetup")
-
     kbot.send_message(
         chat_id=message.chat.id,
         text=(

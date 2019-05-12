@@ -15,9 +15,8 @@ from bot.helpers import is_even
     commands=["week"],
     func=lambda message: students[message.chat.id].previous_message is None
 )
+@metrics.increment("week")
 def week(message):
-    metrics.increment("week")
-    
     kbot.send_message(
         chat_id=message.chat.id,
         text="Текущая неделя {type}.".format(type="чётная" if is_even() else "нечётная")
@@ -28,9 +27,8 @@ def week(message):
     commands=["card"],
     func=lambda message: students[message.chat.id].previous_message is None
 )
+@metrics.increment("card")
 def card(message):
-    metrics.increment("card")
-    
     if students[message.chat.id].student_card_number == "unset":
         students[message.chat.id].previous_message = "/card"  # Gate System (GS)
         
@@ -63,9 +61,8 @@ def card(message):
     commands=["brs"],
     func=lambda message: students[message.chat.id].previous_message is None
 )
+@metrics.increment("brs")
 def brs(message):
-    metrics.increment("brs")
-    
     kbot.send_message(
         chat_id=message.chat.id,
         text=BRS,
@@ -77,9 +74,8 @@ def brs(message):
     commands=["help"],
     func=lambda message: students[message.chat.id].previous_message is None
 )
+@metrics.increment("help")
 def help(message):
-    metrics.increment("help")
-    
     kbot.send_message(
         chat_id=message.chat.id,
         text=HELP,
@@ -91,9 +87,8 @@ def help(message):
     commands=["donate"],
     func=lambda message: students[message.chat.id].previous_message is None
 )
+@metrics.increment("donate")
 def donate(message):
-    metrics.increment("donate")
-    
     kbot.send_message(
         chat_id=message.chat.id,
         text=DONATE,

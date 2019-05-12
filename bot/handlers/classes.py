@@ -16,9 +16,8 @@ from re import fullmatch
     commands=["classes"],
     func=lambda message: students[message.chat.id].previous_message is None
 )
+@metrics.increment("classes")
 def classes(message):
-    metrics.increment("classes")
-    
     students[message.chat.id].previous_message = "/classes"  # Gate System (GS)
     
     if fullmatch("[1-59][1-6][0-9][0-9]", message.text.replace("/classes ", "")):
@@ -114,9 +113,8 @@ def gs_classes(message): kbot.delete_message(chat_id=message.chat.id, message_id
     commands=["exams"],
     func=lambda message: students[message.chat.id].previous_message is None
 )
+@metrics.increment("exams")
 def exams(message):
-    metrics.increment("exams")
-    
     if fullmatch("[1-59][1-6][0-9][0-9]", message.text.replace("/exams ", "")):
         students[message.chat.id].another_group_number_schedule = message.text.replace("/exams ", "")
         

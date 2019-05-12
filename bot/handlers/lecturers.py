@@ -20,9 +20,8 @@ from datetime import datetime
     commands=["lecturers"],
     func=lambda message: students[message.chat.id].previous_message is None
 )
+@metrics.increment("lecturers")
 def lecturers(message):
-    metrics.increment("lecturers")
-    
     students[message.chat.id].previous_message = "/lecturers name"  # Gate System (GS)
     
     kbot.send_message(
