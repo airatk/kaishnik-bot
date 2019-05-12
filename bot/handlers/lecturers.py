@@ -35,8 +35,11 @@ def find_lecturer(message):
     names = get_lecturers_names(message.text)
     
     # Cleanning the chat
-    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    try:
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception:
+        pass
     
     if names is None:
         kbot.send_message(
