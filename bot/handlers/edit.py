@@ -181,27 +181,26 @@ def edit_lecturer_name(callback):
     
     students[callback.message.chat.id].previous_message = "/edit teacher-name"  # Gate System (GS)
 
-@kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/edit teacher-name")
 @kbot.callback_query_handler(func=lambda callback: callback.data == "edit-teacher-name-")
-def edit_department(callback):
-    try:
-        message = callback.message
-    except Exception:
-        message = callback
-        
-        # Cleanning the chat
-        try:
-            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-        except Exception:
-            pass
-        
-        students[message.chat.id].edited_class.teacher = message.text
-    else:
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+@top_notification
+def edit_department_without_teacher_name(callback):
+    students[message.chat.id].edited_class.teacher = ""
     
-        students[message.chat.id].edited_class.teacher = ""
+    edit_department(callback.message)
 
+@kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/edit teacher-name")
+def edit_department(message):
+    is_without_teacher_name = students[message.chat.id].edited_class.teacher == ""
+    
+    # Cleanning the chat
+    try:
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        if not is_without_teacher_name: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception:
+        pass
+
+    if not is_without_teacher_name: students[message.chat.id].edited_class.teacher = message.text
+    
     kbot.send_message(
         chat_id=message.chat.id,
         text="Отправь название кафедры.",
@@ -219,16 +218,17 @@ def finish_edit_without_department(callback):
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/edit department")
 def finish_edit(message):
+    is_without_department = students[message.chat.id].edited_class.department == ""
+    
     # Cleanning the chat & setting department
     try:
         kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     
-        if students[message.chat.id].edited_class.department != "":
-            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-        
-            students[message.chat.id].edited_class.department = message.text
+        if not is_without_department: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
     except Exception:
         pass
+
+    if not is_without_department: students[message.chat.id].edited_class.department = message.text
     
     students[message.chat.id].edited_subjects.append(students[message.chat.id].edited_class)
     students[message.chat.id].edited_class = None
