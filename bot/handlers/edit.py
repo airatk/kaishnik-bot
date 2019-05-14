@@ -5,8 +5,6 @@ from bot import top_notification
 
 from bot.subject import StudentSubject
 
-from bot.constants import MAX_BUTTONS_NUMBER
-
 from bot.keyboards.edit import canceler_skipper
 from bot.keyboards.edit import edit_chooser
 from bot.keyboards.edit import weektype_dialer
@@ -120,21 +118,30 @@ def edit_auditorium(callback):
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Отправь номер аудитории (или где там пара у тебя).",
-        reply_markup=edit_canceler()
+        reply_markup=canceler_skipper("edit-auditorium-")
     )
     
     students[callback.message.chat.id].previous_message = "/edit auditorium"  # Gate System (GS)
 
+@kbot.callback_query_handler(func=lambda callback: callback.data == "edit-auditorium-")
+@top_notification
+def edit_subject_title_without_auditorium(callback):
+    students[callback.message.chat.id].edited_class.auditorium = ""
+    
+    edit_subject_title(callback.message)
+
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/edit auditorium")
 def edit_subject_title(message):
-    students[message.chat.id].edited_class.auditorium = message.text
+    without_auditorium = students[message.chat.id].edited_class.auditorium == ""
     
     # Cleanning the chat
     try:
         kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+        if not without_auditorium: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
     except Exception:
         pass
+    
+    if not without_auditorium: students[message.chat.id].edited_class.auditorium = message.text
     
     kbot.send_message(
         chat_id=message.chat.id,
@@ -184,7 +191,7 @@ def edit_lecturer_name(callback):
 @kbot.callback_query_handler(func=lambda callback: callback.data == "edit-teacher-name-")
 @top_notification
 def edit_department_without_teacher_name(callback):
-    students[message.chat.id].edited_class.teacher = ""
+    students[callback.message.chat.id].edited_class.teacher = ""
     
     edit_department(callback.message)
 
@@ -223,7 +230,6 @@ def finish_edit(message):
     # Cleanning the chat & setting department
     try:
         kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-    
         if not is_without_department: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
     except Exception:
         pass

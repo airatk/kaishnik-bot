@@ -20,15 +20,15 @@ def choose_lecturer(names):
     
     return choose_lecturer_keyboard
 
-def lecturer_schedule_type(prepod_login):
-    lecturer_schedule_type_keyboard = InlineKeyboardMarkup(row_width=1)
+def lecturer_info_type(prepod_login):
+    lecturer_info_type_keyboard = InlineKeyboardMarkup(row_width=1)
     
-    lecturer_schedule_type_keyboard.add(
-        InlineKeyboardButton(text="занятий", callback_data="l-classes {}".format(prepod_login)),
-        InlineKeyboardButton(text="экзаменов", callback_data="l-exams {}".format(prepod_login))
+    lecturer_info_type_keyboard.add(
+        InlineKeyboardButton(text="занятия", callback_data="l-classes {}".format(prepod_login)),
+        InlineKeyboardButton(text="экзамены", callback_data="l-exams {}".format(prepod_login))
     )
     
-    return lecturer_schedule_type_keyboard
+    return lecturer_info_type_keyboard
 
 def lecturer_classes_week_type(prepod_login):
     week_type_keyboard = InlineKeyboardMarkup(row_width=1)

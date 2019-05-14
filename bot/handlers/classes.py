@@ -31,6 +31,7 @@ def classes(message):
             )
             
             students[message.chat.id].previous_message = None  # Gate System (GS)
+            
             return
     
     kbot.send_message(
@@ -123,6 +124,7 @@ def exams(message):
             )
             
             students[message.chat.id].previous_message = None  # Gate System (GS)
+            
             return
 
     kbot.send_message(

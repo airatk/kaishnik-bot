@@ -289,14 +289,8 @@ def set_name(callback):
         
         students[callback.message.chat.id].previous_message = "/settings student-card-number"  # Gate System (GS)
 
-@kbot.message_handler(
-    func=lambda message:
-        students[message.chat.id].previous_message == "/settings student-card-number" or
-        students[message.chat.id].previous_message == "/card" and students[message.chat.id].student_card_number == "unset"
-)
+@kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/settings student-card-number")
 def set_student_card_number(message):
-    students[message.chat.id].previous_message = "/settings student-card-number"  # Gate System (GS)
-    
     if fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9][0-9]?", message.text):
         students[message.chat.id].student_card_number = message.text
         

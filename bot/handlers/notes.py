@@ -3,7 +3,7 @@ from bot import students
 from bot import metrics
 from bot import top_notification
 
-from bot.constants import NOTES_MAX_NUMBER
+from bot.constants import MAX_NOTES_NUMBER
 
 from bot.keyboards.notes import notes_chooser
 from bot.keyboards.notes import notes_list_dialer
@@ -24,7 +24,7 @@ def notes(message):
         chat_id=message.chat.id,
         text="Заметок всего: *{current}/{max}*".format(
             current=len(students[message.chat.id].notes),
-            max=NOTES_MAX_NUMBER
+            max=MAX_NOTES_NUMBER
         ),
         reply_markup=notes_chooser(),
         parse_mode="Markdown"
@@ -58,7 +58,7 @@ def show_all_notes(callback):
             chat_id=callback.message.chat.id,
             text="Заметок всего: *{current}/{max}*".format(
                 current=len(students[callback.message.chat.id].notes),
-                max=NOTES_MAX_NUMBER
+                max=MAX_NOTES_NUMBER
             ),
             parse_mode="Markdown"
         )
@@ -100,11 +100,11 @@ def show_note(callback):
 def add_note_hint(callback):
     number = len(students[callback.message.chat.id].notes) + 1
     
-    if number > NOTES_MAX_NUMBER:
+    if number > MAX_NOTES_NUMBER:
         kbot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
-            text="{max}-заметковый лимит уже достигнут.".format(max=NOTES_MAX_NUMBER)
+            text="{max}-заметковый лимит уже достигнут.".format(max=MAX_NOTES_NUMBER)
         )
     else:
         kbot.edit_message_text(
@@ -155,7 +155,7 @@ def delete_note(callback):
             message_id=callback.message.message_id,
             text="Заметок нет."
         )
-    
+        
         students[callback.message.chat.id].previous_message = None  # Gates System (GS)
     else:
         number = int(callback.data.replace("delete-note-", ""))

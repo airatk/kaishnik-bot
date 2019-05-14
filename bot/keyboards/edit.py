@@ -27,8 +27,8 @@ def weektype_dialer():
     
     weektype_dialer_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-edit"))
     
-    weektype_dialer_keyboard.row(InlineKeyboardButton(text="Чётная", callback_data="edit-weektype-even"))
-    weektype_dialer_keyboard.row(InlineKeyboardButton(text="Нечётная", callback_data="edit-weektype-odd"))
+    weektype_dialer_keyboard.row(InlineKeyboardButton(text="нечётная", callback_data="edit-weektype-odd"))
+    weektype_dialer_keyboard.row(InlineKeyboardButton(text="чётная", callback_data="edit-weektype-even"))
     
     return weektype_dialer_keyboard
 
@@ -85,8 +85,8 @@ def subject_type_dialer():
     
     subject_type_dialer_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-edit"))
     
-    subject_type_dialer_keyboard.row(InlineKeyboardButton(text="Лекция", callback_data="edit-subject-type-лек"))
-    subject_type_dialer_keyboard.row(InlineKeyboardButton(text="Практика", callback_data="edit-subject-type-пр"))
+    subject_type_dialer_keyboard.row(InlineKeyboardButton(text="практика", callback_data="edit-subject-type-пр"))
+    subject_type_dialer_keyboard.row(InlineKeyboardButton(text="лекция", callback_data="edit-subject-type-лек"))
     subject_type_dialer_keyboard.row(InlineKeyboardButton(text="ЛР", callback_data="edit-subject-type-л.р."))
     
     return subject_type_dialer_keyboard

@@ -4,9 +4,10 @@ from bot import metrics
 from bot import top_notification
 
 from bot.constants import WEEKDAYS
+from bot.constants import MAX_LECTURERS_NUMBER
 
 from bot.keyboards.lecturers import choose_lecturer
-from bot.keyboards.lecturers import lecturer_schedule_type
+from bot.keyboards.lecturers import lecturer_info_type
 from bot.keyboards.lecturers import lecturer_classes_week_type
 from bot.keyboards.lecturers import lecturer_certain_date_chooser
 
@@ -46,31 +47,31 @@ def find_lecturer(message):
             text="Сайт kai.ru не отвечает🤷🏼‍♀️",
             disable_web_page_preview=True
         )
-    
+        
         students[message.chat.id].previous_message = None  # Gate System (GS)
-    elif names == []:
-        kbot.send_message(
-            chat_id=message.chat.id,
-            text="Ничего не найдено :("
-        )
-
-        students[message.chat.id].previous_message = None  # Gate System (GS)
-    else:
-        try:
+    elif names != []:
+        if len(names) <= MAX_LECTURERS_NUMBER:
             kbot.send_message(
                 chat_id=message.chat.id,
                 text="Выбери преподавателя:",
                 reply_markup=choose_lecturer(names)
             )
-        
+            
             students[message.chat.id].previous_message = "/lecturers"  # Gate System (GS)
-        except Exception:
+        else:
             kbot.send_message(
                 chat_id=message.chat.id,
                 text="Слишком мало букв, слишком много преподавателей…"
             )
-
+            
             students[message.chat.id].previous_message = None  # Gate System (GS)
+    else:
+        kbot.send_message(
+            chat_id=message.chat.id,
+            text="Ничего не найдено :("
+        )
+        
+        students[message.chat.id].previous_message = None  # Gate System (GS)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -82,8 +83,8 @@ def lecturers_schedule_type(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text="Тебе нужно преподавателево расписание:",
-        reply_markup=lecturer_schedule_type(callback.data.replace("lecturer ", ""))
+        text="Тебе нужны преподавателевы:",
+        reply_markup=lecturer_info_type(callback.data.replace("lecturer ", ""))
     )
 
 @kbot.callback_query_handler(
@@ -131,7 +132,7 @@ def one_day_lecturer_schedule(callback):
         text=get_lecturers_schedule(
             prepod_login=callback.data[15:],
             type="l-classes",
-            weekday=int(callback.data[13:14]),
+            weekday=int(callback.data[13]),
             next="next" in callback.data
         ),
         parse_mode="Markdown"

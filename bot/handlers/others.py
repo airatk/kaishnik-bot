@@ -30,7 +30,8 @@ def week(message):
 @metrics.increment("card")
 def card(message):
     if students[message.chat.id].student_card_number == "unset":
-        students[message.chat.id].previous_message = "/card"  # Gate System (GS)
+        students[message.chat.id].previous_message = "/settings student-card-number"  # Gate System (GS)
+        students[message.chat.id].student_card_number = None
         
         kbot.send_message(
             chat_id=message.chat.id,
@@ -79,7 +80,8 @@ def help(message):
     kbot.send_message(
         chat_id=message.chat.id,
         text=HELP,
-        parse_mode="Markdown"
+        parse_mode="Markdown",
+        disable_web_page_preview=True
     )
 
 

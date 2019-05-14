@@ -7,28 +7,31 @@ from bot.constants import REPLIES_TO_UNKNOWN_MESSAGE
 
 from random import choice
 
+
 @kbot.message_handler(
     content_types=[
         "sticker",
         "photo", "video", "audio", "document",
-        "voice", "video_note", "location", "contact"
+        "voice", "video_note",
+        "location",
+        "contact"
     ]
 )
-def unknown(non_text_message): kbot.delete_message(chat_id=non_text_message.chat.id, message_id=non_text_message.message_id)
+def unknown_nontext_message(message): kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 @kbot.message_handler(func=lambda message: message.text.startswith("/"))
 @metrics.increment("unknown")
-def unknown(command):
+def unknown_command(message):
     kbot.send_message(
-        chat_id=command.chat.id,
+        chat_id=message.chat.id,
         text=choice(REPLIES_TO_UNKNOWN_COMMAND),
         parse_mode="Markdown",
         disable_web_page_preview=True
     )
 
-@kbot.message_handler(content_types=["text"])
+@kbot.message_handler()
 @metrics.increment("unknown")
-def unknown(message):
+def unknown_message(message):
     kbot.send_message(
         chat_id=message.chat.id,
         text=choice(REPLIES_TO_UNKNOWN_MESSAGE),
@@ -38,4 +41,9 @@ def unknown(message):
 @kbot.callback_query_handler(func=lambda callback: True)
 @metrics.increment("unknown")
 @top_notification
-def unknown(callback): kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+def unknown_callback(callback):
+    kbot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="Ой-ой-ой! 🙆🏼‍♀️"
+    )

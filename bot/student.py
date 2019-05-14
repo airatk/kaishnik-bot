@@ -14,6 +14,7 @@ from requests.exceptions import ConnectionError
 
 from bs4 import BeautifulSoup
 
+
 class Student:
     def __init__(
         self,

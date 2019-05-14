@@ -43,4 +43,3 @@ def certain_date_chooser(todays_weekday, type):
         )
     
     return certain_date_keyboard
-

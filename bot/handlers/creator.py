@@ -30,9 +30,9 @@ def creator(message):
             "/users\n"
             "/metrics \[ drop ]\n"
             "/data {\n"
+                "\t\t\t\[ all ]\[ name:{} ]\n"
                 "\t\t\t\[ number:{} ]\[ index:{} ]\n"
-                "\t\t\t\[ name:{} ]\[ group:{} ]\n"
-                "\t\t\t\[ year:{} ]\n"
+                "\t\t\t\[ group:{} ]\[ year:{} ]\n"
             "}\n"
             "\n*data*\n"                ### data
             "/clear\n"
@@ -50,7 +50,8 @@ def creator(message):
             "# data\n"
             "# erased\n"
             "# broadcast\n"
-            "# dropped"
+            "# dropped\n"
+            "# reversed"
         ),
         parse_mode="Markdown"
     )
@@ -61,9 +62,11 @@ def creator(message):
     commands=["users"]
 )
 def users(message):
-    institutes_stats = [ student.institute for _, student in students.items() ]
-    years_stats = [ student.year for _, student in students.items() ]
+    institutes_stats = [ student.institute for student in students.values() ]
+    years_stats = [ student.year for student in students.values() ]
+    
     institutes_names = list(INSTITUTES.values())
+    years_names = [ str(i) for i in range(1, 7) ]  # 6 years maximum
     
     kbot.send_message(
         chat_id=message.chat.id,
@@ -71,34 +74,34 @@ def users(message):
             "*Users*\n"
             "_stats of_ #users\n"
             "\n*institutes*\n"          ### institutes
-            "• ИАНТЭ: {}\n"
-            "• ФМФ: {}\n"
-            "• ИАЭП: {}\n"
-            "• ИКТЗИ: {}\n"
-            "• КИТ: {}\n"
-            "• ИРЭТ: {}\n"
-            "• ИЭУСТ: {}\n"
+            "• {}: {}\n"
+            "• {}: {}\n"
+            "• {}: {}\n"
+            "• {}: {}\n"
+            "• {}: {}\n"
+            "• {}: {}\n"
+            "• {}: {}\n"
             "\n*years*\n"               ### years
-            "• 1: {}\n"
-            "• 2: {}\n"
-            "• 3: {}\n"
-            "• 4: {}\n"
-            "• 5: {}\n"
-            "• 6: {}\n\n"
+            "• {}: {}\n"
+            "• {}: {}\n"
+            "• {}: {}\n"
+            "• {}: {}\n"
+            "• {}: {}\n"
+            "• {}: {}\n\n"
             "*{}* users in total!".format(
-                institutes_stats.count(institutes_names[0]),
-                institutes_stats.count(institutes_names[1]),
-                institutes_stats.count(institutes_names[2]),
-                institutes_stats.count(institutes_names[3]),
-                institutes_stats.count(institutes_names[4]),
-                institutes_stats.count(institutes_names[5]),
-                institutes_stats.count(institutes_names[6]),
-                years_stats.count("1"),
-                years_stats.count("2"),
-                years_stats.count("3"),
-                years_stats.count("4"),
-                years_stats.count("5"),
-                years_stats.count("6"),
+                institutes_names[0], institutes_stats.count(institutes_names[0]),
+                institutes_names[1], institutes_stats.count(institutes_names[1]),
+                institutes_names[2], institutes_stats.count(institutes_names[2]),
+                institutes_names[3], institutes_stats.count(institutes_names[3]),
+                institutes_names[4], institutes_stats.count(institutes_names[4]),
+                institutes_names[5], institutes_stats.count(institutes_names[5]),
+                institutes_names[6], institutes_stats.count(institutes_names[6]),
+                years_names[0], years_stats.count(years_names[0]),
+                years_names[1], years_stats.count(years_names[1]),
+                years_names[2], years_stats.count(years_names[2]),
+                years_names[3], years_stats.count(years_names[3]),
+                years_names[4], years_stats.count(years_names[4]),
+                years_names[5], years_stats.count(years_names[5]),
                 len(students)
             )
         ),
@@ -170,19 +173,23 @@ def data(message):
     asked_users_list = []
     full_users_list = list(students)[::-1]  # Reversing list of students to show new users first
     
-    if option.startswith("number:"):
+    if option == "all":
+        asked_users_list = full_users_list
+    elif option.startswith("number:"):
         try:
             asked_users_number = int(option.replace("number:", ""))
         except ValueError:
-            asked_users_number = 0
-        finally:
+            pass
+        else:
             asked_users_list = full_users_list[:asked_users_number]
     elif option.startswith("index:"):
         try:
             asked_users_index = int(option.replace("index:", ""))
-            asked_users_list.append(full_users_list[asked_users_index])
+            asked_users_chat_id = full_users_list[asked_users_index]
         except Exception:
             pass
+        else:
+            asked_users_list.append(asked_users_chat_id)
     elif option.startswith("name:"):
         asked_users_name = option.replace("name:", "")
         
@@ -264,14 +271,10 @@ def clear(message):
     is_cleared = False
     
     for chat_id in list(students):
-        try: kbot.get_chat(chat_id=chat_id)
-        except: is_launched = False
-        else: is_launched = True
+        chat = kbot.get_chat(chat_id=chat_id)
         
         try:
             kbot.send_chat_action(chat_id=chat_id, action="typing")
-            
-            if not is_launched: raise Exception()
         except Exception:
             is_cleared = True
             
@@ -286,9 +289,9 @@ def clear(message):
                     "• Name: {name}\n"
                     "• Student card number: {student_card_number}\n"
                     "\n#erased".format(
-                        first_name=kbot.get_chat(chat_id=chat_id).first_name if is_launched else "Not launched to get",
-                        last_name=kbot.get_chat(chat_id=chat_id).last_name if is_launched else "",
-                        username=kbot.get_chat(chat_id=chat_id).username if is_launched else "None",
+                        first_name=chat.first_name,
+                        last_name=chat.last_name,
+                        username=chat.username,
                         chat_id=chat_id,
                         institute=students[chat_id].institute,
                         year=students[chat_id].year,
@@ -300,19 +303,13 @@ def clear(message):
             )
             
             del students[chat_id]
-
+    
     save_to(filename="data/users", object=students)
     
-    if is_cleared:
-        kbot.send_message(
-            chat_id=message.chat.id,
-            text="Cleared!"
-        )
-    else:
-        kbot.send_message(
-            chat_id=message.chat.id,
-            text="No one has been cleared!"
-        )
+    kbot.send_message(
+        chat_id=message.chat.id,
+        text="Cleared!" if is_cleared else "No one has been cleared!"
+    )
 
 @kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
@@ -344,19 +341,13 @@ def erase(message):
                     chat_id=message.chat.id,
                     text="{} was #erased!".format(chat_id)
                 )
-
+                
                 counter += 1
-        
-        if counter > 1:
-            kbot.send_message(
-                chat_id=message.chat.id,
-                text="{} users were #erased!".format(counter)
-            )
-        elif counter == 0:
-            kbot.send_message(
-                chat_id=message.chat.id,
-                text="There is no single unsetup!"
-            )
+    
+        kbot.send_message(
+            chat_id=message.chat.id,
+            text="{} users were #erased!".format(counter) if counter > 0 else "There is no single unsetup!"
+        )
     elif to_erase == "me":
         if message.chat.id in students:
             del students[message.chat.id]
@@ -408,7 +399,7 @@ def drop(message):
                         parse_mode="Markdown",
                         disable_notification=True
                     )
-
+                
                 kbot.send_message(
                     chat_id=chat_id,
                     text="Твои заметки, чтобы ничего не потерялось.",
@@ -491,5 +482,5 @@ def reverse(message):
         
         kbot.send_message(
             chat_id=message.chat.id,
-            text="Week type was reversed!"
+            text="Week was #reversed!"
         )

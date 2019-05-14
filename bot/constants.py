@@ -8,12 +8,10 @@ SCHEDULE_URL           = "https://kai.ru/raspisanie"
 LECTURERS_SCHEDULE_URL = "https://kai.ru/for-staff/raspisanie"
 SCORE_URL              = "http://old.kai.ru/info/students/brs.php"
 
-# /notes
-NOTES_MAX_NUMBER = 40
-
-# /edit
+# Maximums
+MAX_NOTES_NUMBER = 40
 MAX_CLASSES_NUMBER = 8
-MAX_BUTTONS_NUMBER = 100
+MAX_LECTURERS_NUMBER = 40
 
 # Week
 WEEKDAYS = {
@@ -277,6 +275,7 @@ HELP = (
     "• Внутри бота реализована GS-система, которая не позволяет отправить две команды одновременно. "
     "Захотели посмотреть расписание, отправили */classes*, и, ничего не выбрав, отправили */week*? "
     "Нет, так нельзя. Сначала — */classes*, потом — */week*. Порядок — наше всё.\n"
+    "• Бот имеет свой репозиторий на Гитхабе, добро пожаловать: github.com/airatk/kaishnik-bot\n"
     "\nХотелки, жалобы, любые интересующие вопросы — разработчику: @airatk"
 )
 

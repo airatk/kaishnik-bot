@@ -4,6 +4,7 @@ from abc import abstractmethod
 from datetime import datetime
 from datetime import timedelta
 
+
 class Subject(ABC):
     def __init__(self):
         self._time       = "\n\n*[ {begin_time} - {end_time} ]"
@@ -84,6 +85,7 @@ class Subject(ABC):
     def get(self):
         pass
 
+
 class StudentSubject(Subject):
     def __init__(self):
         super().__init__()
@@ -151,6 +153,7 @@ class StudentSubject(Subject):
 
     def get_simple(self):
         return " ".join([ self._time, self._title ]).replace("\n", "").replace("*", "")
+
 
 class LecturerSubject(Subject):
     def __init__(self):
