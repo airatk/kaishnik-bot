@@ -94,12 +94,20 @@ def show_all_score(callback):
     elif scoretable != []:
         kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
         
-        for subject in range(int(callback_data[0])):
+        subjects_num = int(callback_data[0])
+        
+        for subject in range(subjects_num):
             kbot.send_message(
                 chat_id=callback.message.chat.id,
                 text=get_subject_score(scoretable=scoretable, subjects_num=subject),
                 parse_mode="Markdown"
             )
+
+        kbot.send_message(
+            chat_id=callback.message.chat.id,
+            text="*{}* предметов всего!".format(subjects_num),
+            parse_mode="Markdown"
+        )
     else:
         kbot.edit_message_text(
             chat_id=callback.message.chat.id,
