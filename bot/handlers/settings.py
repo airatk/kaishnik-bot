@@ -7,6 +7,7 @@ from bot.student import Student
 
 from bot.constants import INSTITUTES
 from bot.constants import REPLIES_TO_UNKNOWN_COMMAND
+from bot.constants import LOADING_REPLIES
 
 from bot.keyboards.settings import institute_setter
 from bot.keyboards.settings import year_setter
@@ -17,6 +18,7 @@ from bot.keyboards.settings import set_card_skipper
 from bot.helpers import save_to
 
 from re import fullmatch
+from random import choice
 
 
 @kbot.callback_query_handler(func=lambda callback: callback.data == "first-setup")
@@ -146,6 +148,13 @@ def set_kit_group_number(message):
 )
 @top_notification
 def set_institute(callback):
+    kbot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text=choice(LOADING_REPLIES),
+        disable_web_page_preview=True
+    )
+    
     institute_id = callback.data.replace("set-institute-", "")
     
     students[callback.message.chat.id] = Student(
@@ -181,6 +190,13 @@ def set_institute(callback):
 )
 @top_notification
 def set_year(callback):
+    kbot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text=choice(LOADING_REPLIES),
+        disable_web_page_preview=True
+    )
+    
     students[callback.message.chat.id].year = callback.data.replace("set-year-", "")
     
     groups = students[callback.message.chat.id].get_dictionary_of(type="p_group")
@@ -215,6 +231,13 @@ def set_year(callback):
 )
 @top_notification
 def set_group_number(callback):
+    kbot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text=choice(LOADING_REPLIES),
+        disable_web_page_preview=True
+    )
+    
     students[callback.message.chat.id].group_number = callback.data.replace("set-group-", "")
     
     if students[callback.message.chat.id].group_number is None:
@@ -263,6 +286,13 @@ def set_group_number(callback):
 )
 @top_notification
 def set_name(callback):
+    kbot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text=choice(LOADING_REPLIES),
+        disable_web_page_preview=True
+    )
+    
     students[callback.message.chat.id].name = students[callback.message.chat.id].names[callback.data.replace("set-name-", "")]
     
     if students[callback.message.chat.id].name is None:
