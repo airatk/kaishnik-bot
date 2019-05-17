@@ -34,10 +34,10 @@ def creator(message):
                 "\t\t\t\[ number:{} ]\[ index:{} ]\n"
                 "\t\t\t\[ group:{} ]\[ year:{} ]\n"
             "}\n"
-            "\n*data*\n"                ### data
+            "\n*cleanning*\n"           ### cleanning
             "/clear\n"
             "/erase {\n"
-                "\t\t\t\[ all ]\[ unsetup ]\n"
+                "\t\t\t\[ all ]\[ unsetup ]\[ me ]\n"
                 "\t\t\t\[ :chat ID 1: … … ]\n"
             "}\n"
             "/drop { all }\n"
