@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:setup.py">
+   </FileRef>
+   <Group
+      location = "group:bot"
+      name = "bot">
+      <FileRef
+         location = "group:__init__.py">
+      </FileRef>
+      <FileRef
+         location = "group:sbot.py">
+      </FileRef>
+      <FileRef
+         location = "group:schedule.py">
+      </FileRef>
+      <FileRef
+         location = "group:constants.py">
+      </FileRef>
+   </Group>
+</Workspace>
