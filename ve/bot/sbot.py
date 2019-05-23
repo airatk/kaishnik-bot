@@ -38,30 +38,29 @@ class Bot:
         self._longpoll = VkBotLongPoll(self._session, self._group_id)
     
     def notification(self):
-        every().day.at("18:00").do(self.tomorrow, True)
+        def tomorrow():
+            self._api.messages.send(
+                peer_id=self._peer_id,
+                random_id=get_random_id(),
+                message=get_schedule(
+                    type="classes",
+                    weekday=datetime.today().isoweekday() + 1
+                )
+            )
+        
+            #self._api.messages.pin(
+            #    peer_id=self._peer_id,
+            #    message_id=self._api.messages.get_history(
+            #        peer_id=self._peer_id,
+            #        count=1
+            #    )[0].id
+            #)
+        
+        every().day.at("18:00").do(tomorrow)
         
         while True:
             run_pending()
             sleep(1)
-    
-    def tomorrow(self, is_pin=False):
-        self._api.messages.send(
-            peer_id=self._peer_id,
-            random_id=get_random_id(),
-            message=get_schedule(
-                type="classes",
-                weekday=datetime.today().isoweekday() + 1
-            )
-        )
-    
-        #if is_pin:
-        #    self._api.messages.pin(
-        #        peer_id=self._peer_id,
-        #        message_id=self._api.messages.get_history(
-        #            peer_id=self._peer_id,
-        #            count=1
-        #        )[0].id
-        #    )
     
     def start(self):
         print("Launched!")
@@ -79,7 +78,6 @@ class Bot:
                         peer_id=event.object.peer_id,
                         random_id=get_random_id(),
                         message=(
-                            "Команды:\n"
                             "• сегодня\n"
                             "• завтра\n"
                             "• чётная\n"
@@ -97,7 +95,14 @@ class Bot:
                         )
                     )
                 elif "завтра" in event.object.text:
-                    self.tomorrow()
+                    self._api.messages.send(
+                        peer_id=event.object.peer_id,
+                        random_id=get_random_id(),
+                        message=get_schedule(
+                            type="classes",
+                            weekday=datetime.today().isoweekday()
+                        )
+                    )
                 elif "чётная" in event.object.text:
                     for weekday in WEEKDAYS:
                         self._api.messages.send(
