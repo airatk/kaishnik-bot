@@ -4,6 +4,7 @@ from datetime import timedelta
 from requests import post
 
 from .constants import SCHEDULE_URL
+from .constants import SCHEDULE_GROUP_ID
 from .constants import WEEKDAYS
 from .constants import MONTHS
 
@@ -144,7 +145,7 @@ def get_schedule(type, weekday=None, next=False):
             "p_p_lifecycle": "2",
             "p_p_resource_id": "schedule" if type == "classes" else "examSchedule"
         }, data={
-            "groupId": "17896"  # 4101
+            "groupId": SCHEDULE_GROUP_ID
         }).json()
     except ConnectionError:
         return "Сайт kai.ru не отвечает🤷🏼‍♀️"
