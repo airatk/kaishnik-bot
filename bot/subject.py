@@ -8,8 +8,8 @@ from datetime import timedelta
 class Subject(ABC):
     def __init__(self):
         self._time       = "\n\n*[ {begin_time} - {end_time} ]"
-        self._building   = "[ {building} ]"
-        self._auditorium = "[ {auditorium} ]"
+        self._building   = "[ {building}"
+        self._auditorium = "{auditorium} ]"
         self._dates      = "\n[ {dates} ]"
         self._title      = "\n{title}*"
         self._type       = "\n_{type}_"
@@ -60,7 +60,7 @@ class Subject(ABC):
     
     @auditorium.setter
     def auditorium(self, auditorium):
-        self._auditorium = self._auditorium.format(auditorium=auditorium) if auditorium else ""
+        self._auditorium = self._auditorium.format(auditorium=(", " + auditorium) if auditorium else "")
     
     @dates.setter
     def dates(self, dates):
@@ -73,11 +73,11 @@ class Subject(ABC):
     @type.setter
     def type(self, type):
         if type == "лек":
-            self._type = "\n_лекция_"
+            self._type = self._type.format(type="лекция")
         elif type == "пр":
-            self._type = "\n_практика_"
+            self._type = self._type.format(type="практика")
         elif type == "л.р.":
-            self._type = "\n_лабораторная работа_"
+            self._type = self._type.format(type="лабораторная работа")
         else:
             self._type = ""
 

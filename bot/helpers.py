@@ -125,7 +125,7 @@ def beautify_exams(json_response):
     schedule = ""
     
     for subject in json_response:
-        time_place = "\n\n*[ {date} ][ {time} ][ {building} ][ {auditorium} ]*".format(
+        time_place = "\n\n*[ {date}, {time} ][ {building}, {auditorium} ]*".format(
             date=subject["examDate"],
             time=subject["examTime"],
             building="{}ка".format(subject["buildNum"]),  # Make buildings look beautiful
@@ -137,7 +137,7 @@ def beautify_exams(json_response):
         teacher = "\n@ {teacher}".format(teacher=subject["prepodName"].title()) if subject["prepodName"] else ""
         
         # Concatenate all the stuff above
-        schedule = "".join([schedule, time_place, subject_name, teacher])
+        schedule = "".join([ schedule, time_place, subject_name, teacher ])
 
     return schedule
 
@@ -243,7 +243,7 @@ def beautify_lecturers_exams(json_response):
     schedule = ""
     
     for subject in json_response:
-        time_place = "\n\n*[ {date} ][ {time} ][ {building} ][ {auditorium} ]*".format(
+        time_place = "\n\n*[ {date}, {time} ][ {building}, {auditorium} ]*".format(
             date=subject["examDate"],
             time=subject["examTime"],
             building="{}ка".format(subject["buildNum"]),  # Make buildings look beautiful
@@ -274,7 +274,7 @@ def get_subject_score(scoretable, subjects_num):
     
     debts = "\n\nДолги: {}".format(subject[10])
     
-    return "".join([title, type, certification1, certification2, certification3, semesterSum, debts])
+    return "".join([ title, type, certification1, certification2, certification3, semesterSum, debts ])
 
 
 # /notes
