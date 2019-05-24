@@ -45,6 +45,7 @@ class Bot:
         self._api = self._session.get_api()
         self._longpoll = VkBotLongPoll(self._session, self._group_id)
     
+    
     def _notificate(self):
         def tomorrow():
             self._api.messages.send(
@@ -56,6 +57,7 @@ class Bot:
                 )
             )
         
+            # Access denied for message pinning for some reason
             #self._api.messages.pin(
             #    peer_id=self._peer_id,
             #    message_id=self._api.messages.get_history(
@@ -72,6 +74,8 @@ class Bot:
 
     def _handler_loop(self):
         for event in self._longpoll.listen():
+            if "club{}".format(GROUP_ID) not in event.object.text: continue
+            
             if event.type == VkBotEventType.MESSAGE_NEW:
                 if "команды" in event.object.text:
                     self._api.messages.send(
@@ -136,6 +140,7 @@ class Bot:
                         random_id=get_random_id(),
                         message=choice(REPLIES_TO_UNKNOWN_MESSAGE)
                     )
+
 
     def start(self):
         print("Launched!")
