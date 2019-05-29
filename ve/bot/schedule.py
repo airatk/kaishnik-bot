@@ -114,7 +114,7 @@ class StudentSubject:
         ])
 
 
-def get_schedule(type, weekday=None, is_odd=False):
+def get_schedule(type, weekday=None, is_next=False):
     try:
         response = post(url=SCHEDULE_URL, params={
             "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
@@ -126,10 +126,10 @@ def get_schedule(type, weekday=None, is_odd=False):
     except ConnectionError:
         return "Сайт kai.ru не отвечает🤷🏼‍♀️"
     
-    return beautify_classes(response, weekday, is_odd) if type == Schedule.CLASSES else beautify_exams(response)
+    return beautify_classes(response, weekday, is_next) if type == Schedule.CLASSES else beautify_exams(response)
 
-def beautify_classes(json_response, weekday, is_odd):
-    date = datetime.today() + timedelta(days=(weekday - datetime.today().isoweekday()) + (7 if is_odd else 0))
+def beautify_classes(json_response, weekday, is_next):
+    date = datetime.today() + timedelta(days=(weekday - datetime.today().isoweekday()) + (7 if is_next else 0))
     
     if weekday == 7:
         return "Воскресенье, {day} {month}\n\nОднозначно выходной".format(
@@ -138,7 +138,7 @@ def beautify_classes(json_response, weekday, is_odd):
         )
     elif weekday == 8:
         weekday = 1
-        is_odd = True
+        is_next = True
     
     # No data - no schedule
     if not json_response:
@@ -161,7 +161,7 @@ def beautify_classes(json_response, weekday, is_odd):
             if "День консультаций" in subject["disciplName"] or "Военная подготовка" in subject["disciplName"]: break
             
             # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
-            if subject["dayDate"] == "неч" if (not is_even() if is_odd else is_even()) else subject["dayDate"] == "чет": continue
+            if subject["dayDate"] == "неч" if (not is_even() if is_next else is_even()) else subject["dayDate"] == "чет": continue
             
             # Do not show subjects with certain dates (21.09) on other dates (28 сентября)
             day_month = "{}.{}".format(int(date.strftime("%d")), date.strftime("%m"))

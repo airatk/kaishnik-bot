@@ -5,9 +5,6 @@ from vk_api.utils import get_random_id
 from vk_api.bot_longpoll import VkBotLongPoll
 from vk_api.bot_longpoll import VkBotEventType
 
-from vk_api.keyboard import VkKeyboard
-from vk_api.keyboard import VkKeyboardColor
-
 from datetime import datetime
 
 from random import choice
@@ -21,6 +18,7 @@ from time import sleep
 
 from .schedule import get_schedule
 from .schedule import Schedule
+from .schedule import is_even
 
 from .constants import TOKEN
 from .constants import GROUP_ID
@@ -74,9 +72,13 @@ class Bot:
 
     def _handler_loop(self):
         for event in self._longpoll.listen():
-            if "club{}".format(GROUP_ID) not in event.object.text: continue
-            
             if event.type == VkBotEventType.MESSAGE_NEW:
+                if "club{}".format(GROUP_ID) not in event.object.text: continue
+                
+                weekdays = list(set(event.object.text.split()).intersection({
+                    weekday_name.lower() for weekday_name in WEEKDAYS.values()
+                }))
+                
                 if "команды" in event.object.text:
                     self._api.messages.send(
                         peer_id=event.object.peer_id,
@@ -84,8 +86,10 @@ class Bot:
                         message=(
                             "• сегодня\n"
                             "• завтра\n"
-                            "• чётная\n"
-                            "• нечётная\n"
+                            "• чётная [ :дни недели: ]\n"
+                            "• нечётная [ :дни недели: ]\n"
+                            "• неделя\n"
+                            "\n"
                             "◦ экзамены\n"
                         )
                     )
@@ -104,18 +108,34 @@ class Bot:
                         random_id=get_random_id(),
                         message=get_schedule(
                             type=Schedule.CLASSES,
-                            weekday=datetime.today().isoweekday()
+                            weekday=datetime.today().isoweekday() + 1
                         )
                     )
-                elif "чётная" in event.object.text:
-                    for weekday in WEEKDAYS:
+                elif weekdays != []:
+                    if "нечётная" in event.object.text:
+                        is_next = is_even()
+                    elif "чётная" in event.object.text:
+                        is_next = not is_even()
+                    else:
+                        is_next = None
+                    
+                    if is_next is not None:
+                        for weekday, weekday_name in WEEKDAYS.items():
+                            if weekday_name.lower() in weekdays:
+                                self._api.messages.send(
+                                    peer_id=event.object.peer_id,
+                                    random_id=get_random_id(),
+                                    message=get_schedule(
+                                        type=Schedule.CLASSES,
+                                        weekday=weekday,
+                                        is_next=is_next
+                                    )
+                                )
+                    else:
                         self._api.messages.send(
                             peer_id=event.object.peer_id,
                             random_id=get_random_id(),
-                            message=get_schedule(
-                                type=Schedule.CLASSES,
-                                weekday=weekday
-                            )
+                            message="Тип недели не указан! Исправляйся."
                         )
                 elif "нечётная" in event.object.text:
                     for weekday in WEEKDAYS:
@@ -125,9 +145,26 @@ class Bot:
                             message=get_schedule(
                                 type=Schedule.CLASSES,
                                 weekday=weekday,
-                                is_odd=True
+                                is_next=is_even()
                             )
                         )
+                elif "чётная" in event.object.text:
+                    for weekday in WEEKDAYS:
+                        self._api.messages.send(
+                            peer_id=event.object.peer_id,
+                            random_id=get_random_id(),
+                            message=get_schedule(
+                                type=Schedule.CLASSES,
+                                weekday=weekday,
+                                is_next=not is_even()
+                            )
+                        )
+                elif "неделя" in event.object.text:
+                    self._api.messages.send(
+                        peer_id=event.object.peer_id,
+                        random_id=get_random_id(),
+                        message="Текущая неделя {}.".format("чётная" if is_even() else "нечётная")
+                    )
                 elif "экзамены" in event.object.text:
                     self._api.messages.send(
                         peer_id=event.object.peer_id,
@@ -150,3 +187,8 @@ class Bot:
                 self._handler_loop()
             except Exception:
                 sleep(5)
+
+    def test(self):
+        print("Let's test me!")
+        
+        self._handler_loop()
