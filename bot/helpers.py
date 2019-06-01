@@ -35,6 +35,19 @@ def is_even():
 def is_week_reversed():
     return load_from("data/is_week_reversed")
 
+def weekday_date():
+    date = datetime.today()
+    weekday = date.isoweekday()
+    
+    return {
+        "weekday": WEEKDAYS[weekday].lower() if weekday != 7 else "воскресенье",
+        "date": "{day} {month}".format(
+            day=int(date.strftime("%d")),
+            month=MONTHS[date.strftime("%m")]
+            # This str(int(:string:)) was done to replace "01 апреля" by "1 апреля"
+        )
+    }
+
 
 # /classes
 def beautify_classes(json_response, weekday, next, edited_subjects):
@@ -44,7 +57,6 @@ def beautify_classes(json_response, weekday, next, edited_subjects):
         return "*Воскресенье, {day} {month}*\n\nОднозначно выходной".format(
             day=int(date.strftime("%d")),
             month=MONTHS[date.strftime("%m")]
-            # This str(int(:string:)) was done to replace "01 апреля" by "1 апреля"
         )
     elif weekday == 8:
         weekday = 1

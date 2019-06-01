@@ -9,6 +9,7 @@ from bot.constants import DONATE
 from bot.keyboards.settings import set_card_skipper
 
 from bot.helpers import is_even
+from bot.helpers import weekday_date
 
 
 @kbot.message_handler(
@@ -19,7 +20,15 @@ from bot.helpers import is_even
 def week(message):
     kbot.send_message(
         chat_id=message.chat.id,
-        text="Текущая неделя {type}.".format(type="чётная" if is_even() else "нечётная")
+        text=(
+            "Сегодня {weekday}, {date}.\n\n"
+            "Текущая неделя *{type}*.".format(
+                weekday=weekday_date()["weekday"],
+                date=weekday_date()["date"],
+                type="чётная" if is_even() else "нечётная"
+            )
+        ),
+        parse_mode="Markdown"
     )
 
 
