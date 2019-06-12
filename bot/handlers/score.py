@@ -17,6 +17,9 @@ from bot.helpers import get_subject_score
 def score(message):
     students[message.chat.id].previous_message = "/score"  # Gate System (GS)
     
+    if "экз" in message.text: students[message.chat.id].previous_message += " exams"
+    elif "зач" in message.text: students[message.chat.id].previous_message += " tests"
+        
     if students[message.chat.id].student_card_number == "unset":
         kbot.send_message(
             chat_id=message.chat.id,
@@ -37,6 +40,61 @@ def score(message):
             text="Выбери номер семестра:",
             reply_markup=semester_dialer(int(students[message.chat.id].year)*2 + 1)
         )
+
+@kbot.callback_query_handler(
+    func=lambda callback: (
+        students[callback.message.chat.id].previous_message == "/score exams" or
+        students[callback.message.chat.id].previous_message == "/score tests"
+    ) and "semester" in callback.data
+)
+@top_notification
+def show_all_score(callback):
+    semester_number = callback.data.replace("semester ", "")
+    scoretable = students[callback.message.chat.id].get_scoretable(semester_number)
+    
+    if scoretable is None:
+        kbot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Сайт kai.ru не отвечает🤷🏼‍♀️",
+            disable_web_page_preview=True
+        )
+    elif scoretable != []:
+        kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+        
+        subjects_num = 0
+        
+        mask = "экзамен" if students[callback.message.chat.id].previous_message == "/score exams" else "зачёт"
+        
+        for subject in range(len(scoretable)):
+            subject_score = get_subject_score(scoretable=scoretable, subjects_num=subject)
+            
+            if mask in subject_score:
+                kbot.send_message(
+                    chat_id=callback.message.chat.id,
+                    text=subject_score,
+                    parse_mode="Markdown"
+                )
+
+                subjects_num += 1
+
+        if subjects_num == 1: grammatical_entity = ""
+        elif subjects_num > 1 and subjects_num < 5: grammatical_entity = "а"
+        else: grammatical_entity = "ов"
+
+        kbot.send_message(
+            chat_id=callback.message.chat.id,
+            text="*{}* предмет{} всего!".format(subjects_num, grammatical_entity),
+            parse_mode="Markdown"
+        )
+    else:
+        kbot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Нет данных."
+        )
+    
+    students[callback.message.chat.id].previous_message = None  # Gate System (GS)
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -103,9 +161,13 @@ def show_all_score(callback):
                 parse_mode="Markdown"
             )
 
+        if subjects_num == 1: grammatical_entity = ""
+        elif subjects_num > 1 and subjects_num < 5: grammatical_entity = "а"
+        else: grammatical_entity = "ов"
+
         kbot.send_message(
             chat_id=callback.message.chat.id,
-            text="*{}* предметов всего!".format(subjects_num),
+            text="*{}* предмет{} всего!".format(subjects_num, grammatical_entity),
             parse_mode="Markdown"
         )
     else:
