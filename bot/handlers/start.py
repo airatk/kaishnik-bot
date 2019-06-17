@@ -3,11 +3,10 @@ from bot import students
 from bot import metrics
 from bot import top_notification
 
-from bot.student import Student
+from bot.keyboards import make_setup
 
-from bot.keyboards.start import make_setup
-
-from bot.helpers import save_to
+from bot.helpers         import save_to
+from bot.helpers.student import Student
 
 
 @kbot.message_handler(func=lambda message: message.chat.id not in students)

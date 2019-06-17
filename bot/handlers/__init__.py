@@ -4,6 +4,7 @@ from bot.handlers import start
 from bot.handlers import settings
 
 from bot.handlers import classes
+from bot.handlers import exams
 from bot.handlers import lecturers
 from bot.handlers import score
 

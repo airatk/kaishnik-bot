@@ -2,97 +2,153 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/airatk/Documents/kaishnik-bot/startup.py">
+      location = "group:startup.py">
+   </FileRef>
+   <FileRef
+      location = "group:data_transferer.py">
    </FileRef>
    <Group
-      location = "container:"
+      location = "group:bot"
       name = "bot">
       <FileRef
-         location = "group:/Users/airatk/Documents/kaishnik-bot/bot/__init__.py">
+         location = "group:__init__.py">
       </FileRef>
       <Group
-         location = "container:"
+         location = "group:handlers"
          name = "handlers">
          <FileRef
-            location = "group:bot/handlers/__init__.py">
+            location = "group:__init__.py">
+         </FileRef>
+         <Group
+            location = "group:settings"
+            name = "settings">
+            <FileRef
+               location = "group:__init__.py">
+            </FileRef>
+            <FileRef
+               location = "group:institutes.py">
+            </FileRef>
+            <FileRef
+               location = "group:kit.py">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:lecturers"
+            name = "lecturers">
+            <FileRef
+               location = "group:__init__.py">
+            </FileRef>
+            <FileRef
+               location = "group:classes.py">
+            </FileRef>
+            <FileRef
+               location = "group:exams.py">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:edit"
+            name = "edit">
+            <FileRef
+               location = "group:__init__.py">
+            </FileRef>
+            <FileRef
+               location = "group:edit.py">
+            </FileRef>
+            <FileRef
+               location = "group:delete.py">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:creator.py">
          </FileRef>
          <FileRef
-            location = "group:bot/handlers/creator.py">
+            location = "group:start.py">
          </FileRef>
          <FileRef
-            location = "group:bot/handlers/start.py">
+            location = "group:classes.py">
          </FileRef>
          <FileRef
-            location = "group:/Users/airatk/Documents/kaishnik-bot/bot/handlers/settings.py">
+            location = "group:exams.py">
          </FileRef>
          <FileRef
-            location = "group:bot/handlers/classes.py">
+            location = "group:score.py">
          </FileRef>
          <FileRef
-            location = "group:/Users/airatk/Documents/kaishnik-bot/bot/handlers/lecturers.py">
+            location = "group:notes.py">
          </FileRef>
          <FileRef
-            location = "group:bot/handlers/score.py">
+            location = "group:locations.py">
          </FileRef>
          <FileRef
-            location = "group:bot/handlers/notes.py">
+            location = "group:others.py">
          </FileRef>
          <FileRef
-            location = "group:bot/handlers/edit.py">
-         </FileRef>
-         <FileRef
-            location = "group:bot/handlers/locations.py">
-         </FileRef>
-         <FileRef
-            location = "group:bot/handlers/others.py">
-         </FileRef>
-         <FileRef
-            location = "group:bot/handlers/unknown.py">
+            location = "group:unknown.py">
          </FileRef>
       </Group>
       <Group
-         location = "container:"
+         location = "group:keyboards"
          name = "keyboards">
+         <Group
+            location = "group:edit"
+            name = "edit">
+            <FileRef
+               location = "group:__init__.py">
+            </FileRef>
+            <FileRef
+               location = "group:edit.py">
+            </FileRef>
+            <FileRef
+               location = "group:delete.py">
+            </FileRef>
+         </Group>
          <FileRef
-            location = "group:bot/keyboards/__init__.py">
+            location = "group:__init__.py">
          </FileRef>
          <FileRef
-            location = "group:bot/keyboards/start.py">
+            location = "group:settings.py">
          </FileRef>
          <FileRef
-            location = "group:/Users/airatk/Documents/kaishnik-bot/bot/keyboards/settings.py">
+            location = "group:classes.py">
          </FileRef>
          <FileRef
-            location = "group:bot/keyboards/classes.py">
+            location = "group:lecturers.py">
          </FileRef>
          <FileRef
-            location = "group:/Users/airatk/Documents/kaishnik-bot/bot/keyboards/lecturers.py">
+            location = "group:score.py">
          </FileRef>
          <FileRef
-            location = "group:bot/keyboards/score.py">
+            location = "group:notes.py">
          </FileRef>
          <FileRef
-            location = "group:bot/keyboards/notes.py">
-         </FileRef>
-         <FileRef
-            location = "group:bot/keyboards/edit.py">
-         </FileRef>
-         <FileRef
-            location = "group:bot/keyboards/locations.py">
+            location = "group:locations.py">
          </FileRef>
       </Group>
-      <FileRef
-         location = "group:bot/constants.py">
-      </FileRef>
-      <FileRef
-         location = "group:bot/helpers.py">
-      </FileRef>
-      <FileRef
-         location = "group:bot/student.py">
-      </FileRef>
-      <FileRef
-         location = "group:bot/subject.py">
-      </FileRef>
+      <Group
+         location = "group:helpers"
+         name = "helpers">
+         <FileRef
+            location = "group:__init__.py">
+         </FileRef>
+         <FileRef
+            location = "group:metrics.py">
+         </FileRef>
+         <FileRef
+            location = "group:student.py">
+         </FileRef>
+         <FileRef
+            location = "group:subject.py">
+         </FileRef>
+         <FileRef
+            location = "group:schedule.py">
+         </FileRef>
+         <FileRef
+            location = "group:lecturers.py">
+         </FileRef>
+         <FileRef
+            location = "group:constants.py">
+         </FileRef>
+      </Group>
    </Group>
    <FileRef
       location = "container:README.md">

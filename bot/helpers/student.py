@@ -1,15 +1,13 @@
-from bot.constants import SCHEDULE_URL
-from bot.constants import SCORE_URL
-
-from bot.helpers import beautify_classes
-from bot.helpers import beautify_exams
+from bot.helpers.schedule  import beautify_classes
+from bot.helpers.schedule  import beautify_exams
+from bot.helpers.constants import SCHEDULE_URL
+from bot.helpers.constants import SCORE_URL
 
 from datetime import datetime
 from datetime import timedelta
 
-from requests import get
-from requests import post
-
+from requests            import get
+from requests            import post
 from requests.exceptions import ConnectionError
 
 from bs4 import BeautifulSoup
@@ -120,6 +118,8 @@ class Student:
             
             # Setting id of group number for score
             if self._institute_id != "КИТ": self._group_number_score = self.get_dictionary_of(type="p_group")[group_number]
+        except (IndexError, KeyError):
+            self._group_number = "non-existing"
         except Exception:
             self._group_number = None
     
@@ -178,19 +178,23 @@ class Student:
     
     
     # /classes & /exams
-    def get_schedule(self, type, weekday=None, next=False):
+    def get_schedule(self, type, next=False):
+        is_own_group_asked = self._another_group_number_schedule is None
+        
         try:
             response = post(url=SCHEDULE_URL, params={
                 "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
                 "p_p_lifecycle": "2",
                 "p_p_resource_id": "schedule" if type == "classes" else "examSchedule"
             }, data={
-                "groupId": self._group_number_schedule if self._another_group_number_schedule is None else self._another_group_number_schedule
+                "groupId": self._group_number_schedule if is_own_group_asked else self._another_group_number_schedule
             }).json()
         except ConnectionError:
-            return "Сайт kai.ru не отвечает🤷🏼‍♀️"
+            return [ "kai.ru не отвечает🤷🏼‍♀️" ]
         
-        return beautify_classes(response, weekday, next, self._edited_subjects) if type == "classes" else beautify_exams(response)
+        if not response: return [ "Нет данных." ]
+        
+        return beautify_classes(response, next, self._edited_subjects) if type == "classes" else beautify_exams(response)
     
     # /score & associated stuff
     def get_dictionary_of(self, type):
@@ -230,7 +234,7 @@ class Student:
             return None
 
         soup = BeautifulSoup(page, features="html.parser")
-        table = soup.html.find("table", { "id": "reyt" })
+        table = soup.html.find(name="table", attrs={ "id": "reyt" })
         
         if not table: return []
         

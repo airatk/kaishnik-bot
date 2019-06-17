@@ -30,7 +30,6 @@ Finally, type `python3 startup.py` to launch.
 
 ## Other stuff
 * `update-logs/` folder contains notes which were sent to users as update announcements.
-* `ve/` folder contains a vk edition of the bot.
 
 ## Design
 All the stuff was drawn using Pixelmator Pro. 

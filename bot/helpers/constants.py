@@ -11,7 +11,7 @@ SCORE_URL              = "http://old.kai.ru/info/students/brs.php"
 # Maximums
 MAX_NOTES_NUMBER = 40
 MAX_CLASSES_NUMBER = 8
-MAX_LECTURERS_NUMBER = 40
+MAX_LECTURERS_NUMBER = 24
 
 # Week
 WEEKDAYS = {
@@ -290,12 +290,10 @@ DONATE = (
     "\n\nСпасибо, что пользуешься ботом! :)"
 )
 
-# Replies on loading, /settings
+# Replies on loading
 LOADING_REPLIES = [
-    "стучусь на сервера kai.ru",
-    "загрузка-шмагрузка",
-    "запрос на kai.ru отправлен, ответа надо подождать🙂"
-    "ожидане ответа от kai.ru"
+    "стучусь на сервера kai.ru…",
+    "…"
 ]
 
 # Replies to unknow stuff

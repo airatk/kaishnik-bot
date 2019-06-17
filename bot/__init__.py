@@ -1,13 +1,11 @@
 from telebot import TeleBot
 from telebot import apihelper
 
-from bot.constants import TOKEN
-
-from bot.helpers import load_from
-from bot.helpers import Metrics
+from bot.helpers           import load_from
+from bot.helpers.metrics   import Metrics
+from bot.helpers.constants import TOKEN
 
 from sys import argv
-
 from random import choice
 
 

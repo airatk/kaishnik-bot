@@ -1,9 +1,10 @@
 from telebot.types import InlineKeyboardMarkup
 from telebot.types import InlineKeyboardButton
 
-from bot.constants import BUILDINGS
-from bot.constants import LIBRARIES
-from bot.constants import DORMS
+from bot.helpers.constants import BUILDINGS
+from bot.helpers.constants import LIBRARIES
+from bot.helpers.constants import DORMS
+
 
 def choose_location_type():
     location_type_keyboard = InlineKeyboardMarkup()

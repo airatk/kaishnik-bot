@@ -1,6 +1,7 @@
 from telebot.types import InlineKeyboardMarkup
 from telebot.types import InlineKeyboardButton
 
+
 def notes_chooser():
     notes_chooser_keyboard = InlineKeyboardMarkup()
     

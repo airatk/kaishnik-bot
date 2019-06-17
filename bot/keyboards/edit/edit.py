@@ -1,27 +1,14 @@
 from telebot.types import InlineKeyboardMarkup
 from telebot.types import InlineKeyboardButton
 
-from bot.constants import WEEKDAYS
-from bot.constants import MAX_CLASSES_NUMBER
-from bot.constants import BUILDINGS
+from bot.helpers.constants import WEEKDAYS
+from bot.helpers.constants import MAX_CLASSES_NUMBER
+from bot.helpers.constants import BUILDINGS
 
 from datetime import datetime
 from datetime import timedelta
 
 
-# /edit menu
-def edit_chooser():
-    edit_chooser_keyboard = InlineKeyboardMarkup()
-    
-    edit_chooser_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-edit"))
-    
-    edit_chooser_keyboard.row(InlineKeyboardButton(text="изменить", callback_data="add-edit"))
-    edit_chooser_keyboard.row(InlineKeyboardButton(text="удалить", callback_data="delete-edit"))
-    
-    return edit_chooser_keyboard
-
-
-# "edit" option
 def weektype_dialer():
     weektype_dialer_keyboard = InlineKeyboardMarkup()
     
@@ -90,38 +77,3 @@ def subject_type_dialer():
     subject_type_dialer_keyboard.row(InlineKeyboardButton(text="ЛР", callback_data="edit-subject-type-л.р."))
     
     return subject_type_dialer_keyboard
-
-
-# "delete" option
-def delete_edit_chooser(edited_subjects):
-    delete_edit_chooser_keyboard = InlineKeyboardMarkup(row_width=1)
-    
-    delete_edit_chooser_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-edit"))
-    
-    delete_edit_chooser_keyboard.row(InlineKeyboardButton(text="удалить все", callback_data="delete-edit-all"))
-    
-    delete_edit_chooser_keyboard.add(*[
-        InlineKeyboardButton(
-            text=subject.get_simple(),
-            callback_data="delete-edit-number-{}".format(index)
-        ) for index, subject in enumerate(edited_subjects)
-    ])
-    
-    return delete_edit_chooser_keyboard
-
-
-# helpers
-def edit_canceler():
-    edit_canceler_keyboard = InlineKeyboardMarkup()
-    
-    edit_canceler_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-edit"))
-    
-    return edit_canceler_keyboard
-
-def canceler_skipper(callback_data):
-    canceler_skipper_keyboard = InlineKeyboardMarkup()
-    
-    canceler_skipper_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-edit"))
-    canceler_skipper_keyboard.row(InlineKeyboardButton(text="пропустить", callback_data=callback_data))
-    
-    return canceler_skipper_keyboard

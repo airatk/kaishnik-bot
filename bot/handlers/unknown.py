@@ -2,8 +2,8 @@ from bot import kbot
 from bot import metrics
 from bot import top_notification
 
-from bot.constants import REPLIES_TO_UNKNOWN_COMMAND
-from bot.constants import REPLIES_TO_UNKNOWN_MESSAGE
+from bot.helpers.constants import REPLIES_TO_UNKNOWN_COMMAND
+from bot.helpers.constants import REPLIES_TO_UNKNOWN_MESSAGE
 
 from random import choice
 

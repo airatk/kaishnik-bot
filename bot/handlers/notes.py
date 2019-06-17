@@ -3,13 +3,12 @@ from bot import students
 from bot import metrics
 from bot import top_notification
 
-from bot.constants import MAX_NOTES_NUMBER
-
 from bot.keyboards.notes import notes_chooser
 from bot.keyboards.notes import notes_list_dialer
 
-from bot.helpers import save_to
-from bot.helpers import clarify_markdown
+from bot.helpers           import save_to
+from bot.helpers           import clarify_markdown
+from bot.helpers.constants import MAX_NOTES_NUMBER
 
 
 @kbot.message_handler(

@@ -2,14 +2,13 @@ from bot import kbot
 from bot import students
 from bot import metrics
 
-from bot.constants import BRS
-from bot.constants import HELP
-from bot.constants import DONATE
-
 from bot.keyboards.settings import set_card_skipper
 
-from bot.helpers import is_even
-from bot.helpers import weekday_date
+from bot.helpers           import is_even
+from bot.helpers           import weekday_date
+from bot.helpers.constants import BRS
+from bot.helpers.constants import HELP
+from bot.helpers.constants import DONATE
 
 
 @kbot.message_handler(
@@ -21,7 +20,7 @@ def week(message):
     kbot.send_message(
         chat_id=message.chat.id,
         text=(
-            "Сегодня {weekday}, {date}.\n\n"
+            "{weekday}, {date}. \n"
             "Текущая неделя *{type}*.".format(
                 weekday=weekday_date()["weekday"],
                 date=weekday_date()["date"],

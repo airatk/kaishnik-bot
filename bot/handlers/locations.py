@@ -3,14 +3,14 @@ from bot import students
 from bot import metrics
 from bot import top_notification
 
-from bot.constants import BUILDINGS
-from bot.constants import LIBRARIES
-from bot.constants import DORMS
-
 from bot.keyboards.locations import choose_location_type
 from bot.keyboards.locations import buildings_dialer
 from bot.keyboards.locations import libraries_dialer
 from bot.keyboards.locations import dorms_dialer
+
+from bot.helpers.constants import BUILDINGS
+from bot.helpers.constants import LIBRARIES
+from bot.helpers.constants import DORMS
 
 
 @kbot.message_handler(

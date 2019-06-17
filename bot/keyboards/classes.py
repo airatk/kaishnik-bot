@@ -1,8 +1,8 @@
 from telebot.types import InlineKeyboardMarkup
 from telebot.types import InlineKeyboardButton
 
-from bot.constants import WEEKDAYS
-from bot.constants import MONTHS
+from bot.helpers.constants import WEEKDAYS
+from bot.helpers.constants import MONTHS
 
 from datetime import datetime
 from datetime import timedelta
@@ -11,9 +11,15 @@ from datetime import timedelta
 def schedule_type():
     schedule_type_keyboard = InlineKeyboardMarkup()
     
+    todays_weekday = datetime.today().isoweekday()
+    tomorrows_weekday = todays_weekday + 1
+    
     schedule_type_keyboard.row(
-        InlineKeyboardButton(text="сегодня", callback_data="daily crnt {}".format(datetime.today().isoweekday())),
-        InlineKeyboardButton(text="завтра", callback_data="daily crnt {}".format(datetime.today().isoweekday() + 1))
+        InlineKeyboardButton(text="сегодня", callback_data="daily crnt {weekday}".format(weekday=todays_weekday)),
+        InlineKeyboardButton(text="завтра", callback_data="daily {type} {weekday}".format(
+            type="crnt" if tomorrows_weekday != 8 else "next",
+            weekday=tomorrows_weekday if tomorrows_weekday != 8 else 1
+        ))
     )
     schedule_type_keyboard.row(InlineKeyboardButton(text="текущую неделю", callback_data="weekdays crnt"))
     schedule_type_keyboard.row(InlineKeyboardButton(text="следующую неделю", callback_data="weekdays next"))

@@ -2,16 +2,14 @@ from bot import kbot
 from bot import students
 from bot import metrics
 
-from bot.student import Student
+from bot.keyboards import make_setup
 
-from bot.constants import CREATOR
-from bot.constants import TOKEN
-from bot.constants import INSTITUTES
-
-from bot.keyboards.start import make_setup
-
-from bot.helpers import save_to
-from bot.helpers import load_from
+from bot.helpers           import save_to
+from bot.helpers           import load_from
+from bot.helpers.student   import Student
+from bot.helpers.constants import CREATOR
+from bot.helpers.constants import TOKEN
+from bot.helpers.constants import INSTITUTES
 
 from datetime import datetime
 

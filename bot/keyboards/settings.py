@@ -1,7 +1,8 @@
 from telebot.types import InlineKeyboardMarkup
 from telebot.types import InlineKeyboardButton
 
-from bot.constants import INSTITUTES
+from bot.helpers.constants import INSTITUTES
+
 
 def institute_setter(is_old):
     institute_setter_keyboard = InlineKeyboardMarkup(row_width=1)

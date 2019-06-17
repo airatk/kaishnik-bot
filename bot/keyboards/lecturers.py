@@ -1,8 +1,8 @@
 from telebot.types import InlineKeyboardMarkup
 from telebot.types import InlineKeyboardButton
 
-from bot.constants import WEEKDAYS
-from bot.constants import MONTHS
+from bot.helpers.constants import WEEKDAYS
+from bot.helpers.constants import MONTHS
 
 from datetime import datetime
 from datetime import timedelta

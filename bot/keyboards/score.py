@@ -1,6 +1,7 @@
 from telebot.types import InlineKeyboardMarkup
 from telebot.types import InlineKeyboardButton
 
+
 def semester_dialer(semesters_number):
     semester_dialer_keyboard = InlineKeyboardMarkup(row_width=2)
     
