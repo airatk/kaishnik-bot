@@ -6,7 +6,10 @@ from bot import top_notification
 from bot.keyboards.score import subject_chooser
 from bot.keyboards.score import semester_dialer
 
-from bot.helpers import get_subject_score
+from bot.helpers           import get_subject_score
+from bot.helpers.constants import LOADING_REPLIES
+
+from random import choice
 
 
 @kbot.message_handler(
@@ -138,8 +141,14 @@ def semester_subjects(callback):
 )
 @top_notification
 def show_all_score(callback):
-    callback_data = callback.data.replace("scoretable all ", "").split()
+    kbot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text=choice(LOADING_REPLIES),
+        disable_web_page_preview=True
+    )
     
+    callback_data = callback.data.replace("scoretable all ", "").split()
     scoretable = students[callback.message.chat.id].get_scoretable(callback_data[1])
     
     if scoretable is None:
@@ -186,6 +195,13 @@ def show_all_score(callback):
 )
 @top_notification
 def show_score(callback):
+    kbot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text=choice(LOADING_REPLIES),
+        disable_web_page_preview=True
+    )
+    
     callback_data = callback.data.replace("scoretable ", "").split()
     scoretable = students[callback.message.chat.id].get_scoretable(callback_data[1])
     
