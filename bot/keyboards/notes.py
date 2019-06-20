@@ -2,12 +2,16 @@ from telebot.types import InlineKeyboardMarkup
 from telebot.types import InlineKeyboardButton
 
 
-def notes_chooser():
+def notes_chooser(notes_number):
     notes_chooser_keyboard = InlineKeyboardMarkup()
     
-    notes_chooser_keyboard.row(InlineKeyboardButton(text="показать", callback_data="show-note"))
+    notes_chooser_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-notes"))
+    
     notes_chooser_keyboard.row(InlineKeyboardButton(text="добавить", callback_data="add-note"))
-    notes_chooser_keyboard.row(InlineKeyboardButton(text="удалить", callback_data="delete-note"))
+    
+    if notes_number != 0:
+        notes_chooser_keyboard.row(InlineKeyboardButton(text="показать", callback_data="show-note"))
+        notes_chooser_keyboard.row(InlineKeyboardButton(text="удалить", callback_data="delete-note"))
     
     return notes_chooser_keyboard
 
