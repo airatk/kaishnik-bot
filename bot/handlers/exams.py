@@ -11,20 +11,32 @@ from re import fullmatch
 )
 @metrics.increment("exams")
 def exams(message):
-    if fullmatch("[1-59][1-6][0-9][0-9]", message.text.replace("/exams ", "")):
-        students[message.chat.id].another_group_number_schedule = message.text.replace("/exams ", "")
+    another_group = message.text.replace("/exams", "")
+    
+    if another_group != "":
+        another_group = another_group[1:]  # Getting rid of a whitespace
         
-        if students[message.chat.id].another_group_number_schedule is None:
+        if fullmatch("[1-59][1-6][0-9][0-9]", another_group):
+            students[message.chat.id].another_group_number_schedule = another_group
+        
+            if students[message.chat.id].another_group_number_schedule is None:
+                kbot.send_message(
+                    chat_id=message.chat.id,
+                    text="kai.ru не отвечает🤷🏼‍♀️",
+                    disable_web_page_preview=True
+                )
+                
+                students[message.chat.id].previous_message = None  # Gate System (GS)
+                return
+        else:
             kbot.send_message(
                 chat_id=message.chat.id,
-                text="Сайт kai.ru не отвечает🤷🏼‍♀️",
-                disable_web_page_preview=True
+                text="Неверный номер группы. Исправляйся."
             )
             
             students[message.chat.id].previous_message = None  # Gate System (GS)
-            
             return
-
+    
     kbot.send_message(
         chat_id=message.chat.id,
         text=students[message.chat.id].get_schedule(type="exams")[0],
