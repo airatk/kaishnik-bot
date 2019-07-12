@@ -1,11 +1,10 @@
-# kaishnik-bot
-_Telegram bot for KAI students_
+# Каист
 
 ## What the ?
 The bot might be considered as kai.ru & old.kai.ru wrapper. It's built using [pyTelegramBotAPI][1].
 
 ## Reason
-Mobile-unfriendly ugly inconvenient website had to be replaced by something usable & not only usable. Here the [@kaishnik_bot][2] comes up.
+Official mobile-unfriendly ugly inconvenient website had to be replaced by something more usable. Here the [@kaishnik_bot][2] comes up.
 
 ## Setup
 
@@ -26,15 +25,13 @@ First of all, this is Python 3.
 
 Secondly, the `requirements.txt` file is included to the repository. So, enter `pip3 install -r requirements.txt` to the console to have all the necessary stuff.
 
-Finally, type `python3 startup.py` to launch.
+Finally, type `python3 launch.py` to launch.
 
 ## Other stuff
 * `update-logs/` folder contains notes which were sent to users as update announcements.
 
 ## Design
 All the stuff was drawn using Pixelmator Pro. 
-
-_Undescribably useful, joyfully cute!_
 
 ![kaishnik_bot logo][5]
 ![kaishnik_bot poster][6]

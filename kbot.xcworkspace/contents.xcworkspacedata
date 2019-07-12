@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:startup.py">
+      location = "group:/Users/airatk/Documents/alight/bots/telegram/kaishnik-bot/launch.py">
    </FileRef>
    <FileRef
       location = "group:data_transferer.py">

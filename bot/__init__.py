@@ -9,7 +9,7 @@ from sys import argv
 from random import choice
 
 
-# Because Telegram is officially blocked in Russia, that's why
+# Bypassing the lockout of Russian government
 apihelper.proxy = { "https": "socks5://163.172.152.192:1080" }
 
 
@@ -35,17 +35,18 @@ def top_notification(callback_handler):
 
 # Polling launcher
 def main():
-    if len(argv) == 1:
-        print("Launched in test mode")
+    if len(argv) == 2 and argv[1] == "t":
+        print("Launched in test mode...")
         kbot.polling()
-    elif argv[1] == "i":
-        print("Launched in infinity mode")
+    elif len(argv) == 2 and argv[1] == "i":
+        print("Launched in infinity mode...")
         kbot.infinity_polling(True)
     else:
         print(
-            "\n  Incorrect options!\n\n"
-              "- python3 startup.py     - to launch in test mode\n"
-              "- python3 startup.py i   - to launch in infinity mode\n"
+            "\n"
+            "  Incorrect options!\n\n"
+            "> python3 startup.py t - to launch in test mode\n"
+            "> python3 startup.py i - to launch in infinity mode\n"
         )
 
 
