@@ -182,11 +182,10 @@ class Student:
         is_own_group_asked = self._another_group_number_schedule is None
         
         try:
-            response = post(url=SCHEDULE_URL, params={
+            response = get(url=SCHEDULE_URL, params={
                 "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
                 "p_p_lifecycle": "2",
-                "p_p_resource_id": "schedule" if type == "classes" else "examSchedule"
-            }, data={
+                "p_p_resource_id": "schedule" if type == "classes" else "examSchedule",
                 "groupId": self._group_number_schedule if is_own_group_asked else self._another_group_number_schedule
             }).json()
         except ConnectionError:

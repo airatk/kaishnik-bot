@@ -160,7 +160,11 @@ def set_group_number(callback):
         kbot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
-            text="Такой группы не существует🤔"
+            text="Такой группы нет🤔"
+        )
+        kbot.send_message(
+            chat_id=callback.message.chat.id,
+            text="Возможно, она появится позже, когда её внесут в каёвскую базу🤓"
         )
     
         students[callback.message.chat.id] = Student()  # Drop all the entered data

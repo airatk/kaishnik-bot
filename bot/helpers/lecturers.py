@@ -8,7 +8,6 @@ from datetime import datetime
 from datetime import timedelta
 
 from requests            import get
-from requests            import post
 from requests.exceptions import ConnectionError
 
 
@@ -25,11 +24,10 @@ def get_lecturers_names(name_part):
 
 def get_lecturers_schedule(prepod_login, type, weekday=None, next=False):
     try:
-        response = post(url=LECTURERS_SCHEDULE_URL, params={
+        response = get(url=LECTURERS_SCHEDULE_URL, params={
             "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
             "p_p_lifecycle": "2",
-            "p_p_resource_id": "schedule" if type == "l-classes" else "examSchedule"
-        }, data={
+            "p_p_resource_id": "schedule" if type == "l-classes" else "examSchedule",
             "prepodLogin": prepod_login
         }).json()
     except ConnectionError:
