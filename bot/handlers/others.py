@@ -37,6 +37,13 @@ def week(message):
 )
 @metrics.increment("card")
 def card(message):
+    if students[message.chat.id].institute_id == "КИТ":
+        kbot.send_message(
+            chat_id=message.chat.id,
+            text="Не доступно :("
+        )
+        return
+    
     if students[message.chat.id].student_card_number == "unset":
         students[message.chat.id].previous_message = "/settings student-card-number"  # Gate System (GS)
         students[message.chat.id].student_card_number = None
@@ -51,19 +58,16 @@ def card(message):
             ),
             reply_markup=set_card_skipper()
         )
-    elif students[message.chat.id].institute_id == "КИТ":
-        kbot.send_message(
-            chat_id=message.chat.id,
-            text="Не доступно :("
-        )
-    else:
-        kbot.send_message(
-            chat_id=message.chat.id,
-            text="Номер твоего студенческого билета и твоей зачётной книжки: *{card}*".format(
-                card=students[message.chat.id].student_card_number
-            ),
-            parse_mode="Markdown"
-        )
+
+        return
+
+    kbot.send_message(
+        chat_id=message.chat.id,
+        text="Номер твоего студенческого билета и твоей зачётной книжки: *{card}*".format(
+            card=students[message.chat.id].student_card_number
+        ),
+        parse_mode="Markdown"
+    )
 
 
 @kbot.message_handler(

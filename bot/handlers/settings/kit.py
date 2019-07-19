@@ -42,40 +42,48 @@ def set_kit_group_number(message):
     except Exception:
         pass
     
-    if fullmatch("[4][1-4][2-5][0-9]", message.text):
-        students[message.chat.id].group_number = message.text
-    
-        if students[message.chat.id].group_number is None:
-            kbot.send_message(
-                chat_id=message.chat.id,
-                text="Сайт kai.ru не отвечает🤷🏼‍♀️",
-                disable_web_page_preview=True
-            )
-            
-            students[message.chat.id] = Student()  # Drop all the entered data
-        elif students[message.chat.id].group_number != "non-existing":
-            students[message.chat.id].previous_message = None  # Gates System (GS)
-            save_to(filename="data/users", object=students)
-            
-            kbot.send_message(
-                chat_id=message.chat.id,
-                text="Запомнено!"
-            )
-            kbot.send_message(
-                chat_id=message.chat.id,
-                text=REPLIES_TO_UNKNOWN_COMMAND[0],
-                parse_mode="Markdown"
-            )
-        else:
-            kbot.edit_message_text(
-                chat_id=callback.message.chat.id,
-                message_id=callback.message.message_id,
-                text="Такой группы не существует🤔"
-            )
-
-            students[callback.message.chat.id] = Student()  # Drop all the entered data
-    else:
+    if not fullmatch("[4][1-4][2-5][0-9]", message.text):
         kbot.send_message(
             chat_id=message.chat.id,
             text="Неверный номер группы. Исправляйся."
         )
+        return
+        
+    students[message.chat.id].group_number = message.text
+
+    if students[message.chat.id].group_number is None:
+        kbot.send_message(
+            chat_id=message.chat.id,
+            text="Сайт kai.ru не отвечает🤷🏼‍♀️",
+            disable_web_page_preview=True
+        )
+        
+        students[message.chat.id] = Student()  # Drop all the entered data
+        return
+
+    if students[message.chat.id].group_number == "non-existing":
+        kbot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Такой группы нет🤔"
+        )
+        kbot.send_message(
+            chat_id=callback.message.chat.id,
+            text="Возможно, она появится позже, когда её внесут в каёвскую базу🤓"
+        )
+
+        students[callback.message.chat.id] = Student()  # Drop all the entered data
+        return
+
+    students[message.chat.id].previous_message = None  # Gates System (GS)
+    save_to(filename="data/users", object=students)
+
+    kbot.send_message(
+        chat_id=message.chat.id,
+        text="Запомнено!"
+    )
+    kbot.send_message(
+        chat_id=message.chat.id,
+        text=REPLIES_TO_UNKNOWN_COMMAND[0],
+        parse_mode="Markdown"
+    )

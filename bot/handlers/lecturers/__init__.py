@@ -42,29 +42,33 @@ def find_lecturer(message):
         )
         
         students[message.chat.id].previous_message = None  # Gate System (GS)
-    elif names != []:
-        if len(names) <= MAX_LECTURERS_NUMBER:
-            kbot.send_message(
-                chat_id=message.chat.id,
-                text="Выбери преподавателя:",
-                reply_markup=choose_lecturer(names)
-            )
-            
-            students[message.chat.id].previous_message = "/lecturers"  # Gate System (GS)
-        else:
-            kbot.send_message(
-                chat_id=message.chat.id,
-                text="Слишком мало букв, слишком много преподавателей…"
-            )
-            
-            students[message.chat.id].previous_message = None  # Gate System (GS)
-    else:
+        return
+
+    if names == []:
         kbot.send_message(
             chat_id=message.chat.id,
             text="Ничего не найдено :("
         )
         
         students[message.chat.id].previous_message = None  # Gate System (GS)
+        return
+
+    if len(names) > MAX_LECTURERS_NUMBER:
+        kbot.send_message(
+            chat_id=message.chat.id,
+            text="Слишком мало букв, слишком много преподавателей…"
+        )
+        
+        students[message.chat.id].previous_message = None  # Gate System (GS)
+        return
+
+    kbot.send_message(
+        chat_id=message.chat.id,
+        text="Выбери преподавателя:",
+        reply_markup=choose_lecturer(names)
+    )
+    
+    students[message.chat.id].previous_message = "/lecturers"  # Gate System (GS)
 
 @kbot.callback_query_handler(
     func=lambda callback:

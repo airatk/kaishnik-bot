@@ -1,7 +1,7 @@
-from bot.helpers.schedule  import beautify_classes
-from bot.helpers.schedule  import beautify_exams
-from bot.helpers.constants import SCHEDULE_URL
-from bot.helpers.constants import SCORE_URL
+from bot.helpers.schedule   import beautify_classes
+from bot.helpers.schedule   import beautify_exams
+from bot.helpers.constants  import SCHEDULE_URL
+from bot.helpers.constants  import SCORE_URL
 
 from datetime import datetime
 from datetime import timedelta

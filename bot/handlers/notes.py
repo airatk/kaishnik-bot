@@ -108,20 +108,23 @@ def add_note_hint(callback):
             message_id=callback.message.message_id,
             text="{max}-заметковый лимит уже достигнут.".format(max=MAX_NOTES_NUMBER)
         )
-    else:
-        kbot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
-            text=(
-                "Добавляемая заметка будет *{number}* по счёту.\n\n"
-                "• Используй звёздочки, чтобы выделить \**жирным*\*\n"
-                "• Используй нижнее подчёркивание, чтобы выделить \__курсивом_\_\n\n"
-                "Напиши заметку и отправь решительно.".format(number=number)
-            ),
-            parse_mode="Markdown"
-        )
         
-        students[callback.message.chat.id].previous_message = "/notes add-new"
+        students[callback.message.chat.id].previous_message = None  # Gates System (GS)
+        return
+    
+    kbot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text=(
+            "Добавляемая заметка будет *{number}* по счёту.\n\n"
+            "• Используй звёздочки, чтобы выделить \**жирным*\*\n"
+            "• Используй нижнее подчёркивание, чтобы выделить \__курсивом_\_\n\n"
+            "Напиши заметку и отправь решительно.".format(number=number)
+        ),
+        parse_mode="Markdown"
+    )
+
+    students[callback.message.chat.id].previous_message = "/notes add-new"
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/notes add-new")
 def add_note(message):

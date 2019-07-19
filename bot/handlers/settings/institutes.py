@@ -7,11 +7,11 @@ from bot.keyboards.settings import group_number_setter
 from bot.keyboards.settings import name_setter
 from bot.keyboards.settings import set_card_skipper
 
-from bot.helpers           import save_to
-from bot.helpers.student   import Student
-from bot.helpers.constants import INSTITUTES
-from bot.helpers.constants import REPLIES_TO_UNKNOWN_COMMAND
-from bot.helpers.constants import LOADING_REPLIES
+from bot.helpers            import save_to
+from bot.helpers.student    import Student
+from bot.helpers.constants  import INSTITUTES
+from bot.helpers.constants  import REPLIES_TO_UNKNOWN_COMMAND
+from bot.helpers.constants  import LOADING_REPLIES
 
 from re import fullmatch
 from random import choice
@@ -20,7 +20,7 @@ from random import choice
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/settings" and
-        "set-institute-" in callback.data
+        "set-institute-" in callback.data and "КИТ" not in callback.data
 )
 @top_notification
 def set_institute(callback):
@@ -51,13 +51,14 @@ def set_institute(callback):
         )
         
         students[callback.message.chat.id] = Student()  # Drop all the entered data
-    else:
-        kbot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
-            text="Выбери свой курс:",
-            reply_markup=year_setter(years)
-        )
+        return
+    
+    kbot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="Выбери свой курс:",
+        reply_markup=year_setter(years)
+    )
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -86,21 +87,27 @@ def set_year(callback):
         )
     
         students[callback.message.chat.id] = Student()  # Drop all the entered data
-    elif groups != {}:
+        return
+    
+    if groups == {}:
         kbot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
-            text="Выбери свою группу:",
-            reply_markup=group_number_setter(groups)
-        )
-    else:
-        kbot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
-            text="Здесь ничего нет. Начни сначала."
+            text=(
+                "Здесь ничего нет, начни сначала —\n"
+                "/settings"
+            )
         )
 
         students[callback.message.chat.id] = Student()  # Drop all the entered data
+        return
+    
+    kbot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="Выбери свою группу:",
+        reply_markup=group_number_setter(groups)
+    )
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -116,6 +123,7 @@ def set_group_number(callback):
         disable_web_page_preview=True
     )
     
+    # Setting group number
     students[callback.message.chat.id].group_number = callback.data.replace("set-group-", "")
     
     if students[callback.message.chat.id].group_number is None:
@@ -127,36 +135,9 @@ def set_group_number(callback):
         )
         
         students[callback.message.chat.id] = Student()  # Drop all the entered data
-    elif students[callback.message.chat.id].group_number != "non-existing":
-        names = students[callback.message.chat.id].get_dictionary_of(type="p_stud")
-        
-        if names is None:
-            kbot.edit_message_text(
-                chat_id=callback.message.chat.id,
-                message_id=callback.message.message_id,
-                text="kai.ru не отвечает🤷🏼‍♀️",
-                disable_web_page_preview=True
-            )
-            
-            students[callback.message.chat.id] = Student()  # Drop all the entered data
-        elif names != {}:
-            students[callback.message.chat.id].names = { name_id: name for name, name_id in names.items() }
-            
-            kbot.edit_message_text(
-                chat_id=callback.message.chat.id,
-                message_id=callback.message.message_id,
-                text="Выбери себя:",
-                reply_markup=name_setter(names)
-            )
-        else:
-            kbot.edit_message_text(
-                chat_id=callback.message.chat.id,
-                message_id=callback.message.message_id,
-                text="Здесь ничего нет. Начни сначала."
-            )
-            
-            students[callback.message.chat.id] = Student()  # Drop all the entered data
-    else:
+        return
+    
+    if students[callback.message.chat.id].group_number == "non-existing":
         kbot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
@@ -168,6 +149,40 @@ def set_group_number(callback):
         )
     
         students[callback.message.chat.id] = Student()  # Drop all the entered data
+        return
+    
+    # Setting name
+    names = students[callback.message.chat.id].get_dictionary_of(type="p_stud")
+    
+    if names is None:
+        kbot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="kai.ru не отвечает🤷🏼‍♀️",
+            disable_web_page_preview=True
+        )
+        
+        students[callback.message.chat.id] = Student()  # Drop all the entered data
+        return
+
+    if names == {}:
+        kbot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Здесь ничего нет. Начни сначала."
+        )
+        
+        students[callback.message.chat.id] = Student()  # Drop all the entered data
+        return
+
+    students[callback.message.chat.id].names = { name_id: name for name, name_id in names.items() }
+        
+    kbot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="Выбери себя:",
+        reply_markup=name_setter(names)
+    )
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -194,80 +209,72 @@ def set_name(callback):
         )
         
         students[callback.message.chat.id] = Student()  # Drop all the entered data
-    else:
-        kbot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
+        return
+    
+    kbot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text=(
+            "Отправь номер своей зачётки "
+            "(интересный факт — студенческий билет и зачётка имеют одинаковый номер!)."
+            "\n\n"
+            "Либо пропусти, но баллы показать не смогу."
+        ),
+        reply_markup=set_card_skipper()
+    )
+
+    students[callback.message.chat.id].previous_message = "/settings student-card-number"  # Gate System (GS)
+
+@kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/settings student-card-number")
+def set_student_card_number(message):
+    students[message.chat.id].student_card_number = message.text
+    
+    # The very 1st semester might be empty, so check the 1st one of the current year
+    prelast_semester = int(students[message.chat.id].year)*2 - 1
+    scoretable = students[message.chat.id].get_scoretable(prelast_semester)
+    
+    # Cleanning the chat
+    try:
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception:
+        pass
+    
+    if scoretable is None:
+        kbot.send_message(
+            chat_id=message.chat.id,
+            text="kai.ru не отвечает🤷🏼‍♀️",
+            disable_web_page_preview=True
+        )
+    
+        students[message.chat.id] = Student()  # Drop all the entered data
+        return
+
+    if scoretable == []:
+        students[message.chat.id].student_card_number = None
+    
+        kbot.send_message(
+            chat_id=message.chat.id,
             text=(
-                "Отправь номер своей зачётки "
-                "(интересный факт — студенческий билет и зачётка имеют одинаковый номер!)."
+                "Неверный номер зачётки. Исправляйся."
                 "\n\n"
                 "Либо пропусти, но баллы показать не смогу."
             ),
             reply_markup=set_card_skipper()
         )
-        
-        students[callback.message.chat.id].previous_message = "/settings student-card-number"  # Gate System (GS)
+        return
 
-@kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/settings student-card-number")
-def set_student_card_number(message):
-    if fullmatch("[0-9][0-9][0-9][0-9][0-9][0-9][0-9]?", message.text):
-        students[message.chat.id].student_card_number = message.text
-        
-        # The very 1st semester might be empty, so check the 1st one of the current year
-        prelast_semester = int(students[message.chat.id].year)*2 - 1
-        scoretable = students[message.chat.id].get_scoretable(prelast_semester)
-        
-        # Cleanning the chat
-        try:
-            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-        except Exception:
-            pass
-        
-        if scoretable is None:
-            kbot.send_message(
-                chat_id=message.chat.id,
-                text="kai.ru не отвечает🤷🏼‍♀️",
-                disable_web_page_preview=True
-            )
-        
-            students[message.chat.id] = Student()  # Drop all the entered data
-            
-            return
-        elif scoretable != []:
-            students[message.chat.id].previous_message = None  # Gates System (GS)
-            save_to(filename="data/users", object=students)
-            
-            kbot.send_message(
-                chat_id=message.chat.id,
-                text="Запомнено!"
-            )
-            kbot.send_message(
-                chat_id=message.chat.id,
-                text=REPLIES_TO_UNKNOWN_COMMAND[0],
-                parse_mode="Markdown"
-            )
-            
-            return
-        else:
-            students[message.chat.id].student_card_number = None
-    else:
-        # Cleanning the chat
-        try:
-            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-        except Exception:
-            pass
-    
+    students[message.chat.id].previous_message = None  # Gates System (GS)
+    save_to(filename="data/users", object=students)
+
     kbot.send_message(
         chat_id=message.chat.id,
-        text=(
-            "Неверный номер зачётки. Исправляйся."
-            "\n\n"
-            "Либо пропусти, но баллы показать не смогу."
-        ),
-        reply_markup=set_card_skipper()
+        text="Запомнено!"
+    )
+    kbot.send_message(
+        chat_id=message.chat.id,
+        text=REPLIES_TO_UNKNOWN_COMMAND[0],
+        parse_mode="Markdown"
     )
 
 @kbot.callback_query_handler(

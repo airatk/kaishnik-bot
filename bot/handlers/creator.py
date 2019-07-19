@@ -113,6 +113,8 @@ def users(message):
 def get_metrics(message):
     if "drop" in message.text: metrics.zerofy()
     
+    if metrics.day != datetime.today().isoweekday(): metrics.zerofy()
+    
     kbot.send_message(
         chat_id=message.chat.id,
         text=(

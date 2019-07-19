@@ -56,48 +56,49 @@ def beautify_lecturers_classes(json_response, next):
                 day=int(date.strftime("%d")),
                 month=MONTHS[date.strftime("%m")]
             ))
-        else:
-            # Removing extraspaces & standardizing values to string type
-            json_response[str(weekday)] = [ {
-                    key: " ".join(str(value).split()) for key, value in subject.items()
-                } for subject in json_response[str(weekday)]
-            ]
+            continue
+        
+        # Removing extraspaces & standardizing values to string type
+        json_response[str(weekday)] = [ {
+                key: " ".join(str(value).split()) for key, value in subject.items()
+            } for subject in json_response[str(weekday)]
+        ]
+        
+        # Getting rid of subjects which are not needed
+        for subject in list(json_response[str(weekday)]):
+            # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
+            if subject["dayDate"] == "неч" if (not is_even() if next else is_even()) else subject["dayDate"] == "чет":
+                json_response[str(weekday)].remove(subject)
+        
+        # Finnaly, setting subjects themselves
+        for subject in json_response[str(weekday)]:
+            if previous_time == subject["dayTime"]: continue
             
-            # Getting rid of subjects which are not needed
-            for subject in list(json_response[str(weekday)]):
-                # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
-                if subject["dayDate"] == "неч" if (not is_even() if next else is_even()) else subject["dayDate"] == "чет":
-                    json_response[str(weekday)].remove(subject)
-            
-            # Finnaly, setting subjects themselves
-            for subject in json_response[str(weekday)]:
-                if previous_time == subject["dayTime"]: continue
-                
-                lecturerSubject = LecturerSubject()
+            lecturerSubject = LecturerSubject()
 
-                lecturerSubject.time = subject["dayTime"]
-                lecturerSubject.building = subject["buildNum"]
-                lecturerSubject.auditorium = subject["audNum"]
-                lecturerSubject.dates = subject["dayDate"]
-                lecturerSubject.title = subject["disciplName"]
-                lecturerSubject.type = subject["disciplType"]
-                
-                previous_time = subject["dayTime"]
-                
-                for another_subject in json_response[str(weekday)]:
-                    if previous_time == another_subject["dayTime"]:
-                        lecturerSubject.groups.append(another_subject["group"])
-
-                daily_schedule = "".join([ daily_schedule, lecturerSubject.get() ])
+            lecturerSubject.time = subject["dayTime"]
+            lecturerSubject.building = subject["buildNum"]
+            lecturerSubject.auditorium = subject["audNum"]
+            lecturerSubject.dates = subject["dayDate"]
+            lecturerSubject.title = subject["disciplName"]
+            lecturerSubject.type = subject["disciplType"]
             
-            weekly_schedule.append("".join([
-                "*{weekday}, {day} {month}*".format(
-                    weekday=WEEKDAYS[weekday],
-                    day=int(date.strftime("%d")),
-                    month=MONTHS[date.strftime("%m")]
-                ),
-                daily_schedule if daily_schedule != "" else "\n\nНет занятий"
-            ]))
+            previous_time = subject["dayTime"]
+            
+            for another_subject in json_response[str(weekday)]:
+                if previous_time == another_subject["dayTime"]:
+                    lecturerSubject.groups.append(another_subject["group"])
+
+            daily_schedule = "".join([ daily_schedule, lecturerSubject.get() ])
+        
+        weekly_schedule.append("".join([
+            "*{weekday}, {day} {month}*".format(
+                weekday=WEEKDAYS[weekday],
+                day=int(date.strftime("%d")),
+                month=MONTHS[date.strftime("%m")]
+            ),
+            daily_schedule if daily_schedule != "" else "\n\nНет занятий"
+        ]))
 
     return weekly_schedule
 
