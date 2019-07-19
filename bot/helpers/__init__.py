@@ -43,8 +43,14 @@ def weekday_date():
 def get_subject_score(scoretable, subjects_num):
     subject = scoretable[subjects_num]
     
-    title = "*{title}*".format(title=subject[1][:len(subject[1]) - 6])  # Erase (экз.) & (зач.) stuff
-    type = "\n_экзамен_\n" if "экз" in subject[1] else "\n_зачёт_\n"
+    title = "*{title}*".format(title=subject[1].replace("(экз.)", "").replace("(зач.)", "").replace("(зач./оц.)", ""))
+    
+    if "(экз.)" in subject[1]:
+        type = "\n_экзамен_\n"
+    elif "(зач.)" in subject[1]:
+        type = "\n_зачёт_\n"
+    elif "(зач./оц.)" in subject[1]:
+        type = "\n_зачёт с оценкой_\n"
     
     certification1 = "\n• 1 аттестация: {gained} / {max}".format(gained=subject[2], max=subject[3])
     certification2 = "\n• 2 аттестация: {gained} / {max}".format(gained=subject[4], max=subject[5])

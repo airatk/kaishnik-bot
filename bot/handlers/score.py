@@ -31,23 +31,42 @@ def score(message):
             text="Не доступно :("
         )
         return
+    
+    last_available_semester = students[message.chat.id].get_last_available_semester()
+
+    if last_available_semester is None:
+        kbot.send_message(
+            chat_id=message.chat.id,
+            text="kai.ru не отвечает🤷🏼‍♀️",
+            disable_web_page_preview=True
+        )
+        return
 
     students[message.chat.id].previous_message = "/score"  # Gate System (GS)
-    
-    if "экз" in message.text: students[message.chat.id].previous_message += " exams"
-    elif "зач" in message.text: students[message.chat.id].previous_message += " tests"
-    
+
+    if "экз" in message.text:
+        students[message.chat.id].previous_message += " exams"
+    elif "зач" in message.text:
+        students[message.chat.id].previous_message += " tests"
+
+        if "оц" in message.text:
+            students[message.chat.id].previous_message += " plus"
+
     kbot.send_message(
         chat_id=message.chat.id,
         text="Выбери номер семестра:",
-        reply_markup=semester_dialer(int(students[message.chat.id].year)*2 + 1)
+        reply_markup=semester_dialer(last_available_semester)
     )
 
 @kbot.callback_query_handler(
     func=lambda callback: (
-        students[callback.message.chat.id].previous_message == "/score exams" or
-        students[callback.message.chat.id].previous_message == "/score tests"
-    ) and "semester" in callback.data
+        students[callback.message.chat.id].previous_message is not None and
+        students[callback.message.chat.id].previous_message.startswith("/score") and
+        "semester" in callback.data and (
+            "exams" in students[callback.message.chat.id].previous_message or
+            "tests" in students[callback.message.chat.id].previous_message
+        )
+    )
 )
 @top_notification
 def show_all_score(callback):
@@ -79,7 +98,13 @@ def show_all_score(callback):
     
     subjects_num = 0
     
-    mask = "экзамен" if students[callback.message.chat.id].previous_message == "/score exams" else "зачёт"
+    if "exams" in students[callback.message.chat.id].previous_message:
+        mask = "экзамен"
+    elif "tests" in students[callback.message.chat.id].previous_message:
+        mask = "зачёт"
+
+        if "plus" in students[callback.message.chat.id].previous_message:
+            mask += " с оценкой"
     
     for subject in range(len(scoretable)):
         subject_score = get_subject_score(scoretable=scoretable, subjects_num=subject)

@@ -7,9 +7,9 @@ def semester_dialer(semesters_number):
     
     semester_dialer_keyboard.add(*[
         InlineKeyboardButton(
-            text=str(semester),
-            callback_data="semester {}".format(semester)
-        ) for semester in range(1, semesters_number)
+            text=str(semester + 1),
+            callback_data="semester {}".format(semester + 1)
+        ) for semester in range(semesters_number)
     ])
     
     return semester_dialer_keyboard
@@ -23,7 +23,7 @@ def subject_chooser(scoretable, semester):
     )
     subject_chooser_keyboard.add(*[
         InlineKeyboardButton(
-            text=subject[1][:len(subject[1]) - 6],  # (экз.) or (зач.) are 6 last charachters of a subject title
+            text=subject[1].replace("(экз.)", "").replace("(зач.)", "").replace("(зач./оц.)", ""),
             callback_data="scoretable {n} {s}".format(n=int(subject[0]) - 1, s=semester)  # begin counting from 0, not from 1
         ) for subject in scoretable
     ])

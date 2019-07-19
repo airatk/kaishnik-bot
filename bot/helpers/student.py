@@ -218,6 +218,29 @@ class Student:
         
         return dict(zip(keys, values))
     
+    def get_last_available_semester(self):
+        try:
+            page = post(SCORE_URL, data={
+                "p_sub": "",  # Unknown nonsense thing which is necessary
+                "p_fac": self._institute_id,
+                "p_kurs": self._year,
+                "p_group": self._group_number_score,
+                "p_stud": self._name_id,
+                "p_zach": self._student_card_number
+            }).content.decode("CP1251")
+        except ConnectionError:
+            return None
+
+        soup = BeautifulSoup(page, "html.parser")
+        selector = soup.find(name="select", attrs={ "name": "semestr" })
+        
+        try:
+            last_available_semeter = max([ int(option["value"]) for option in selector.find_all("option") ])
+        except ValueError:
+            return None
+        
+        return last_available_semeter
+    
     def get_scoretable(self, semester):
         try:
             page = post(SCORE_URL, data={
