@@ -1,3 +1,18 @@
+from bot import kbot
+from bot import students
+
+
+@kbot.message_handler(commands=[ "cancel" ])
+def cancel(message):
+    students[message.chat.id].previous_message = None  # Gates System (GS)
+
+    kbot.send_message(
+        chat_id=message.chat.id,
+        text="Отменено!"
+    )
+
+
+# (all the commands & other stuff handlers) - 1
 from bot.handlers import creator
 
 from bot.handlers import start
