@@ -106,8 +106,8 @@ def show_all_score(callback):
         if "plus" in students[callback.message.chat.id].previous_message:
             mask += " с оценкой"
     
-    for subject in range(len(scoretable)):
-        subject_score = get_subject_score(scoretable=scoretable, subjects_num=subject)
+    for subject in scoretable:
+        subject_score = get_subject_score(subject)
         
         if mask in subject_score:
             kbot.send_message(
@@ -118,12 +118,9 @@ def show_all_score(callback):
 
             subjects_num += 1
 
-    if subjects_num == 1:
-        grammatical_entity = ""
-    elif subjects_num > 1 and subjects_num < 5:
-        grammatical_entity = "а"
-    else:
-        grammatical_entity = "ов"
+    if subjects_num == 1: grammatical_entity = ""
+    elif subjects_num in range(2, 5): grammatical_entity = "а"
+    else: grammatical_entity = "ов"
 
     kbot.send_message(
         chat_id=callback.message.chat.id,
@@ -216,16 +213,13 @@ def show_all_score(callback):
     for subject in range(subjects_num):
         kbot.send_message(
             chat_id=callback.message.chat.id,
-            text=get_subject_score(scoretable=scoretable, subjects_num=subject),
+            text=get_subject_score(scoretable[subject]),
             parse_mode="Markdown"
         )
 
-    if subjects_num == 1:
-        grammatical_entity = ""
-    elif subjects_num > 1 and subjects_num < 5:
-        grammatical_entity = "а"
-    else:
-        grammatical_entity = "ов"
+    if subjects_num == 1: grammatical_entity = ""
+    elif subjects_num in range(2, 5): grammatical_entity = "а"
+    else: grammatical_entity = "ов"
 
     kbot.send_message(
         chat_id=callback.message.chat.id,
@@ -276,7 +270,7 @@ def show_score(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text=get_subject_score(scoretable=scoretable, subjects_num=int(callback_data[1])),
+        text=get_subject_score(scoretable[int(callback_data[1])]),
         parse_mode="Markdown"
     )
     

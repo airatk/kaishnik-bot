@@ -40,9 +40,7 @@ def weekday_date():
 
 
 # /score
-def get_subject_score(scoretable, subjects_num):
-    subject = scoretable[subjects_num]
-    
+def get_subject_score(subject):
     title = "*{title}*".format(title=subject[1].replace("(экз.)", "").replace("(зач.)", "").replace("(зач./оц.)", ""))
     
     if "(экз.)" in subject[1]:
