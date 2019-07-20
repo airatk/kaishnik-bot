@@ -146,6 +146,9 @@
             location = "group:lecturers.py">
          </FileRef>
          <FileRef
+            location = "group:datatypes.py">
+         </FileRef>
+         <FileRef
             location = "group:constants.py">
          </FileRef>
       </Group>

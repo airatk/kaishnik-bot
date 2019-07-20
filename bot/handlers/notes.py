@@ -29,6 +29,7 @@ def notes(message):
         parse_mode="Markdown"
     )
 
+
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/notes" and
@@ -166,9 +167,7 @@ def delete_note(callback):
     )
     
     del students[callback.message.chat.id].notes[number]
-    
     students[callback.message.chat.id].previous_message = None  # Gates System (GS)
-    
     save_to(filename="data/users", object=students)
 
 @kbot.callback_query_handler(

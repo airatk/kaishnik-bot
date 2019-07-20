@@ -4,7 +4,7 @@ from bot import top_notification
 
 from bot.helpers           import save_to
 from bot.helpers.student   import Student
-from bot.helpers.constants import REPLIES_TO_UNKNOWN_COMMAND
+from bot.helpers.constants import GUIDE_MESSAGE
 
 from re import fullmatch
 
@@ -84,6 +84,6 @@ def set_kit_group_number(message):
     )
     kbot.send_message(
         chat_id=message.chat.id,
-        text=REPLIES_TO_UNKNOWN_COMMAND[0],
+        text=GUIDE_MESSAGE,
         parse_mode="Markdown"
     )

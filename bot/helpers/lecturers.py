@@ -1,5 +1,6 @@
 from bot.helpers           import is_even
 from bot.helpers.subject   import LecturerSubject
+from bot.helpers.datatypes import ScheduleType
 from bot.helpers.constants import LECTURERS_SCHEDULE_URL
 from bot.helpers.constants import WEEKDAYS
 from bot.helpers.constants import MONTHS
@@ -22,20 +23,20 @@ def get_lecturers_names(name_part):
     except ConnectionError:
         return None
 
-def get_lecturers_schedule(prepod_login, type, weekday=None, next=False):
+def get_lecturers_schedule(lecturer_id, type, weekday=None, next=False):
     try:
         response = get(url=LECTURERS_SCHEDULE_URL, params={
             "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
             "p_p_lifecycle": "2",
-            "p_p_resource_id": "schedule" if type == "l-classes" else "examSchedule",
-            "prepodLogin": prepod_login
+            "p_p_resource_id": type.value,
+            "prepodLogin": lecturer_id
         }).json()
     except ConnectionError:
         return [ "Сайт kai.ru не отвечает🤷🏼‍♀️" ]
     
     if not response: return [ "Нет данных." ]
     
-    return beautify_lecturers_classes(response, next) if type == "l-classes" else beautify_lecturers_exams(response)
+    return beautify_lecturers_classes(response, next) if type == ScheduleType.classes else beautify_lecturers_exams(response)
 
 
 def beautify_lecturers_classes(json_response, next):

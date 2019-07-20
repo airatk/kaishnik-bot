@@ -249,8 +249,8 @@ def show_score(callback):
         disable_web_page_preview=True
     )
     
-    callback_data = callback.data.replace("scoretable ", "").split()
-    scoretable = students[callback.message.chat.id].get_scoretable(callback_data[1])
+    callback_data = callback.data.split()
+    scoretable = students[callback.message.chat.id].get_scoretable(callback_data[2])
     
     if scoretable is None:
         kbot.edit_message_text(
@@ -276,7 +276,7 @@ def show_score(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text=get_subject_score(scoretable=scoretable, subjects_num=int(callback_data[0])),
+        text=get_subject_score(scoretable=scoretable, subjects_num=int(callback_data[1])),
         parse_mode="Markdown"
     )
     

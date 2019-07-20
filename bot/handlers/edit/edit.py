@@ -91,7 +91,7 @@ def edit_auditorium(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text="Отправь номер аудитории (или где там пара у тебя).",
+        text="Отправь номер аудитории (или где там у тебя пара).",
         reply_markup=canceler_skipper("edit-auditorium-")
     )
     

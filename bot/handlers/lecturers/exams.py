@@ -3,6 +3,7 @@ from bot import students
 from bot import top_notification
 
 from bot.helpers.lecturers import get_lecturers_schedule
+from bot.helpers.datatypes import ScheduleType
 from bot.helpers.constants import LOADING_REPLIES
 
 from random import choice
@@ -11,7 +12,7 @@ from random import choice
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/lecturers" and
-        "l-exams" in callback.data
+        ScheduleType.exams.value in callback.data
 )
 @top_notification
 def send_lecturers_exams(callback):
@@ -22,10 +23,8 @@ def send_lecturers_exams(callback):
         disable_web_page_preview=True
     )
     
-    schedule = get_lecturers_schedule(
-        prepod_login=callback.data.replace("l-exams ", ""),
-        type="l-exams"
-    )
+    lecturer_id = callback.data.split()[1]
+    schedule = get_lecturers_schedule(lecturer_id=lecturer_id, type=ScheduleType.exams)
     
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,

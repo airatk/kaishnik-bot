@@ -6,12 +6,13 @@ from bot import top_notification
 from bot.keyboards.classes import schedule_type
 from bot.keyboards.classes import certain_date_chooser
 
+from bot.helpers.datatypes import ScheduleType
 from bot.helpers.constants import WEEKDAYS
 from bot.helpers.constants import LOADING_REPLIES
 
 from datetime import datetime
-from re import fullmatch
 from random import choice
+from re import fullmatch
 
 
 @kbot.message_handler(
@@ -68,15 +69,17 @@ def one_day_schedule(callback):
         disable_web_page_preview=True
     )
     
+    callback_data = callback.data.split()
+    
     schedule = students[callback.message.chat.id].get_schedule(
-        type="classes",
-        next="next" in callback.data
+        type=ScheduleType.classes,
+        next="next" in callback_data
     )
     
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text=schedule[int(callback.data[11:]) - 1] if len(schedule) != 1 else schedule[0],
+        text=schedule[int(callback_data[2]) - 1] if len(schedule) != 1 else schedule[0],
         parse_mode="Markdown",
         disable_web_page_preview=True
     )
@@ -114,7 +117,7 @@ def weekly_schedule(callback):
     )
     
     schedule = students[callback.message.chat.id].get_schedule(
-        type="classes",
+        type=ScheduleType.classes,
         next="next" in callback.data
     )
     

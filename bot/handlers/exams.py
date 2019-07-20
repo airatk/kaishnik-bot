@@ -2,6 +2,8 @@ from bot import kbot
 from bot import students
 from bot import metrics
 
+from bot.helpers.datatypes import ScheduleType
+
 from re import fullmatch
 
 
@@ -26,7 +28,7 @@ def exams(message):
             return
         
         students[message.chat.id].another_group_number_schedule = another_group
-    
+        
         if students[message.chat.id].another_group_number_schedule is None:
             kbot.send_message(
                 chat_id=message.chat.id,
@@ -39,7 +41,7 @@ def exams(message):
     
     kbot.send_message(
         chat_id=message.chat.id,
-        text=students[message.chat.id].get_schedule(type="exams")[0],
+        text=students[message.chat.id].get_schedule(type=ScheduleType.exams)[0],
         parse_mode="Markdown",
         disable_web_page_preview=True
     )

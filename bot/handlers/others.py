@@ -45,9 +45,6 @@ def card(message):
         return
     
     if students[message.chat.id].student_card_number == "unset":
-        students[message.chat.id].previous_message = "/settings student-card-number"  # Gate System (GS)
-        students[message.chat.id].student_card_number = None
-        
         kbot.send_message(
             chat_id=message.chat.id,
             text=(
@@ -58,7 +55,9 @@ def card(message):
             ),
             reply_markup=set_card_skipper()
         )
-
+        
+        students[message.chat.id].student_card_number = None
+        students[message.chat.id].previous_message = "/settings student-card-number"  # Gate System (GS)
         return
 
     kbot.send_message(

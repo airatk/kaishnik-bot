@@ -19,12 +19,12 @@ def subject_chooser(scoretable, semester):
     
     subject_chooser_keyboard.row(InlineKeyboardButton(
         text="Показать все",
-        callback_data="scoretable all {n} {s}".format(n=len(scoretable), s=semester))
+        callback_data="scoretable all {} {}".format(len(scoretable), semester))
     )
     subject_chooser_keyboard.add(*[
         InlineKeyboardButton(
             text=subject[1].replace("(экз.)", "").replace("(зач.)", "").replace("(зач./оц.)", ""),
-            callback_data="scoretable {n} {s}".format(n=int(subject[0]) - 1, s=semester)  # begin counting from 0, not from 1
+            callback_data="scoretable {} {}".format(int(subject[0]) - 1, semester)  # begin counting from 0, not from 1
         ) for subject in scoretable
     ])
     

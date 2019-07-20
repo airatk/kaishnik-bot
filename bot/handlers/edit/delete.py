@@ -18,17 +18,20 @@ def delete_edit(callback):
     
     edited_subjects = students[callback.message.chat.id].edited_subjects
     
-    if edited_subjects != []:
-        kbot.send_message(
-            chat_id=callback.message.chat.id,
-            text="Выбери пару, которую нужно удалить:",
-            reply_markup=delete_edit_chooser(edited_subjects)
-        )
-    else:
+    if edited_subjects == []:
         kbot.send_message(
             chat_id=callback.message.chat.id,
             text="Добавленных пар нет."
         )
+
+        students[callback.message.chat.id].previous_message = None  # Gate System (GS)
+        return
+    
+    kbot.send_message(
+        chat_id=callback.message.chat.id,
+        text="Выбери пару, которую нужно удалить:",
+        reply_markup=delete_edit_chooser(edited_subjects)
+    )
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -45,7 +48,6 @@ def delete_edited(callback):
         del students[callback.message.chat.id].edited_subjects[int(callback.data.replace("delete-edit-number-", ""))]
     
     students[callback.message.chat.id].previous_message = None  # Gate System (GS)
-    
     save_to(filename="data/users", object=students)
     
     kbot.send_message(

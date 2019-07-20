@@ -8,6 +8,9 @@ from bot.keyboards.lecturers import lecturer_info_type
 
 from bot.helpers.lecturers import get_lecturers_names
 from bot.helpers.constants import MAX_LECTURERS_NUMBER
+from bot.helpers.constants import LOADING_REPLIES
+
+from random import choice
 
 
 @kbot.message_handler(
@@ -20,16 +23,26 @@ def lecturers(message):
     
     kbot.send_message(
         chat_id=message.chat.id,
-        text="Введи ФИО преподавателя полностью или частично."
+        text="Отправь фамилию или ФИО преподавателя."
     )
 
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/lecturers name")
 def find_lecturer(message):
-    names = get_lecturers_names(message.text)
-    
     # Cleanning the chat
     try:
         kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        kbot.edit_message_text(
+            chat_id=message.chat.id,
+            message_id=message.message_id - 1,
+            text=choice(LOADING_REPLIES)
+        )
+    except Exception:
+        pass
+    
+    names = get_lecturers_names(name_part=message.text)
+    
+    # Cleanning the chat
+    try:
         kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
     except Exception:
         pass
@@ -65,7 +78,7 @@ def find_lecturer(message):
     kbot.send_message(
         chat_id=message.chat.id,
         text="Выбери преподавателя:",
-        reply_markup=choose_lecturer(names)
+        reply_markup=choose_lecturer(names=names)
     )
     
     students[message.chat.id].previous_message = "/lecturers"  # Gate System (GS)
@@ -77,11 +90,13 @@ def find_lecturer(message):
 )
 @top_notification
 def lecturers_schedule_type(callback):
+    lecturer_id = callback.data.split()[1]
+    
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Тебе нужны преподавателевы:",
-        reply_markup=lecturer_info_type(callback.data.replace("lecturer ", ""))
+        reply_markup=lecturer_info_type(lecturer_id=lecturer_id)
     )
 
 

@@ -1,7 +1,8 @@
-from bot.helpers.schedule   import beautify_classes
-from bot.helpers.schedule   import beautify_exams
-from bot.helpers.constants  import SCHEDULE_URL
-from bot.helpers.constants  import SCORE_URL
+from bot.helpers.schedule  import beautify_classes
+from bot.helpers.schedule  import beautify_exams
+from bot.helpers.datatypes import ScheduleType
+from bot.helpers.constants import SCHEDULE_URL
+from bot.helpers.constants import SCORE_URL
 
 from datetime import datetime
 from datetime import timedelta
@@ -185,7 +186,7 @@ class Student:
             response = get(url=SCHEDULE_URL, params={
                 "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
                 "p_p_lifecycle": "2",
-                "p_p_resource_id": "schedule" if type == "classes" else "examSchedule",
+                "p_p_resource_id": type.value,
                 "groupId": self._group_number_schedule if is_own_group_asked else self._another_group_number_schedule
             }).json()
         except ConnectionError:
@@ -193,7 +194,7 @@ class Student:
         
         if not response: return [ "Нет данных." ]
         
-        return beautify_classes(response, next, self._edited_subjects) if type == "classes" else beautify_exams(response)
+        return beautify_classes(response, next, self._edited_subjects) if type == ScheduleType.classes else beautify_exams(response)
     
     # /score & associated stuff
     def get_dictionary_of(self, type):
@@ -207,7 +208,7 @@ class Student:
             return None
         
         soup = BeautifulSoup(page, "html.parser")
-        selector = soup.find(name="select", attrs={ "name": type })
+        selector = soup.find(name="select", attrs={ "name": type.value })
         
         keys = [ option.text for option in selector.find_all("option") ][1:]
         values = [ option["value"] for option in selector.find_all("option") ][1:]

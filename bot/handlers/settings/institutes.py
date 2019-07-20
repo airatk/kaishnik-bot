@@ -7,11 +7,12 @@ from bot.keyboards.settings import group_number_setter
 from bot.keyboards.settings import name_setter
 from bot.keyboards.settings import set_card_skipper
 
-from bot.helpers            import save_to
-from bot.helpers.student    import Student
-from bot.helpers.constants  import INSTITUTES
-from bot.helpers.constants  import REPLIES_TO_UNKNOWN_COMMAND
-from bot.helpers.constants  import LOADING_REPLIES
+from bot.helpers           import save_to
+from bot.helpers.student   import Student
+from bot.helpers.datatypes import ScoreDataType
+from bot.helpers.constants import INSTITUTES
+from bot.helpers.constants import GUIDE_MESSAGE
+from bot.helpers.constants import LOADING_REPLIES
 
 from re import fullmatch
 from random import choice
@@ -24,6 +25,7 @@ from random import choice
 )
 @top_notification
 def set_institute(callback):
+    # Setting institute
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -40,7 +42,8 @@ def set_institute(callback):
     
     students[callback.message.chat.id].previous_message = "/settings"  # Gates System (GS)
     
-    years = students[callback.message.chat.id].get_dictionary_of(type="p_kurs")
+    # Asking for year
+    years = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.years)
     
     if years is None:
         kbot.edit_message_text(
@@ -67,6 +70,7 @@ def set_institute(callback):
 )
 @top_notification
 def set_year(callback):
+    # Setting year
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -76,7 +80,8 @@ def set_year(callback):
     
     students[callback.message.chat.id].year = callback.data.replace("set-year-", "")
     
-    groups = students[callback.message.chat.id].get_dictionary_of(type="p_group")
+    # Asking for group
+    groups = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.groups)
     
     if groups is None:
         kbot.edit_message_text(
@@ -116,6 +121,7 @@ def set_year(callback):
 )
 @top_notification
 def set_group_number(callback):
+    # Setting group
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -123,7 +129,6 @@ def set_group_number(callback):
         disable_web_page_preview=True
     )
     
-    # Setting group number
     students[callback.message.chat.id].group_number = callback.data.replace("set-group-", "")
     
     if students[callback.message.chat.id].group_number is None:
@@ -151,8 +156,8 @@ def set_group_number(callback):
         students[callback.message.chat.id] = Student()  # Drop all the entered data
         return
     
-    # Setting name
-    names = students[callback.message.chat.id].get_dictionary_of(type="p_stud")
+    # Asking for name
+    names = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.names)
     
     if names is None:
         kbot.edit_message_text(
@@ -191,6 +196,7 @@ def set_group_number(callback):
 )
 @top_notification
 def set_name(callback):
+    # Setting name
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -211,6 +217,7 @@ def set_name(callback):
         students[callback.message.chat.id] = Student()  # Drop all the entered data
         return
     
+    # Asking for student card number
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -246,13 +253,11 @@ def set_student_card_number(message):
             text="kai.ru не отвечает🤷🏼‍♀️",
             disable_web_page_preview=True
         )
-    
+        
         students[message.chat.id] = Student()  # Drop all the entered data
         return
 
     if scoretable == []:
-        students[message.chat.id].student_card_number = None
-    
         kbot.send_message(
             chat_id=message.chat.id,
             text=(
@@ -262,6 +267,8 @@ def set_student_card_number(message):
             ),
             reply_markup=set_card_skipper()
         )
+        
+        students[message.chat.id].student_card_number = None
         return
 
     students[message.chat.id].previous_message = None  # Gates System (GS)
@@ -273,7 +280,7 @@ def set_student_card_number(message):
     )
     kbot.send_message(
         chat_id=message.chat.id,
-        text=REPLIES_TO_UNKNOWN_COMMAND[0],
+        text=GUIDE_MESSAGE,
         parse_mode="Markdown"
     )
 
@@ -296,6 +303,6 @@ def save_without_student_card_number(callback):
     )
     kbot.send_message(
         chat_id=callback.message.chat.id,
-        text=REPLIES_TO_UNKNOWN_COMMAND[0],
+        text=GUIDE_MESSAGE,
         parse_mode="Markdown"
     )

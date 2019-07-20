@@ -34,7 +34,7 @@ def weekday_date():
         "date": "{day} {month}".format(
             day=int(date.strftime("%d")),
             month=MONTHS[date.strftime("%m")]
-            # This str(int(:string:)) was done to replace "01 апреля" by "1 апреля"
+            # This str(int(str)) was done to replace "01 апреля" by "1 апреля"
         )
     }
 

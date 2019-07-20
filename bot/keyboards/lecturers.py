@@ -1,6 +1,7 @@
 from telebot.types import InlineKeyboardMarkup
 from telebot.types import InlineKeyboardButton
 
+from bot.helpers.datatypes import ScheduleType
 from bot.helpers.constants import WEEKDAYS
 from bot.helpers.constants import MONTHS
 
@@ -20,38 +21,30 @@ def choose_lecturer(names):
     
     return choose_lecturer_keyboard
 
-def lecturer_info_type(prepod_login):
+def lecturer_info_type(lecturer_id):
     lecturer_info_type_keyboard = InlineKeyboardMarkup(row_width=1)
     
     lecturer_info_type_keyboard.add(
-        InlineKeyboardButton(text="занятия", callback_data="l-classes {}".format(prepod_login)),
-        InlineKeyboardButton(text="экзамены", callback_data="l-exams {}".format(prepod_login))
+        InlineKeyboardButton(text="занятия", callback_data=" ".join([ ScheduleType.classes.value, lecturer_id ])),
+        InlineKeyboardButton(text="экзамены", callback_data=" ".join([ ScheduleType.exams.value, lecturer_id ]))
     )
     
     return lecturer_info_type_keyboard
 
-def lecturer_classes_week_type(prepod_login):
+def lecturer_classes_week_type(lecturer_id):
     week_type_keyboard = InlineKeyboardMarkup(row_width=1)
     
     week_type_keyboard.add(
-        InlineKeyboardButton(text="текущую неделю", callback_data="l-weekdays crnt {}".format(prepod_login)),
-        InlineKeyboardButton(text="следующую неделю", callback_data="l-weekdays next {}".format(prepod_login))
+        InlineKeyboardButton(text="текущую неделю", callback_data="l-weekdays crnt {}".format(lecturer_id)),
+        InlineKeyboardButton(text="следующую неделю", callback_data="l-weekdays next {}".format(lecturer_id))
     )
     
     return week_type_keyboard
 
-def lecturer_certain_date_chooser(todays_weekday, type, prepod_login):
+def lecturer_certain_date_chooser(todays_weekday, type, lecturer_id):
     certain_date_keyboard = InlineKeyboardMarkup()
     
-    certain_date_keyboard.row(
-        InlineKeyboardButton(
-            text="Показать все",
-            callback_data="l-weekly {type} {prepod_login}".format(
-                type=type,
-                prepod_login=prepod_login
-            )
-        )
-    )
+    certain_date_keyboard.row(InlineKeyboardButton(text="Показать все", callback_data="l-weekly {} {}".format(type, lecturer_id)))
     
     today = datetime.today()
     
@@ -66,10 +59,10 @@ def lecturer_certain_date_chooser(todays_weekday, type, prepod_login):
                     month=MONTHS[date.strftime("%m")],
                     is_today=" •" if today.strftime("%d") == date.strftime("%d") else ""
                 ),
-                callback_data="l-daily {type} {weekday} {prepod_login}".format(
+                callback_data="l-daily {type} {weekday} {lecturer_id}".format(
                     type=type,
                     weekday=weekday,
-                    prepod_login=prepod_login
+                    lecturer_id=lecturer_id
                 )
             )
         )

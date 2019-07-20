@@ -6,6 +6,7 @@ from bot.keyboards.lecturers import lecturer_classes_week_type
 from bot.keyboards.lecturers import lecturer_certain_date_chooser
 
 from bot.helpers.lecturers import get_lecturers_schedule
+from bot.helpers.datatypes import ScheduleType
 from bot.helpers.constants import WEEKDAYS
 from bot.helpers.constants import LOADING_REPLIES
 
@@ -16,15 +17,17 @@ from random import choice
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/lecturers" and
-        "l-classes" in callback.data
+        ScheduleType.classes.value in callback.data
 )
 @top_notification
 def lecturers_week_type_classes(callback):
+    lecturer_id = callback.data.split()[1]
+    
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Преподавателево расписание занятий на:",
-        reply_markup=lecturer_classes_week_type(callback.data.replace("l-classes ", ""))
+        reply_markup=lecturer_classes_week_type(lecturer_id=lecturer_id)
     )
 
 @kbot.callback_query_handler(
@@ -34,14 +37,16 @@ def lecturers_week_type_classes(callback):
 )
 @top_notification
 def certain_date_schedule(callback):
+    callback_data = callback.data.split()
+    
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Выбери нужный день:",
         reply_markup=lecturer_certain_date_chooser(
             todays_weekday=datetime.today().isoweekday(),
-            type=callback.data.replace("l-weekdays ", "")[:4],
-            prepod_login=callback.data[16:]
+            type=callback_data[1],
+            lecturer_id=callback_data[2]
         )
     )
 
@@ -59,16 +64,18 @@ def one_day_lecturer_schedule(callback):
         disable_web_page_preview=True
     )
     
+    callback_data = callback.data.split()
+    
     schedule = get_lecturers_schedule(
-        prepod_login=callback.data[15:],
-        type="l-classes",
-        next="next" in callback.data
+        lecturer_id=callback_data[3],
+        type=ScheduleType.classes,
+        next="next" in callback_data
     )
     
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text=schedule[int(callback.data[13]) - 1] if len(schedule) != 1 else schedule[0],
+        text=schedule[int(callback_data[2]) - 1] if len(schedule) != 1 else schedule[0],
         parse_mode="Markdown"
     )
     
@@ -88,10 +95,12 @@ def weekly_lecturer_schedule(callback):
         disable_web_page_preview=True
     )
     
+    callback_data = callback.data.split()
+    
     schedule = get_lecturers_schedule(
-        prepod_login=callback.data[14:],
-        type="l-classes",
-        next="next" in callback.data
+        lecturer_id=callback_data[2],
+        type=ScheduleType.classes,
+        next="next" in callback_data
     )
     
     if len(schedule) == 1:
