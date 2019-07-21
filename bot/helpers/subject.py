@@ -22,11 +22,11 @@ class Subject(ABC):
     
     @property
     def building(self):
-        return self._building
+        return self._building[2:]
     
     @property
     def auditorium(self):
-        return self._auditorium
+        return self._auditorium[:-2]
     
     @property
     def dates(self):

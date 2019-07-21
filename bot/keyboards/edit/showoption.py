@@ -18,9 +18,24 @@ def edited_classes_weektype_dialer(edited_classes):
         elif edited_class.is_even is False: weektypes["odd"] += 1
         elif edited_class.is_even is None: weektypes["none"] += 1
     
-    edited_classes_weektype_dialer_keyboard.row(InlineKeyboardButton(text="чётная ({})".format(weektypes["even"]), callback_data="show-weektype-even"))
-    edited_classes_weektype_dialer_keyboard.row(InlineKeyboardButton(text="нечётная ({})".format(weektypes["odd"]), callback_data="show-weektype-odd"))
-    edited_classes_weektype_dialer_keyboard.row(InlineKeyboardButton(text="каждая ({})".format(weektypes["none"]), callback_data="show-weektype-none"))
+    if weektypes["even"] != 0: edited_classes_weektype_dialer_keyboard.row(
+        InlineKeyboardButton(
+            text="чётная ({})".format(weektypes["even"]),
+            callback_data="show-weektype-even"
+        )
+    )
+    if weektypes["odd"] != 0: edited_classes_weektype_dialer_keyboard.row(
+        InlineKeyboardButton(
+            text="нечётная ({})".format(weektypes["odd"]),
+            callback_data="show-weektype-odd"
+        )
+    )
+    if weektypes["none"] != 0: edited_classes_weektype_dialer_keyboard.row(
+        InlineKeyboardButton(
+            text="каждая ({})".format(weektypes["none"]),
+            callback_data="show-weektype-none"
+        )
+    )
     
     return edited_classes_weektype_dialer_keyboard
 
