@@ -130,6 +130,7 @@ def get_metrics(message):
             "/locations: {}\n"
             "/card: {}\n"
             "/brs: {}\n"
+            "/cancel: {}\n"
             "\n*setup*\n"               ### setup
             "/start: {}\n"
             "/settings: {}\n"
@@ -149,6 +150,7 @@ def get_metrics(message):
                 metrics.locations,
                 metrics.card,
                 metrics.brs,
+                metrics.cancel,
                 metrics.start,
                 metrics.settings,
                 metrics.unsetup,

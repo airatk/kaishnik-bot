@@ -1,8 +1,10 @@
 from bot import kbot
 from bot import students
+from bot import metrics
 
 
 @kbot.message_handler(commands=[ "cancel" ])
+@metrics.increment("cancel")
 def cancel(message):
     if students[message.chat.id].previous_message is None:
         kbot.send_message(
