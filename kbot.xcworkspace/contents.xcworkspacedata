@@ -52,10 +52,13 @@
                location = "group:__init__.py">
             </FileRef>
             <FileRef
-               location = "group:edit.py">
+               location = "group:/Users/airatk/Documents/alight/bots/telegram/kaishnik-bot/bot/handlers/edit/editoption.py">
             </FileRef>
             <FileRef
-               location = "group:delete.py">
+               location = "group:showoption.py">
+            </FileRef>
+            <FileRef
+               location = "group:/Users/airatk/Documents/alight/bots/telegram/kaishnik-bot/bot/handlers/edit/deleteoption.py">
             </FileRef>
          </Group>
          <FileRef
@@ -96,10 +99,13 @@
                location = "group:__init__.py">
             </FileRef>
             <FileRef
-               location = "group:edit.py">
+               location = "group:/Users/airatk/Documents/alight/bots/telegram/kaishnik-bot/bot/keyboards/edit/editoption.py">
             </FileRef>
             <FileRef
-               location = "group:delete.py">
+               location = "group:showoption.py">
+            </FileRef>
+            <FileRef
+               location = "group:/Users/airatk/Documents/alight/bots/telegram/kaishnik-bot/bot/keyboards/edit/deleteoption.py">
             </FileRef>
          </Group>
          <FileRef

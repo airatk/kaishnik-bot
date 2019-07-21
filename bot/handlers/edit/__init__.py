@@ -14,26 +14,30 @@ from bot.keyboards.edit import edit_chooser
 def edit(message):
     students[message.chat.id].previous_message = "/edit"  # Gate System (GS)
     
+    edited_number = len(students[message.chat.id].edited_subjects)
+    
     kbot.send_message(
         chat_id=message.chat.id,
         text=(
             "Изменить — это одновременно и изменить, и добавить."
             "\n\n"
-            "Добавлено-изменено пар: *{}*".format(len(students[message.chat.id].edited_subjects))
+            "Добавлено-изменено пар: *{}*".format(edited_number)
         ),
-        reply_markup=edit_chooser(),
+        reply_markup=edit_chooser(not_add_only=edited_number != 0),
         parse_mode="Markdown"
     )
 
 
 # Importing respective edit menu options
-from bot.handlers.edit import edit
-from bot.handlers.edit import delete
+from bot.handlers.edit import editoption
+from bot.handlers.edit import showoption
+from bot.handlers.edit import deleteoption
 
 
 @kbot.callback_query_handler(
     func=lambda callback:
-        students[callback.message.chat.id].previous_message == "/edit" and
+        students[callback.message.chat.id].previous_message is not None and
+        students[callback.message.chat.id].previous_message.startswith("/edit") and
         callback.data == "cancel-edit"
 )
 @top_notification

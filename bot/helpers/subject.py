@@ -13,6 +13,8 @@ class Subject(ABC):
         self._dates      = "\n[ {dates} ]"
         self._title      = "\n{title}*"
         self._type       = "\n_{type}_"
+        
+        self._begin_time = None
     
     @property
     def time(self):
@@ -40,6 +42,8 @@ class Subject(ABC):
     
     @time.setter
     def time(self, time):
+        self._begin_time = time
+        
         hours, minutes = int(time.split(":")[0]), int(time.split(":")[1])
         
         self._begin_hour = hours
@@ -152,7 +156,7 @@ class StudentSubject(Subject):
         ])
 
     def get_simple(self):
-        return " ".join([ self._time, self._title ]).replace("\n", "").replace("*", "")
+        return " ".join([ self._begin_time, self._title ]).replace("\n", "").replace("*", "")
 
 
 class LecturerSubject(Subject):

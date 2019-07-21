@@ -2,7 +2,7 @@ from bot import kbot
 from bot import students
 from bot import top_notification
 
-from bot.keyboards.edit.delete import delete_edit_chooser
+from bot.keyboards.edit.deleteoption import delete_edit_chooser
 
 from bot.helpers import save_to
 
@@ -14,21 +14,11 @@ from bot.helpers import save_to
 )
 @top_notification
 def delete_edit(callback):
-    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    
     edited_subjects = students[callback.message.chat.id].edited_subjects
     
-    if edited_subjects == []:
-        kbot.send_message(
-            chat_id=callback.message.chat.id,
-            text="Добавленных пар нет."
-        )
-
-        students[callback.message.chat.id].previous_message = None  # Gate System (GS)
-        return
-    
-    kbot.send_message(
+    kbot.edit_message_text(
         chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
         text="Выбери пару, которую нужно удалить:",
         reply_markup=delete_edit_chooser(edited_subjects)
     )
@@ -40,8 +30,6 @@ def delete_edit(callback):
 )
 @top_notification
 def delete_edited(callback):
-    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    
     if "all" in callback.data:
         students[callback.message.chat.id].edited_subjects = []
     else:
@@ -50,7 +38,8 @@ def delete_edited(callback):
     students[callback.message.chat.id].previous_message = None  # Gate System (GS)
     save_to(filename="data/users", object=students)
     
-    kbot.send_message(
+    kbot.edit_message_text(
         chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
         text="Удалено!"
     )

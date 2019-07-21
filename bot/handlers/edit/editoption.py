@@ -2,13 +2,13 @@ from bot import kbot
 from bot import students
 from bot import top_notification
 
-from bot.keyboards.edit      import canceler_skipper
-from bot.keyboards.edit      import edit_canceler
-from bot.keyboards.edit.edit import weektype_dialer
-from bot.keyboards.edit.edit import weekday_dialer
-from bot.keyboards.edit.edit import hours_dialer
-from bot.keyboards.edit.edit import buildings_dialer
-from bot.keyboards.edit.edit import subject_type_dialer
+from bot.keyboards.edit            import canceler_skipper
+from bot.keyboards.edit            import edit_canceler
+from bot.keyboards.edit.editoption import weektype_dialer
+from bot.keyboards.edit.editoption import weekday_dialer
+from bot.keyboards.edit.editoption import hours_dialer
+from bot.keyboards.edit.editoption import buildings_dialer
+from bot.keyboards.edit.editoption import subject_type_dialer
 
 from bot.helpers         import save_to
 from bot.helpers.subject import StudentSubject
@@ -38,7 +38,9 @@ def add_edit(callback):
 )
 @top_notification
 def edit_weekday(callback):
-    students[callback.message.chat.id].edited_class.is_even = callback.data.replace("edit-weektype-", "") == "even"
+    weektype = callback.data.replace("edit-weektype-", "")
+    
+    if weektype != "none": students[callback.message.chat.id].edited_class.is_even = weektype == "even"
     
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,

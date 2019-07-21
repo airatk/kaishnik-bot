@@ -20,7 +20,10 @@ def beautify_classes(json_response, next, edited_subjects):
         
         # Adding appropriate edited classes to schedule
         for subject in edited_subjects:
-            if subject.weekday == weekday and subject.is_even == (not is_even() if next else is_even()):
+            if subject.weekday == weekday and (
+                    subject.is_even is None or
+                    subject.is_even == (not is_even() if next else is_even())
+                ):
                 subjects_list.append((subject.begin_hour, subject))
 
         if str(weekday) in json_response:

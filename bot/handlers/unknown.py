@@ -1,4 +1,5 @@
 from bot import kbot
+from bot import students
 from bot import metrics
 from bot import top_notification
 
@@ -47,3 +48,5 @@ def unknown_callback(callback):
         message_id=callback.message.message_id,
         text="Ой-ой-ой! 🙆🏼‍♀️"
     )
+
+    students[callback.message.chat.id].previous_message = None

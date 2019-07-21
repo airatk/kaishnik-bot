@@ -2,13 +2,16 @@ from telebot.types import InlineKeyboardMarkup
 from telebot.types import InlineKeyboardButton
 
 
-def edit_chooser():
+def edit_chooser(not_add_only):
     edit_chooser_keyboard = InlineKeyboardMarkup()
     
     edit_chooser_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-edit"))
     
     edit_chooser_keyboard.row(InlineKeyboardButton(text="изменить", callback_data="add-edit"))
-    edit_chooser_keyboard.row(InlineKeyboardButton(text="удалить", callback_data="delete-edit"))
+    
+    if not_add_only:
+        edit_chooser_keyboard.row(InlineKeyboardButton(text="показать", callback_data="show-edit"))
+        edit_chooser_keyboard.row(InlineKeyboardButton(text="удалить", callback_data="delete-edit"))
     
     return edit_chooser_keyboard
 
