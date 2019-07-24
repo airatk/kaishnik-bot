@@ -43,10 +43,17 @@ def unknown_message(message):
 @metrics.increment("unknown")
 @top_notification
 def unknown_callback(callback):
-    kbot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        text="Ой-ой-ой! 🙆🏼‍♀️"
-    )
+    try:
+        kbot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Ой-ой-ой! 🙆🏼‍♀️"
+        )
+    except Exception:
+        kbot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text="Ой! 🙆🏼‍♀️"
+        )
 
     students[callback.message.chat.id].previous_message = None

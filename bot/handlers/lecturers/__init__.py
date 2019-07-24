@@ -29,23 +29,24 @@ def lecturers(message):
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/lecturers name")
 def find_lecturer(message):
     # Cleanning the chat
+    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     try:
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
         kbot.edit_message_text(
             chat_id=message.chat.id,
             message_id=message.message_id - 1,
             text=choice(LOADING_REPLIES)
         )
     except Exception:
-        pass
+        kbot.send_message(
+            chat_id=message.chat.id,
+            text=choice(LOADING_REPLIES)
+        )
     
     names = get_lecturers_names(name_part=message.text)
     
     # Cleanning the chat
-    try:
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-    except Exception:
-        pass
+    try: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception: pass
     
     if names is None:
         kbot.send_message(

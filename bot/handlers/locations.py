@@ -53,10 +53,7 @@ def send_building(callback):
     
     number = callback.data.replace("buildings ", "")
     
-    kbot.delete_message(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id
-    )
+    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     kbot.send_venue(
         chat_id=callback.message.chat.id,
         latitude=BUILDINGS[number]["latitude"],
@@ -99,10 +96,7 @@ def send_library(callback):
     number = callback.data.replace("libraries ", "")
     building = LIBRARIES[number]["building"]
     
-    kbot.delete_message(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id
-    )
+    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     kbot.send_venue(
         chat_id=callback.message.chat.id,
         latitude=BUILDINGS[building]["latitude"],
@@ -144,10 +138,7 @@ def send_dorm(callback):
     
     number = callback.data.replace("dorms ", "")
     
-    kbot.delete_message(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id
-    )
+    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     kbot.send_venue(
         chat_id=callback.message.chat.id,
         latitude=DORMS[number]["latitude"],

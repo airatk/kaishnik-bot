@@ -111,11 +111,11 @@ def edit_subject_title(message):
     without_auditorium = students[message.chat.id].edited_class.auditorium == ""
     
     # Cleanning the chat
+    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     try:
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        if not without_auditorium: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-    except Exception:
-        pass
+        if not without_auditorium:
+            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception: pass
     
     if not without_auditorium: students[message.chat.id].edited_class.auditorium = message.text
     
@@ -132,11 +132,9 @@ def edit_subject_type(message):
     students[message.chat.id].edited_class.title = message.text
     
     # Cleanning the chat
-    try:
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-    except Exception:
-        pass
+    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    try: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception: pass
     
     kbot.send_message(
         chat_id=message.chat.id,
@@ -176,11 +174,11 @@ def edit_department(message):
     is_without_teacher_name = students[message.chat.id].edited_class.teacher == ""
     
     # Cleanning the chat
+    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     try:
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        if not is_without_teacher_name: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-    except Exception:
-        pass
+        if not is_without_teacher_name:
+            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception: pass
 
     if not is_without_teacher_name: students[message.chat.id].edited_class.teacher = message.text
     
@@ -204,11 +202,11 @@ def finish_edit(message):
     is_without_department = students[message.chat.id].edited_class.department == ""
     
     # Cleanning the chat & setting department
+    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     try:
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        if not is_without_department: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-    except Exception:
-        pass
+        if not is_without_department:
+            kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception: pass
 
     if not is_without_department: students[message.chat.id].edited_class.department = message.text
     

@@ -241,11 +241,9 @@ def set_student_card_number(message):
     scoretable = students[message.chat.id].get_scoretable(prelast_semester)
     
     # Cleanning the chat
-    try:
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-    except Exception:
-        pass
+    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    try: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception: pass
     
     if scoretable is None:
         kbot.send_message(

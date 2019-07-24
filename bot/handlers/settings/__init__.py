@@ -12,11 +12,9 @@ from bot.helpers.student import Student
 @top_notification
 def first_setup(callback):
     # Cleanning the chat
-    try:
-        kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-        kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id - 1)
-    except Exception:
-        pass
+    kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+    try: kbot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id - 1)
+    except Exception: pass
     
     settings(callback.message)
 

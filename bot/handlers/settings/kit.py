@@ -36,11 +36,9 @@ def set_kit(callback):
 @kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/settings set-kit-group")
 def set_kit_group_number(message):
     # Cleanning the chat
-    try:
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-    except Exception:
-        pass
+    kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    try: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
+    except Exception: pass
     
     if not fullmatch("[4][1-4][2-5][0-9]", message.text):
         kbot.send_message(
