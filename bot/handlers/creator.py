@@ -86,6 +86,7 @@ def users(message):
             "• {}: {}\n"
             "• {}: {}\n"
             "• {}: {}\n\n"
+            "*unsetup*: {}\n\n"
             "*{}* users in total!".format(
                 institutes_names[0], institutes_stats.count(institutes_names[0]),
                 institutes_names[1], institutes_stats.count(institutes_names[1]),
@@ -100,6 +101,7 @@ def users(message):
                 years_names[3], years_stats.count(years_names[3]),
                 years_names[4], years_stats.count(years_names[4]),
                 years_names[5], years_stats.count(years_names[5]),
+                sum(1 for student in students.values() if student.is_not_set_up()),
                 len(students)
             )
         ),
