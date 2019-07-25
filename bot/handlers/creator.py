@@ -16,7 +16,7 @@ from datetime import datetime
 
 @kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
-    commands=["creator"]
+    commands=[ "creator" ]
 )
 def creator(message):
     kbot.send_message(
@@ -57,7 +57,7 @@ def creator(message):
 
 @kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
-    commands=["users"]
+    commands=[ "users" ]
 )
 def users(message):
     institutes_stats = [ student.institute for student in students.values() ]
@@ -110,7 +110,7 @@ def users(message):
 
 @kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
-    commands=["metrics"]
+    commands=[ "metrics" ]
 )
 def get_metrics(message):
     if "drop" in message.text: metrics.zerofy()
@@ -168,7 +168,7 @@ def get_metrics(message):
 
 @kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
-    commands=["data"]
+    commands=[ "data" ]
 )
 def data(message):
     option = message.text.replace("/data ", "")
@@ -266,7 +266,7 @@ def data(message):
 
 @kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
-    commands=["clear"]
+    commands=[ "clear" ]
 )
 def clear(message):
     is_cleared = False
@@ -314,7 +314,7 @@ def clear(message):
 
 @kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
-    commands=["erase"]
+    commands=[ "erase" ]
 )
 def erase(message):
     to_erase = message.text.replace("/erase ", "")
@@ -382,7 +382,7 @@ def erase(message):
 
 @kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
-    commands=["drop"]
+    commands=[ "drop" ]
 )
 def drop(message):
     if message.text.replace("/drop ", "") != "all":
@@ -433,7 +433,7 @@ def drop(message):
 
 @kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
-    commands=["broadcast"]
+    commands=[ "broadcast" ]
 )
 def broadcast(message):
     broadcast_message = message.text.replace("/broadcast ", "")
@@ -472,7 +472,7 @@ def broadcast(message):
 
 @kbot.message_handler(
     func=lambda message: message.chat.id == CREATOR,
-    commands=["reverse"]
+    commands=[ "reverse" ]
 )
 def reverse(message):
     if "week" not in message.text:

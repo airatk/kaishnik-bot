@@ -14,7 +14,7 @@ from bot.helpers.constants import DORMS
 
 
 @kbot.message_handler(
-    commands=["locations"],
+    commands=[ "locations" ],
     func=lambda message: students[message.chat.id].previous_message is None
 )
 @metrics.increment("locations")

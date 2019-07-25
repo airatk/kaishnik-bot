@@ -12,7 +12,7 @@ from bot.helpers.constants import DONATE
 
 
 @kbot.message_handler(
-    commands=["week"],
+    commands=[ "week" ],
     func=lambda message: students[message.chat.id].previous_message is None
 )
 @metrics.increment("week")
@@ -32,7 +32,7 @@ def week(message):
 
 
 @kbot.message_handler(
-    commands=["card"],
+    commands=[ "card" ],
     func=lambda message: students[message.chat.id].previous_message is None
 )
 @metrics.increment("card")
@@ -70,7 +70,7 @@ def card(message):
 
 
 @kbot.message_handler(
-    commands=["brs"],
+    commands=[ "brs" ],
     func=lambda message: students[message.chat.id].previous_message is None
 )
 @metrics.increment("brs")
@@ -83,7 +83,7 @@ def brs(message):
 
 
 @kbot.message_handler(
-    commands=["help"],
+    commands=[ "help" ],
     func=lambda message: students[message.chat.id].previous_message is None
 )
 @metrics.increment("help")
@@ -97,7 +97,7 @@ def help(message):
 
 
 @kbot.message_handler(
-    commands=["donate"],
+    commands=[ "donate" ],
     func=lambda message: students[message.chat.id].previous_message is None
 )
 @metrics.increment("donate")
@@ -107,4 +107,64 @@ def donate(message):
         text=DONATE,
         parse_mode="Markdown",
         disable_web_page_preview=True
+    )
+
+
+@kbot.message_handler(
+    commands=[ "me" ],
+    func=lambda message: students[message.chat.id].previous_message is None
+)
+def me(message):
+    chat = kbot.get_chat(chat_id=message.chat.id)
+    
+    if students[message.chat.id].institute_id == "КИТ":
+        message_text = (
+            "{firstname}{lastname}{username}\n"
+            "chat id {chat_id}\n"
+            "\n"
+            "• Колледж: {institute}\n"
+            "• Группа: {group_number}\n"
+            "\n"
+            "• Заметок: {notes_number}\n"
+            "• Изменений в расписании: {edited_classes_number}".format(
+                firstname=chat.first_name,
+                lastname=f" {chat.last_name}" if chat.last_name is not None else "",
+                username=f" @{chat.username}" if chat.username is not None else "",
+                chat_id=message.chat.id,
+                institute=students[message.chat.id].institute,
+                group_number=students[message.chat.id].group_number,
+                notes_number=len(students[message.chat.id].notes),
+                edited_classes_number=len(students[message.chat.id].edited_subjects)
+            )
+        )
+    else:
+        message_text = (
+            "{firstname}{lastname}{username}\n"
+            "chat id {chat_id}\n"
+            "\n"
+            "• Институт: {institute}\n"
+            "• Курс: {year}\n"
+            "• Группа: {group_number}\n"
+            "• Имя: {name}\n"
+            "• Номер зачётки: {card}\n"
+            "\n"
+            "• Заметок: {notes_number}\n"
+            "• Изменений в расписании: {edited_classes_number}".format(
+                firstname=chat.first_name,
+                lastname=f" {chat.last_name}" if chat.last_name is not None else "",
+                username=f" @{chat.username}" if chat.username is not None else "",
+                chat_id=message.chat.id,
+                institute=students[message.chat.id].institute,
+                year=students[message.chat.id].year,
+                group_number=students[message.chat.id].group_number,
+                name=students[message.chat.id].name,
+                card=students[message.chat.id].student_card_number,
+                notes_number=len(students[message.chat.id].notes),
+                edited_classes_number=len(students[message.chat.id].edited_subjects)
+            )
+        )
+    
+    kbot.send_message(
+        chat_id=message.chat.id,
+        text=message_text
     )

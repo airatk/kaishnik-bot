@@ -20,7 +20,7 @@ def first_setup(callback):
 
 
 @kbot.message_handler(
-    commands=["settings"],
+    commands=[ "settings" ],
     func=lambda message:
         students[message.chat.id].previous_message == "/start" or
         students[message.chat.id].previous_message is None

@@ -14,7 +14,7 @@ from random import choice
 
 
 @kbot.message_handler(
-    commands=["lecturers"],
+    commands=[ "lecturers" ],
     func=lambda message: students[message.chat.id].previous_message is None
 )
 @metrics.increment("lecturers")

@@ -13,7 +13,7 @@ from random import choice
 
 
 @kbot.message_handler(
-    commands=["score"],
+    commands=[ "score" ],
     func=lambda message: students[message.chat.id].previous_message is None
 )
 @metrics.increment("score")

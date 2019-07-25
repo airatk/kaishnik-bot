@@ -7,7 +7,7 @@ from bot.keyboards.edit import edit_chooser
 
 
 @kbot.message_handler(
-    commands=["edit"],
+    commands=[ "edit" ],
     func=lambda message: students[message.chat.id].previous_message is None
 )
 @metrics.increment("edit")

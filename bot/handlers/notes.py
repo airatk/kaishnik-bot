@@ -12,7 +12,7 @@ from bot.helpers.constants import MAX_NOTES_NUMBER
 
 
 @kbot.message_handler(
-    commands=["notes"],
+    commands=[ "notes" ],
     func=lambda message: students[message.chat.id].previous_message is None
 )
 @metrics.increment("notes")

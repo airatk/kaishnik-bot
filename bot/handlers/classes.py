@@ -16,7 +16,7 @@ from re import fullmatch
 
 
 @kbot.message_handler(
-    commands=["classes"],
+    commands=[ "classes" ],
     func=lambda message: students[message.chat.id].previous_message is None
 )
 @metrics.increment("classes")
