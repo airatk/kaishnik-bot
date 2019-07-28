@@ -13,6 +13,7 @@ class Metrics:
         self._locations = 0
         self._card = 0
         self._brs = 0
+        self._me = 0
         self._cancel = 0
         self._start = 0
         self._settings = 0
@@ -63,6 +64,10 @@ class Metrics:
         return self._brs
     
     @property
+    def me(self):
+        return self._me
+    
+    @property
     def cancel(self):
         return self._cancel
     
@@ -106,6 +111,7 @@ class Metrics:
             self._locations +
             self._card +
             self._brs +
+            self._me +
             self._cancel +
             self._start +
             self._settings +
@@ -127,6 +133,7 @@ class Metrics:
         self._locations = 0
         self._card = 0
         self._brs = 0
+        self._me = 0
         self._cancel = 0
         self._start = 0
         self._settings = 0
@@ -150,6 +157,7 @@ class Metrics:
                 elif command == "locations": self._locations += 1
                 elif command == "card": self._card += 1
                 elif command == "brs": self._brs += 1
+                elif command == "me": self._me += 1
                 elif command == "cancel": self._cancel += 1
                 elif command == "start": self._start += 1
                 elif command == "settings": self._settings += 1

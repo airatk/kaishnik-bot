@@ -114,6 +114,7 @@ def donate(message):
     commands=[ "me" ],
     func=lambda message: students[message.chat.id].previous_message is None
 )
+@metrics.increment("me")
 def me(message):
     chat = kbot.get_chat(chat_id=message.chat.id)
     
