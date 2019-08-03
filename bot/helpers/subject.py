@@ -82,6 +82,8 @@ class Subject(ABC):
             self._type = self._type.format(type="практика")
         elif type == "л.р.":
             self._type = self._type.format(type="лабораторная работа")
+        elif type == "конс":
+            self._type = self._type.format(type="консультация")
         else:
             self._type = ""
 
