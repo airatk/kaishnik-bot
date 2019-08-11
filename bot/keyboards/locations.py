@@ -3,14 +3,16 @@ from telebot.types import InlineKeyboardButton
 
 from bot.helpers.constants import BUILDINGS
 from bot.helpers.constants import LIBRARIES
+from bot.helpers.constants import SPORTSCOMPLEX
 from bot.helpers.constants import DORMS
 
 
 def choose_location_type():
     location_type_keyboard = InlineKeyboardMarkup()
     
-    location_type_keyboard.row(InlineKeyboardButton(text="Учебные здания и СК", callback_data="buildings_type"))
+    location_type_keyboard.row(InlineKeyboardButton(text="Учебные здания", callback_data="buildings_type"))
     location_type_keyboard.row(InlineKeyboardButton(text="Библиотеки", callback_data="libraries_type"))
+    location_type_keyboard.row(InlineKeyboardButton(text="Спортивный комплекс", callback_data="sportscomplex_type"))
     location_type_keyboard.row(InlineKeyboardButton(text="Общежития", callback_data="dorms_type"))
     
     return location_type_keyboard
@@ -38,6 +40,18 @@ def libraries_dialer():
     ])
     
     return libraries_dialer_keyboard
+
+def sportscomplex_dialer():
+    sportscomplex_dialer_keyboard = InlineKeyboardMarkup(row_width=1)
+    
+    sportscomplex_dialer_keyboard.add(*[
+        InlineKeyboardButton(
+            text=sportscomplex,
+            callback_data="sportscomplex {}".format(sportscomplex)
+        ) for sportscomplex in SPORTSCOMPLEX
+    ])
+    
+    return sportscomplex_dialer_keyboard
 
 def dorms_dialer():
     dorms_dialer_keyboard = InlineKeyboardMarkup(row_width=4)
