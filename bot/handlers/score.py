@@ -18,17 +18,17 @@ from random import choice
 )
 @metrics.increment("score")
 def score(message):
-    if students[message.chat.id].student_card_number == "unset":
-        kbot.send_message(
-            chat_id=message.chat.id,
-            text="Номер зачётки не указан, но ты можешь это исправить — отправь /card"
-        )
-        return
-
-    if students[message.chat.id].institute_id == "КИТ":
+    if students[message.chat.id].institute_id == "-":
         kbot.send_message(
             chat_id=message.chat.id,
             text="Не доступно :("
+        )
+        kbot.send_message(
+            chat_id=message.chat.id,
+            text=(
+                "Чтобы видеть номер зачётки и баллы, можешь перенастроиться, отправив /settings. "
+                "Понадобится зачётка и не быть студентом КИТ."
+            )
         )
         return
     

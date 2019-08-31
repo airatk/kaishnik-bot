@@ -4,10 +4,27 @@ from telebot.types import InlineKeyboardButton
 from bot.helpers.constants import INSTITUTES
 
 
-def institute_setter(is_old):
-    institute_setter_keyboard = InlineKeyboardMarkup(row_width=1)
+def setup_way_chooser(is_old):
+    setup_way_chooser_keyboard = InlineKeyboardMarkup()
     
-    if is_old: institute_setter_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-settings"))
+    if is_old: setup_way_chooser_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-settings"))
+
+    setup_way_chooser_keyboard.row(InlineKeyboardButton(text="с зачёткой", callback_data="settings-card-way"))
+    setup_way_chooser_keyboard.row(InlineKeyboardButton(text="без зачётки", callback_data="settings-noncard-way"))
+
+    return setup_way_chooser_keyboard
+
+
+def cancel_option(row_width = 1):
+    cancel_option_keyboard = InlineKeyboardMarkup(row_width=row_width)
+    
+    cancel_option_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-settings"))
+    
+    return cancel_option_keyboard
+
+
+def institute_setter():
+    institute_setter_keyboard = cancel_option()
     
     institute_setter_keyboard.add(*[
         InlineKeyboardButton(
@@ -19,9 +36,7 @@ def institute_setter(is_old):
     return institute_setter_keyboard
 
 def year_setter(years):
-    year_setter_keyboard = InlineKeyboardMarkup(row_width=2)
-    
-    year_setter_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-settings"))
+    year_setter_keyboard = cancel_option(row_width=2)
     
     year_setter_keyboard.add(*[
         InlineKeyboardButton(
@@ -33,9 +48,7 @@ def year_setter(years):
     return year_setter_keyboard
 
 def group_number_setter(groups):
-    group_number_setter_keyboard = InlineKeyboardMarkup(row_width=2)
-    
-    group_number_setter_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-settings"))
+    group_number_setter_keyboard = cancel_option(row_width=2)
     
     group_number_setter_keyboard.add(*[
         InlineKeyboardButton(
@@ -47,9 +60,7 @@ def group_number_setter(groups):
     return group_number_setter_keyboard
 
 def name_setter(names):
-    name_setter_keyboard = InlineKeyboardMarkup(row_width=1)
-    
-    name_setter_keyboard.row(InlineKeyboardButton(text="отменить", callback_data="cancel-settings"))
+    name_setter_keyboard = cancel_option()
     
     name_setter_keyboard.add(*[
         InlineKeyboardButton(
@@ -59,10 +70,3 @@ def name_setter(names):
     ])
     
     return name_setter_keyboard
-
-def set_card_skipper():
-    set_card_skipper_keyboard = InlineKeyboardMarkup()
-    
-    set_card_skipper_keyboard.row(InlineKeyboardButton(text="пропустить", callback_data="skip-set-card"))
-    
-    return set_card_skipper_keyboard

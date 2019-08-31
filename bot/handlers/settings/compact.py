@@ -12,19 +12,19 @@ from re import fullmatch
 @kbot.callback_query_handler(
     func=lambda callback:
         students[callback.message.chat.id].previous_message == "/settings" and
-        callback.data == "set-institute-КИТ"
+        callback.data == "settings-noncard-way"
 )
 @top_notification
 def set_kit(callback):
     students[callback.message.chat.id] = Student(
-        institute="КИТ",
-        institute_id="КИТ",
-        year="unknown",
-        name="unknown",
-        student_card_number="unknown"
+        institute="-",
+        institute_id="-",
+        year="-",
+        name="-",
+        student_card_number="-"
     )
     
-    students[callback.message.chat.id].previous_message = "/settings set-kit-group"  # Gate System (GS)
+    students[callback.message.chat.id].previous_message = "/settings noncard-way"  # Gate System (GS)
     
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -33,20 +33,13 @@ def set_kit(callback):
     )
 
 
-@kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/settings set-kit-group")
+@kbot.message_handler(func=lambda message: students[message.chat.id].previous_message == "/settings noncard-way")
 def set_kit_group_number(message):
     # Cleanning the chat
     kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     try: kbot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
     except Exception: pass
     
-    if not fullmatch("[4][1-4][2-5][0-9]", message.text):
-        kbot.send_message(
-            chat_id=message.chat.id,
-            text="Неверный номер группы. Исправляйся."
-        )
-        return
-        
     students[message.chat.id].group_number = message.text
 
     if students[message.chat.id].group_number is None:
@@ -60,17 +53,20 @@ def set_kit_group_number(message):
         return
 
     if students[message.chat.id].group_number == "non-existing":
-        kbot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
+        kbot.send_message(
+            chat_id=message.chat.id,
             text="Такой группы нет🤔"
         )
         kbot.send_message(
-            chat_id=callback.message.chat.id,
+            chat_id=message.chat.id,
             text="Возможно, она появится позже, когда её внесут в каёвскую базу🤓"
         )
+        kbot.send_message(
+            chat_id=message.chat.id,
+            text="Ещё разок? /settings"
+        )
 
-        students[callback.message.chat.id] = Student()  # Drop all the entered data
+        students[message.chat.id] = Student()  # Drop all the entered data
         return
 
     students[message.chat.id].previous_message = None  # Gates System (GS)

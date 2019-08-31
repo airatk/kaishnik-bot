@@ -2,10 +2,11 @@ from bot import kbot
 from bot import students
 from bot import top_notification
 
+from bot.keyboards.settings import institute_setter
 from bot.keyboards.settings import year_setter
 from bot.keyboards.settings import group_number_setter
 from bot.keyboards.settings import name_setter
-from bot.keyboards.settings import set_card_skipper
+from bot.keyboards.settings import cancel_option
 
 from bot.helpers           import save_to
 from bot.helpers.student   import Student
@@ -17,6 +18,22 @@ from bot.helpers.constants import LOADING_REPLIES
 from re import fullmatch
 from random import choice
 
+
+@kbot.callback_query_handler(
+    func=lambda callback:
+        students[callback.message.chat.id].previous_message == "/settings" and
+        callback.data == "settings-card-way"
+)
+@top_notification
+def settings(callback):
+    students[callback.message.chat.id].previous_message = "/settings"  # Gate System (GS)
+    
+    kbot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        text="Выбери институт (привет, ФМФ🌚):",
+        reply_markup=institute_setter()
+    )
 
 @kbot.callback_query_handler(
     func=lambda callback:
@@ -59,7 +76,7 @@ def set_institute(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text="Выбери свой курс:",
+        text="Выбери курс:",
         reply_markup=year_setter(years)
     )
 
@@ -110,7 +127,7 @@ def set_year(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text="Выбери свою группу:",
+        text="Выбери группу:",
         reply_markup=group_number_setter(groups)
     )
 
@@ -221,13 +238,8 @@ def set_name(callback):
     kbot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text=(
-            "Отправь номер своей зачётки "
-            "(интересный факт — студенческий билет и зачётка имеют одинаковый номер!)."
-            "\n\n"
-            "Либо пропусти, но баллы показать не смогу."
-        ),
-        reply_markup=set_card_skipper()
+        text="Отправь номер зачётки.",
+        reply_markup=cancel_option()
     )
 
     students[callback.message.chat.id].previous_message = "/settings student-card-number"  # Gate System (GS)
@@ -258,12 +270,8 @@ def set_student_card_number(message):
     if scoretable == []:
         kbot.send_message(
             chat_id=message.chat.id,
-            text=(
-                "Неверный номер зачётки. Исправляйся."
-                "\n\n"
-                "Либо пропусти, но баллы показать не смогу."
-            ),
-            reply_markup=set_card_skipper()
+            text="Неверный номер зачётки. Исправляйся.",
+            reply_markup=cancel_option()
         )
         
         students[message.chat.id].student_card_number = None
@@ -278,29 +286,6 @@ def set_student_card_number(message):
     )
     kbot.send_message(
         chat_id=message.chat.id,
-        text=GUIDE_MESSAGE,
-        parse_mode="Markdown"
-    )
-
-@kbot.callback_query_handler(
-    func=lambda callback: (
-        students[callback.message.chat.id].previous_message == "/settings student-card-number" or
-        students[callback.message.chat.id].previous_message == "/card"
-    ) and callback.data == "skip-set-card"
-)
-@top_notification
-def save_without_student_card_number(callback):
-    students[callback.message.chat.id].student_card_number = "unset"
-    students[callback.message.chat.id].previous_message = None  # Gates System (GS)
-    save_to(filename="data/users", object=students)
-    
-    kbot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        text="Запомнено без зачётки!"
-    )
-    kbot.send_message(
-        chat_id=callback.message.chat.id,
         text=GUIDE_MESSAGE,
         parse_mode="Markdown"
     )

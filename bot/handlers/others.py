@@ -2,8 +2,6 @@ from bot import kbot
 from bot import students
 from bot import metrics
 
-from bot.keyboards.settings import set_card_skipper
-
 from bot.helpers           import is_even
 from bot.helpers           import weekday_date
 from bot.helpers.constants import BRS
@@ -37,29 +35,20 @@ def week(message):
 )
 @metrics.increment("card")
 def card(message):
-    if students[message.chat.id].institute_id == "КИТ":
+    if students[message.chat.id].student_card_number == "-":
         kbot.send_message(
             chat_id=message.chat.id,
             text="Не доступно :("
         )
-        return
-    
-    if students[message.chat.id].student_card_number == "unset":
         kbot.send_message(
             chat_id=message.chat.id,
             text=(
-                "Отправь номер своей зачётки "
-                "(интересный факт — студенческий билет и зачётка имеют одинаковый номер!)."
-                "\n\n"
-                "Либо пропусти, но баллы показать не смогу."
-            ),
-            reply_markup=set_card_skipper()
+                "Чтобы видеть номер зачётки и баллы, можешь перенастроиться, отправив /settings. "
+                "Понадобится зачётка и не быть студентом КИТ."
+            )
         )
-        
-        students[message.chat.id].student_card_number = None
-        students[message.chat.id].previous_message = "/settings student-card-number"  # Gate System (GS)
         return
-
+    
     kbot.send_message(
         chat_id=message.chat.id,
         text="Номер твоего студенческого билета и твоей зачётной книжки: *{card}*".format(
@@ -118,12 +107,11 @@ def donate(message):
 def me(message):
     chat = kbot.get_chat(chat_id=message.chat.id)
     
-    if students[message.chat.id].institute_id == "КИТ":
+    if students[message.chat.id].institute_id == "-":
         message_text = (
             "{firstname}{lastname}{username}\n"
             "chat id {chat_id}\n"
             "\n"
-            "• Колледж: {institute}\n"
             "• Группа: {group_number}\n"
             "\n"
             "• Заметок: {notes_number}\n"
@@ -132,7 +120,6 @@ def me(message):
                 lastname=f" {chat.last_name}" if chat.last_name is not None else "",
                 username=f" @{chat.username}" if chat.username is not None else "",
                 chat_id=message.chat.id,
-                institute=students[message.chat.id].institute,
                 group_number=students[message.chat.id].group_number,
                 notes_number=len(students[message.chat.id].notes),
                 edited_classes_number=len(students[message.chat.id].edited_subjects)

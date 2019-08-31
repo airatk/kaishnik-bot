@@ -26,10 +26,10 @@
                location = "group:__init__.py">
             </FileRef>
             <FileRef
-               location = "group:institutes.py">
+               location = "group:/Users/airatk/Documents/alight/bots/telegram/kaishnik-bot/bot/handlers/settings/full.py">
             </FileRef>
             <FileRef
-               location = "group:kit.py">
+               location = "group:/Users/airatk/Documents/alight/bots/telegram/kaishnik-bot/bot/handlers/settings/compact.py">
             </FileRef>
          </Group>
          <Group

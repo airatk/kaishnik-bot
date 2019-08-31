@@ -3,7 +3,7 @@ from bot import students
 from bot import metrics
 from bot import top_notification
 
-from bot.keyboards.settings import institute_setter
+from bot.keyboards.settings import setup_way_chooser
 
 from bot.helpers.student import Student
 
@@ -31,15 +31,17 @@ def settings(message):
     
     kbot.send_message(
         chat_id=message.chat.id,
-        text="{warning}Выбери своё подразделение:".format(
-            # Show the warning to the old users
+        text=(
+            "{warning}Если что, студенческий билет и зачётка имеют одинаковый номер😉\n"
+            "КИТ может пройти без зачётки только.\n\n"
+            "Выбери желаемый путь настройки:"
+        ).format(
+            # Showing the warning to the old users
             warning=(
-                "Все текущие данные, включая "
-                "*заметки*, *изменённое расписание* и *номер зачётки*, "
-                "будут стёрты.\n\n"
+                "Все текущие данные, включая *заметки* и *изменённое расписание*, будут стёрты.\n\n"
             ) if not students[message.chat.id].is_not_set_up() else ""
         ),
-        reply_markup=institute_setter(is_old=not students[message.chat.id].is_not_set_up()),
+        reply_markup=setup_way_chooser(is_old=not students[message.chat.id].is_not_set_up()),
         parse_mode="Markdown"
     )
 
@@ -62,8 +64,8 @@ def cancel_setting_process(callback):
 
 
 # Importing respective settings menus
-from bot.handlers.settings import institutes
-from bot.handlers.settings import kit
+from bot.handlers.settings import full
+from bot.handlers.settings import compact
 
 
 @kbot.message_handler(

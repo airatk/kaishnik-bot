@@ -1,6 +1,7 @@
 from bot.helpers.schedule  import beautify_classes
 from bot.helpers.schedule  import beautify_exams
 from bot.helpers.datatypes import ScheduleType
+from bot.helpers.datatypes import ScoreDataType
 from bot.helpers.constants import SCHEDULE_URL
 from bot.helpers.constants import SCORE_URL
 
@@ -118,7 +119,7 @@ class Student:
             }).json()[0]["id"]
             
             # Setting id of group number for score
-            if self._institute_id != "КИТ": self._group_number_score = self.get_dictionary_of(type="p_group")[group_number]
+            if self._institute_id != "-": self._group_number_score = self.get_dictionary_of(ScoreDataType.groups)[group_number]
         except (IndexError, KeyError):
             self._group_number = "non-existing"
         except Exception:
@@ -146,7 +147,7 @@ class Student:
         
         try:
             # Setting id of name for score
-            self._name_id = self.get_dictionary_of(type="p_stud")[name]
+            self._name_id = self.get_dictionary_of(ScoreDataType.names)[name]
         except Exception:
             self._name = None
     

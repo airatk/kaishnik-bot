@@ -78,7 +78,6 @@ def users(message):
             "• {}: {}\n"
             "• {}: {}\n"
             "• {}: {}\n"
-            "• {}: {}\n"
             "\n*years*\n"               ### years
             "• {}: {}\n"
             "• {}: {}\n"
@@ -86,6 +85,7 @@ def users(message):
             "• {}: {}\n"
             "• {}: {}\n"
             "• {}: {}\n\n"
+            "*group only*: {}\n"
             "*unsetup*: {}\n\n"
             "*{}* users in total!".format(
                 institutes_names[0], institutes_stats.count(institutes_names[0]),
@@ -94,13 +94,13 @@ def users(message):
                 institutes_names[3], institutes_stats.count(institutes_names[3]),
                 institutes_names[4], institutes_stats.count(institutes_names[4]),
                 institutes_names[5], institutes_stats.count(institutes_names[5]),
-                institutes_names[6], institutes_stats.count(institutes_names[6]),
                 years_names[0], years_stats.count(years_names[0]),
                 years_names[1], years_stats.count(years_names[1]),
                 years_names[2], years_stats.count(years_names[2]),
                 years_names[3], years_stats.count(years_names[3]),
                 years_names[4], years_stats.count(years_names[4]),
                 years_names[5], years_stats.count(years_names[5]),
+                institutes_stats.count("-"),
                 sum(1 for student in students.values() if student.is_not_set_up()),
                 len(students)
             )
@@ -227,37 +227,43 @@ def data(message):
         return
     
     for chat_id in asked_users_list:
-        chat = kbot.get_chat(chat_id=chat_id)
-        
-        kbot.send_message(
-            chat_id=message.chat.id,
-            text=(
-                "{firstname} {lastname} @{username}\n"
-                "chat id {chat_id}\n\n"
-                "• Institute: {institute}\n"
-                "• Year: {year}\n"
-                "• Group: {group_number}\n"
-                "• Name: {name}\n"
-                "• Student card number: {card}\n\n"
-                "• Number of notes: {notes_number}\n"
-                "• Number of edited classes: {edited_classes_number}\n"
-                "• Number of fellow students: {fellow_students_number}\n"
-                "\n#data".format(
-                    firstname=chat.first_name,
-                    lastname=chat.last_name,
-                    username=chat.username,
-                    chat_id=chat_id,
-                    institute=students[chat_id].institute,
-                    year=students[chat_id].year,
-                    group_number=students[chat_id].group_number,
-                    name=students[chat_id].name,
-                    card=students[chat_id].student_card_number,
-                    notes_number=len(students[chat_id].notes),
-                    edited_classes_number=len(students[chat_id].edited_subjects),
-                    fellow_students_number=len(students[chat_id].names)
+        try:
+            chat = kbot.get_chat(chat_id=chat_id)
+        except Exception:
+            kbot.send_message(
+                chat_id=message.chat.id,
+                text="{} is inactive! /clear?".format(chat_id)
+            )
+        else:
+            kbot.send_message(
+                chat_id=message.chat.id,
+                text=(
+                    "{firstname} {lastname} @{username}\n"
+                    "chat id {chat_id}\n\n"
+                    "• Institute: {institute}\n"
+                    "• Year: {year}\n"
+                    "• Group: {group_number}\n"
+                    "• Name: {name}\n"
+                    "• Student card number: {card}\n\n"
+                    "• Number of notes: {notes_number}\n"
+                    "• Number of edited classes: {edited_classes_number}\n"
+                    "• Number of fellow students: {fellow_students_number}\n"
+                    "\n#data".format(
+                        firstname=chat.first_name,
+                        lastname=chat.last_name,
+                        username=chat.username,
+                        chat_id=chat_id,
+                        institute=students[chat_id].institute,
+                        year=students[chat_id].year,
+                        group_number=students[chat_id].group_number,
+                        name=students[chat_id].name,
+                        card=students[chat_id].student_card_number,
+                        notes_number=len(students[chat_id].notes),
+                        edited_classes_number=len(students[chat_id].edited_subjects),
+                        fellow_students_number=len(students[chat_id].names)
+                    )
                 )
             )
-        )
 
     kbot.send_message(
         chat_id=message.chat.id,
@@ -464,7 +470,7 @@ def broadcast(message):
         except Exception:
             kbot.send_message(
                 chat_id=message.chat.id,
-                text="Inactive user occured! /clear?"
+                text="{} is inactive! /clear?".format(chat_id)
             )
 
     kbot.send_message(
