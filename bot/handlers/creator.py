@@ -393,49 +393,58 @@ def erase(message):
     commands=[ "drop" ]
 )
 def drop(message):
-    if message.text.replace("/drop ", "") != "all":
+    to_drop = message.text.replace("/drop ", "")
+    
+    if to_drop == "institutes":
+        students_to_drop = [ chat_id for chat_id in students if students[chat_id].institute != "-" ]
+    elif to_drop == "all":
+        students_to_drop = list(students)
+    else:
         kbot.send_message(
             chat_id=message.chat.id,
             text="If you are sure to drop all users' data, type */drop all*",
             parse_mode="Markdown"
         )
         return
-        
-    for chat_id in list(students):
-        if students[chat_id].notes != []:
-            for note in students[chat_id].notes:
+
+    for chat_id in students_to_drop:
+        try:
+            if students[chat_id].notes != []:
+                for note in students[chat_id].notes:
+                    kbot.send_message(
+                        chat_id=chat_id,
+                        text=note,
+                        parse_mode="Markdown",
+                        disable_notification=True
+                    )
+                
                 kbot.send_message(
                     chat_id=chat_id,
-                    text=note,
-                    parse_mode="Markdown",
+                    text="Твои заметки, чтобы ничего не потерялось.",
                     disable_notification=True
                 )
             
+            students[chat_id] = Student()
+            
             kbot.send_message(
                 chat_id=chat_id,
-                text="Твои заметки, чтобы ничего не потерялось.",
+                text="Текущие настройки сброшены.",
                 disable_notification=True
             )
-        
-        students[chat_id] = Student()
-        
-        kbot.send_message(
-            chat_id=chat_id,
-            text="Текущие настройки сброшены.",
-            disable_notification=True
-        )
-        kbot.send_message(
-            chat_id=chat_id,
-            text="Обнови данные:",
-            reply_markup=make_setup(),
-            disable_notification=True
-        )
+            kbot.send_message(
+                chat_id=chat_id,
+                text="Обнови данные:",
+                reply_markup=make_setup(),
+                disable_notification=True
+            )
+        except Exception:
+            del students[chat_id]
     
     save_to(filename="data/users", object=students)
-
+    
     kbot.send_message(
         chat_id=message.chat.id,
-        text="All data was #dropped!"
+        text="Data was #dropped!"
     )
 
 
