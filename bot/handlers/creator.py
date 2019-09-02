@@ -38,7 +38,7 @@ def creator(message):
                 "\t\t\t\[ all ]\[ unsetup ]\[ me ]\n"
                 "\t\t\t\[ :chat ID 1: … … ]\n"
             "}\n"
-            "/drop { all }\n"
+            "/drop { [ all ]\[ institutes ] }\n"
             "\n*others*\n"              ### others
             "/broadcast { :message: }\n"
             "/reverse { week }\n"

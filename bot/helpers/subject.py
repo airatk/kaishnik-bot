@@ -59,12 +59,12 @@ class Subject(ABC):
     @building.setter
     def building(self, building):
         self._building = self._building.format(
-            building="СК Олимп" if building in [ "КАИ ОЛИМП", "СК Олимп" ] else "{}ка".format(building)
+            building="СК Олимп" if "ОЛИМП" in building.upper() else "{}ка".format(building)
         )
     
     @auditorium.setter
     def auditorium(self, auditorium):
-        self._auditorium = self._auditorium.format(auditorium=(", " + auditorium) if auditorium else "")
+        self._auditorium = "" if self._building == "СК Олимп" else self._auditorium.format(auditorium=(", " + auditorium) if auditorium else "")
     
     @dates.setter
     def dates(self, dates):
@@ -85,7 +85,7 @@ class Subject(ABC):
         elif type == "конс":
             self._type = self._type.format(type="консультация")
         else:
-            self._type = ""
+            self._type = type
 
     @abstractmethod
     def get(self):
