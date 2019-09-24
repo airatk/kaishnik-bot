@@ -35,7 +35,7 @@ Type `python3 . -m 'launch mode'` to launch where `launch mode` is either `testi
 * card - номер зачётки
 * brs - что за БРС?
 * edit - изменить расписание
-* login - настройки
+* login - вход
 * me - ты
 * donate - сказать спасибо
 * help - подсказки

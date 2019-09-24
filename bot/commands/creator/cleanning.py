@@ -33,9 +33,6 @@ def clear(message):
         try:
             bot.send_chat_action(chat_id=chat_id, action="typing")
         except Exception:
-            del students[chat_id]
-            is_cleared = True
-            
             bot.send_message(
                 chat_id=message.chat.id,
                 text=USER_DATA.format(
@@ -55,6 +52,9 @@ def clear(message):
                     hashtag="erased"
                 )
             )
+            
+            del students[chat_id]
+            is_cleared = True
     
     save_data(file=USERS_FILE, object=students)
     

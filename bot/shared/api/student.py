@@ -124,63 +124,63 @@ class Student:
     
     
     @is_setup.setter
-    def is_setup(self, is_setup):
-        self._is_setup = is_setup
+    def is_setup(self, new_value):
+        self._is_setup = new_value
     
     @is_full.setter
-    def is_full(self, is_full):
-        self._is_full = is_full
+    def is_full(self, new_value):
+        self._is_full = new_value
     
     @institute.setter
-    def institute(self, institute):
-        self._institute = institute
+    def institute(self, new_value):
+        self._institute = new_value
 
     @institute_id.setter
-    def institute_id(self, institute_id):
-        self._institute_id = institute_id
+    def institute_id(self, new_value):
+        self._institute_id = new_value
     
     @year.setter
-    def year(self, year):
-        self._year = year
+    def year(self, new_value):
+        self._year = new_value
     
     @group.setter
-    def group(self, group):
-        self._group = group
-        self._group_schedule_id = self.get_schedule_id(group)
-        self._group_score_id = self.get_dictionary_of(ScoreDataType.GROUPS).get(group) if self._is_full else None
+    def group(self, new_value):
+        self._group = new_value
+        self._group_schedule_id = self.get_schedule_id(group=new_value)
+        self._group_score_id = self.get_dictionary_of(ScoreDataType.GROUPS).get(new_value) if self._is_full else None
     
     @another_group.setter
-    def another_group(self, group):
-        self._another_group = None if group is None else self.get_schedule_id(group)
+    def another_group(self, new_value):
+        self._another_group = None if new_value is None else self.get_schedule_id(group=new_value)
     
     @name.setter
-    def name(self, name):
-        self._name = name
-        self._name_id = self.get_dictionary_of(ScoreDataType.NAMES).get(name)
+    def name(self, new_value):
+        self._name = new_value
+        self._name_id = self.get_dictionary_of(ScoreDataType.NAMES).get(new_value)
     
     @names.setter
-    def names(self, names):
-        self._names = names
+    def names(self, new_value):
+        self._names = new_value
     
     @card.setter
-    def card(self, card):
-        self._card = card
+    def card(self, new_value):
+        self._card = new_value
     
     @scoretable.setter
-    def scoretable(self, scoretable):
-        self._scoretable = scoretable
+    def scoretable(self, new_value):
+        self._scoretable = new_value
     
     @notes.setter
-    def notes(self, notes):
-        self._notes = notes
+    def notes(self, new_value):
+        self._notes = new_value
     
     @edited_subjects.setter
-    def edited_subjects(self, given_edited_subjects):
-        self._edited_subjects = given_edited_subjects
+    def edited_subjects(self, new_value):
+        self._edited_subjects = new_value
     
     @edited_subject.setter
-    def edited_subject(self, given_edited_subject):
-        self._edited_subject = given_edited_subject
+    def edited_subject(self, new_value):
+        self._edited_subject = new_value
     
     
     def get_schedule_id(self, group):
