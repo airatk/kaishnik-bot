@@ -27,10 +27,14 @@ def clear(message):
     )
     
     is_cleared = False
+    progress_bar = ""
     students_list = list(students)
     
     for (index, chat_id) in enumerate(students_list):
-        update_progress_bar(loading_message, values=students_list, index=index)
+        progress_bar = update_progress_bar(
+            loading_message=loading_message, current_progress_bar=progress_bar,
+            values=students_list, index=index
+        )
         
         chat = bot.get_chat(chat_id=chat_id)
         
@@ -99,14 +103,19 @@ def erase(message):
                 )
             else:
                 erase_list.append(chat_id)
-
+    
+    progress_bar = ""
+    
     loading_message = bot.send_message(
         chat_id=message.chat.id,
         text="Started erasing…"
     )
     
     for (index, chat_id) in enumerate(erase_list):
-        update_progress_bar(loading_message, values=erase_list, index=index)
+        progress_bar = update_progress_bar(
+            loading_message=loading_message, current_progress_bar=progress_bar,
+            values=erase_list, index=index
+        )
         
         if chat_id in students:
             chat = bot.get_chat(chat_id=chat_id)
@@ -164,7 +173,19 @@ def drop(message):
         )
         return
     
-    for chat_id in drop_list:
+    progress_bar = ""
+    
+    loading_message = bot.send_message(
+        chat_id=message.chat.id,
+        text="Started dropping…"
+    )
+    
+    for (index, chat_id) in enumerate(drop_list):
+        progress_bar = update_progress_bar(
+            loading_message=loading_message, current_progress_bar=progress_bar,
+            values=drop_list, index=index
+        )
+        
         try:
             if students[chat_id].notes != []:
                 for note in students[chat_id].notes:
