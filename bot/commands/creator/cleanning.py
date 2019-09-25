@@ -2,6 +2,7 @@ from bot import bot
 from bot import students
 
 from bot.commands.creator.utilities.helpers import parse_creator_request
+from bot.commands.creator.utilities.helpers import update_progress_bar
 from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import USER_DATA
 from bot.commands.creator.utilities.types import EraseOption
@@ -20,14 +21,17 @@ from bot.shared.commands import Commands
     commands=[ Commands.CLEAR.value ]
 )
 def clear(message):
-    is_cleared = False
-    
-    bot.send_message(
+    loading_message = bot.send_message(
         chat_id=message.chat.id,
-        text="Started clearing…"
+        text="Started clearing..."
     )
     
-    for chat_id in list(students):
+    is_cleared = False
+    students_list = list(students)
+    
+    for (index, chat_id) in enumerate(students_list):
+        update_progress_bar(loading_message, values=students_list, index=index)
+        
         chat = bot.get_chat(chat_id=chat_id)
         
         try:
@@ -96,12 +100,14 @@ def erase(message):
             else:
                 erase_list.append(chat_id)
 
-    bot.send_message(
+    loading_message = bot.send_message(
         chat_id=message.chat.id,
-        text="No users to erase!" if len(erase_list) == 0 else "Stared erasing…"
+        text="Started erasing…"
     )
     
-    for chat_id in erase_list:
+    for (index, chat_id) in enumerate(erase_list):
+        update_progress_bar(loading_message, values=erase_list, index=index)
+        
         if chat_id in students:
             chat = bot.get_chat(chat_id=chat_id)
             
@@ -134,7 +140,7 @@ def erase(message):
     
     bot.send_message(
         chat_id=message.chat.id,
-        text="Erased!"
+        text="No users to erase!" if len(erase_list) == 0 else "Erased!"
     )
 
     save_data(file=USERS_FILE, object=students)
