@@ -2,6 +2,7 @@ from bot import bot
 from bot import students
 
 from bot.commands.creator.utilities.helpers import parse_creator_request
+from bot.commands.creator.utilities.helpers import update_progress_bar
 from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import BROADCAST_MESSAGE_TEMPLATE
 from bot.commands.creator.utilities.types import ReverseOption
@@ -24,10 +25,22 @@ def broadcast(message):
             parse_mode="Markdown"
         )
         return
-
-    broadcast_message = message.text[11:]  # Getting rid of /boardcast command
     
-    for chat_id in students:
+    broadcast_message = message.text[11:]  # Getting rid of /boardcast command
+    students_list = list(students)
+    progress_bar = ""
+    
+    loading_message = bot.send_message(
+        chat_id=message.chat.id,
+        text="Started broadcasting..."
+    )
+    
+    for (index, chat_id) in enumerate(students_list):
+        progress_bar = update_progress_bar(
+            loading_message=loading_message, current_progress_bar=progress_bar,
+            values=students_list, index=index
+        )
+        
         try:
             bot.send_message(
                 chat_id=chat_id,
@@ -40,10 +53,10 @@ def broadcast(message):
                 chat_id=message.chat.id,
                 text="{} is inactive! /clear?".format(chat_id)
             )
-
+    
     bot.send_message(
         chat_id=message.chat.id,
-        text="Done! Sent to each & every user."
+        text="Broadcasted!"
     )
 
 @bot.message_handler(
