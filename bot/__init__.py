@@ -12,7 +12,7 @@ apihelper.proxy = { "https": "socks5://163.172.152.192:1080" }
 
 
 # Initialising the bot components
-bot = TeleBot(token=TOKEN)
+bot = TeleBot(token=TOKEN, threaded=False, skip_pending=True)
 students = load_data(file=USERS_FILE)
 metrics = Metrics()
 
