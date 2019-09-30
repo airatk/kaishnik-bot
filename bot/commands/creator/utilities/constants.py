@@ -1,8 +1,3 @@
-from os import environ
-
-
-CREATOR = int(environ["KBOT_CREATOR"])
-
 CONTROL_PANEL = (
     "*Control panel*\n"  # {} - required, [] - optional
     "_creator access only_\n"
@@ -107,5 +102,6 @@ BROADCAST_MESSAGE_TEMPLATE = (
     "*Телеграмма от разработчика*\n"
     "#broadcast\n\n"
     "{broadcast_message}\n\n"
+    "Поддержать бота финансово: /donate\n"
     "Написать разработчику: @airatk"
 )

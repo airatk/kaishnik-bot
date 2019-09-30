@@ -11,6 +11,25 @@
       location = "group:README.md">
    </FileRef>
    <Group
+      location = "group:update-logs"
+      name = "update-logs">
+      <FileRef
+         location = "group:update1.txt">
+      </FileRef>
+      <FileRef
+         location = "group:update2.txt">
+      </FileRef>
+      <FileRef
+         location = "group:update3.txt">
+      </FileRef>
+      <FileRef
+         location = "group:update4.txt">
+      </FileRef>
+      <FileRef
+         location = "group:update5.txt">
+      </FileRef>
+   </Group>
+   <Group
       location = "group:bot"
       name = "bot">
       <FileRef
@@ -358,9 +377,6 @@
          </FileRef>
          <FileRef
             location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/shared/helpers.py">
-         </FileRef>
-         <FileRef
-            location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/shared/constants.py">
          </FileRef>
          <Group
             location = "group:api"

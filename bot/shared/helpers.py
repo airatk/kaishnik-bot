@@ -1,8 +1,7 @@
 from telebot import apihelper
 
 from bot import bot
-
-from bot.shared.constants import TOKEN
+from bot import keys
 
 from sys import argv
 
