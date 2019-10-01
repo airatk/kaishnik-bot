@@ -12,7 +12,7 @@ def top_notification(callback_handler):
         callback_handler(callback)
         
         apihelper.answer_callback_query(
-            token=TOKEN,
+            token=keys.TOKEN,
             callback_query_id=callback.id,
             cache_time=0
         )

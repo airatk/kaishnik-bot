@@ -42,6 +42,6 @@ def login_on_command(message):
 def login_on_callback(callback):
     # Cleanning the chat
     bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    bot.delete_message(chat_id=callback.message.chat.id, message_id=students[callback.message.chat.id].guard.message.message_id)
+    bot.delete_message(chat_id=students[callback.message.chat.id].guard.message.chat.id, message_id=students[callback.message.chat.id].guard.message.message_id)
     
     login_on_command(callback.message)

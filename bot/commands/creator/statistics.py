@@ -1,9 +1,9 @@
 from bot import bot
 from bot import students
 from bot import metrics
-from bot import keys
 
 from bot.commands.creator.utilities.helpers import parse_creator_request
+from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import USERS_STATS
 from bot.commands.creator.utilities.constants import COMMAND_REQUESTS_STATS
 from bot.commands.creator.utilities.constants import USER_DATA
@@ -16,7 +16,7 @@ from datetime import datetime
 
 
 @bot.message_handler(
-    func=lambda message: message.chat.id == keys.CREATOR,
+    func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.USERS.value ]
 )
 def users(message):
@@ -49,7 +49,7 @@ def users(message):
     )
 
 @bot.message_handler(
-    func=lambda message: message.chat.id == keys.CREATOR,
+    func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.METRICS.value ]
 )
 def get_metrics(message):
@@ -85,7 +85,7 @@ def get_metrics(message):
     )
 
 @bot.message_handler(
-    func=lambda message: message.chat.id == keys.CREATOR,
+    func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.DATA.value ]
 )
 def data(message):
@@ -106,7 +106,7 @@ def data(message):
         elif option == DataOption.INDEX.value:
             asked_users_list.append(full_users_list[int(option_data)])
         elif option == DataOption.NAME.value:
-            asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].name is not None and option_data in students[chat_id].name ]
+            asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].name is not None and message.text.split(":")[1] in students[chat_id].name ]
         elif option == DataOption.GROUP.value:
             asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].group is not None and option_data in students[chat_id].group ]
         elif option == DataOption.YEAR.value:

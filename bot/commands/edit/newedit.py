@@ -119,7 +119,7 @@ def add_subject_title(message):
     bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     
     if students[message.chat.id].edited_subject.auditorium != "":
-        bot.delete_message(chat_id=message.chat.id, message_id=students[message.chat.id].guard.message.message_id)
+        bot.delete_message(chat_id=students[message.chat.id].guard.message.chat.id, message_id=students[message.chat.id].guard.message.message_id)
         
         students[message.chat.id].edited_subject.auditorium = message.text
     
@@ -183,7 +183,7 @@ def add_department(message):
     bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     
     if students[message.chat.id].edited_subject.lecturer != "":
-        bot.delete_message(chat_id=message.chat.id, message_id=students[message.chat.id].guard.message.message_id)
+        bot.delete_message(chat_id=students[message.chat.id].guard.message.chat.id, message_id=students[message.chat.id].guard.message.message_id)
         
         students[message.chat.id].edited_subject.lecturer = message.text
     
@@ -211,7 +211,7 @@ def end_edit(message):
     bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     
     if students[message.chat.id].edited_subject.department != "":
-        bot.delete_message(chat_id=message.chat.id, message_id=students[message.chat.id].guard.message.message_id)
+        bot.delete_message(chat_id=students[message.chat.id].guard.message.chat.id, message_id=students[message.chat.id].guard.message.message_id)
         
         students[message.chat.id].edited_subject.department = message.text
     

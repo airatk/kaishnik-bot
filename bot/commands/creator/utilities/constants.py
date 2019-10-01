@@ -1,3 +1,8 @@
+from bot import keys
+
+
+CREATOR = int(keys.CREATOR)
+
 CONTROL_PANEL = (
     "*Control panel*\n"  # {} - required, [] - optional
     "_creator access only_\n"

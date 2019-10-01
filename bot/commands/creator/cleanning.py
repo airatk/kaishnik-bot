@@ -1,9 +1,9 @@
 from bot import bot
 from bot import students
-from bot import keys
 
 from bot.commands.creator.utilities.helpers import parse_creator_request
 from bot.commands.creator.utilities.helpers import update_progress_bar
+from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import USER_DATA
 from bot.commands.creator.utilities.types import EraseOption
 from bot.commands.creator.utilities.types import DropOption
@@ -17,7 +17,7 @@ from bot.shared.commands import Commands
 
 
 @bot.message_handler(
-    func=lambda message: message.chat.id == keys.CREATOR,
+    func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.CLEAR.value ]
 )
 def clear(message):
@@ -72,7 +72,7 @@ def clear(message):
     )
 
 @bot.message_handler(
-    func=lambda message: message.chat.id == keys.CREATOR,
+    func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.ERASE.value ]
 )
 def erase(message):
@@ -155,7 +155,7 @@ def erase(message):
     save_data(file=USERS_FILE, object=students)
 
 @bot.message_handler(
-    func=lambda message: message.chat.id == keys.CREATOR,
+    func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.DROP.value ]
 )
 def drop(message):
@@ -229,7 +229,7 @@ def drop(message):
     )
 
 @bot.message_handler(
-    func=lambda message: message.chat.id == keys.CREATOR,
+    func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.GUARDDROP.value ]
 )
 def guarddrop(message):

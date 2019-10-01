@@ -1,9 +1,9 @@
 from bot import bot
 from bot import students
-from bot import keys
 
 from bot.commands.creator.utilities.helpers import parse_creator_request
 from bot.commands.creator.utilities.helpers import update_progress_bar
+from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import BROADCAST_MESSAGE_TEMPLATE
 from bot.commands.creator.utilities.types import ReverseOption
 
@@ -14,7 +14,7 @@ from bot.shared.commands import Commands
 
 
 @bot.message_handler(
-    func=lambda message: message.chat.id == keys.CREATOR,
+    func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.BROADCAST.value ]
 )
 def broadcast(message):
@@ -60,7 +60,7 @@ def broadcast(message):
     )
 
 @bot.message_handler(
-    func=lambda message: message.chat.id == keys.CREATOR,
+    func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.REVERSE.value ]
 )
 def reverse(message):
