@@ -56,7 +56,7 @@ def get_metrics(message):
     (option, _) = parse_creator_request(message.text)
     
     if option == "drop" or metrics.day != datetime.today().isoweekday():
-        metrics.zerofy()
+        metrics.drop()
     
     bot.send_message(
         chat_id=message.chat.id,

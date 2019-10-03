@@ -136,7 +136,7 @@ class Metrics:
     def increment(self, command):
         def outter(func):
             def inner(arg):
-                if self._day != datetime.today().isoweekday(): self.zerofy()
+                if self._day != datetime.today().isoweekday(): self.drop()
                 
                 if command is Commands.CANCEL: self._cancel += 1
                 elif command is Commands.START: self._start += 1
