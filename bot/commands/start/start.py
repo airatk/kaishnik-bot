@@ -11,8 +11,12 @@ from bot.shared.data.constants import USERS_FILE
 from bot.shared.commands import Commands
 
 
-# Accepting whole new users on any messsage...
-@bot.message_handler(func=lambda message: message.chat.id not in students)
+# Accepting old users on `/start` command whole new users on any messsage...
+@bot.message_handler(
+    func=lambda message:
+        message.text == "/" + Commands.START.value or
+        message.chat.id not in students
+)
 @metrics.increment(Commands.START)
 def start_on_command(message):
     students[message.chat.id] = Student()
