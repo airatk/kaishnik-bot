@@ -19,5 +19,8 @@ class EraseOption(Enum):
 class DropOption(Enum):
     ALL = "all"
 
+class GuarddropOption(Enum):
+    ALL = "all"
+
 class ReverseOption(Enum):
     WEEK = "week"

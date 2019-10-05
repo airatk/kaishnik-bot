@@ -10,6 +10,9 @@
    <FileRef
       location = "group:README.md">
    </FileRef>
+   <FileRef
+      location = "group:requirements.txt">
+   </FileRef>
    <Group
       location = "group:update-logs"
       name = "update-logs">
@@ -27,6 +30,13 @@
       </FileRef>
       <FileRef
          location = "group:update5.txt">
+      </FileRef>
+   </Group>
+   <Group
+      location = "group:data"
+      name = "data">
+      <FileRef
+         location = "group:keys">
       </FileRef>
    </Group>
    <Group

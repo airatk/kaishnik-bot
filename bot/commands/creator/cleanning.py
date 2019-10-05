@@ -7,6 +7,7 @@ from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import USER_DATA
 from bot.commands.creator.utilities.types import EraseOption
 from bot.commands.creator.utilities.types import DropOption
+from bot.commands.creator.utilities.types import GuarddropOption
 
 from bot.commands.start.utilities.keyboards import make_login
 
@@ -85,6 +86,7 @@ def erase(message):
             chat_id=message.chat.id,
             text="No option has been found!"
         )
+        return
     elif option == EraseOption.ALL.value:
         erase_list = list(students)
     elif option == EraseOption.UNLOGIN.value:
@@ -233,36 +235,41 @@ def drop(message):
     commands=[ Commands.GUARDDROP.value ]
 )
 def guarddrop(message):
+    (option, _) = parse_creator_request(message.text)
+    
     guarddrop_list = []
     
-    for possible_chat_id in message.text.split()[1:]:
-        try:
-            chat_id = int(possible_chat_id)
-        except Exception:
-            bot.send_message(
-                chat_id=message.chat.id,
-                text="*{invalid_chat_id}* cannot be a chat ID!".format(invalid_chat_id=possible_chat_id),
-                parse_mode="Markdown"
-            )
-        else:
-            guarddrop_list.append(chat_id)
-    
-    if len(guarddrop_list) == 0:
+    if option is None:
         bot.send_message(
             chat_id=message.chat.id,
-            text="No users to guarddrop!"
+            text="No option has been found!"
         )
-
+        return
+    elif option == GuarddropOption.ALL.value:
+        guarddrop_list = list(students)
+    else:
+        for possible_chat_id in message.text.split()[1:]:
+            try:
+                chat_id = int(possible_chat_id)
+            except Exception:
+                bot.send_message(
+                    chat_id=message.chat.id,
+                    text="*{invalid_chat_id}* cannot be a chat ID!".format(invalid_chat_id=possible_chat_id),
+                    parse_mode="Markdown"
+                )
+            else:
+                guarddrop_list.append(chat_id)
+    
     for chat_id in guarddrop_list:
         if chat_id in students:
             students[chat_id].guard.drop()
-            
-            bot.send_message(
-                chat_id=message.chat.id,
-                text="{chat_id} was #guarddropped!".format(chat_id=chat_id)
-            )
         else:
             bot.send_message(
                 chat_id=message.chat.id,
                 text="{chat_id} doesn't use me!".format(chat_id=chat_id)
             )
+    
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="No users to guarddrop!" if len(guarddrop_list) == 0 else "Guarddropped!"
+    )

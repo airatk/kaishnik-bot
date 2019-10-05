@@ -1,3 +1,4 @@
+config==0.4.2
 requests==2.21.0
-beautifulsoup4==4.7.1
+beautifulsoup4==4.8.1
 pyTelegramBotAPI==3.6.6
