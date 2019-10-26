@@ -22,7 +22,10 @@ CONTROL_PANEL = (
         "\t\t\t\[ :chat ID 1: … … ]\n"
     "}\n"
     "/drop { all }\n"
-    "/guarddrop { :chat ID 1: … … }\n"
+    "/guarddrop {\n"
+        "\t\t\t\[ all ]\n"
+        "\t\t\t\[ :chat ID 1: … … ]\n"
+    "}\n"
     "\n*others*\n"  # uncategorised commands
     "/broadcast { :message: }\n"
     "/reverse { week }\n"
