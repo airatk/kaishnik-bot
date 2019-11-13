@@ -206,10 +206,10 @@ def beautify_scoretable(raw_scoretable):
         elif "(зач./оц.)" in subject[1]: type = "".join([ "\n_", SubjectScoreType.GRADED_TEST.value, "_\n" ])
         else: type = "".join([ "\n_", SubjectScoreType.OTHER.value, "_\n" ])
         
-        certification1 = "\n• 1 аттестация: {gained} / {max}".format(gained=subject[2], max=subject[3])
-        certification2 = "\n• 2 аттестация: {gained} / {max}".format(gained=subject[4], max=subject[5])
-        certification3 = "\n• 3 аттестация: {gained} / {max}".format(gained=subject[6], max=subject[7])
-        score_sum = "\n◦ За семестр: {}".format(subject[8])
+        certification1 = "\n`•` 1 аттестация: {gained} / {max}".format(gained=subject[2], max=subject[3])
+        certification2 = "\n`•` 2 аттестация: {gained} / {max}".format(gained=subject[4], max=subject[5])
+        certification3 = "\n`•` 3 аттестация: {gained} / {max}".format(gained=subject[6], max=subject[7])
+        score_sum = "\n`◦` За семестр: {}".format(subject[8])
         
         debts = "\n\nДолги: {}".format(subject[10])
         
