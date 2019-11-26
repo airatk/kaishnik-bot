@@ -34,7 +34,7 @@ def login_compact(callback):
         text="Отправь номер своей группы.",
         reply_markup=cancel_option()
     )
-
+    
     students[callback.message.chat.id].guard.text = Commands.LOGIN_COMPACT.value
     students[callback.message.chat.id].guard.message = guard_message
 

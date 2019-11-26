@@ -21,21 +21,35 @@ The `requirements.txt` file is included to the repository. So, enter `pip3 insta
 Type `python3 . -m 'launch mode'` to launch where `launch mode` is either `testing` or `eternal`.
 
 ## Commands
-* classes - занятия
-* score - баллы
-* lecturers - преподаватели
-* notes - заметки
-* week - чётность недели
-* exams - экзамены
-* locations - здания КАИ
-* card - номер зачётки
-* brs - что за БРС?
-* edit - изменить расписание
-* login - вход
-* me - ты
-* donate - сказать спасибо
-* help - подсказки
-* cancel - отменить команду
+* **classes** - занятия
+* **score** - баллы
+* **lecturers** - преподаватели
+* **notes** - заметки
+* **week** - чётность недели
+* **exams** - экзамены
+* **locations** - здания КАИ
+* **card** - номер зачётки
+* **brs** - что за БРС?
+* **edit** - изменить расписание
+* **login** - вход
+* **me** - ты
+* **donate** - сказать спасибо
+* **help** - подсказки
+* **cancel** - отменить команду
+
+Each command has its own directory:
+```
+*command_name*/
+    *command_file*.py
+    *command_file*.py
+    guard.py
+    utilities/
+        keyboards.py
+        helpers.py
+        constants.py
+        types.py
+```
+The structure is essential meanwhile all the noted files are optional. One-file commands are exceptions & are located at `bot/commands/others/` directory.
 
 ## Other stuff
 * `update-logs/` folder contains notes which were sent to users as update announcements.

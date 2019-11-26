@@ -93,7 +93,7 @@ def data(message):
     
     full_users_list = list(students)[::-1]  # Reversing list of students to show new users first
     asked_users_list = []
-
+    
     try:
         if option == DataOption.ALL.value:
             asked_users_list = full_users_list
@@ -148,7 +148,7 @@ def data(message):
                     hashtag="data"
                 )
             )
-
+    
     bot.send_message(
         chat_id=message.chat.id,
         text="*{shown}/{total}* users were shown!".format(shown=len(asked_users_list), total=len(students)),

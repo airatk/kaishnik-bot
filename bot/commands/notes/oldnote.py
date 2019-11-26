@@ -46,7 +46,7 @@ def show_all(callback):
             text=note,
             parse_mode="Markdown"
         )
-
+    
     bot.send_message(
         chat_id=callback.message.chat.id,
         text="Заметок всего: *{current}/{max}*".format(
@@ -92,6 +92,7 @@ def delete_all(callback):
     
     students[callback.message.chat.id].guard.drop()
     students[callback.message.chat.id].notes = []
+    
     save_data(file=USERS_FILE, object=students)
 
 @bot.callback_query_handler(
@@ -115,4 +116,5 @@ def delete_note(callback):
     
     students[callback.message.chat.id].guard.drop()
     del students[callback.message.chat.id].notes[number]
+    
     save_data(file=USERS_FILE, object=students)

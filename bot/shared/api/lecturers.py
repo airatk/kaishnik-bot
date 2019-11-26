@@ -30,7 +30,7 @@ def get_lecturers_schedule(lecturer_id, TYPE, weekday=None, is_next=False):
         return None
     
     if not response: return []
-
+    
     if TYPE == ScheduleType.CLASSES:
         return beautify_lecturers_classes(response, is_next)
     elif TYPE == ScheduleType.EXAMS:

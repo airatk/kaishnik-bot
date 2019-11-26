@@ -73,7 +73,7 @@ def find_lecturer(message):
         
         students[message.chat.id].guard.drop()
         return
-
+    
     bot.edit_message_text(
         chat_id=students[message.chat.id].guard.message.chat.id,
         message_id=students[message.chat.id].guard.message.message_id,

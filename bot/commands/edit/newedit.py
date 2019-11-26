@@ -223,4 +223,5 @@ def end_edit(message):
     students[message.chat.id].guard.drop()
     students[message.chat.id].edited_subjects.append(students[message.chat.id].edited_subject)
     students[message.chat.id].edited_subject = None
+    
     save_data(file=USERS_FILE, object=students)

@@ -141,7 +141,7 @@ def erase(message):
                     hashtag="erased"
                 )
             )
-        
+            
             del students[chat_id]
         else:
             bot.send_message(
@@ -153,7 +153,7 @@ def erase(message):
         chat_id=message.chat.id,
         text="No users to erase!" if len(erase_list) == 0 else "Erased!"
     )
-
+    
     save_data(file=USERS_FILE, object=students)
 
 @bot.message_handler(

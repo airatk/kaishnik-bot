@@ -111,7 +111,7 @@ def set_year(callback):
             text=ResponseError.NO_RESPONSE.value,
             disable_web_page_preview=True
         )
-
+        
         students[callback.message.chat.id] = Student()  # Drop all the entered data
         return
     
@@ -145,7 +145,7 @@ def set_group(callback):
             message_id=callback.message.message_id,
             text=ResponseError.NO_GROUP.value
         )
-    
+        
         students[callback.message.chat.id] = Student()  # Drop all the entered data
         return
     
@@ -173,7 +173,7 @@ def set_group(callback):
         
         students[callback.message.chat.id] = Student()  # Drop all the entered data
         return
-
+    
     students[callback.message.chat.id].names = { name_id: name for (name, name_id) in names.items() }
     
     bot.edit_message_text(

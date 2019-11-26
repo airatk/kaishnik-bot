@@ -171,14 +171,14 @@ def show_all(callback):
 def show_edit(callback):
     index = int(callback.data.split()[1])
     subject = students[callback.message.chat.id].edited_subjects[index]
-
+    
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text=subject.get(),
         parse_mode="Markdown"
     )
-
+    
     students[callback.message.chat.id].guard.drop()
 
 
@@ -229,12 +229,12 @@ def delete_all(callback):
 def delete_edit(callback):
     index = int(callback.data.split()[1])
     students[callback.message.chat.id].edited_subjects.pop(index)
-
+    
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Удалено!",
         parse_mode="Markdown"
     )
-
+    
     students[callback.message.chat.id].guard.drop()

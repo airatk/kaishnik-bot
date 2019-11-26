@@ -8,10 +8,10 @@ from bot.shared.commands import Commands
 
 def login_way_chooser(is_old):
     setup_way_chooser_keyboard = cancel_option() if is_old else InlineKeyboardMarkup()
-
+    
     setup_way_chooser_keyboard.row(InlineKeyboardButton(text="с зачёткой", callback_data=Commands.LOGIN_EXTENDED.value))
     setup_way_chooser_keyboard.row(InlineKeyboardButton(text="без зачётки", callback_data=Commands.LOGIN_COMPACT.value))
-
+    
     return setup_way_chooser_keyboard
 
 

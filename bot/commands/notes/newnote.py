@@ -40,7 +40,7 @@ def add_note_hint(callback):
         ),
         parse_mode="Markdown"
     )
-
+    
     students[callback.message.chat.id].guard.text = Commands.NOTES_ADD.value
     students[callback.message.chat.id].guard.message = guard_message
 

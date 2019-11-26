@@ -4,8 +4,7 @@ from bot import bot
 def parse_creator_request(request: str) -> (str, str):
     request_words = request.split()
     
-    if len(request_words) <= 1:
-        return (None, None)
+    if len(request_words) <= 1: return (None, None)
     
     option = request_words[1]  # The 0th index is for a command
     

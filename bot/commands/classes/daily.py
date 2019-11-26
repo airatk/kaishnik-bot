@@ -7,6 +7,7 @@ from bot.shared.helpers import top_notification
 from bot.shared.api.constants import LOADING_REPLIES
 from bot.shared.api.types import ScheduleType
 from bot.shared.api.types import ClassesOptionType
+from bot.shared.api.types import ResponseError
 from bot.shared.calendar.constants import WEEKDAYS
 from bot.shared.calendar.week import WeekType
 from bot.shared.commands import Commands

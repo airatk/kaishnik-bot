@@ -2,16 +2,16 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/__main__.py">
+      location = "group:transferer.py">
    </FileRef>
    <FileRef
-      location = "group:transferer.py">
+      location = "group:requirements.txt">
    </FileRef>
    <FileRef
       location = "group:README.md">
    </FileRef>
    <FileRef
-      location = "group:requirements.txt">
+      location = "group:__main__.py">
    </FileRef>
    <Group
       location = "group:update-logs"
@@ -79,7 +79,7 @@
                   location = "group:constants.py">
                </FileRef>
                <FileRef
-                  location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/commands/creator/utilities/types.py">
+                  location = "group:types.py">
                </FileRef>
             </Group>
          </Group>
@@ -94,7 +94,7 @@
             </FileRef>
          </Group>
          <Group
-            location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/commands/start"
+            location = "group:/Users/airatk/Documents/alight.software/bots/telegram/kaist-bot/bot/commands/start"
             name = "start">
             <FileRef
                location = "group:__init__.py">
@@ -103,7 +103,7 @@
                location = "group:start.py">
             </FileRef>
             <FileRef
-               location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/commands/start/guard.py">
+               location = "group:guard.py">
             </FileRef>
             <Group
                location = "group:utilities"
@@ -123,7 +123,7 @@
                location = "group:login.py">
             </FileRef>
             <FileRef
-               location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/commands/login/extended.py">
+               location = "group:extended.py">
             </FileRef>
             <FileRef
                location = "group:compact.py">
@@ -146,7 +146,7 @@
             </Group>
          </Group>
          <Group
-            location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/commands/classes"
+            location = "group:classes"
             name = "classes">
             <FileRef
                location = "group:__init__.py">
@@ -231,7 +231,7 @@
             </Group>
          </Group>
          <Group
-            location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/commands/notes"
+            location = "group:notes"
             name = "notes">
             <FileRef
                location = "group:__init__.py">
@@ -240,7 +240,7 @@
                location = "group:menu.py">
             </FileRef>
             <FileRef
-               location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/commands/notes/newnote.py">
+               location = "group:newnote.py">
             </FileRef>
             <FileRef
                location = "group:oldnote.py">
@@ -263,7 +263,7 @@
             </Group>
          </Group>
          <Group
-            location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/commands/edit"
+            location = "group:edit"
             name = "edit">
             <FileRef
                location = "group:__init__.py">
@@ -301,7 +301,7 @@
                location = "group:menu.py">
             </FileRef>
             <FileRef
-               location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/commands/locations/buildings.py">
+               location = "group:buildings.py">
             </FileRef>
             <FileRef
                location = "group:libraries.py">
@@ -325,7 +325,7 @@
                   location = "group:constants.py">
                </FileRef>
                <FileRef
-                  location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/commands/locations/utilities/types.py">
+                  location = "group:types.py">
                </FileRef>
             </Group>
          </Group>
@@ -339,7 +339,7 @@
                location = "group:week.py">
             </FileRef>
             <FileRef
-               location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/commands/others/card.py">
+               location = "group:card.py">
             </FileRef>
             <FileRef
                location = "group:brs.py">
@@ -386,13 +386,13 @@
             location = "group:keyboards.py">
          </FileRef>
          <FileRef
-            location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/shared/helpers.py">
+            location = "group:helpers.py">
          </FileRef>
          <Group
             location = "group:api"
             name = "api">
             <FileRef
-               location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/shared/api/helpers.py">
+               location = "group:helpers.py">
             </FileRef>
             <FileRef
                location = "group:constants.py">
@@ -401,7 +401,7 @@
                location = "group:types.py">
             </FileRef>
             <FileRef
-               location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/shared/api/student.py">
+               location = "group:student.py">
             </FileRef>
             <FileRef
                location = "group:lecturers.py">
@@ -417,14 +417,14 @@
                location = "group:constants.py">
             </FileRef>
             <FileRef
-               location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/shared/calendar/week.py">
+               location = "group:week.py">
             </FileRef>
          </Group>
          <Group
             location = "group:data"
             name = "data">
             <FileRef
-               location = "group:/Users/airatk/Documents/alight/bots/telegram/kaist-bot/bot/shared/data/helpers.py">
+               location = "group:helpers.py">
             </FileRef>
             <FileRef
                location = "group:constants.py">

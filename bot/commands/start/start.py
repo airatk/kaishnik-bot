@@ -21,7 +21,7 @@ from bot.shared.commands import Commands
 def start_on_command(message):
     students[message.chat.id] = Student()
     save_data(file=USERS_FILE, object=students)
-
+    
     guard_message = bot.send_message(
         chat_id=message.chat.id,
         text="Йоу!"

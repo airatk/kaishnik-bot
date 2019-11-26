@@ -65,7 +65,7 @@ class Subject(ABC):
     @dates.setter
     def dates(self, dates):
         self._dates = self._dates.format(dates=dates) if "." in dates or "/" in dates or "(" in dates else ""
-
+    
     @title.setter
     def title(self, title):
         self._title = self._title.format(title=title)

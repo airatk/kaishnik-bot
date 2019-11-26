@@ -23,7 +23,7 @@ def beautify_classes(raw_schedule, is_next, edited_subjects) -> list:
         subjects_list = [ (subject.begin_hour, subject) for subject in edited_subjects if subject.weekday == weekday and (
             subject.is_even is None or subject.is_even == (not is_even() if is_next else is_even())
         ) ]
-
+        
         if str(weekday) in raw_schedule:
             # Removing extraspaces
             raw_schedule[str(weekday)] = [ {
@@ -41,9 +41,9 @@ def beautify_classes(raw_schedule, is_next, edited_subjects) -> list:
                 # Do not show subjects with certain dates (21.09) on other dates (28 сентября)
                 day_month = "{}.{}".format(int(date.strftime("%d")), date.strftime("%m"))
                 if "." in subject["dayDate"] and day_month not in subject["dayDate"]: continue
-
+                
                 studentSubject = StudentSubject()
-
+                
                 studentSubject.time = subject["dayTime"]
                 
                 # Do not show subject if there is its edited alternative
@@ -58,12 +58,12 @@ def beautify_classes(raw_schedule, is_next, edited_subjects) -> list:
                 studentSubject.department = subject["orgUnitName"]
                 
                 subjects_list.append((studentSubject.begin_hour, studentSubject))
-    
+            
         # Sort by begin_hour
         subjects_list.sort(key=lambda subject: subject[0])
         
         daily_schedule = "".join([ subject.get() for (_, subject) in subjects_list ])
-
+        
         weekly_schedule.append("".join([
             "*{weekday}, {day} {month}*".format(
                 weekday=WEEKDAYS[weekday], day=int(date.strftime("%d")), month=MONTHS[date.strftime("%m")]
@@ -152,7 +152,7 @@ def beautify_lecturers_classes(raw_schedule, is_next):
             for another_subject in raw_schedule[str(weekday)]:
                 if previous_time == another_subject["dayTime"]:
                     lecturerSubject.groups.append(another_subject["group"])
-
+            
             daily_schedule = "".join([ daily_schedule, lecturerSubject.get() ])
         
         weekly_schedule.append("".join([
@@ -161,7 +161,7 @@ def beautify_lecturers_classes(raw_schedule, is_next):
             ),
             daily_schedule if daily_schedule != "" else "\n\nНет занятий"
         ]))
-
+    
     return weekly_schedule
 
 def beautify_lecturers_exams(raw_schedule) -> str:

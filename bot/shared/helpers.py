@@ -40,7 +40,5 @@ def main():
     
     print(f"Launched in {argv[1]} mode...")
     
-    if argv[1] == launch_modes[0]:
-        bot.polling()
-    elif argv[1] == launch_modes[1]:
-        bot.infinity_polling(True)
+    if argv[1] == launch_modes[0]: bot.polling()
+    elif argv[1] == launch_modes[1]: bot.infinity_polling(True)
