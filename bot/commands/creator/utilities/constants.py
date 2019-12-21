@@ -1,9 +1,9 @@
 from bot import keys
 
 
-CREATOR = int(keys.CREATOR)
+CREATOR: int = int(keys.CREATOR)
 
-CONTROL_PANEL = (
+CONTROL_PANEL: str = (
     "*Control panel*\n"  # {} - required, [] - optional
     "_creator access only_\n"
     "\n*stats*\n"  # commands of bot usage statistics
@@ -40,7 +40,7 @@ CONTROL_PANEL = (
     "# reversed"
 )
 
-USERS_STATS = (
+USERS_STATS: str = (
     "*Users*\n"
     "_stats of_ #users\n"
     "\n*institutes*\n"  # institutes
@@ -62,7 +62,7 @@ USERS_STATS = (
     "*{total}* users in total!"  # total
 )
 
-COMMAND_REQUESTS_STATS = (
+COMMAND_REQUESTS_STATS: str = (
     "*Metrics*\n"
     "_daily_ #metrics\n"
     "\n*usage*\n"  # main commands requests number
@@ -89,7 +89,7 @@ COMMAND_REQUESTS_STATS = (
     "\n*{total_request_number}* requests in total!"  # total requests number
 )
 
-USER_DATA = (
+USER_DATA: str = (
     "{firstname} {lastname} @{username}\n"
     "chat id {chat_id}\n\n"
     "• Institute: {institute}\n"
@@ -106,7 +106,7 @@ USER_DATA = (
     "#{hashtag}"
 )
 
-BROADCAST_MESSAGE_TEMPLATE = (
+BROADCAST_MESSAGE_TEMPLATE: str = (
     "*Телеграмма от разработчика*\n"
     "#broadcast\n\n"
     "{broadcast_message}\n\n"

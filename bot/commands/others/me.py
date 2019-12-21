@@ -1,3 +1,6 @@
+from telebot.types import Chat
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 from bot import metrics
@@ -13,8 +16,8 @@ from bot.shared.commands import Commands
     func=lambda message: students[message.chat.id].guard.text is None
 )
 @metrics.increment(Commands.ME)
-def me(message):
-    chat = bot.get_chat(chat_id=message.chat.id)
+def me(message: Message):
+    chat: Chat = bot.get_chat(chat_id=message.chat.id)
     
     if students[message.chat.id].is_full:
         message_text = FULL_USER_INFO.format(

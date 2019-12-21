@@ -1,3 +1,6 @@
+from telebot.types import CallbackQuery
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 
@@ -21,7 +24,7 @@ from random import choice
         callback.data == Commands.LOGIN_COMPACT.value
 )
 @top_notification
-def login_compact(callback):
+def login_compact(callback: CallbackQuery):
     # Resetting user
     students[callback.message.chat.id] = Student()
     
@@ -39,7 +42,7 @@ def login_compact(callback):
     students[callback.message.chat.id].guard.message = guard_message
 
 @bot.message_handler(func=lambda message: students[message.chat.id].guard.text == Commands.LOGIN_COMPACT.value)
-def set_group(message):
+def set_group(message: Message):
     bot.delete_message(
         chat_id=message.chat.id,
         message_id=message.message_id
@@ -77,4 +80,5 @@ def set_group(message):
     
     students[message.chat.id].guard.drop()
     students[message.chat.id].is_setup = True
+    
     save_data(file=USERS_FILE, object=students)

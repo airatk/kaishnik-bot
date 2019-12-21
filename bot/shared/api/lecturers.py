@@ -7,7 +7,7 @@ from bot.shared.api.types import ResponseError
 from requests import get
 
 
-def get_lecturers_names(name_part) -> list:
+def get_lecturers_names(name_part: str) -> [{str, str}]:
     try:
         return get(LECTURERS_SCHEDULE_URL, params={
             "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
@@ -18,9 +18,9 @@ def get_lecturers_names(name_part) -> list:
     except Exception:
         return None
 
-def get_lecturers_schedule(lecturer_id, TYPE, weekday=None, is_next=False):
+def get_lecturers_schedule(lecturer_id: str, TYPE: ScheduleType, weekday: str = None, is_next: bool = False) -> [str]:
     try:
-        response = get(url=LECTURERS_SCHEDULE_URL, params={
+        response: [{str, str}] = get(url=LECTURERS_SCHEDULE_URL, params={
             "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
             "p_p_lifecycle": "2",
             "p_p_resource_id": TYPE.value,
@@ -31,7 +31,7 @@ def get_lecturers_schedule(lecturer_id, TYPE, weekday=None, is_next=False):
     
     if not response: return []
     
-    if TYPE == ScheduleType.CLASSES:
+    if TYPE is ScheduleType.CLASSES:
         return beautify_lecturers_classes(response, is_next)
-    elif TYPE == ScheduleType.EXAMS:
+    elif TYPE is ScheduleType.EXAMS:
         return beautify_lecturers_exams(response)

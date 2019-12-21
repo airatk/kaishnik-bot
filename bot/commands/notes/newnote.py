@@ -1,3 +1,6 @@
+from telebot.types import CallbackQuery
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 
@@ -16,8 +19,8 @@ from bot.shared.commands import Commands
         callback.data == Commands.NOTES_ADD.value
 )
 @top_notification
-def add_note_hint(callback):
-    number = len(students[callback.message.chat.id].notes) + 1
+def add_note_hint(callback: CallbackQuery):
+    number: int = len(students[callback.message.chat.id].notes) + 1
     
     if number > MAX_NOTES_NUMBER:
         bot.edit_message_text(
@@ -29,7 +32,7 @@ def add_note_hint(callback):
         students[callback.message.chat.id].guard.drop()
         return
     
-    guard_message = bot.edit_message_text(
+    guard_message: Message = bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text=(
@@ -45,7 +48,7 @@ def add_note_hint(callback):
     students[callback.message.chat.id].guard.message = guard_message
 
 @bot.message_handler(func=lambda message: students[message.chat.id].guard.text == Commands.NOTES_ADD.value)
-def add_note(message):
+def add_note(message: Message):
     bot.delete_message(
         chat_id=message.chat.id,
         message_id=message.message_id
@@ -58,4 +61,5 @@ def add_note(message):
     
     students[message.chat.id].guard.drop()
     students[message.chat.id].notes.append(clarify_markdown(message.text))
+    
     save_data(file=USERS_FILE, object=students)

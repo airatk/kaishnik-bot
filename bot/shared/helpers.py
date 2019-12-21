@@ -22,7 +22,7 @@ def top_notification(callback_handler):
 
 # Launcher
 def main():
-    launch_modes = [ "testing", "eternal" ]
+    launch_modes: [str] = [ "testing", "eternal" ]
     
     if len(argv) != 2 or argv[1] not in launch_modes:
         print(

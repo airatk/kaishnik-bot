@@ -1,3 +1,6 @@
+from telebot.types import Chat
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 
@@ -21,15 +24,15 @@ from bot.shared.commands import Commands
     func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.CLEAR.value ]
 )
-def clear(message):
+def clear(message: Message):
+    is_cleared: bool = False
+    progress_bar: str = ""
+    students_list: [Student] = list(students)
+    
     loading_message = bot.send_message(
         chat_id=message.chat.id,
         text="Started clearing..."
     )
-    
-    is_cleared = False
-    progress_bar = ""
-    students_list = list(students)
     
     for (index, chat_id) in enumerate(students_list):
         progress_bar = update_progress_bar(
@@ -37,7 +40,7 @@ def clear(message):
             values=students_list, index=index
         )
         
-        chat = bot.get_chat(chat_id=chat_id)
+        chat: Chat = bot.get_chat(chat_id=chat_id)
         
         try:
             bot.send_chat_action(chat_id=chat_id, action="typing")
@@ -76,10 +79,10 @@ def clear(message):
     func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.ERASE.value ]
 )
-def erase(message):
+def erase(message: Message):
     (option, _) = parse_creator_request(message.text)
     
-    erase_list = []
+    erase_list: [Student] = []
     
     if option is None:
         bot.send_message(
@@ -92,11 +95,11 @@ def erase(message):
     elif option == EraseOption.UNLOGIN.value:
         erase_list = [ chat_id for chat_id in list(students) if not students[chat_id].is_setup ]
     elif option == EraseOption.ME.value:
-        erase_list = [ message.chat.id ]
+        erase_list.append(message.chat.id)
     else:
         for possible_chat_id in message.text.split()[1:]:
             try:
-                chat_id = int(possible_chat_id)
+                chat_id: int = int(possible_chat_id)
             except Exception:
                 bot.send_message(
                     chat_id=message.chat.id,
@@ -106,9 +109,9 @@ def erase(message):
             else:
                 erase_list.append(chat_id)
     
-    progress_bar = ""
+    progress_bar: str = ""
     
-    loading_message = bot.send_message(
+    loading_message: Message = bot.send_message(
         chat_id=message.chat.id,
         text="Started erasing…"
     )
@@ -120,7 +123,7 @@ def erase(message):
         )
         
         if chat_id in students:
-            chat = bot.get_chat(chat_id=chat_id)
+            chat: Chat = bot.get_chat(chat_id=chat_id)
             
             bot.send_message(
                 chat_id=message.chat.id,
@@ -148,6 +151,11 @@ def erase(message):
                 chat_id=message.chat.id,
                 text="{chat_id} doesn't use me!".format(chat_id=chat_id)
             )
+            
+            erase_list.remove(chat_id)
+    
+    if len(erase_list) == 0:
+        bot.delete_message(chat_id=message.chat.id, message_id=loading_message.message_id)
     
     bot.send_message(
         chat_id=message.chat.id,
@@ -160,10 +168,10 @@ def erase(message):
     func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.DROP.value ]
 )
-def drop(message):
+def drop(message: Message):
     (option, _) = parse_creator_request(message.text)
     
-    drop_list = []
+    drop_list: [Student] = []
     
     if option == DropOption.ALL.value:
         drop_list = list(students)
@@ -175,9 +183,9 @@ def drop(message):
         )
         return
     
-    progress_bar = ""
+    progress_bar: str = ""
     
-    loading_message = bot.send_message(
+    loading_message: Message = bot.send_message(
         chat_id=message.chat.id,
         text="Started dropping…"
     )
@@ -204,9 +212,9 @@ def drop(message):
                     disable_notification=True
                 )
             
-            students[chat_id] = Student()
+            students[chat_id]: Student = Student()
             
-            guard_message = bot.send_message(
+            guard_message: Message = bot.send_message(
                 chat_id=chat_id,
                 text="Текущие настройки сброшены.",
                 disable_notification=True
@@ -237,7 +245,7 @@ def drop(message):
 def guarddrop(message):
     (option, _) = parse_creator_request(message.text)
     
-    guarddrop_list = []
+    guarddrop_list: [Student] = []
     
     if option is None:
         bot.send_message(
@@ -250,7 +258,7 @@ def guarddrop(message):
     else:
         for possible_chat_id in message.text.split()[1:]:
             try:
-                chat_id = int(possible_chat_id)
+                chat_id: int = int(possible_chat_id)
             except Exception:
                 bot.send_message(
                     chat_id=message.chat.id,
@@ -268,6 +276,8 @@ def guarddrop(message):
                 chat_id=message.chat.id,
                 text="{chat_id} doesn't use me!".format(chat_id=chat_id)
             )
+            
+            guarddrop_list.remove(chat_id)
     
     bot.send_message(
         chat_id=message.chat.id,

@@ -1,3 +1,5 @@
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 from bot import metrics
@@ -14,7 +16,7 @@ from bot.shared.commands import Commands
     func=lambda message: students[message.chat.id].guard.text is None
 )
 @metrics.increment(Commands.NOTES)
-def notes(message):
+def notes(message: Message):
     students[message.chat.id].guard.text = Commands.NOTES.value
     
     bot.send_message(

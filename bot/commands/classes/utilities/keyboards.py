@@ -10,13 +10,13 @@ from datetime import datetime
 from datetime import timedelta
 
 
-def schedule_type():
-    schedule_type_keyboard = InlineKeyboardMarkup()
+def schedule_type() -> InlineKeyboardMarkup:
+    schedule_type_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup()
     
     # Decrementing to turn both variables into schedule array indeces
-    today_weekday = datetime.today().isoweekday() - 1
-    tomorrow_weekday = today_weekday + 1
-    should_show_next_week = tomorrow_weekday > 6
+    today_weekday: int = datetime.today().isoweekday() - 1
+    tomorrow_weekday: int = today_weekday + 1
+    should_show_next_week: bool = tomorrow_weekday > 6
     
     schedule_type_keyboard.row(
         InlineKeyboardButton(text="сегодня",
@@ -40,8 +40,8 @@ def schedule_type():
     return schedule_type_keyboard
 
 
-def weekday_chooser(is_next):
-    weekday_chooser_keyboard = InlineKeyboardMarkup()
+def weekday_chooser(is_next: bool) -> InlineKeyboardMarkup:
+    weekday_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup()
     
     weekday_chooser_keyboard.row(InlineKeyboardButton(text="Показать все",
         callback_data=" ".join([
@@ -50,11 +50,11 @@ def weekday_chooser(is_next):
         ])
     ))
     
-    today = datetime.today()
-    today_weekday = today.isoweekday()
+    today: datetime = datetime.today()
+    today_weekday: int = today.isoweekday()
     
     for weekday in WEEKDAYS:
-        date = today + timedelta(days=(weekday - today_weekday) + (7 if is_next else 0))
+        date: datetime = today + timedelta(days=(weekday - today_weekday) + (7 if is_next else 0))
         
         weekday_chooser_keyboard.row(
             InlineKeyboardButton(

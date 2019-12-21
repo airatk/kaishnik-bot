@@ -1,3 +1,5 @@
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 from bot import metrics
@@ -15,14 +17,14 @@ from random import choice
     func=lambda message: students[message.chat.id].guard.text is None
 )
 @metrics.increment(Commands.EXAMS)
-def exams(message):
-    loading_message = bot.send_message(
+def exams(message: Message):
+    loading_message: Message = bot.send_message(
         chat_id=message.chat.id,
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
     )
     
-    request_entities = message.text.split()
+    request_entities: [str] = message.text.split()
     
     if len(request_entities) > 1:
         students[message.chat.id].another_group = request_entities[1]
@@ -38,11 +40,11 @@ def exams(message):
             students[message.chat.id].guard.drop()
             return
     
-    exams = students[message.chat.id].get_schedule(TYPE=ScheduleType.EXAMS)
+    exams: [str] = students[message.chat.id].get_schedule(TYPE=ScheduleType.EXAMS)
     
-    if exams is None: message_text = ResponseError.NO_RESPONSE.value
-    elif exams == []: message_text = ResponseError.NO_DATA.value
-    else: message_text = exams
+    if exams is None: message_text: str = ResponseError.NO_RESPONSE.value
+    elif len(exams) == 0: message_text: str = ResponseError.NO_DATA.value
+    else: message_text: str = exams
     
     bot.edit_message_text(
         chat_id=loading_message.chat.id,

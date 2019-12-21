@@ -1,3 +1,6 @@
+from telebot.types import CallbackQuery
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 from bot import metrics
@@ -11,7 +14,7 @@ from bot.shared.commands import Commands
     func=lambda message: message.chat.id in students
 )
 @metrics.increment(Commands.CANCEL)
-def cancel_on_command(message):
+def cancel_on_command(message: Message):
     if students[message.chat.id].guard.text is None:
         bot.send_message(
             chat_id=message.chat.id,
@@ -32,6 +35,6 @@ def cancel_on_command(message):
         callback.data == Commands.CANCEL.value
 )
 @top_notification
-def cancel_on_callback(callback):
+def cancel_on_callback(callback: CallbackQuery):
     bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     cancel_on_command(callback.message)

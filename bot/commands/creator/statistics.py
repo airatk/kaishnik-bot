@@ -1,3 +1,6 @@
+from telebot.types import Chat
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 from bot import metrics
@@ -10,6 +13,7 @@ from bot.commands.creator.utilities.constants import USER_DATA
 from bot.commands.creator.utilities.types import DataOption
 
 from bot.shared.api.constants import INSTITUTES
+from bot.shared.api.student import Student
 from bot.shared.commands import Commands
 
 from datetime import datetime
@@ -19,12 +23,12 @@ from datetime import datetime
     func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.USERS.value ]
 )
-def users(message):
-    institutes_stats = [ student.institute for student in students.values() ]
-    years_stats = [ student.year for student in students.values() ]
+def users(message: Message):
+    institutes_stats: [str] = [ student.institute for student in students.values() ]
+    years_stats: [str] = [ student.year for student in students.values() ]
     
-    institutes_names = list(INSTITUTES.values())
-    years_names = [ str(i) for i in range(1, 7) ]  # 6 years maximum
+    institutes_names: [str] = list(INSTITUTES.values())
+    years_names: [str] = [ str(i) for i in range(1, 7) ]  # 6 years maximum
     
     bot.send_message(
         chat_id=message.chat.id,
@@ -52,7 +56,7 @@ def users(message):
     func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.METRICS.value ]
 )
-def get_metrics(message):
+def get_metrics(message: Message):
     (option, _) = parse_creator_request(message.text)
     
     if option == "drop" or metrics.day != datetime.today().isoweekday():
@@ -88,11 +92,11 @@ def get_metrics(message):
     func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.DATA.value ]
 )
-def data(message):
+def data(message: Message):
     (option, option_data) = parse_creator_request(message.text)
     
-    full_users_list = list(students)[::-1]  # Reversing list of students to show new users first
-    asked_users_list = []
+    full_users_list: [Student] = list(students)[::-1]  # Reversing list of students to show new users first
+    asked_users_list: [Student] = []
     
     try:
         if option == DataOption.ALL.value:
@@ -100,7 +104,7 @@ def data(message):
         elif option == DataOption.UNLOGIN.value:
             asked_users_list = [ chat_id for chat_id in full_users_list if not students[chat_id].is_setup ]
         elif option == DataOption.ME.value:
-            asked_users_list = [ message.chat.id ]
+            asked_users_list.append(message.chat.id)
         elif option == DataOption.NUMBER.value:
             asked_users_list = full_users_list[:int(option_data)]
         elif option == DataOption.INDEX.value:
@@ -112,7 +116,7 @@ def data(message):
         elif option == DataOption.YEAR.value:
             asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].year == option_data ]
         else:
-            raise
+            raise Exception()
     except Exception:
         bot.send_message(
             chat_id=message.chat.id,
@@ -122,7 +126,7 @@ def data(message):
     
     for chat_id in asked_users_list:
         try:
-            chat = bot.get_chat(chat_id=chat_id)
+            chat: Chat = bot.get_chat(chat_id=chat_id)
         except Exception:
             bot.send_message(
                 chat_id=message.chat.id,

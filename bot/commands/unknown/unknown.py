@@ -1,3 +1,6 @@
+from telebot.types import CallbackQuery
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 from bot import metrics
@@ -12,11 +15,11 @@ from random import choice
 
 
 @bot.message_handler(content_types=[ "sticker", "photo", "video", "audio", "document", "voice", "video_note", "location", "contact" ])
-def unknown_nontext_message(message): bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+def unknown_nontext_message(message: Message): bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 @bot.message_handler()
 @metrics.increment(Commands.UNKNOWN)
-def unknown_command(message):
+def unknown_command(message: Message):
     bot.send_message(
         chat_id=message.chat.id,
         text=choice(REPLIES_TO_UNKNOWN_COMMAND if message.text.startswith("/") else REPLIES_TO_UNKNOWN_MESSAGE),
@@ -27,7 +30,7 @@ def unknown_command(message):
 @bot.callback_query_handler(func=lambda callback: True)
 @metrics.increment(Commands.UNKNOWN)
 @top_notification
-def unknown_callback(callback):
+def unknown_callback(callback: CallbackQuery):
     try:
         bot.edit_message_text(
             chat_id=callback.message.chat.id,

@@ -1,3 +1,5 @@
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 
@@ -7,6 +9,7 @@ from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import BROADCAST_MESSAGE_TEMPLATE
 from bot.commands.creator.utilities.types import ReverseOption
 
+from bot.shared.api.student import Student
 from bot.shared.data.helpers import save_data
 from bot.shared.data.helpers import load_data
 from bot.shared.data.constants import IS_WEEK_REVERSED_FILE
@@ -17,7 +20,7 @@ from bot.shared.commands import Commands
     func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.BROADCAST.value ]
 )
-def broadcast(message):
+def broadcast(message: Message):
     if message.text == "/broadcast":
         bot.send_message(
             chat_id=message.chat.id,
@@ -26,11 +29,11 @@ def broadcast(message):
         )
         return
     
-    broadcast_message = message.text[11:]  # Getting rid of /boardcast command
-    students_list = list(students)
-    progress_bar = ""
+    broadcast_message: str = message.text[11:]  # Getting rid of /boardcast command
+    progress_bar: str = ""
+    students_list: [Student] = list(students)
     
-    loading_message = bot.send_message(
+    loading_message: Message = bot.send_message(
         chat_id=message.chat.id,
         text="Started broadcasting..."
     )
@@ -63,7 +66,7 @@ def broadcast(message):
     func=lambda message: message.chat.id == CREATOR,
     commands=[ Commands.REVERSE.value ]
 )
-def reverse(message):
+def reverse(message: Message):
     (option, _) = parse_creator_request(message.text)
     
     if option == ReverseOption.WEEK.value:

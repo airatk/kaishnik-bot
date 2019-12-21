@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class LocationType(Enum):
-    BUILDING = "building"
-    LIBRARY = "library"
-    SPORTSCOMPLEX = "sportscomplex"
-    DORM = "dorm"
+    BUILDING: str = "building"
+    LIBRARY: str = "library"
+    SPORTSCOMPLEX: str = "sportscomplex"
+    DORM: str = "dorm"

@@ -7,16 +7,16 @@ from datetime import datetime
 from enum import Enum
 
 
-def is_even():
+def is_even() -> bool:
     return datetime.today().isocalendar()[1] % 2 == (1 if is_week_reversed() else 0)
 
-def is_week_reversed():
+def is_week_reversed() -> bool:
     return load_data(file=IS_WEEK_REVERSED_FILE)
 
 
-def weekday_date():
-    date = datetime.today()
-    weekday = date.isoweekday()
+def weekday_date() -> (str, str):
+    date: datetime = datetime.today()
+    weekday: int = date.isoweekday()
     
     return (
         WEEKDAYS[weekday] if weekday < 7 else "Воскресенье",
@@ -28,10 +28,10 @@ def weekday_date():
 
 
 class WeekType(Enum):
-    CURRENT = "week-current"
-    NEXT = "week-next"
+    CURRENT: str = "week-current"
+    NEXT: str = "week-next"
 
 class WeekParity(Enum):
-    BOTH = "both"
-    EVEN = "even"
-    ODD = "odd"
+    BOTH: str = "both"
+    EVEN: str = "even"
+    ODD: str = "odd"

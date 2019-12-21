@@ -1,3 +1,5 @@
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 
@@ -9,4 +11,4 @@ from bot.shared.commands import Commands
         students[message.chat.id].guard.text is not None and
         Commands.LOGIN.value in students[message.chat.id].guard.text
 )
-def guard(message): bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+def guard(message: Message): bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)

@@ -1,3 +1,5 @@
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 from bot import metrics
@@ -13,8 +15,8 @@ from bot.shared.commands import Commands
     func=lambda message: students[message.chat.id].guard.text is None
 )
 @metrics.increment(Commands.EDIT)
-def edit(message):
-    edited_number = len(students[message.chat.id].edited_subjects)
+def edit(message: Message):
+    edited_number: int = len(students[message.chat.id].edited_subjects)
     
     bot.send_message(
         chat_id=message.chat.id,

@@ -2,25 +2,25 @@ from enum import Enum
 
 
 class DataOption(Enum):
-    ALL = "all"
-    UNLOGIN = "unlogin"
-    ME = "me"
-    NUMBER = "number"
-    INDEX = "index"
-    NAME = "name"
-    GROUP = "group"
-    YEAR = "year"
+    ALL: str = "all"
+    UNLOGIN: str = "unlogin"
+    ME: str = "me"
+    NUMBER: str = "number"
+    INDEX: str = "index"
+    NAME: str = "name"
+    GROUP: str = "group"
+    YEAR: str = "year"
 
 class EraseOption(Enum):
-    ALL = "all"
-    UNLOGIN = "unlogin"
-    ME = "me"
+    ALL: str = "all"
+    UNLOGIN: str = "unlogin"
+    ME: str = "me"
 
 class DropOption(Enum):
-    ALL = "all"
+    ALL: str = "all"
 
 class GuarddropOption(Enum):
-    ALL = "all"
+    ALL: str = "all"
 
 class ReverseOption(Enum):
-    WEEK = "week"
+    WEEK: str = "week"

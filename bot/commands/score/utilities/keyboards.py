@@ -4,8 +4,8 @@ from telebot.types import InlineKeyboardButton
 from bot.shared.commands import Commands
 
 
-def semester_chooser(semesters_number):
-    semester_chooser_keyboard = InlineKeyboardMarkup(row_width=2)
+def semester_chooser(semesters_number: int) -> InlineKeyboardMarkup:
+    semester_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
     
     semester_chooser_keyboard.add(*[
         InlineKeyboardButton(
@@ -16,8 +16,8 @@ def semester_chooser(semesters_number):
     
     return semester_chooser_keyboard
 
-def subjects_type_chooser(has_exams, has_tests, has_graded_tests):
-    subjects_type_chooser_keyboard = InlineKeyboardMarkup()
+def subjects_type_chooser(has_exams: bool, has_tests: bool, has_graded_tests: bool) -> InlineKeyboardMarkup:
+    subjects_type_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup()
     
     if has_exams or has_tests or has_graded_tests:
         subjects_type_chooser_keyboard.row(InlineKeyboardButton(
@@ -39,8 +39,8 @@ def subjects_type_chooser(has_exams, has_tests, has_graded_tests):
     
     return subjects_type_chooser_keyboard
 
-def subject_chooser(subjects, ACTION):
-    subject_chooser_keyboard = InlineKeyboardMarkup(row_width=1)
+def subject_chooser(subjects: [str], ACTION: Commands) -> InlineKeyboardMarkup:
+    subject_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
     subject_chooser_keyboard.row(InlineKeyboardButton(
         text="Показать все",

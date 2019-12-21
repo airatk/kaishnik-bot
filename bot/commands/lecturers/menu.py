@@ -1,3 +1,6 @@
+from telebot.types import CallbackQuery
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 from bot import metrics
@@ -21,8 +24,8 @@ from random import choice
     func=lambda message: students[message.chat.id].guard.text is None
 )
 @metrics.increment(Commands.LECTURERS)
-def lecturers(message):
-    guard_message = bot.send_message(
+def lecturers(message: Message):
+    guard_message: Message = bot.send_message(
         chat_id=message.chat.id,
         text="Отправь фамилию или ФИО преподавателя.",
         reply_markup=cancel_option()
@@ -32,7 +35,7 @@ def lecturers(message):
     students[message.chat.id].guard.message = guard_message
 
 @bot.message_handler(func=lambda message: students[message.chat.id].guard.text == Commands.LECTURERS_NAME.value)
-def find_lecturer(message):
+def find_lecturer(message: Message):
     bot.delete_message(
         chat_id=message.chat.id,
         message_id=message.message_id
@@ -43,7 +46,7 @@ def find_lecturer(message):
         text=choice(LOADING_REPLIES)
     )
     
-    names = get_lecturers_names(name_part=message.text)
+    names: [{str: str}] = get_lecturers_names(name_part=message.text)
     
     if names is None:
         bot.edit_message_text(
@@ -55,7 +58,7 @@ def find_lecturer(message):
         
         students[message.chat.id].guard.drop()
         return
-    elif names == []:
+    elif len(names) == 0:
         bot.edit_message_text(
             chat_id=students[message.chat.id].guard.message.chat.id,
             message_id=students[message.chat.id].guard.message.message_id,
@@ -89,7 +92,7 @@ def find_lecturer(message):
         Commands.LECTURERS.value in callback.data
 )
 @top_notification
-def lecturers_schedule_type(callback):
+def lecturers_schedule_type(callback: CallbackQuery):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,

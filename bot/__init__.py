@@ -1,6 +1,7 @@
 from telebot import TeleBot
 from telebot import apihelper
 
+from bot.shared.api.student import Student
 from bot.shared.data.helpers import load_data
 from bot.shared.data.constants import USERS_FILE
 from bot.shared.data.constants import KEYS_FILE
@@ -14,10 +15,12 @@ apihelper.proxy = { "https": "socks5://163.172.152.192:1080" }
 
 
 # Initialising the bot components
-with open(KEYS_FILE) as keys_file: keys = Config(keys_file)
-bot = TeleBot(token=keys.TOKEN, threaded=False)
-students = load_data(file=USERS_FILE)
-metrics = Metrics()
+with open(KEYS_FILE) as keys_file:
+    keys: Config = Config(keys_file)
+
+bot: TeleBot = TeleBot(token=keys.TOKEN, threaded=False)
+students: {int: Student} = load_data(file=USERS_FILE)
+metrics: Metrics = Metrics()
 
 
 # Importing all the commands

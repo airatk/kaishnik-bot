@@ -1,3 +1,5 @@
+from telebot.types import CallbackQuery
+
 from bot import bot
 from bot import students
 
@@ -16,7 +18,7 @@ from bot.shared.commands import Commands
         callback.data == LocationType.LIBRARY.value
 )
 @top_notification
-def libraries(callback):
+def libraries(callback: CallbackQuery):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -30,11 +32,11 @@ def libraries(callback):
         LocationType.LIBRARY.value in callback.data
 )
 @top_notification
-def send_library(callback):
+def send_library(callback: CallbackQuery):
     bot.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
     
-    number = callback.data.split()[1]
-    building = LIBRARIES[number]["building"]
+    number: str = callback.data.split()[1]
+    building: str = LIBRARIES[number]["building"]
     
     bot.delete_message(
         chat_id=callback.message.chat.id,

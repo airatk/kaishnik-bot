@@ -1,3 +1,5 @@
+from telebot.types import CallbackQuery
+
 from bot import bot
 from bot import students
 
@@ -24,7 +26,7 @@ from random import choice
         ScheduleType.CLASSES.value in callback.data
 )
 @top_notification
-def lecturers_week_type_classes(callback):
+def lecturers_week_type_classes(callback: CallbackQuery):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -38,7 +40,7 @@ def lecturers_week_type_classes(callback):
         ClassesOptionType.DAILY.value in callback.data
 )
 @top_notification
-def one_day_lecturer_schedule(callback):
+def one_day_lecturer_schedule(callback: CallbackQuery):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -48,15 +50,15 @@ def one_day_lecturer_schedule(callback):
     
     (weektype, weekday, lecturer_id) = callback.data.split()[1:]
     
-    schedule = get_lecturers_schedule(
+    schedule: [str] = get_lecturers_schedule(
         lecturer_id=lecturer_id,
         TYPE=ScheduleType.CLASSES,
         is_next=weektype == WeekType.NEXT.value
     )
     
-    if schedule is None: message_text = ResponseError.NO_RESPONSE.value
-    elif len(schedule) == 0: message_text = ResponseError.NO_DATA.value
-    else: message_text = schedule[int(weekday)]
+    if schedule is None: message_text: str = ResponseError.NO_RESPONSE.value
+    elif len(schedule) == 0: message_text: str = ResponseError.NO_DATA.value
+    else: message_text: str = schedule[int(weekday)]
     
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -73,7 +75,7 @@ def one_day_lecturer_schedule(callback):
         ClassesOptionType.WEEKDAYS.value in callback.data
 )
 @top_notification
-def certain_date_schedule(callback):
+def certain_date_schedule(callback: CallbackQuery):
     (weektype, lecturer_id) = callback.data.split()[1:]
     
     bot.edit_message_text(
@@ -92,7 +94,7 @@ def certain_date_schedule(callback):
         ClassesOptionType.WEEKLY.value in callback.data
 )
 @top_notification
-def weekly_lecturer_schedule(callback):
+def weekly_lecturer_schedule(callback: CallbackQuery):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -102,7 +104,7 @@ def weekly_lecturer_schedule(callback):
     
     (weektype, lecturer_id) = callback.data.split()[1:]
     
-    schedule = get_lecturers_schedule(
+    schedule: [str] = get_lecturers_schedule(
         lecturer_id=lecturer_id,
         TYPE=ScheduleType.CLASSES,
         is_next=weektype == WeekType.NEXT.value

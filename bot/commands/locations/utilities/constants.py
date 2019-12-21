@@ -1,4 +1,4 @@
-BUILDINGS = {
+BUILDINGS: {str: {str: None}} = {
     "1": {
         "title": "Первое учебное здание",
         "description": (
@@ -81,7 +81,7 @@ BUILDINGS = {
     }
 }
 
-LIBRARIES = {
+LIBRARIES: {str: {str: str}} = {
     "1": {
         "title": "Читальный зал №1",
         "description": "*В 1ке.* Ближайшая остановка: КАИ.",
@@ -109,7 +109,7 @@ LIBRARIES = {
     }
 }
 
-SPORTSCOMPLEX = {
+SPORTSCOMPLEX: {str: {str: None}} = {
     "Главное здание": {
         "title": "Главное здание",
         "description": "Ближайшие остановки: СК Олимп, Чистопольская, Четаева, Амирхана.",
@@ -133,7 +133,7 @@ SPORTSCOMPLEX = {
     }
 }
 
-DORMS = {
+DORMS: {str: {str: None}} = {
     "1": {
         "title": "Первое общежитие",
         "description": "Ближайшая остановка: КАИ.",

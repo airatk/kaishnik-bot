@@ -7,15 +7,14 @@ from pickle import HIGHEST_PROTOCOL
 from sys import argv
 
 
-result_data_type = argv[1]
-input_path = argv[2]
-output_path = argv[3]
+result_data_type: str = argv[1]
+input_path: str = argv[2]
+output_path: str = argv[3]
 
-input_data = None
-output_data = {}
+input_data: {int: None} = None
+output_data: {int: None} = {}
 
-with open(input_path, "rb") as input_file:
-    input_data = load(input_file)
+with open(input_path, "rb") as input_file: input_data = load(input_file)
 
 if result_data_type == "obj":  # `str` to `Student`
     for (id, student) in input_data.items():

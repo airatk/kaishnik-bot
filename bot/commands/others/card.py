@@ -1,3 +1,5 @@
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 from bot import metrics
@@ -10,7 +12,7 @@ from bot.shared.commands import Commands
     func=lambda message: students[message.chat.id].guard.text is None
 )
 @metrics.increment(Commands.CARD)
-def card(message):
+def card(message: Message):
     if not students[message.chat.id].is_full:
         bot.send_message(
             chat_id=message.chat.id,

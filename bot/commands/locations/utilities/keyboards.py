@@ -8,8 +8,8 @@ from bot.commands.locations.utilities.constants import DORMS
 from bot.commands.locations.utilities.types import LocationType
 
 
-def location_type_chooser():
-    location_type_chooser_keyboard = InlineKeyboardMarkup()
+def location_type_chooser() -> InlineKeyboardMarkup:
+    location_type_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup()
     
     location_type_chooser_keyboard.row(InlineKeyboardButton(
         text="Учебные здания", callback_data=LocationType.BUILDING.value
@@ -27,8 +27,8 @@ def location_type_chooser():
     return location_type_chooser_keyboard
 
 
-def buildings_dialer():
-    buildings_dialer_keyboard = InlineKeyboardMarkup(row_width=4)
+def buildings_dialer() -> InlineKeyboardMarkup:
+    buildings_dialer_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=4)
     
     buildings_dialer_keyboard.add(*[
         InlineKeyboardButton(
@@ -38,8 +38,8 @@ def buildings_dialer():
     
     return buildings_dialer_keyboard
 
-def libraries_dialer():
-    libraries_dialer_keyboard = InlineKeyboardMarkup(row_width=4)
+def libraries_dialer() -> InlineKeyboardMarkup:
+    libraries_dialer_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=4)
     
     libraries_dialer_keyboard.add(*[
         InlineKeyboardButton(
@@ -49,8 +49,8 @@ def libraries_dialer():
     
     return libraries_dialer_keyboard
 
-def sportscomplex_dialer():
-    sportscomplex_dialer_keyboard = InlineKeyboardMarkup(row_width=1)
+def sportscomplex_dialer() -> InlineKeyboardMarkup:
+    sportscomplex_dialer_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
     sportscomplex_dialer_keyboard.add(*[
         InlineKeyboardButton(
@@ -60,8 +60,8 @@ def sportscomplex_dialer():
     
     return sportscomplex_dialer_keyboard
 
-def dorms_dialer():
-    dorms_dialer_keyboard = InlineKeyboardMarkup(row_width=4)
+def dorms_dialer() -> InlineKeyboardMarkup:
+    dorms_dialer_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=4)
     
     dorms_dialer_keyboard.add(*[
         InlineKeyboardButton(

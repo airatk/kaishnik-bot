@@ -12,8 +12,8 @@ from datetime import datetime
 from datetime import timedelta
 
 
-def lecturer_chooser(names):
-    lecturer_chooser_keyboard = InlineKeyboardMarkup(row_width=1)
+def lecturer_chooser(names: [{str: str}]) -> InlineKeyboardMarkup:
+    lecturer_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
     lecturer_chooser_keyboard.add(*[
         InlineKeyboardButton(
@@ -23,8 +23,8 @@ def lecturer_chooser(names):
     
     return lecturer_chooser_keyboard
 
-def lecturer_info_type_chooser(lecturer_id):
-    lecturer_info_type_chooser_keyboard = InlineKeyboardMarkup(row_width=1)
+def lecturer_info_type_chooser(lecturer_id: str) -> InlineKeyboardMarkup:
+    lecturer_info_type_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
     lecturer_info_type_chooser_keyboard.add(
         InlineKeyboardButton(text="занятия", callback_data=" ".join([ ScheduleType.CLASSES.value, lecturer_id ])),
@@ -34,8 +34,8 @@ def lecturer_info_type_chooser(lecturer_id):
     return lecturer_info_type_chooser_keyboard
 
 
-def lecturer_weektype_chooser(lecturer_id):
-    lecturer_weektype_chooser_keyboard = InlineKeyboardMarkup(row_width=1)
+def lecturer_weektype_chooser(lecturer_id: str) -> InlineKeyboardMarkup:
+    lecturer_weektype_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
     lecturer_weektype_chooser_keyboard.add(
         InlineKeyboardButton(text="текущую неделю", callback_data=" ".join([
@@ -49,8 +49,8 @@ def lecturer_weektype_chooser(lecturer_id):
     return lecturer_weektype_chooser_keyboard
 
 
-def lecturer_weekday_chooser(is_next, lecturer_id):
-    lecturer_weekday_chooser_keyboard = InlineKeyboardMarkup()
+def lecturer_weekday_chooser(is_next: bool, lecturer_id: str) -> InlineKeyboardMarkup:
+    lecturer_weekday_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup()
     
     lecturer_weekday_chooser_keyboard.row(InlineKeyboardButton(
         text="Показать все",
@@ -61,11 +61,11 @@ def lecturer_weekday_chooser(is_next, lecturer_id):
         ])
     ))
     
-    today = datetime.today()
-    today_weekday = today.isoweekday()
+    today: datetime = datetime.today()
+    today_weekday: int = today.isoweekday()
     
     for weekday in WEEKDAYS:
-        date = today + timedelta(days=(weekday - today_weekday) + (7 if is_next else 0))
+        date: datetime = today + timedelta(days=(weekday - today_weekday) + (7 if is_next else 0))
         
         lecturer_weekday_chooser_keyboard.row(
             InlineKeyboardButton(

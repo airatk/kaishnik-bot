@@ -1,3 +1,6 @@
+from telebot.types import CallbackQuery
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 
@@ -23,7 +26,7 @@ from bot.shared.commands import Commands
         callback.data == Commands.EDIT_ADD.value
 )
 @top_notification
-def add_edit(callback):
+def add_edit(callback: CallbackQuery):
     students[callback.message.chat.id].edited_subject = StudentSubject()
     students[callback.message.chat.id].edited_subject.dates = ""
     
@@ -40,8 +43,8 @@ def add_edit(callback):
         Commands.EDIT_WEEKTYPE.value in callback.data
 )
 @top_notification
-def add_weekday(callback):
-    weektype = callback.data.split()[1]
+def add_weekday(callback: CallbackQuery):
+    weektype: str = callback.data.split()[1]
     
     if weektype != WeekParity.BOTH.value:
         students[callback.message.chat.id].edited_subject.is_even = weektype == WeekParity.EVEN.value
@@ -59,7 +62,7 @@ def add_weekday(callback):
         Commands.EDIT_WEEKDAY.value in callback.data
 )
 @top_notification
-def add_time(callback):
+def add_time(callback: CallbackQuery):
     students[callback.message.chat.id].edited_subject.weekday = int(callback.data.split()[1])
     
     bot.edit_message_text(
@@ -75,7 +78,7 @@ def add_time(callback):
         Commands.EDIT_TIME.value in callback.data
 )
 @top_notification
-def add_building(callback):
+def add_building(callback: CallbackQuery):
     students[callback.message.chat.id].edited_subject.time = callback.data.split()[1]
     
     bot.edit_message_text(
@@ -91,10 +94,10 @@ def add_building(callback):
         Commands.EDIT_BUILDING.value in callback.data
 )
 @top_notification
-def add_auditorium(callback):
+def add_auditorium(callback: CallbackQuery):
     students[callback.message.chat.id].edited_subject.building = callback.data.split()[1]
     
-    guard_message = bot.edit_message_text(
+    guard_message: Message = bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Отправь номер аудитории (или где там у тебя пара).",
@@ -110,12 +113,12 @@ def add_auditorium(callback):
         callback.data == Commands.EDIT_AUDITORIUM.value
 )
 @top_notification
-def skip_auditorium(callback):
+def skip_auditorium(callback: CallbackQuery):
     students[callback.message.chat.id].edited_subject.auditorium = ""
     add_subject_title(callback.message)
 
 @bot.message_handler(func=lambda message: students[message.chat.id].guard.text == Commands.EDIT_AUDITORIUM.value)
-def add_subject_title(message):
+def add_subject_title(message: Message):
     bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     
     if students[message.chat.id].edited_subject.auditorium != "":
@@ -123,7 +126,7 @@ def add_subject_title(message):
         
         students[message.chat.id].edited_subject.auditorium = message.text
     
-    guard_message = bot.send_message(
+    guard_message: Message = bot.send_message(
         chat_id=message.chat.id,
         text="Отправь название предмета.",
         reply_markup=cancel_option()
@@ -133,7 +136,7 @@ def add_subject_title(message):
     students[message.chat.id].guard.message = guard_message
 
 @bot.message_handler(func=lambda message: students[message.chat.id].guard.text == Commands.EDIT_SUBJECT_TITLE.value)
-def add_subject_type(message):
+def add_subject_type(message: Message):
     students[message.chat.id].edited_subject.title = message.text
     
     bot.delete_message(
@@ -155,10 +158,10 @@ def add_subject_type(message):
         Commands.EDIT_SUBJECT_TYPE.value in callback.data
 )
 @top_notification
-def add_lecturer(callback):
+def add_lecturer(callback: CallbackQuery):
     students[callback.message.chat.id].edited_subject.type = callback.data.split()[1]
     
-    guard_message = bot.edit_message_text(
+    guard_message: Message = bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Отправь имя преподавателя.",
@@ -174,12 +177,12 @@ def add_lecturer(callback):
         callback.data == Commands.EDIT_LECTURER.value
 )
 @top_notification
-def skip_lecturer(callback):
+def skip_lecturer(callback: CallbackQuery):
     students[callback.message.chat.id].edited_subject.lecturer = ""
     add_department(callback.message)
 
 @bot.message_handler(func=lambda message: students[message.chat.id].guard.text == Commands.EDIT_LECTURER.value)
-def add_department(message):
+def add_department(message: Message):
     bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     
     if students[message.chat.id].edited_subject.lecturer != "":
@@ -187,7 +190,7 @@ def add_department(message):
         
         students[message.chat.id].edited_subject.lecturer = message.text
     
-    guard_message = bot.send_message(
+    guard_message: Message = bot.send_message(
         chat_id=message.chat.id,
         text="Отправь название кафедры.",
         reply_markup=skip(ACTION=Commands.EDIT_DEPARTMENT)
@@ -202,12 +205,12 @@ def add_department(message):
         callback.data == Commands.EDIT_DEPARTMENT.value
 )
 @top_notification
-def skip_department(callback):
+def skip_department(callback: CallbackQuery):
     students[callback.message.chat.id].edited_subject.department = ""
     end_edit(callback.message)
 
 @bot.message_handler(func=lambda message: students[message.chat.id].guard.text == Commands.EDIT_DEPARTMENT.value)
-def end_edit(message):
+def end_edit(message: Message):
     bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     
     if students[message.chat.id].edited_subject.department != "":

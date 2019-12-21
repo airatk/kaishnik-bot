@@ -1,12 +1,14 @@
 from bot import bot
 
+from bot.shared.api.student import Student
+
 
 def parse_creator_request(request: str) -> (str, str):
-    request_words = request.split()
+    request_words: [str] = request.split()
     
     if len(request_words) <= 1: return (None, None)
     
-    option = request_words[1]  # The 0th index is for a command
+    option: str = request_words[1]  # The 0th index is for a command
     
     if ":" in option:
         option_data = option.split(":")
@@ -14,11 +16,11 @@ def parse_creator_request(request: str) -> (str, str):
     else:
         return (option, None)
 
-def update_progress_bar(loading_message, current_progress_bar: str, values: list, index: int) -> str:
-    period = 20
-    percent = int((index + 1)/len(values)*period)
+def update_progress_bar(loading_message, current_progress_bar: str, values: [Student], index: int) -> str:
+    period: int = 20
+    percent: int = int((index + 1)/len(values)*period)
     
-    next_progress_bar = "".join(
+    next_progress_bar: str = "".join(
         [ "`[ " ] +
         [ "+" for _ in range(percent) ] +
         [ "-" for _ in range(period - percent) ] +

@@ -1,3 +1,5 @@
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 from bot import metrics
@@ -15,13 +17,13 @@ from random import choice
     func=lambda message: students[message.chat.id].guard.text is None
 )
 @metrics.increment(Commands.CLASSES)
-def menu(message):
+def menu(message: Message):
     students[message.chat.id].guard.text = Commands.CLASSES.value
     
-    request_entities = message.text.split()
+    request_entities: [str] = message.text.split()
     
     if len(request_entities) > 1:
-        loading_message = bot.send_message(
+        loading_message: Message = bot.send_message(
             chat_id=message.chat.id,
             text=choice(LOADING_REPLIES),
             disable_web_page_preview=True

@@ -4,8 +4,8 @@ from telebot.types import InlineKeyboardButton
 from bot.shared.commands import Commands
 
 
-def make_login():
-    make_login_keyboard = InlineKeyboardMarkup()
+def make_login() -> InlineKeyboardMarkup:
+    make_login_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup()
     
     make_login_keyboard.row(InlineKeyboardButton(text="/login", callback_data=Commands.LOGIN.value))
     

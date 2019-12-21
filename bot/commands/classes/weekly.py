@@ -1,3 +1,5 @@
+from telebot.types import CallbackQuery
+
 from bot import bot
 from bot import students
 
@@ -19,7 +21,7 @@ from random import choice
         ClassesOptionType.WEEKLY.value in callback.data
 )
 @top_notification
-def weekly_schedule(callback):
+def weekly_schedule(callback: CallbackQuery):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -27,9 +29,9 @@ def weekly_schedule(callback):
         disable_web_page_preview=True
     )
     
-    weektype = callback.data.split()[1]
+    weektype: str = callback.data.split()[1]
     
-    schedule = students[callback.message.chat.id].get_schedule(
+    schedule: [str] = students[callback.message.chat.id].get_schedule(
         TYPE=ScheduleType.CLASSES,
         is_next=weektype == WeekType.NEXT.value
     )

@@ -1,3 +1,6 @@
+from telebot.types import CallbackQuery
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 from bot import metrics
@@ -15,8 +18,8 @@ from bot.shared.commands import Commands
         students[message.chat.id].guard.text is None
 )
 @metrics.increment(Commands.LOGIN)
-def login_on_command(message):
-    guard_message = bot.send_message(
+def login_on_command(message: Message):
+    guard_message: Message = bot.send_message(
         chat_id=message.chat.id,
         text=(
             "{warning}"
@@ -39,7 +42,7 @@ def login_on_command(message):
 )
 @metrics.increment(Commands.LOGIN)
 @top_notification
-def login_on_callback(callback):
+def login_on_callback(callback: CallbackQuery):
     # Cleanning the chat
     bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     bot.delete_message(chat_id=students[callback.message.chat.id].guard.message.chat.id, message_id=students[callback.message.chat.id].guard.message.message_id)

@@ -1,3 +1,6 @@
+from telebot.types import CallbackQuery
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 from bot import metrics
@@ -18,11 +21,12 @@ from bot.shared.commands import Commands
         message.chat.id not in students
 )
 @metrics.increment(Commands.START)
-def start_on_command(message):
+def start_on_command(message: Message):
     students[message.chat.id] = Student()
+    
     save_data(file=USERS_FILE, object=students)
     
-    guard_message = bot.send_message(
+    guard_message: Message = bot.send_message(
         chat_id=message.chat.id,
         text="Йоу!"
     )
@@ -40,6 +44,6 @@ def start_on_command(message):
 @bot.callback_query_handler(lambda callback: callback.message.chat.id not in students)
 @metrics.increment(Commands.START)
 @top_notification
-def start_on_callback(callback):
+def start_on_callback(callback: CallbackQuery):
     bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     start_on_command(callback.message)

@@ -1,3 +1,5 @@
+from telebot.types import CallbackQuery
+
 from bot import bot
 from bot import students
 
@@ -16,9 +18,9 @@ from bot.shared.commands import Commands
         callback.data in [ Commands.NOTES_SHOW.value, Commands.NOTES_DELETE.value ]
 )
 @top_notification
-def choose_note(callback):
-    if callback.data == Commands.NOTES_SHOW.value: ACTION = Commands.NOTES_SHOW
-    elif callback.data == Commands.NOTES_DELETE.value: ACTION = Commands.NOTES_DELETE
+def choose_note(callback: CallbackQuery):
+    if callback.data == Commands.NOTES_SHOW.value: ACTION: Commands = Commands.NOTES_SHOW
+    elif callback.data == Commands.NOTES_DELETE.value: ACTION: Commands = Commands.NOTES_DELETE
     
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -37,7 +39,7 @@ def choose_note(callback):
         callback.data == Commands.NOTES_SHOW_ALL.value
 )
 @top_notification
-def show_all(callback):
+def show_all(callback: CallbackQuery):
     bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     
     for note in students[callback.message.chat.id].notes:
@@ -64,8 +66,8 @@ def show_all(callback):
         Commands.NOTES_SHOW.value in callback.data
 )
 @top_notification
-def show_note(callback):
-    number = int(callback.data.split()[1])
+def show_note(callback: CallbackQuery):
+    number: int = int(callback.data.split()[1])
     
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -83,7 +85,7 @@ def show_note(callback):
         callback.data == Commands.NOTES_DELETE_ALL.value
 )
 @top_notification
-def delete_all(callback):
+def delete_all(callback: CallbackQuery):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -101,8 +103,8 @@ def delete_all(callback):
         Commands.NOTES_DELETE.value in callback.data
 )
 @top_notification
-def delete_note(callback):
-    number = int(callback.data.split()[1])
+def delete_note(callback: CallbackQuery):
+    number: int = int(callback.data.split()[1])
     
     bot.edit_message_text(
         chat_id=callback.message.chat.id,

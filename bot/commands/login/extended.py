@@ -1,3 +1,6 @@
+from telebot.types import CallbackQuery
+from telebot.types import Message
+
 from bot import bot
 from bot import students
 
@@ -27,7 +30,7 @@ from random import choice
         callback.data == Commands.LOGIN_EXTENDED.value
 )
 @top_notification
-def login_extended(callback):
+def login_extended(callback: CallbackQuery):
     # Resetting the user
     students[callback.message.chat.id] = Student()
     
@@ -49,7 +52,7 @@ def login_extended(callback):
         Commands.LOGIN_SET_INSTITUTE.value in callback.data
 )
 @top_notification
-def set_institute(callback):
+def set_institute(callback: CallbackQuery):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -58,13 +61,13 @@ def set_institute(callback):
     )
     
     # Setting institute
-    institute_id = callback.data.split()[1]
+    institute_id: int = callback.data.split()[1]
     
     students[callback.message.chat.id].institute = INSTITUTES[institute_id]
     students[callback.message.chat.id].institute_id = institute_id
     
     # Asking for year
-    years = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.YEARS)
+    years: {str: str} = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.YEARS)
     
     if len(years) == 0:
         bot.edit_message_text(
@@ -90,7 +93,7 @@ def set_institute(callback):
         Commands.LOGIN_SET_YEAR.value in callback.data
 )
 @top_notification
-def set_year(callback):
+def set_year(callback: CallbackQuery):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -102,7 +105,7 @@ def set_year(callback):
     students[callback.message.chat.id].year = callback.data.split()[1]
     
     # Asking for group
-    groups = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.GROUPS)
+    groups: {str: str} = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.GROUPS)
     
     if len(groups) == 0:
         bot.edit_message_text(
@@ -128,7 +131,7 @@ def set_year(callback):
         Commands.LOGIN_SET_GROUP.value in callback.data
 )
 @top_notification
-def set_group(callback):
+def set_group(callback: CallbackQuery):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -161,7 +164,7 @@ def set_group(callback):
         return
     
     # Asking for name
-    names = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.NAMES)
+    names: {str: str} = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.NAMES)
     
     if len(names) == 0:
         bot.edit_message_text(
@@ -189,7 +192,7 @@ def set_group(callback):
         Commands.LOGIN_SET_NAME.value in callback.data
 )
 @top_notification
-def set_name(callback):
+def set_name(callback: CallbackQuery):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -198,7 +201,7 @@ def set_name(callback):
     )
     
     # Setting name
-    name = callback.data.split()[1]
+    name: str = callback.data.split()[1]
     students[callback.message.chat.id].name = students[callback.message.chat.id].names[name]
     
     if students[callback.message.chat.id].name_id is None:
@@ -224,7 +227,7 @@ def set_name(callback):
     students[callback.message.chat.id].guard.message = guard_message
 
 @bot.message_handler(func=lambda message: students[message.chat.id].guard.text == Commands.LOGIN_SET_CARD.value)
-def set_card(message):
+def set_card(message: Message):
     bot.delete_message(
         chat_id=message.chat.id,
         message_id=message.message_id
@@ -237,7 +240,7 @@ def set_card(message):
     )
     
     students[message.chat.id].card = message.text
-    last_available_semester = students[message.chat.id].get_last_available_semester()
+    last_available_semester: int = students[message.chat.id].get_last_available_semester()
     
     if last_available_semester is None:
         bot.edit_message_text(
@@ -274,4 +277,5 @@ def set_card(message):
     
     students[message.chat.id].guard.drop()
     students[message.chat.id].is_setup = True
+    
     save_data(file=USERS_FILE, object=students)

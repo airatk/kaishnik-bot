@@ -9,19 +9,19 @@ from datetime import datetime
 from datetime import timedelta
 
 
-def beautify_classes(raw_schedule, is_next, edited_subjects) -> list:
-    weekly_schedule = []
+def beautify_classes(raw_schedule: [{int: {str: str}}], is_next: bool, edited_subjects: [StudentSubject]) -> [str]:
+    weekly_schedule: [str] = []
     
-    today = datetime.today() + timedelta(days=7 if is_next else 0)
-    today_weekday = today.isoweekday()
+    today: datetime = datetime.today() + timedelta(days=7 if is_next else 0)
+    today_weekday: int = today.isoweekday()
     
     for weekday in WEEKDAYS:
         # Date of each weekday
-        date = today + timedelta(days=weekday - today_weekday)
+        date: datetime = today + timedelta(days=weekday - today_weekday)
         
         # Reseting `subjects_list` Adding the appropriate edited subjects to the schedule
-        subjects_list = [ (subject.begin_hour, subject) for subject in edited_subjects if subject.weekday == weekday and (
-            subject.is_even is None or subject.is_even == (not is_even() if is_next else is_even())
+        subjects_list: [(int, StudentSubject)] = [ (subject.begin_hour, subject) for subject in edited_subjects if (
+            subject.weekday == weekday and (subject.is_even is None or subject.is_even == (not is_even() if is_next else is_even()))
         ) ]
         
         if str(weekday) in raw_schedule:
@@ -42,7 +42,7 @@ def beautify_classes(raw_schedule, is_next, edited_subjects) -> list:
                 day_month = "{}.{}".format(int(date.strftime("%d")), date.strftime("%m"))
                 if "." in subject["dayDate"] and day_month not in subject["dayDate"]: continue
                 
-                studentSubject = StudentSubject()
+                studentSubject: StudentSubject = StudentSubject()
                 
                 studentSubject.time = subject["dayTime"]
                 
@@ -62,41 +62,37 @@ def beautify_classes(raw_schedule, is_next, edited_subjects) -> list:
         # Sort by begin_hour
         subjects_list.sort(key=lambda subject: subject[0])
         
-        daily_schedule = "".join([ subject.get() for (_, subject) in subjects_list ])
+        daily_schedule: str = "".join([ subject.get() for (_, subject) in subjects_list ])
         
         weekly_schedule.append("".join([
-            "*{weekday}, {day} {month}*".format(
-                weekday=WEEKDAYS[weekday], day=int(date.strftime("%d")), month=MONTHS[date.strftime("%m")]
-            ),
+            "*{weekday}, {day} {month}*".format(weekday=WEEKDAYS[weekday], day=int(date.strftime("%d")), month=MONTHS[date.strftime("%m")]),
             daily_schedule if daily_schedule != "" else "\n\nВыходной"
         ]))
     
     # Adding Sunday as well
-    date = today + timedelta(days=7 - today.isoweekday())
+    date: datetime = today + timedelta(days=7 - today.isoweekday())
     
-    weekly_schedule.append("*Воскресенье, {day} {month}*\n\nОднозначно выходной".format(
-        day=int(date.strftime("%d")), month=MONTHS[date.strftime("%m")]
-    ))
+    weekly_schedule.append("*Воскресенье, {day} {month}*\n\nОднозначно выходной".format(day=int(date.strftime("%d")), month=MONTHS[date.strftime("%m")]))
     
     return weekly_schedule
 
-def beautify_exams(raw_schedule) -> str:
+def beautify_exams(raw_schedule: [{int: {str: str}}]) -> str:
     # Removing extraspaces & standardizing values to string type
     raw_schedule = [ {
             key: " ".join(str(value).split()) for (key, value) in subject.items()
         } for subject in raw_schedule
     ]
     
-    schedule = ""
+    schedule: str = ""
     
     for subject in raw_schedule:
-        time_place = "\n\n*[ {date}, {time} ][ {building}, {auditorium} ]*".format(
+        time_place: str = "\n\n*[ {date}, {time} ][ {building}, {auditorium} ]*".format(
             date=subject["examDate"], time=subject["examTime"],
             building=subject["buildNum"] + "ка", auditorium=subject["audNum"]
         )
         
-        subject_name = "\n*{subject_name}*".format(subject_name=subject["disciplName"])
-        lecturer = "\n@ {lecturer}".format(lecturer=subject["prepodName"].title()) if subject["prepodName"] else ""
+        subject_name: str = "\n*{subject_name}*".format(subject_name=subject["disciplName"])
+        lecturer: str = "\n@ {lecturer}".format(lecturer=subject["prepodName"].title()) if subject["prepodName"] else ""
         
         # Concatenate all the stuff above
         schedule = "".join([ schedule, time_place, subject_name, lecturer ])
@@ -104,18 +100,18 @@ def beautify_exams(raw_schedule) -> str:
     return schedule
 
 
-def beautify_lecturers_classes(raw_schedule, is_next):
-    weekly_schedule = []
+def beautify_lecturers_classes(raw_schedule: [{int: {str: str}}], is_next: bool) -> [str]:
+    weekly_schedule: [str] = []
     
-    today = datetime.today() + timedelta(days=7 if is_next else 0)
-    today_weekday = today.isoweekday()
+    today: datetime = datetime.today() + timedelta(days=7 if is_next else 0)
+    today_weekday: int = today.isoweekday()
     
     for weekday in WEEKDAYS:
         # Date of each weekday
-        date = today + timedelta(days=weekday - today_weekday)
+        date: datetime = today + timedelta(days=weekday - today_weekday)
         
-        daily_schedule = ""
-        previous_time = ""
+        daily_schedule: str = ""
+        previous_time: str = ""
         
         if str(weekday) not in raw_schedule:
             weekly_schedule.append("*{weekday}, {day} {month}*\n\nНет занятий".format(
@@ -138,7 +134,7 @@ def beautify_lecturers_classes(raw_schedule, is_next):
         for subject in raw_schedule[str(weekday)]:
             if previous_time == subject["dayTime"]: continue
             
-            lecturerSubject = LecturerSubject()
+            lecturerSubject: LecturerSubject = LecturerSubject()
             
             lecturerSubject.time = subject["dayTime"]
             lecturerSubject.building = subject["buildNum"]
@@ -164,28 +160,28 @@ def beautify_lecturers_classes(raw_schedule, is_next):
     
     return weekly_schedule
 
-def beautify_lecturers_exams(raw_schedule) -> str:
+def beautify_lecturers_exams(raw_schedule: [{int: {str: str}}]) -> str:
     # Removing extraspaces & standardizing values to string type
     raw_schedule = [ {
             key: " ".join(str(value).split()) for (key, value) in subject.items()
         } for subject in raw_schedule
     ]
     
-    schedule = []
+    schedule: [(str, str)] = []
     
     for subject in raw_schedule:
-        time_place = "\n\n*[ {date}, {time} ][ {building}, {auditorium} ]*".format(
+        time_place: str = "\n\n*[ {date}, {time} ][ {building}, {auditorium} ]*".format(
             date=subject["examDate"], time=subject["examTime"],
             building=subject["buildNum"] + "ка", auditorium=subject["audNum"]
         )
         
-        subject_name = "\n*{subject_name}*".format(subject_name=subject["disciplName"])
+        subject_name: str = "\n*{subject_name}*".format(subject_name=subject["disciplName"])
         
-        group = "\n• У группы {group}".format(group=subject["group"])
+        group: str = "\n• У группы {group}".format(group=subject["group"])
         
         # To sort by date
-        functional_date_entities = subject["examDate"].split(".")
-        functional_date = "".join([ functional_date_entities[1], functional_date_entities[0] ])
+        functional_date_entities: str = subject["examDate"].split(".")
+        functional_date: str = "".join([ functional_date_entities[1], functional_date_entities[0] ])
         
         schedule.append((functional_date, "".join([ time_place, subject_name, group ])))
     
@@ -194,24 +190,24 @@ def beautify_lecturers_exams(raw_schedule) -> str:
     return "".join([ subject for (_, subject) in schedule ])
 
 
-def beautify_scoretable(raw_scoretable):
-    scoretable = []
+def beautify_scoretable(raw_scoretable: [[str]]) -> [(str, str)]:
+    scoretable: [(str, str)] = []
     
     for subject in raw_scoretable:
-        unstyled_title = subject[1].replace("(экз.)", "").replace("(зач.)", "").replace("(зач./оц.)", "")
-        title = "*{title}*".format(title=unstyled_title)
+        unstyled_title: str = subject[1].replace("(экз.)", "").replace("(зач.)", "").replace("(зач./оц.)", "")
+        title: str = "*{title}*".format(title=unstyled_title)
         
-        if "(экз.)" in subject[1]: type = "".join([ "\n_", SubjectScoreType.EXAM.value, "_\n" ])
-        elif "(зач.)" in subject[1]: type = "".join([ "\n_", SubjectScoreType.TEST.value, "_\n" ])
-        elif "(зач./оц.)" in subject[1]: type = "".join([ "\n_", SubjectScoreType.GRADED_TEST.value, "_\n" ])
-        else: type = "".join([ "\n_", SubjectScoreType.OTHER.value, "_\n" ])
+        if "(экз.)" in subject[1]: type: str = "".join([ "\n_", SubjectScoreType.EXAM.value, "_\n" ])
+        elif "(зач.)" in subject[1]: type: str = "".join([ "\n_", SubjectScoreType.TEST.value, "_\n" ])
+        elif "(зач./оц.)" in subject[1]: type: str = "".join([ "\n_", SubjectScoreType.GRADED_TEST.value, "_\n" ])
+        else: type: str = "".join([ "\n_", SubjectScoreType.OTHER.value, "_\n" ])
         
-        certification1 = "\n`•` 1 аттестация: {gained} / {max}".format(gained=subject[2], max=subject[3])
-        certification2 = "\n`•` 2 аттестация: {gained} / {max}".format(gained=subject[4], max=subject[5])
-        certification3 = "\n`•` 3 аттестация: {gained} / {max}".format(gained=subject[6], max=subject[7])
-        score_sum = "\n`◦` За семестр: {}".format(subject[8])
+        certification1: str = "\n`•` 1 аттестация: {gained} / {max}".format(gained=subject[2], max=subject[3])
+        certification2: str = "\n`•` 2 аттестация: {gained} / {max}".format(gained=subject[4], max=subject[5])
+        certification3: str = "\n`•` 3 аттестация: {gained} / {max}".format(gained=subject[6], max=subject[7])
+        score_sum: str = "\n`◦` За семестр: {}".format(subject[8])
         
-        debts = "\n\nДолги: {}".format(subject[10])
+        debts: str = "\n\nДолги: {}".format(subject[10])
         
         scoretable.append(
             (unstyled_title, "".join([ title, type, certification1, certification2, certification3, score_sum, debts ]))

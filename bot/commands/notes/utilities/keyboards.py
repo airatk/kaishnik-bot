@@ -1,3 +1,4 @@
+from telebot.types import InlineKeyboardMarkup
 from telebot.types import InlineKeyboardButton
 
 from bot.commands.notes.utilities.constants import MAX_SYMBOLS_NUMBER
@@ -6,8 +7,8 @@ from bot.shared.keyboards import cancel_option
 from bot.shared.commands import Commands
 
 
-def action_chooser(has_notes):
-    action_chooser_keyboard = cancel_option()
+def action_chooser(has_notes: bool) -> InlineKeyboardMarkup:
+    action_chooser_keyboard: InlineKeyboardMarkup = cancel_option()
     
     action_chooser_keyboard.row(InlineKeyboardButton(text="добавить", callback_data=Commands.NOTES_ADD.value))
     
@@ -17,8 +18,8 @@ def action_chooser(has_notes):
     
     return action_chooser_keyboard
 
-def note_chooser(notes, ACTION):
-    note_chooser_keyboard = cancel_option()
+def note_chooser(notes: [str], ACTION: Commands) -> InlineKeyboardMarkup:
+    note_chooser_keyboard: InlineKeyboardMarkup = cancel_option()
     
     if len(notes) > 1:
         if ACTION is Commands.NOTES_SHOW:

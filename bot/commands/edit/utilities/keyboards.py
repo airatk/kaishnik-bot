@@ -1,3 +1,4 @@
+from telebot.types import InlineKeyboardMarkup
 from telebot.types import InlineKeyboardButton
 
 from bot.commands.edit.utilities.constants import MAX_CLASSES_NUMBER
@@ -5,6 +6,7 @@ from bot.commands.edit.utilities.constants import MAX_CLASSES_NUMBER
 from bot.commands.locations.utilities.constants import BUILDINGS
 
 from bot.shared.keyboards import cancel_option
+from bot.shared.api.subject import StudentSubject
 from bot.shared.api.subject import SubjectType
 from bot.shared.calendar.constants import WEEKDAYS
 from bot.shared.calendar.week import WeekParity
@@ -14,8 +16,8 @@ from datetime import datetime
 from datetime import timedelta
 
 
-def action_chooser(has_edits):
-    action_chooser_keyboard = cancel_option()
+def action_chooser(has_edits: bool) -> InlineKeyboardMarkup:
+    action_chooser_keyboard: InlineKeyboardMarkup = cancel_option()
     
     action_chooser_keyboard.row(InlineKeyboardButton(text="изменить", callback_data=Commands.EDIT_ADD.value))
     
@@ -26,15 +28,15 @@ def action_chooser(has_edits):
     return action_chooser_keyboard
 
 
-def skip(ACTION):
-    skip_keyboard = cancel_option()
+def skip(ACTION: Commands) -> InlineKeyboardMarkup:
+    skip_keyboard: InlineKeyboardMarkup = cancel_option()
     
     skip_keyboard.row(InlineKeyboardButton(text="пропустить", callback_data=ACTION.value))
     
     return skip_keyboard
 
-def weektype_editer():
-    weektype_editer_keyboard = cancel_option()
+def weektype_editer() -> InlineKeyboardMarkup:
+    weektype_editer_keyboard: InlineKeyboardMarkup = cancel_option()
     
     weektype_editer_keyboard.row(InlineKeyboardButton(text="каждая", callback_data=" ".join([
         Commands.EDIT_WEEKTYPE.value, WeekParity.BOTH.value
@@ -48,8 +50,8 @@ def weektype_editer():
     
     return weektype_editer_keyboard
 
-def weekday_editer():
-    weekday_editer_keyboard = cancel_option()
+def weekday_editer() -> InlineKeyboardMarkup:
+    weekday_editer_keyboard: InlineKeyboardMarkup = cancel_option()
     
     weekday_editer_keyboard.add(*[
         InlineKeyboardButton(
@@ -59,10 +61,10 @@ def weekday_editer():
     
     return weekday_editer_keyboard
 
-def hours_editer():
-    hours_editer_keyboard = cancel_option()
+def hours_editer() -> InlineKeyboardMarkup:
+    hours_editer_keyboard: InlineKeyboardMarkup = cancel_option()
     
-    time = datetime(1, 1, 1, hour=8, minute=0)  # An educational day starts at 8:00 am
+    time: datetime = datetime(1, 1, 1, hour=8, minute=0)  # An educational day starts at 8:00 am
     
     for class_number in range(MAX_CLASSES_NUMBER):
         hours_editer_keyboard.row(InlineKeyboardButton(
@@ -74,8 +76,8 @@ def hours_editer():
     
     return hours_editer_keyboard
 
-def buildings_editer():
-    buildings_editer_keyboard = cancel_option(row_width=4)
+def buildings_editer() -> InlineKeyboardMarkup:
+    buildings_editer_keyboard: InlineKeyboardMarkup = cancel_option(row_width=4)
     
     buildings_editer_keyboard.add(*[
         InlineKeyboardButton(
@@ -85,8 +87,8 @@ def buildings_editer():
     
     return buildings_editer_keyboard
 
-def subject_type_editer():
-    subject_type_editer_keyboard = cancel_option()
+def subject_type_editer() -> InlineKeyboardMarkup:
+    subject_type_editer_keyboard: InlineKeyboardMarkup = cancel_option()
     
     subject_type_editer_keyboard.row(InlineKeyboardButton(text="лекция", callback_data=" ".join([
         Commands.EDIT_SUBJECT_TYPE.value, SubjectType.LECTURE.value
@@ -104,16 +106,16 @@ def subject_type_editer():
     return subject_type_editer_keyboard
 
 
-def weektype_chooser(classes_on_both, classes_on_even, classes_on_odd, ACTION):
-    weektype_chooser_keyboard = cancel_option()
+def weektype_chooser(classes_on_both: int, classes_on_even: int, classes_on_odd: int, ACTION: Commands) -> InlineKeyboardMarkup:
+    weektype_chooser_keyboard: InlineKeyboardMarkup = cancel_option()
     
     if classes_on_both + classes_on_even + classes_on_odd > 1:
         if ACTION is Commands.EDIT_SHOW_WEEKTYPE:
-            action = "показать все"
-            callback_action = Commands.EDIT_SHOW_ALL.value
+            action: str = "показать все"
+            callback_action: str = Commands.EDIT_SHOW_ALL.value
         elif ACTION is Commands.EDIT_DELETE_WEEKTYPE:
-            action = "удалить все"
-            callback_action = Commands.EDIT_DELETE_ALL.value
+            action: str = "удалить все"
+            callback_action: str = Commands.EDIT_DELETE_ALL.value
         
         weektype_chooser_keyboard.row(InlineKeyboardButton(text=action, callback_data=callback_action))
     
@@ -135,16 +137,16 @@ def weektype_chooser(classes_on_both, classes_on_even, classes_on_odd, ACTION):
     
     return weektype_chooser_keyboard
 
-def weekday_chooser(weektype, subjects_number_by_weekdays, ACTION):
-    weekday_chooser_keyboard = cancel_option()
+def weekday_chooser(weektype: str, subjects_number_by_weekdays: [int], ACTION: Commands) -> InlineKeyboardMarkup:
+    weekday_chooser_keyboard: InlineKeyboardMarkup = cancel_option()
     
     if sum(subjects_number_by_weekdays) > 1:
         if ACTION is Commands.EDIT_SHOW_WEEKDAY:
-            action = "Показать все"
-            callback_action = Commands.EDIT_SHOW_ALL.value
+            action: str = "Показать все"
+            callback_action: str = Commands.EDIT_SHOW_ALL.value
         elif ACTION is Commands.EDIT_DELETE_WEEKDAY:
-            action = "Удалить все"
-            callback_action = Commands.EDIT_DELETE_ALL.value
+            action: str = "Удалить все"
+            callback_action: str = Commands.EDIT_DELETE_ALL.value
         
         weekday_chooser_keyboard.row(InlineKeyboardButton(text=action, callback_data=" ".join([
             callback_action, weektype
@@ -161,16 +163,16 @@ def weekday_chooser(weektype, subjects_number_by_weekdays, ACTION):
     
     return weekday_chooser_keyboard
 
-def edit_chooser(weektype, weekday, subjects, ACTION):
-    edit_chooser_keyboard = cancel_option()
+def edit_chooser(weektype: str, weekday: int, subjects: [StudentSubject], ACTION: Commands) -> InlineKeyboardMarkup:
+    edit_chooser_keyboard: InlineKeyboardMarkup = cancel_option()
     
     if len(subjects) > 1:
         if ACTION is Commands.EDIT_SHOW_EDIT:
-            action = "Показать все"
-            callback_action = Commands.EDIT_SHOW_ALL.value
+            action: str = "Показать все"
+            callback_action: str = Commands.EDIT_SHOW_ALL.value
         elif ACTION is Commands.EDIT_DELETE_EDIT:
-            action = "Удалить все"
-            callback_action = Commands.EDIT_DELETE_ALL.value
+            action: str = "Удалить все"
+            callback_action: str = Commands.EDIT_DELETE_ALL.value
         
         edit_chooser_keyboard.row(InlineKeyboardButton(text=action, callback_data=" ".join([
             callback_action, weektype, weekday

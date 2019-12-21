@@ -1,3 +1,5 @@
+from telebot.types import CallbackQuery
+
 from bot import bot
 from bot import students
 
@@ -22,7 +24,7 @@ from random import choice
         ClassesOptionType.DAILY.value in callback.data
 )
 @top_notification
-def daily(callback):
+def daily(callback: CallbackQuery):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -32,14 +34,14 @@ def daily(callback):
     
     (weektype, weekday) = callback.data.split()[1:]
     
-    schedule = students[callback.message.chat.id].get_schedule(
+    schedule: [str] = students[callback.message.chat.id].get_schedule(
         TYPE=ScheduleType.CLASSES,
         is_next=weektype == WeekType.NEXT.value
     )
     
-    if schedule is None: message_text = ResponseError.NO_RESPONSE.value
-    elif len(schedule) == 0: message_text = ResponseError.NO_DATA.value
-    else: message_text = schedule[int(weekday)]
+    if schedule is None: message_text: str = ResponseError.NO_RESPONSE.value
+    elif len(schedule) == 0: message_text: str = ResponseError.NO_DATA.value
+    else: message_text: str = schedule[int(weekday)]
     
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
@@ -57,8 +59,8 @@ def daily(callback):
         ClassesOptionType.WEEKDAYS.value in callback.data
 )
 @top_notification
-def certain_date_schedule(callback):
-    weektype = callback.data.split()[1]
+def certain_date_schedule(callback: CallbackQuery):
+    weektype: str = callback.data.split()[1]
     
     bot.edit_message_text(
         chat_id=callback.message.chat.id,

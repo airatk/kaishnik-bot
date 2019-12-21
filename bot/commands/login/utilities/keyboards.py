@@ -6,8 +6,8 @@ from bot.shared.api.constants import INSTITUTES
 from bot.shared.commands import Commands
 
 
-def login_way_chooser(is_old):
-    setup_way_chooser_keyboard = cancel_option() if is_old else InlineKeyboardMarkup()
+def login_way_chooser(is_old: bool) -> InlineKeyboardMarkup:
+    setup_way_chooser_keyboard: InlineKeyboardMarkup = cancel_option() if is_old else InlineKeyboardMarkup()
     
     setup_way_chooser_keyboard.row(InlineKeyboardButton(text="с зачёткой", callback_data=Commands.LOGIN_EXTENDED.value))
     setup_way_chooser_keyboard.row(InlineKeyboardButton(text="без зачётки", callback_data=Commands.LOGIN_COMPACT.value))
@@ -15,8 +15,8 @@ def login_way_chooser(is_old):
     return setup_way_chooser_keyboard
 
 
-def institute_setter():
-    institute_setter_keyboard = cancel_option()
+def institute_setter() -> InlineKeyboardMarkup:
+    institute_setter_keyboard: InlineKeyboardMarkup = cancel_option()
     
     institute_setter_keyboard.add(*[
         InlineKeyboardButton(
@@ -26,8 +26,8 @@ def institute_setter():
     
     return institute_setter_keyboard
 
-def year_setter(years):
-    year_setter_keyboard = cancel_option(row_width=2)
+def year_setter(years: {str: str}) -> InlineKeyboardMarkup:
+    year_setter_keyboard: InlineKeyboardMarkup = cancel_option(row_width=2)
     
     year_setter_keyboard.add(*[
         InlineKeyboardButton(
@@ -37,8 +37,8 @@ def year_setter(years):
     
     return year_setter_keyboard
 
-def group_number_setter(groups):
-    group_number_setter_keyboard = cancel_option(row_width=2)
+def group_number_setter(groups: {str: str}) -> InlineKeyboardMarkup:
+    group_number_setter_keyboard: InlineKeyboardMarkup = cancel_option(row_width=2)
     
     group_number_setter_keyboard.add(*[
         InlineKeyboardButton(
@@ -48,8 +48,8 @@ def group_number_setter(groups):
     
     return group_number_setter_keyboard
 
-def name_setter(names):
-    name_setter_keyboard = cancel_option()
+def name_setter(names: {str: str}) -> InlineKeyboardMarkup:
+    name_setter_keyboard: InlineKeyboardMarkup = cancel_option()
     
     name_setter_keyboard.add(*[
         InlineKeyboardButton(

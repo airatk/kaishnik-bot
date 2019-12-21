@@ -1,4 +1,4 @@
-BRS = (
+BRS: str = (
     "*БРС*\n"
     "_балльно-рейтинговая система_\n\n"
     "Обычно можно получить *50* баллов за семестр и столько же за экзамен. *100* баллов всего.\n\n"
@@ -9,7 +9,7 @@ BRS = (
     "_варьируется от преподавателя к преподавателю_"
 )
 
-HELP = (
+HELP: str = (
     "*~$ kbot --help*\n"
     
     "\n*classes & exams*\n"
@@ -30,7 +30,7 @@ HELP = (
     "\nХотелки, жалобы, любые интересующие вопросы — разработчику: @airatk"
 )
 
-DONATE = (
+DONATE: str = (
     "Если тебе понравился бот, ты можешь добровольно отблагодарить разработчика денежным донатом:\n\n"
     "• *Paypal*: paypal.me/kamairat\n"
     "• *Сбербанк*: 2202 2012 3023 9101"
@@ -38,7 +38,7 @@ DONATE = (
 )
 
 
-FULL_USER_INFO = (
+FULL_USER_INFO: str = (
     "{firstname}{lastname}{username}\n"
     "chat id {chat_id}\n\n"
     "• Институт: {institute}\n"
@@ -50,7 +50,7 @@ FULL_USER_INFO = (
     "• Изменений в расписании: {edited_classes_number}"
 )
 
-COMPACT_USER_INFO = (
+COMPACT_USER_INFO: str = (
     "{firstname}{lastname}{username}\n"
     "chat id {chat_id}\n\n"
     "• Группа: {group_number}\n\n"

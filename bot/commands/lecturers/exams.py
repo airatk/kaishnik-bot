@@ -1,3 +1,5 @@
+from telebot.types import CallbackQuery
+
 from bot import bot
 from bot import students
 
@@ -17,7 +19,7 @@ from random import choice
         ScheduleType.EXAMS.value in callback.data
 )
 @top_notification
-def lecturers_exams(callback):
+def lecturers_exams(callback: CallbackQuery):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -25,12 +27,12 @@ def lecturers_exams(callback):
         disable_web_page_preview=True
     )
     
-    lecturer_id = callback.data.split()[1]
-    schedule = get_lecturers_schedule(lecturer_id=lecturer_id, TYPE=ScheduleType.EXAMS)
+    lecturer_id: str = callback.data.split()[1]
+    schedule: [str] = get_lecturers_schedule(lecturer_id=lecturer_id, TYPE=ScheduleType.EXAMS)
     
-    if schedule is None: message_text = ResponseError.NO_RESPONSE.value
-    elif schedule == []: message_text = ResponseError.NO_DATA.value
-    else: message_text = schedule
+    if schedule is None: message_text: str = ResponseError.NO_RESPONSE.value
+    elif len(schedule) == 0: message_text: str = ResponseError.NO_DATA.value
+    else: message_text: str = schedule
     
     bot.edit_message_text(
         chat_id=callback.message.chat.id,

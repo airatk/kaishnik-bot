@@ -5,108 +5,108 @@ from datetime import datetime
 
 class Metrics:
     def __init__(self):
-        self._day = datetime.today().isoweekday()
+        self._day: int = datetime.today().isoweekday()
         
-        self._cancel = 0
-        self._start = 0
-        self._login = 0
-        self._unlogin = 0
-        self._classes = 0
-        self._exams = 0
-        self._lecturers = 0
-        self._score = 0
-        self._notes = 0
-        self._edit = 0
-        self._locations = 0
-        self._week = 0
-        self._card = 0
-        self._brs = 0
-        self._help = 0
-        self._donate = 0
-        self._me = 0
-        self._unknown = 0
+        self._cancel: int = 0
+        self._start: int = 0
+        self._login: int = 0
+        self._unlogin: int = 0
+        self._classes: int = 0
+        self._exams: int = 0
+        self._lecturers: int = 0
+        self._score: int = 0
+        self._notes: int = 0
+        self._edit: int = 0
+        self._locations: int = 0
+        self._week: int = 0
+        self._card: int = 0
+        self._brs: int = 0
+        self._help: int = 0
+        self._donate: int = 0
+        self._me: int = 0
+        self._unknown: int = 0
     
     
     @property
-    def day(self):
+    def day(self) -> int:
         return self._day
     
     
     @property
-    def cancel(self):
+    def cancel(self) -> int:
         return self._cancel
     
     @property
-    def start(self):
+    def start(self) -> int:
         return self._start
     
     @property
-    def login(self):
+    def login(self) -> int:
         return self._login
     
     @property
-    def unlogin(self):
+    def unlogin(self) -> int:
         return self._unlogin
     
     @property
-    def classes(self):
+    def classes(self) -> int:
         return self._classes
     
     @property
-    def exams(self):
+    def exams(self) -> int:
         return self._exams
     
     @property
-    def lecturers(self):
+    def lecturers(self) -> int:
         return self._lecturers
     
     @property
-    def score(self):
+    def score(self) -> int:
         return self._score
     
     @property
-    def notes(self):
+    def notes(self) -> int:
         return self._notes
     
     @property
-    def edit(self):
+    def edit(self) -> int:
         return self._edit
     
     @property
-    def locations(self):
+    def locations(self) -> int:
         return self._locations
     
     @property
-    def week(self):
+    def week(self) -> int:
         return self._week
     
     @property
-    def card(self):
+    def card(self) -> int:
         return self._card
     
     @property
-    def brs(self):
+    def brs(self) -> int:
         return self._brs
     
     @property
-    def help(self):
+    def help(self) -> int:
         return self._help
     
     @property
-    def donate(self):
+    def donate(self) -> int:
         return self._donate
     
     @property
-    def me(self):
+    def me(self) -> int:
         return self._me
     
     @property
-    def unknown(self):
+    def unknown(self) -> int:
         return self._unknown
     
     
     @property
-    def sum(self):
+    def sum(self) -> int:
         return (
             self._cancel +
             self._start +
@@ -133,7 +133,7 @@ class Metrics:
         self.__init__()
     
     
-    def increment(self, command):
+    def increment(self, command: Commands):
         def outter(func):
             def inner(arg):
                 if self._day != datetime.today().isoweekday(): self.drop()

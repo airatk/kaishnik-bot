@@ -1,3 +1,5 @@
+from telebot.types import CallbackQuery
+
 from bot import bot
 from bot import students
 
@@ -15,7 +17,7 @@ from bot.shared.commands import Commands
         callback.data == LocationType.SPORTSCOMPLEX.value
 )
 @top_notification
-def s_s(callback):
+def s_s(callback: CallbackQuery):
     bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
@@ -29,10 +31,10 @@ def s_s(callback):
         LocationType.SPORTSCOMPLEX.value in callback.data
 )
 @top_notification
-def send_sportscomplex(callback):
+def send_sportscomplex(callback: CallbackQuery):
     bot.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
     
-    number = " ".join(callback.data.split()[1:])
+    number: str = " ".join(callback.data.split()[1:])
     
     bot.delete_message(
         chat_id=callback.message.chat.id,
