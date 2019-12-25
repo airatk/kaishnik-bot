@@ -1,6 +1,8 @@
-from telebot.types import Message
+from aiogram.types import Message
 
 from bot import bot
+from bot import dispatcher
+
 from bot import students
 
 from bot.commands.creator.utilities.helpers import parse_creator_request
@@ -16,16 +18,15 @@ from bot.shared.data.constants import IS_WEEK_REVERSED_FILE
 from bot.shared.commands import Commands
 
 
-@bot.message_handler(
-    func=lambda message: message.chat.id == CREATOR,
+@dispatcher.message_handler(
+    lambda message: message.chat.id == CREATOR,
     commands=[ Commands.BROADCAST.value ]
 )
-def broadcast(message: Message):
+async def broadcast(message: Message):
     if message.text == "/broadcast":
-        bot.send_message(
+        await bot.send_message(
             chat_id=message.chat.id,
-            text="No broadcast message was found! It's supposed to be right after the */broadcast* command.",
-            parse_mode="Markdown"
+            text="No broadcast message was found! It's supposed to be right after the */broadcast* command."
         )
         return
     
@@ -33,7 +34,7 @@ def broadcast(message: Message):
     progress_bar: str = ""
     students_list: [Student] = list(students)
     
-    loading_message: Message = bot.send_message(
+    loading_message: Message = await bot.send_message(
         chat_id=message.chat.id,
         text="Started broadcasting..."
     )
@@ -45,40 +46,38 @@ def broadcast(message: Message):
         )
         
         try:
-            bot.send_message(
+            await bot.send_message(
                 chat_id=chat_id,
                 text=BROADCAST_MESSAGE_TEMPLATE.format(broadcast_message=broadcast_message),
-                parse_mode="Markdown",
                 disable_web_page_preview=True
             )
         except Exception:
-            bot.send_message(
+            await bot.send_message(
                 chat_id=message.chat.id,
                 text="{} is inactive! /clear?".format(chat_id)
             )
     
-    bot.send_message(
+    await bot.send_message(
         chat_id=message.chat.id,
         text="Broadcasted!"
     )
 
-@bot.message_handler(
-    func=lambda message: message.chat.id == CREATOR,
+@dispatcher.message_handler(
+    lambda message: message.chat.id == CREATOR,
     commands=[ Commands.REVERSE.value ]
 )
-def reverse(message: Message):
+async def reverse(message: Message):
     (option, _) = parse_creator_request(message.text)
     
     if option == ReverseOption.WEEK.value:
         save_data(file=IS_WEEK_REVERSED_FILE, object=not load_from(file=IS_WEEK_REVERSED_FILE))
         
-        bot.send_message(
+        await bot.send_message(
             chat_id=message.chat.id,
             text="Week was #reversed!"
         )
     else:
-        bot.send_message(
+        await bot.send_message(
             chat_id=message.chat.id,
-            text="If you are sure to reverse type of a week, type */reverse week*",
-            parse_mode="Markdown"
+            text="If you are sure to reverse type of a week, type */reverse week*"
         )

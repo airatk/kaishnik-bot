@@ -1,7 +1,9 @@
-from telebot.types import Chat
-from telebot.types import Message
+from aiogram.types import Chat
+from aiogram.types import Message
 
 from bot import bot
+from bot import dispatcher
+
 from bot import students
 from bot import metrics
 
@@ -11,13 +13,13 @@ from bot.commands.others.utilities.constants import COMPACT_USER_INFO
 from bot.shared.commands import Commands
 
 
-@bot.message_handler(
-    commands=[ Commands.ME.value ],
-    func=lambda message: students[message.chat.id].guard.text is None
+@dispatcher.message_handler(
+    lambda message: students[message.chat.id].guard.text is None,
+    commands=[ Commands.ME.value ]
 )
 @metrics.increment(Commands.ME)
-def me(message: Message):
-    chat: Chat = bot.get_chat(chat_id=message.chat.id)
+async def me(message: Message):
+    chat: Chat = await bot.get_chat(chat_id=message.chat.id)
     
     if students[message.chat.id].is_full:
         message_text = FULL_USER_INFO.format(
@@ -44,7 +46,8 @@ def me(message: Message):
             edited_classes_number=len(students[message.chat.id].edited_subjects)
         )
     
-    bot.send_message(
+    await bot.send_message(
         chat_id=message.chat.id,
-        text=message_text
+        text=message_text,
+        parse_mode=None
     )

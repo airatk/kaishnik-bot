@@ -1,7 +1,9 @@
-from telebot.types import CallbackQuery
-from telebot.types import Message
+from aiogram.types import CallbackQuery
+from aiogram.types import Message
 
 from bot import bot
+from bot import dispatcher
+
 from bot import students
 from bot import metrics
 
@@ -18,24 +20,24 @@ from bot.shared.commands import Commands
 from random import choice
 
 
-@bot.message_handler(
-    commands=[ Commands.SCORE.value ],
-    func=lambda message: students[message.chat.id].guard.text is None
+@dispatcher.message_handler(
+    lambda message: students[message.chat.id].guard.text is None,
+    commands=[ Commands.SCORE.value ]
 )
 @metrics.increment(Commands.SCORE)
-def score(message: Message):
+async def score(message: Message):
     if not students[message.chat.id].is_full:
-        bot.send_message(
+        await bot.send_message(
             chat_id=message.chat.id,
             text="Не доступно :("
         )
-        bot.send_message(
+        await bot.send_message(
             chat_id=message.chat.id,
             text="Чтобы видеть номер зачётки и баллы, нужно перенастроиться с зачёткой, отправив /login"
         )
         return
     
-    loading_message: Message = bot.send_message(
+    loading_message: Message = await bot.send_message(
         chat_id=message.chat.id,
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
@@ -44,7 +46,7 @@ def score(message: Message):
     last_available_semester: int = students[message.chat.id].get_last_available_semester()
     
     if last_available_semester is None:
-        bot.edit_message_text(
+        await bot.edit_message_text(
             chat_id=loading_message.chat.id,
             message_id=loading_message.message.id,
             text=ResponseError.NO_RESPONSE.value,
@@ -52,7 +54,7 @@ def score(message: Message):
         )
         return
     
-    bot.edit_message_text(
+    await bot.edit_message_text(
         chat_id=loading_message.chat.id,
         message_id=loading_message.message_id,
         text="Выбери номер семестра:",
@@ -61,14 +63,14 @@ def score(message: Message):
     
     students[message.chat.id].guard.text = Commands.SCORE.value
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.SCORE.value and
         Commands.SCORE_SEMESTER.value in callback.data
 )
 @top_notification
-def choose_subjects_type(callback: CallbackQuery):
-    bot.edit_message_text(
+async def choose_subjects_type(callback: CallbackQuery):
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text=choice(LOADING_REPLIES),
@@ -79,7 +81,7 @@ def choose_subjects_type(callback: CallbackQuery):
     students[callback.message.chat.id].scoretable = students[callback.message.chat.id].get_scoretable(semester_number)
     
     if students[callback.message.chat.id].scoretable is None:
-        bot.edit_message_text(
+        await bot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
             text=ResponseError.NO_RESPONSE.value,
@@ -89,7 +91,7 @@ def choose_subjects_type(callback: CallbackQuery):
         students[callback.message.chat.id].guard.drop()
         return
     elif len(students[callback.message.chat.id].scoretable) == 0:
-        bot.edit_message_text(
+        await bot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
             text=ResponseError.NO_DATA.value
@@ -105,20 +107,20 @@ def choose_subjects_type(callback: CallbackQuery):
         elif SubjectScoreType.TEST.value in subject_score: has_tests = True
         elif SubjectScoreType.GRADED_TEST.value in subject_score: has_graded_tests = True
     
-    bot.edit_message_text(
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Выбери тип:",
         reply_markup=subjects_type_chooser(has_exams=has_exams, has_tests=has_tests, has_graded_tests=has_graded_tests)
     )
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.SCORE.value and
         callback.data in [ Commands.SCORE_ALL.value, Commands.SCORE_EXAMS.value, Commands.SCORE_TESTS.value, Commands.SCORE_GRADED_TESTS.value ]
 )
 @top_notification
-def choose_subject(callback: CallbackQuery):
+async def choose_subject(callback: CallbackQuery):
     if callback.data == Commands.SCORE_ALL.value:
         subjects: [str] = [ title for (title, _) in students[callback.message.chat.id].scoretable ]
         ACTION: Commands = Commands.SCORE_ALL
@@ -132,15 +134,15 @@ def choose_subject(callback: CallbackQuery):
         subjects: [str] = [ title for (title, subject_score) in students[callback.message.chat.id].scoretable if SubjectScoreType.GRADED_TEST.value in subject_score ]
         ACTION: Commands = Commands.SCORE_GRADED_TESTS
     
-    bot.edit_message_text(
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Выбери предмет:",
         reply_markup=subject_chooser(subjects=subjects, ACTION=ACTION)
     )
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.SCORE.value and (
             Commands.SCORE_ALL.value in callback.data or
             Commands.SCORE_EXAMS.value in callback.data or
@@ -149,7 +151,7 @@ def choose_subject(callback: CallbackQuery):
         )
 )
 @top_notification
-def show_subjects(callback: CallbackQuery):
+async def show_subjects(callback: CallbackQuery):
     (action, string_index) = callback.data.split()
     
     if action == Commands.SCORE_ALL.value:
@@ -162,20 +164,18 @@ def show_subjects(callback: CallbackQuery):
         subjects: [str] = [ subject_score for (_, subject_score) in students[callback.message.chat.id].scoretable if SubjectScoreType.GRADED_TEST.value in subject_score ]
     
     if string_index != "None":
-        bot.edit_message_text(
+        await bot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
-            text=subjects[int(string_index)],
-            parse_mode="Markdown"
+            text=subjects[int(string_index)]
         )
     else:
-        bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+        await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
         
         for subject_score in subjects:
-            bot.send_message(
+            await bot.send_message(
                 chat_id=callback.message.chat.id,
-                text=subject_score,
-                parse_mode="Markdown"
+                text=subject_score
             )
         
         subjects_number: int = len(subjects)
@@ -184,12 +184,11 @@ def show_subjects(callback: CallbackQuery):
         elif subjects_number in range(2, 5): ending: str = "а"
         else: ending: str = "ов"
         
-        bot.send_message(
+        await bot.send_message(
             chat_id=callback.message.chat.id,
             text="*{subjects_number}* предмет{ending} всего!".format(
                 subjects_number=subjects_number, ending=ending
-            ),
-            parse_mode="Markdown"
+            )
         )
     
     students[callback.message.chat.id].guard.drop()

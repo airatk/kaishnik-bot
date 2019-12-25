@@ -388,6 +388,9 @@
          <FileRef
             location = "group:helpers.py">
          </FileRef>
+         <FileRef
+            location = "group:constants.py">
+         </FileRef>
          <Group
             location = "group:api"
             name = "api">

@@ -1,6 +1,8 @@
-from telebot.types import CallbackQuery
+from aiogram.types import CallbackQuery
 
 from bot import bot
+from bot import dispatcher
+
 from bot import students
 
 from bot.shared.helpers import top_notification
@@ -15,14 +17,14 @@ from bot.shared.commands import Commands
 from random import choice
 
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.CLASSES.value and
         ClassesOptionType.WEEKLY.value in callback.data
 )
 @top_notification
-def weekly_schedule(callback: CallbackQuery):
-    bot.edit_message_text(
+async def weekly_schedule(callback: CallbackQuery):
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text=choice(LOADING_REPLIES),
@@ -37,27 +39,26 @@ def weekly_schedule(callback: CallbackQuery):
     )
     
     if schedule is None:
-        bot.edit_message_text(
+        await bot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
             text=ResponseError.NO_RESPONSE.value,
             disable_web_page_preview=True
         )
     elif len(schedule) == 0:
-        bot.edit_message_text(
+        await bot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
             text=ResponseError.NO_DATA.value,
             disable_web_page_preview=True
         )
     else:
-        bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+        await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
         
         for weekday in WEEKDAYS:
-            bot.send_message(
+            await bot.send_message(
                 chat_id=callback.message.chat.id,
-                text=schedule[weekday - 1],
-                parse_mode="Markdown"
+                text=schedule[weekday - 1]
             )
     
     students[callback.message.chat.id].guard.drop()

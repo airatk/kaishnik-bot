@@ -1,7 +1,9 @@
-from telebot.types import CallbackQuery
-from telebot.types import Message
+from aiogram.types import CallbackQuery
+from aiogram.types import Message
 
 from bot import bot
+from bot import dispatcher
+
 from bot import students
 from bot import metrics
 
@@ -9,14 +11,14 @@ from bot.shared.helpers import top_notification
 from bot.shared.commands import Commands
 
 
-@bot.message_handler(
-    commands=[ Commands.CANCEL.value ],
-    func=lambda message: message.chat.id in students
+@dispatcher.message_handler(
+    lambda message: message.chat.id in students,
+    commands=[ Commands.CANCEL.value ]
 )
 @metrics.increment(Commands.CANCEL)
-def cancel_on_command(message: Message):
+async def cancel_on_command(message: Message):
     if students[message.chat.id].guard.text is None:
-        bot.send_message(
+        await bot.send_message(
             chat_id=message.chat.id,
             text="Запущенных команд нет. Отправь какую-нибудь☺️"
         )
@@ -24,17 +26,18 @@ def cancel_on_command(message: Message):
     
     students[message.chat.id].guard.drop()
     
-    bot.send_message(
+    await bot.send_message(
         chat_id=message.chat.id,
         text="Отменено!"
     )
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         callback.message.chat.id in students and
         callback.data == Commands.CANCEL.value
 )
 @top_notification
-def cancel_on_callback(callback: CallbackQuery):
-    bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    cancel_on_command(callback.message)
+async def cancel_on_callback(callback: CallbackQuery):
+    await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+    
+    await cancel_on_command(callback.message)

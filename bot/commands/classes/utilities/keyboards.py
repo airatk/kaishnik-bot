@@ -1,5 +1,5 @@
-from telebot.types import InlineKeyboardMarkup
-from telebot.types import InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton
 
 from bot.shared.api.types import ClassesOptionType
 from bot.shared.calendar.constants import WEEKDAYS

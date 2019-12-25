@@ -1,6 +1,8 @@
-from telebot.types import CallbackQuery
+from aiogram.types import CallbackQuery
 
 from bot import bot
+from bot import dispatcher
+
 from bot import students
 
 from bot.commands.edit.utilities.keyboards import weektype_chooser
@@ -14,13 +16,13 @@ from bot.shared.calendar.week import WeekParity
 from bot.shared.commands import Commands
 
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.EDIT.value and
         callback.data in [ Commands.EDIT_SHOW.value, Commands.EDIT_DELETE.value ]
 )
 @top_notification
-def choose_weetype(callback: CallbackQuery):
+async def choose_weetype(callback: CallbackQuery):
     if callback.data == Commands.EDIT_SHOW.value: ACTION: Commands = Commands.EDIT_SHOW_WEEKTYPE
     elif callback.data == Commands.EDIT_DELETE.value: ACTION: Commands = Commands.EDIT_DELETE_WEEKTYPE
     
@@ -31,7 +33,7 @@ def choose_weetype(callback: CallbackQuery):
         elif edited_subject.is_even is True: classes_on_even += 1
         elif edited_subject.is_even is False: classes_on_odd += 1
     
-    bot.edit_message_text(
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text=(
@@ -46,15 +48,15 @@ def choose_weetype(callback: CallbackQuery):
         )
     )
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.EDIT.value and (
             Commands.EDIT_SHOW_WEEKTYPE.value in callback.data or
             Commands.EDIT_DELETE_WEEKTYPE.value in callback.data
         )
 )
 @top_notification
-def choose_weekday(callback: CallbackQuery):
+async def choose_weekday(callback: CallbackQuery):
     if Commands.EDIT_SHOW_WEEKTYPE.value in callback.data: ACTION: Commands = Commands.EDIT_SHOW_WEEKDAY
     elif Commands.EDIT_DELETE_WEEKTYPE.value in callback.data: ACTION: Commands = Commands.EDIT_DELETE_WEEKDAY
     
@@ -64,7 +66,7 @@ def choose_weekday(callback: CallbackQuery):
     elif weektype == WeekParity.EVEN.value: is_even: bool = True
     elif weektype == WeekParity.ODD.value: is_even: bool = False
     
-    bot.edit_message_text(
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Выбери день:",
@@ -77,15 +79,15 @@ def choose_weekday(callback: CallbackQuery):
         )
     )
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.EDIT.value and (
             Commands.EDIT_SHOW_WEEKDAY.value in callback.data or
             Commands.EDIT_DELETE_WEEKDAY.value in callback.data
         )
 )
 @top_notification
-def choose_edit(callback: CallbackQuery):
+async def choose_edit(callback: CallbackQuery):
     if Commands.EDIT_SHOW_WEEKDAY.value in callback.data: ACTION: Commands = Commands.EDIT_SHOW_EDIT
     elif Commands.EDIT_DELETE_WEEKDAY.value in callback.data: ACTION: Commands = Commands.EDIT_DELETE_EDIT
     
@@ -97,7 +99,7 @@ def choose_edit(callback: CallbackQuery):
     
     subjects: {int: StudentSubject} = { index: subject for (index, subject) in enumerate(students[callback.message.chat.id].edited_subjects) if subject.is_even == is_even and subject.weekday == int(weekday) }
     
-    bot.edit_message_text(
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Выбери пару:",
@@ -110,14 +112,14 @@ def choose_edit(callback: CallbackQuery):
     )
 
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.EDIT.value and
         Commands.EDIT_SHOW_ALL.value in callback.data
 )
 @top_notification
-def show_all(callback: CallbackQuery):
-    bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+async def show_all(callback: CallbackQuery):
+    await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     
     request_enities: [str] = callback.data.split()[1:]
     
@@ -147,51 +149,48 @@ def show_all(callback: CallbackQuery):
         
         if len(weektype_weekdays) > 1:
             for weektype_weekday in weektype_weekdays:
-                bot.send_message(
+                await bot.send_message(
                     chat_id=callback.message.chat.id,
-                    text=weektype_weekday,
-                    parse_mode="Markdown"
+                    text=weektype_weekday
                 )
     
     if subjects_number == 1: grammatical_entity: str = "а"
     elif subjects_number in range(2, 5): grammatical_entity: str = "ы"
     else: grammatical_entity: str = ""
     
-    bot.send_message(
+    await bot.send_message(
         chat_id=callback.message.chat.id,
-        text="*{}* пар{} всего!".format(subjects_number, grammatical_entity),
-        parse_mode="Markdown"
+        text="*{}* пар{} всего!".format(subjects_number, grammatical_entity)
     )
     
     students[callback.message.chat.id].guard.drop()
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.EDIT.value and
         Commands.EDIT_SHOW_EDIT.value in callback.data
 )
 @top_notification
-def show_edit(callback: CallbackQuery):
+async def show_edit(callback: CallbackQuery):
     index: int = int(callback.data.split()[1])
     subject: StudentSubject = students[callback.message.chat.id].edited_subjects[index]
     
-    bot.edit_message_text(
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text=subject.get(),
-        parse_mode="Markdown"
+        text=subject.get()
     )
     
     students[callback.message.chat.id].guard.drop()
 
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.EDIT.value and
         Commands.EDIT_DELETE_ALL.value in callback.data
 )
 @top_notification
-def delete_all(callback: CallbackQuery):
+async def delete_all(callback: CallbackQuery):
     request_enities: [str] = callback.data.split()[1:]
     
     weektypes: {str: bool} = { "каждая": None, "чётная": True, "нечётная": False }
@@ -214,30 +213,28 @@ def delete_all(callback: CallbackQuery):
                 if subject.weekday == weekday and subject.is_even == is_even:
                     students[callback.message.chat.id].edited_subjects.remove(subject)
     
-    bot.edit_message_text(
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text="Удалено!",
-        parse_mode="Markdown"
+        text="Удалено!"
     )
     
     students[callback.message.chat.id].guard.drop()
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.EDIT.value and
         Commands.EDIT_DELETE_EDIT.value in callback.data
 )
 @top_notification
-def delete_edit(callback: CallbackQuery):
+async def delete_edit(callback: CallbackQuery):
     index: int = int(callback.data.split()[1])
     students[callback.message.chat.id].edited_subjects.pop(index)
     
-    bot.edit_message_text(
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text="Удалено!",
-        parse_mode="Markdown"
+        text="Удалено!"
     )
     
     students[callback.message.chat.id].guard.drop()

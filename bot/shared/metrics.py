@@ -135,7 +135,7 @@ class Metrics:
     
     def increment(self, command: Commands):
         def outter(func):
-            def inner(arg):
+            async def inner(arg):
                 if self._day != datetime.today().isoweekday(): self.drop()
                 
                 if command is Commands.CANCEL: self._cancel += 1
@@ -157,6 +157,6 @@ class Metrics:
                 elif command is Commands.ME: self._me += 1
                 elif command is Commands.UNKNOWN: self._unknown += 1
                 
-                func(arg)
+                await func(arg)
             return inner
         return outter

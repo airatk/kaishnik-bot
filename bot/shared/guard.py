@@ -1,4 +1,4 @@
-from telebot.types import Message
+from aiogram.types import Message
 
 
 class Guard:

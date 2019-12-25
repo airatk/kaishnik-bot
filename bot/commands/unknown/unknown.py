@@ -1,7 +1,9 @@
-from telebot.types import CallbackQuery
-from telebot.types import Message
+from aiogram.types import CallbackQuery
+from aiogram.types import Message
 
 from bot import bot
+from bot import dispatcher
+
 from bot import students
 from bot import metrics
 
@@ -14,31 +16,30 @@ from bot.shared.commands import Commands
 from random import choice
 
 
-@bot.message_handler(content_types=[ "sticker", "photo", "video", "audio", "document", "voice", "video_note", "location", "contact" ])
-def unknown_nontext_message(message: Message): bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+@dispatcher.message_handler(content_types=[ "sticker", "photo", "video", "audio", "document", "voice", "video_note", "location", "contact" ])
+async def unknown_nontext_message(message: Message): await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
-@bot.message_handler()
+@dispatcher.message_handler(content_types=[ "text" ])
 @metrics.increment(Commands.UNKNOWN)
-def unknown_command(message: Message):
-    bot.send_message(
+async def unknown_command(message: Message):
+    await bot.send_message(
         chat_id=message.chat.id,
         text=choice(REPLIES_TO_UNKNOWN_COMMAND if message.text.startswith("/") else REPLIES_TO_UNKNOWN_MESSAGE),
-        parse_mode="Markdown",
         disable_web_page_preview=True
     )
 
-@bot.callback_query_handler(func=lambda callback: True)
+@dispatcher.callback_query_handler(lambda callback: True)
 @metrics.increment(Commands.UNKNOWN)
 @top_notification
-def unknown_callback(callback: CallbackQuery):
+async def unknown_callback(callback: CallbackQuery):
     try:
-        bot.edit_message_text(
+        await bot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
             text="Ой-ой-ой!🙆🏼‍♀️"
         )
     except Exception:
-        bot.edit_message_text(
+        await bot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
             text="Ой!🙆🏼‍♀️"

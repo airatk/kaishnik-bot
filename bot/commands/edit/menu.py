@@ -1,6 +1,8 @@
-from telebot.types import Message
+from aiogram.types import Message
 
 from bot import bot
+from bot import dispatcher
+
 from bot import students
 from bot import metrics
 
@@ -10,19 +12,18 @@ from bot.shared.helpers import top_notification
 from bot.shared.commands import Commands
 
 
-@bot.message_handler(
-    commands=[ Commands.EDIT.value ],
-    func=lambda message: students[message.chat.id].guard.text is None
+@dispatcher.message_handler(
+    lambda message: students[message.chat.id].guard.text is None,
+    commands=[ Commands.EDIT.value ]
 )
 @metrics.increment(Commands.EDIT)
-def edit(message: Message):
+async def edit(message: Message):
     edited_number: int = len(students[message.chat.id].edited_subjects)
     
-    bot.send_message(
+    await bot.send_message(
         chat_id=message.chat.id,
         text="Отредактировано пар: *{edited_number}*".format(edited_number=edited_number),
-        reply_markup=action_chooser(has_edits=edited_number != 0),
-        parse_mode="Markdown"
+        reply_markup=action_chooser(has_edits=edited_number != 0)
     )
     
     students[message.chat.id].guard.text = Commands.EDIT.value

@@ -1,6 +1,8 @@
-from telebot.types import CallbackQuery
+from aiogram.types import CallbackQuery
 
 from bot import bot
+from bot import dispatcher
+
 from bot import students
 
 from bot.commands.lecturers.utilities.keyboards import lecturer_weektype_chooser
@@ -20,28 +22,28 @@ from datetime import datetime
 from random import choice
 
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.LECTURERS.value and
         ScheduleType.CLASSES.value in callback.data
 )
 @top_notification
-def lecturers_week_type_classes(callback: CallbackQuery):
-    bot.edit_message_text(
+async def lecturers_week_type_classes(callback: CallbackQuery):
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Преподавателево расписание занятий на:",
         reply_markup=lecturer_weektype_chooser(lecturer_id=callback.data.split()[1])
     )
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.LECTURERS.value and
         ClassesOptionType.DAILY.value in callback.data
 )
 @top_notification
-def one_day_lecturer_schedule(callback: CallbackQuery):
-    bot.edit_message_text(
+async def one_day_lecturer_schedule(callback: CallbackQuery):
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text=choice(LOADING_REPLIES),
@@ -60,25 +62,24 @@ def one_day_lecturer_schedule(callback: CallbackQuery):
     elif len(schedule) == 0: message_text: str = ResponseError.NO_DATA.value
     else: message_text: str = schedule[int(weekday)]
     
-    bot.edit_message_text(
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text=message_text,
-        parse_mode="Markdown"
+        text=message_text
     )
     
     students[callback.message.chat.id].guard.drop()
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.LECTURERS.value and
         ClassesOptionType.WEEKDAYS.value in callback.data
 )
 @top_notification
-def certain_date_schedule(callback: CallbackQuery):
+async def certain_date_schedule(callback: CallbackQuery):
     (weektype, lecturer_id) = callback.data.split()[1:]
     
-    bot.edit_message_text(
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Выбери нужный день:",
@@ -88,14 +89,14 @@ def certain_date_schedule(callback: CallbackQuery):
         )
     )
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.LECTURERS.value and
         ClassesOptionType.WEEKLY.value in callback.data
 )
 @top_notification
-def weekly_lecturer_schedule(callback: CallbackQuery):
-    bot.edit_message_text(
+async def weekly_lecturer_schedule(callback: CallbackQuery):
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text=choice(LOADING_REPLIES),
@@ -111,25 +112,24 @@ def weekly_lecturer_schedule(callback: CallbackQuery):
     )
     
     if schedule is None:
-        bot.edit_message_text(
+        await bot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
             text=ResponseError.NO_RESPONSE.value
         )
     elif len(schedule) == 0:
-        bot.edit_message_text(
+        await bot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
             text=ResponseError.NO_DATA.value
         )
     else:
-        bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+        await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
         
         for weekday in WEEKDAYS:
-            bot.send_message(
+            await bot.send_message(
                 chat_id=callback.message.chat.id,
-                text=schedule[weekday - 1],
-                parse_mode="Markdown"
+                text=schedule[weekday - 1]
             )
     
     students[callback.message.chat.id].guard.drop()

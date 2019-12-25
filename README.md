@@ -1,7 +1,7 @@
 # Каист
 
 ## What the ?
-The bot might be considered as `kai.ru` & `old.kai.ru` wrapper. It's built using [pyTelegramBotAPI][1].
+The bot might be considered as `kai.ru` & `old.kai.ru` wrapper. It's built on [aiogram][1].
 
 ## Reason
 Official mobile-unfriendly ugly inconvenient website had to be replaced by something more usable. Here the [@kaishnik_bot][2] comes up.
@@ -61,7 +61,7 @@ All the stuff was drawn using Pixelmator Pro.
 ![kaishnik_bot poster][6]
 
 
-[1]: https://github.com/eternnoir/pyTelegramBotAPI "Repository of pyTelegramBotAPI"
+[1]: https://github.com/aiogram/aiogram "Repository of aiogram"
 [2]: https://telegram.me/kaishnik_bot "Open the bot in Telegram"
 [3]: https://telegram.me/BotFather "Open BotFather in Telegram"
 [4]: https://core.telegram.org/bots/api "Telegram Bot API official reference"

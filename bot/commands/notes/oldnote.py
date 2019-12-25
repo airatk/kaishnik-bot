@@ -1,6 +1,8 @@
-from telebot.types import CallbackQuery
+from aiogram.types import CallbackQuery
 
 from bot import bot
+from bot import dispatcher
+
 from bot import students
 
 from bot.commands.notes.utilities.keyboards import note_chooser
@@ -12,17 +14,17 @@ from bot.shared.data.constants import USERS_FILE
 from bot.shared.commands import Commands
 
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.NOTES.value and
         callback.data in [ Commands.NOTES_SHOW.value, Commands.NOTES_DELETE.value ]
 )
 @top_notification
-def choose_note(callback: CallbackQuery):
+async def choose_note(callback: CallbackQuery):
     if callback.data == Commands.NOTES_SHOW.value: ACTION: Commands = Commands.NOTES_SHOW
     elif callback.data == Commands.NOTES_DELETE.value: ACTION: Commands = Commands.NOTES_DELETE
     
-    bot.edit_message_text(
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Выбери заметку:",
@@ -33,60 +35,57 @@ def choose_note(callback: CallbackQuery):
     )
 
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.NOTES.value and
         callback.data == Commands.NOTES_SHOW_ALL.value
 )
 @top_notification
-def show_all(callback: CallbackQuery):
-    bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+async def show_all(callback: CallbackQuery):
+    await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     
     for note in students[callback.message.chat.id].notes:
-        bot.send_message(
+        await bot.send_message(
             chat_id=callback.message.chat.id,
-            text=note,
-            parse_mode="Markdown"
+            text=note
         )
     
-    bot.send_message(
+    await bot.send_message(
         chat_id=callback.message.chat.id,
         text="Заметок всего: *{current}/{max}*".format(
             current=len(students[callback.message.chat.id].notes),
             max=MAX_NOTES_NUMBER
-        ),
-        parse_mode="Markdown"
+        )
     )
     
     students[callback.message.chat.id].guard.drop()
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.NOTES.value and
         Commands.NOTES_SHOW.value in callback.data
 )
 @top_notification
-def show_note(callback: CallbackQuery):
+async def show_note(callback: CallbackQuery):
     number: int = int(callback.data.split()[1])
     
-    bot.edit_message_text(
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text=students[callback.message.chat.id].notes[number],
-        parse_mode="Markdown"
+        text=students[callback.message.chat.id].notes[number]
     )
     
     students[callback.message.chat.id].guard.drop()
 
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.NOTES.value and
         callback.data == Commands.NOTES_DELETE_ALL.value
 )
 @top_notification
-def delete_all(callback: CallbackQuery):
-    bot.edit_message_text(
+async def delete_all(callback: CallbackQuery):
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Удалено!"
@@ -97,23 +96,22 @@ def delete_all(callback: CallbackQuery):
     
     save_data(file=USERS_FILE, object=students)
 
-@bot.callback_query_handler(
-    func=lambda callback:
+@dispatcher.callback_query_handler(
+    lambda callback:
         students[callback.message.chat.id].guard.text == Commands.NOTES.value and
         Commands.NOTES_DELETE.value in callback.data
 )
 @top_notification
-def delete_note(callback: CallbackQuery):
+async def delete_note(callback: CallbackQuery):
     number: int = int(callback.data.split()[1])
     
-    bot.edit_message_text(
+    await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text=(
             "Заметка удалена! В ней было:\n\n"
             "{note}".format(note=students[callback.message.chat.id].notes[number])
-        ),
-        parse_mode="Markdown"
+        )
     )
     
     students[callback.message.chat.id].guard.drop()

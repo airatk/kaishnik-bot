@@ -1,7 +1,9 @@
-from telebot.types import Chat
-from telebot.types import Message
+from aiogram.types import Chat
+from aiogram.types import Message
 
 from bot import bot
+from bot import dispatcher
+
 from bot import students
 
 from bot.commands.creator.utilities.helpers import parse_creator_request
@@ -20,32 +22,32 @@ from bot.shared.data.constants import USERS_FILE
 from bot.shared.commands import Commands
 
 
-@bot.message_handler(
-    func=lambda message: message.chat.id == CREATOR,
+@dispatcher.message_handler(
+    lambda message: message.chat.id == CREATOR,
     commands=[ Commands.CLEAR.value ]
 )
-def clear(message: Message):
+async def clear(message: Message):
     is_cleared: bool = False
     progress_bar: str = ""
     students_list: [Student] = list(students)
     
-    loading_message = bot.send_message(
+    loading_message = await bot.send_message(
         chat_id=message.chat.id,
         text="Started clearing..."
     )
     
     for (index, chat_id) in enumerate(students_list):
-        progress_bar = update_progress_bar(
+        progress_bar = await update_progress_bar(
             loading_message=loading_message, current_progress_bar=progress_bar,
             values=students_list, index=index
         )
         
-        chat: Chat = bot.get_chat(chat_id=chat_id)
+        chat: Chat = await bot.get_chat(chat_id=chat_id)
         
         try:
-            bot.send_chat_action(chat_id=chat_id, action="typing")
+            await bot.send_chat_action(chat_id=chat_id, action="typing")
         except Exception:
-            bot.send_message(
+            await bot.send_message(
                 chat_id=message.chat.id,
                 text=USER_DATA.format(
                     firstname=chat.first_name, lastname=chat.last_name, username=chat.username,
@@ -62,7 +64,8 @@ def clear(message: Message):
                     guard_text=students[chat_id].guard.text,
                     is_guard_message_none=students[chat_id].guard.message is None,
                     hashtag="erased"
-                )
+                ),
+                parse_mode=None
             )
             
             del students[chat_id]
@@ -70,22 +73,22 @@ def clear(message: Message):
     
     save_data(file=USERS_FILE, object=students)
     
-    bot.send_message(
+    await bot.send_message(
         chat_id=message.chat.id,
         text="Cleared!" if is_cleared else "No users to clear!"
     )
 
-@bot.message_handler(
-    func=lambda message: message.chat.id == CREATOR,
+@dispatcher.message_handler(
+    lambda message: message.chat.id == CREATOR,
     commands=[ Commands.ERASE.value ]
 )
-def erase(message: Message):
+async def erase(message: Message):
     (option, _) = parse_creator_request(message.text)
     
     erase_list: [Student] = []
     
     if option is None:
-        bot.send_message(
+        await bot.send_message(
             chat_id=message.chat.id,
             text="No option has been found!"
         )
@@ -101,17 +104,16 @@ def erase(message: Message):
             try:
                 chat_id: int = int(possible_chat_id)
             except Exception:
-                bot.send_message(
+                await bot.send_message(
                     chat_id=message.chat.id,
-                    text="*{invalid_chat_id}* cannot be a chat ID!".format(invalid_chat_id=possible_chat_id),
-                    parse_mode="Markdown"
+                    text="*{invalid_chat_id}* cannot be a chat ID!".format(invalid_chat_id=possible_chat_id)
                 )
             else:
                 erase_list.append(chat_id)
     
     progress_bar: str = ""
     
-    loading_message: Message = bot.send_message(
+    loading_message: Message = await bot.send_message(
         chat_id=message.chat.id,
         text="Started erasing…"
     )
@@ -123,9 +125,9 @@ def erase(message: Message):
         )
         
         if chat_id in students:
-            chat: Chat = bot.get_chat(chat_id=chat_id)
+            chat: Chat = await bot.get_chat(chat_id=chat_id)
             
-            bot.send_message(
+            await bot.send_message(
                 chat_id=message.chat.id,
                 text=USER_DATA.format(
                     firstname=chat.first_name, lastname=chat.last_name, username=chat.username,
@@ -142,12 +144,13 @@ def erase(message: Message):
                     guard_text=students[chat_id].guard.text,
                     is_guard_message_none=students[chat_id].guard.message is None,
                     hashtag="erased"
-                )
+                ),
+                parse_mode=None
             )
             
             del students[chat_id]
         else:
-            bot.send_message(
+            await bot.send_message(
                 chat_id=message.chat.id,
                 text="{chat_id} doesn't use me!".format(chat_id=chat_id)
             )
@@ -155,20 +158,20 @@ def erase(message: Message):
             erase_list.remove(chat_id)
     
     if len(erase_list) == 0:
-        bot.delete_message(chat_id=message.chat.id, message_id=loading_message.message_id)
+        await bot.delete_message(chat_id=message.chat.id, message_id=loading_message.message_id)
     
-    bot.send_message(
+    await bot.send_message(
         chat_id=message.chat.id,
         text="No users to erase!" if len(erase_list) == 0 else "Erased!"
     )
     
     save_data(file=USERS_FILE, object=students)
 
-@bot.message_handler(
-    func=lambda message: message.chat.id == CREATOR,
+@dispatcher.message_handler(
+    lambda message: message.chat.id == CREATOR,
     commands=[ Commands.DROP.value ]
 )
-def drop(message: Message):
+async def drop(message: Message):
     (option, _) = parse_creator_request(message.text)
     
     drop_list: [Student] = []
@@ -176,16 +179,15 @@ def drop(message: Message):
     if option == DropOption.ALL.value:
         drop_list = list(students)
     else:
-        bot.send_message(
+        await bot.send_message(
             chat_id=message.chat.id,
-            text="If you are sure to drop all users' data, type */drop all*",
-            parse_mode="Markdown"
+            text="If you are sure to drop all users' data, type */drop all*"
         )
         return
     
     progress_bar: str = ""
     
-    loading_message: Message = bot.send_message(
+    loading_message: Message = await bot.send_message(
         chat_id=message.chat.id,
         text="Started dropping…"
     )
@@ -199,14 +201,13 @@ def drop(message: Message):
         try:
             if students[chat_id].notes != []:
                 for note in students[chat_id].notes:
-                    bot.send_message(
+                    await bot.send_message(
                         chat_id=chat_id,
                         text=note,
-                        parse_mode="Markdown",
                         disable_notification=True
                     )
                 
-                bot.send_message(
+                await bot.send_message(
                     chat_id=chat_id,
                     text="Твои заметки, чтобы ничего не потерялось.",
                     disable_notification=True
@@ -214,12 +215,12 @@ def drop(message: Message):
             
             students[chat_id]: Student = Student()
             
-            guard_message: Message = bot.send_message(
+            guard_message: Message = await bot.send_message(
                 chat_id=chat_id,
                 text="Текущие настройки сброшены.",
                 disable_notification=True
             )
-            bot.send_message(
+            await bot.send_message(
                 chat_id=chat_id,
                 text="Обнови данные:",
                 reply_markup=make_login(),
@@ -233,22 +234,22 @@ def drop(message: Message):
     
     save_data(file=USERS_FILE, object=students)
     
-    bot.send_message(
+    await bot.send_message(
         chat_id=message.chat.id,
         text="Data was #dropped!"
     )
 
-@bot.message_handler(
-    func=lambda message: message.chat.id == CREATOR,
+@dispatcher.message_handler(
+    lambda message: message.chat.id == CREATOR,
     commands=[ Commands.GUARDDROP.value ]
 )
-def guarddrop(message):
+async def guarddrop(message):
     (option, _) = parse_creator_request(message.text)
     
     guarddrop_list: [Student] = []
     
     if option is None:
-        bot.send_message(
+        await bot.send_message(
             chat_id=message.chat.id,
             text="No option has been found!"
         )
@@ -260,10 +261,9 @@ def guarddrop(message):
             try:
                 chat_id: int = int(possible_chat_id)
             except Exception:
-                bot.send_message(
+                await bot.send_message(
                     chat_id=message.chat.id,
-                    text="*{invalid_chat_id}* cannot be a chat ID!".format(invalid_chat_id=possible_chat_id),
-                    parse_mode="Markdown"
+                    text="*{invalid_chat_id}* cannot be a chat ID!".format(invalid_chat_id=possible_chat_id)
                 )
             else:
                 guarddrop_list.append(chat_id)
@@ -272,14 +272,14 @@ def guarddrop(message):
         if chat_id in students:
             students[chat_id].guard.drop()
         else:
-            bot.send_message(
+            await bot.send_message(
                 chat_id=message.chat.id,
                 text="{chat_id} doesn't use me!".format(chat_id=chat_id)
             )
             
             guarddrop_list.remove(chat_id)
     
-    bot.send_message(
+    await bot.send_message(
         chat_id=message.chat.id,
         text="No users to guarddrop!" if len(guarddrop_list) == 0 else "Guarddropped!"
     )

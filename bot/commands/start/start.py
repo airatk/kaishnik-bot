@@ -1,7 +1,9 @@
-from telebot.types import CallbackQuery
-from telebot.types import Message
+from aiogram.types import CallbackQuery
+from aiogram.types import Message
 
 from bot import bot
+from bot import dispatcher
+
 from bot import students
 from bot import metrics
 
@@ -15,23 +17,23 @@ from bot.shared.commands import Commands
 
 
 # Accepting old users on `/start` command whole new users on any messsage...
-@bot.message_handler(
-    func=lambda message:
+@dispatcher.message_handler(
+    lambda message:
         message.text == "/" + Commands.START.value or
         message.chat.id not in students
 )
 @metrics.increment(Commands.START)
-def start_on_command(message: Message):
+async def start_on_command(message: Message):
     students[message.chat.id] = Student()
     
     save_data(file=USERS_FILE, object=students)
     
-    guard_message: Message = bot.send_message(
+    guard_message: Message = await bot.send_message(
         chat_id=message.chat.id,
         text="Йоу!"
     )
     
-    bot.send_message(
+    await bot.send_message(
         chat_id=message.chat.id,
         text="Для начала настрой меня на общение с тобой😏",
         reply_markup=make_login()
@@ -41,9 +43,10 @@ def start_on_command(message: Message):
     students[message.chat.id].guard.message = guard_message
 
 # ... & any callback
-@bot.callback_query_handler(lambda callback: callback.message.chat.id not in students)
+@dispatcher.callback_query_handler(lambda callback: callback.message.chat.id not in students)
 @metrics.increment(Commands.START)
 @top_notification
-def start_on_callback(callback: CallbackQuery):
-    bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    start_on_command(callback.message)
+async def start_on_callback(callback: CallbackQuery):
+    await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+    
+    await start_on_command(callback.message)

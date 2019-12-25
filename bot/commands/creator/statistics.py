@@ -1,7 +1,9 @@
-from telebot.types import Chat
-from telebot.types import Message
+from aiogram.types import Chat
+from aiogram.types import Message
 
 from bot import bot
+from bot import dispatcher
+
 from bot import students
 from bot import metrics
 
@@ -19,18 +21,18 @@ from bot.shared.commands import Commands
 from datetime import datetime
 
 
-@bot.message_handler(
-    func=lambda message: message.chat.id == CREATOR,
+@dispatcher.message_handler(
+    lambda message: message.chat.id == CREATOR,
     commands=[ Commands.USERS.value ]
 )
-def users(message: Message):
+async def users(message: Message):
     institutes_stats: [str] = [ student.institute for student in students.values() ]
     years_stats: [str] = [ student.year for student in students.values() ]
     
     institutes_names: [str] = list(INSTITUTES.values())
     years_names: [str] = [ str(i) for i in range(1, 7) ]  # 6 years maximum
     
-    bot.send_message(
+    await bot.send_message(
         chat_id=message.chat.id,
         text=USERS_STATS.format(
             faculty_1=institutes_names[0], number_faculty_1=institutes_stats.count(institutes_names[0]),
@@ -48,21 +50,19 @@ def users(message: Message):
             number_group_only=sum(1 for student in students.values() if not student.is_full),
             number_unsetup=sum(1 for student in students.values() if not student.is_setup),
             total=len(students)
-        ),
-        parse_mode="Markdown"
+        )
     )
 
-@bot.message_handler(
-    func=lambda message: message.chat.id == CREATOR,
+@dispatcher.message_handler(
+    lambda message: message.chat.id == CREATOR,
     commands=[ Commands.METRICS.value ]
 )
-def get_metrics(message: Message):
+async def get_metrics(message: Message):
     (option, _) = parse_creator_request(message.text)
     
-    if option == "drop" or metrics.day != datetime.today().isoweekday():
-        metrics.drop()
+    if option == "drop" or metrics.day != datetime.today().isoweekday(): metrics.drop()
     
-    bot.send_message(
+    await bot.send_message(
         chat_id=message.chat.id,
         text=COMMAND_REQUESTS_STATS.format(
             classes_request_number=metrics.classes,
@@ -84,41 +84,31 @@ def get_metrics(message: Message):
             donate_request_number=metrics.donate,
             unknown_request_number=metrics.unknown,
             total_request_number=metrics.sum
-        ),
-        parse_mode="Markdown"
+        )
     )
 
-@bot.message_handler(
-    func=lambda message: message.chat.id == CREATOR,
+@dispatcher.message_handler(
+    lambda message: message.chat.id == CREATOR,
     commands=[ Commands.DATA.value ]
 )
-def data(message: Message):
+async def data(message: Message):
     (option, option_data) = parse_creator_request(message.text)
     
     full_users_list: [Student] = list(students)[::-1]  # Reversing list of students to show new users first
     asked_users_list: [Student] = []
     
     try:
-        if option == DataOption.ALL.value:
-            asked_users_list = full_users_list
-        elif option == DataOption.UNLOGIN.value:
-            asked_users_list = [ chat_id for chat_id in full_users_list if not students[chat_id].is_setup ]
-        elif option == DataOption.ME.value:
-            asked_users_list.append(message.chat.id)
-        elif option == DataOption.NUMBER.value:
-            asked_users_list = full_users_list[:int(option_data)]
-        elif option == DataOption.INDEX.value:
-            asked_users_list.append(full_users_list[int(option_data)])
-        elif option == DataOption.NAME.value:
-            asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].name is not None and message.text.split(":")[1] in students[chat_id].name ]
-        elif option == DataOption.GROUP.value:
-            asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].group is not None and option_data in students[chat_id].group ]
-        elif option == DataOption.YEAR.value:
-            asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].year == option_data ]
-        else:
-            raise Exception()
+        if option == DataOption.ALL.value: asked_users_list = full_users_list
+        elif option == DataOption.UNLOGIN.value: asked_users_list = [ chat_id for chat_id in full_users_list if not students[chat_id].is_setup ]
+        elif option == DataOption.ME.value: asked_users_list.append(message.chat.id)
+        elif option == DataOption.NUMBER.value: asked_users_list = full_users_list[:int(option_data)]
+        elif option == DataOption.INDEX.value: asked_users_list.append(full_users_list[int(option_data)])
+        elif option == DataOption.NAME.value: asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].name is not None and message.text.split(":")[1] in students[chat_id].name ]
+        elif option == DataOption.GROUP.value: asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].group is not None and option_data in students[chat_id].group ]
+        elif option == DataOption.YEAR.value: asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].year == option_data ]
+        else: raise Exception()
     except Exception:
-        bot.send_message(
+        await bot.send_message(
             chat_id=message.chat.id,
             text="Incorrect option!"
         )
@@ -126,14 +116,14 @@ def data(message: Message):
     
     for chat_id in asked_users_list:
         try:
-            chat: Chat = bot.get_chat(chat_id=chat_id)
+            chat: Chat = await bot.get_chat(chat_id=chat_id)
         except Exception:
-            bot.send_message(
+            await bot.send_message(
                 chat_id=message.chat.id,
                 text="{} is inactive! /clear?".format(chat_id)
             )
         else:
-            bot.send_message(
+            await bot.send_message(
                 chat_id=message.chat.id,
                 text=USER_DATA.format(
                     firstname=chat.first_name, lastname=chat.last_name, username=chat.username,
@@ -150,11 +140,11 @@ def data(message: Message):
                     guard_text=students[chat_id].guard.text,
                     is_guard_message_none=students[chat_id].guard.message is None,
                     hashtag="data"
-                )
+                ),
+                parse_mode=None
             )
     
-    bot.send_message(
+    await bot.send_message(
         chat_id=message.chat.id,
-        text="*{shown}/{total}* users were shown!".format(shown=len(asked_users_list), total=len(students)),
-        parse_mode="Markdown"
+        text="*{shown}/{total}* users were shown!".format(shown=len(asked_users_list), total=len(students))
     )
