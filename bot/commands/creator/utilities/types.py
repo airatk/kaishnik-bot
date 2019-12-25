@@ -5,9 +5,11 @@ class DataOption(Enum):
     ALL: str = "all"
     UNLOGIN: str = "unlogin"
     ME: str = "me"
+    USERNAME: str = "username"
+    FIRSTNAME: str = "firstname"
     NUMBER: str = "number"
     INDEX: str = "index"
-    NAME: str = "name"
+    FULLNAME: str = "fullname"
     GROUP: str = "group"
     YEAR: str = "year"
 

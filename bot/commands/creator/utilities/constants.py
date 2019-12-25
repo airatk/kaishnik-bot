@@ -11,8 +11,9 @@ CONTROL_PANEL: str = (
     "/metrics \[ drop ]\n"
     "/data {\n"
         "\t\t\t\[ all ]\[ unlogin ]\[ me ]\n"
+        "\t\t\t\[ username:{} ]\[ firstname:{} ]\n"
         "\t\t\t\[ number:{} ]\[ index:{} ]\n"
-        "\t\t\t\[ name:{} ]\[ group:{} ]\n"
+        "\t\t\t\[ fullname:{} ]\[ group:{} ]\n"
         "\t\t\t\[ year:{} ]\n"
     "}\n"
     "\n*cleanning*\n"  # commands to get rid of inactive users

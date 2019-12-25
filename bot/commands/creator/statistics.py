@@ -94,13 +94,23 @@ async def get_metrics(message: Message):
 async def data(message: Message):
     (option, option_data) = parse_creator_request(message.text)
     
-    full_users_list: [Student] = list(students)[::-1]  # Reversing list of students to show new users first
-    asked_users_list: [Student] = []
+    full_users_list: [str] = list(students)[::-1]  # Reversing list of students to show new users first
+    asked_users_list: [str] = []
+    
+    chats_list: [Chat] = []
+    inactives_list: [str] = []
+    
+    for chat_id in full_users_list:
+        try: chat: Chat = await bot.get_chat(chat_id=chat_id)
+        except Exception: inactives_list.append(chat_id)
+        else: chats_list.append(chat)
     
     try:
         if option == DataOption.ALL.value: asked_users_list = full_users_list
         elif option == DataOption.UNLOGIN.value: asked_users_list = [ chat_id for chat_id in full_users_list if not students[chat_id].is_setup ]
         elif option == DataOption.ME.value: asked_users_list.append(message.chat.id)
+        elif option == DataOption.USERNAME.value: asked_users_list = [ chat.id for chat in chats_list if option_data in chat.username ]
+        elif option == DataOption.FIRSTNAME.value: asked_users_list = [ chat.id for chat in chats_list if option_data in chat.first_name ]
         elif option == DataOption.NUMBER.value: asked_users_list = full_users_list[:int(option_data)]
         elif option == DataOption.INDEX.value: asked_users_list.append(full_users_list[int(option_data)])
         elif option == DataOption.NAME.value: asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].name is not None and message.text.split(":")[1] in students[chat_id].name ]
@@ -115,34 +125,36 @@ async def data(message: Message):
         return
     
     for chat_id in asked_users_list:
-        try:
-            chat: Chat = await bot.get_chat(chat_id=chat_id)
-        except Exception:
-            await bot.send_message(
-                chat_id=message.chat.id,
-                text="{} is inactive! /clear?".format(chat_id)
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=USER_DATA.format(
+                firstname=chat.first_name, lastname=chat.last_name, username=chat.username,
+                chat_id=chat_id,
+                institute=students[chat_id].institute,
+                year=students[chat_id].year,
+                group_number=students[chat_id].group,
+                name=students[chat_id].name,
+                card=students[chat_id].card,
+                notes_number=len(students[chat_id].notes),
+                edited_classes_number=len(students[chat_id].edited_subjects),
+                fellow_students_number=len(students[chat_id].names),
+                is_full=students[chat_id].is_full,
+                guard_text=students[chat_id].guard.text,
+                is_guard_message_none=students[chat_id].guard.message is None,
+                hashtag="data"
+            ),
+            parse_mode=None
+        )
+    
+    if len(inactives_list) != 0:
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text="There are *{number}* inactive user{ending}: {ids}".format(
+                number=len(inactives_list),
+                ending="" if len(inactives_list) == 1 else "s",
+                ids=", ".join([ chat_id for chat_id in inactives_list ])
             )
-        else:
-            await bot.send_message(
-                chat_id=message.chat.id,
-                text=USER_DATA.format(
-                    firstname=chat.first_name, lastname=chat.last_name, username=chat.username,
-                    chat_id=chat_id,
-                    institute=students[chat_id].institute,
-                    year=students[chat_id].year,
-                    group_number=students[chat_id].group,
-                    name=students[chat_id].name,
-                    card=students[chat_id].card,
-                    notes_number=len(students[chat_id].notes),
-                    edited_classes_number=len(students[chat_id].edited_subjects),
-                    fellow_students_number=len(students[chat_id].names),
-                    is_full=students[chat_id].is_full,
-                    guard_text=students[chat_id].guard.text,
-                    is_guard_message_none=students[chat_id].guard.message is None,
-                    hashtag="data"
-                ),
-                parse_mode=None
-            )
+        )
     
     await bot.send_message(
         chat_id=message.chat.id,
