@@ -16,7 +16,7 @@ output_data: {int: None} = {}
 
 with open(input_path, "rb") as input_file: input_data = load(input_file)
 
-if result_data_type == "obj":  # `str` to `Student`
+if result_data_type == "obj":  # {int: str} to {int: Student}
     for (id, student) in input_data.items():
         output_data[id]                    = Student()
         output_data[id]._is_setup          = student["is_setup"]
@@ -34,7 +34,7 @@ if result_data_type == "obj":  # `str` to `Student`
         output_data[id]._notes             = student["notes"]
         output_data[id]._edited_subjects   = student["edited_subjects"]
         
-elif result_data_type == "str":  # `Student` to `str`
+elif result_data_type == "str":  # {int: Student} to {int: str}
     for (id, student) in input_data.items():
         output_data[id]                      = {}
         output_data[id]["is_setup"]          = student._is_setup

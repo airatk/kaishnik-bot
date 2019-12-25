@@ -202,12 +202,19 @@ def beautify_scoretable(raw_scoretable: [[str]]) -> [(str, str)]:
         elif "(зач./оц.)" in subject[1]: type: str = "".join([ "\n_", SubjectScoreType.GRADED_TEST.value, "_\n" ])
         else: type: str = "".join([ "\n_", SubjectScoreType.OTHER.value, "_\n" ])
         
-        certification1: str = "\n`•` 1 аттестация: {gained} / {max}".format(gained=subject[2], max=subject[3])
-        certification2: str = "\n`•` 2 аттестация: {gained} / {max}".format(gained=subject[4], max=subject[5])
-        certification3: str = "\n`•` 3 аттестация: {gained} / {max}".format(gained=subject[6], max=subject[7])
-        score_sum: str = "\n`◦` За семестр: {}".format(subject[8])
+        certification1: str = "\n• 1 аттестация: {gained} / {max}".format(gained=subject[2], max=subject[3])
+        certification2: str = "\n• 2 аттестация: {gained} / {max}".format(gained=subject[4], max=subject[5])
+        certification3: str = "\n• 3 аттестация: {gained} / {max}".format(gained=subject[6], max=subject[7])
         
-        debts: str = "\n\nДолги: {}".format(subject[10])
+        score_sum: str = "\n\n• За семестр: {gained} / {max}".format(
+            gained=subject[8],
+            max=(
+                (int(subject[3]) if subject[3].isnumeric() else 0) +
+                (int(subject[5]) if subject[5].isnumeric() else 0) +
+                (int(subject[7]) if subject[7].isnumeric() else 0)
+            )
+        )
+        debts: str = "\n• Долги: {}".format(subject[10])
         
         scoretable.append(
             (unstyled_title, "".join([ title, type, certification1, certification2, certification3, score_sum, debts ]))
