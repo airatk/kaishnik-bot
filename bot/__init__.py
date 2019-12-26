@@ -14,10 +14,7 @@ import logging
 
 
 # Logger setup
-logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    level=logging.INFO & logging.WARNING
-)
+logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=logging.NOTSET)
 
 
 # Initialising the bot components

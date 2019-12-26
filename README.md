@@ -1,10 +1,12 @@
 # Каист
+_telegram bot for students of KNRTU-KAI to make their daily routine more pleasant_
 
-## What the ?
-The bot might be considered as `kai.ru` & `old.kai.ru` wrapper. It's built on [aiogram][1].
+### Stack
+* Python
+* aiogram, pyTelegramBotAPI
 
 ## Reason
-Official mobile-unfriendly ugly inconvenient website had to be replaced by something more usable. Here the [@kaishnik_bot][2] comes up.
+The bot might be considered as `kai.ru` & `old.kai.ru` wrapper. Official mobile-unfriendly ugly inconvenient website had to be replaced by something more usable. Here the [@kaishnik_bot][2] comes up.
 
 ## Setup
 

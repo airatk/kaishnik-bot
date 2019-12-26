@@ -47,6 +47,8 @@ async def menu(message: Message):
     
     await bot.send_message(
         chat_id=message.chat.id,
-        text="Тебе нужно расписание{group} на:".format(group=" группы " + request_entities[1]),
+        text="Тебе нужно расписание{group} на:".format(
+            group=(" группы " + request_entities[1]) if len(request_entities) > 1 else ""
+        ),
         reply_markup=schedule_type()
     )
