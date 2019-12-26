@@ -35,7 +35,7 @@ async def exams(message: Message):
             await bot.edit_message_text(
                 chat_id=loading_message.chat.id,
                 message_id=loading_message.message_id,
-                text="Расписание экзаменов для группы *{group}* получить не удалось :(".format(group=request_entities[1])
+                text="Расписание экзаменов группы *{group}* получить не удалось :(".format(group=request_entities[1])
             )
             
             students[message.chat.id].guard.drop()

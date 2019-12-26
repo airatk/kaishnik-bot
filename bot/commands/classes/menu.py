@@ -37,7 +37,7 @@ async def menu(message: Message):
             await bot.edit_message_text(
                 chat_id=loading_message.chat.id,
                 message_id=loading_message.message_id,
-                text="Расписание занятий для группы *{group}* получить не удалось :(".format(group=request_entities[1])
+                text="Расписание занятий группы *{group}* получить не удалось :(".format(group=request_entities[1])
             )
             
             students[message.chat.id].guard.drop()
@@ -47,6 +47,6 @@ async def menu(message: Message):
     
     await bot.send_message(
         chat_id=message.chat.id,
-        text="Тебе нужно расписание на:",
+        text="Тебе нужно расписание{group} на:".format(group=" группы " + request_entities[1]),
         reply_markup=schedule_type()
     )

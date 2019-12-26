@@ -140,7 +140,7 @@ async def add_subject_title(message: Message):
 
 @dispatcher.message_handler(lambda message: students[message.chat.id].guard.text == Commands.EDIT_SUBJECT_TITLE.value)
 async def add_subject_type(message: Message):
-    students[message.chat.id].edited_subject.title = message.text
+    students[message.chat.id].edited_subject.title = " ".join([ message.text, "•" ])
     
     await bot.delete_message(
         chat_id=message.chat.id,

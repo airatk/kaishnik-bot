@@ -214,7 +214,7 @@ class Student:
         self._another_group = None
 
         if TYPE is ScheduleType.CLASSES:
-            return beautify_classes(response, is_next, self._edited_subjects)
+            return beautify_classes(response, is_next, self._edited_subjects if is_own_group_asked else [])
         elif TYPE is ScheduleType.EXAMS:
             return beautify_exams(response)
     
