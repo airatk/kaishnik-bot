@@ -59,6 +59,7 @@ async def set_institute(callback: CallbackQuery):
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text=choice(LOADING_REPLIES),
+        parse_mode="markdown",
         disable_web_page_preview=True
     )
     
@@ -273,7 +274,8 @@ async def set_card(message: Message):
     )
     await bot.send_message(
         chat_id=message.chat.id,
-        text=GUIDE_MESSAGE
+        text=GUIDE_MESSAGE,
+        parse_mode="markdown"
     )
     
     students[message.chat.id].guard.drop()

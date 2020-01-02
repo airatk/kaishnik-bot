@@ -151,7 +151,8 @@ async def show_all(callback: CallbackQuery):
             for weektype_weekday in weektype_weekdays:
                 await bot.send_message(
                     chat_id=callback.message.chat.id,
-                    text=weektype_weekday
+                    text=weektype_weekday,
+                    parse_mode="markdown"
                 )
     
     if subjects_number == 1: grammatical_entity: str = "а"
@@ -160,7 +161,8 @@ async def show_all(callback: CallbackQuery):
     
     await bot.send_message(
         chat_id=callback.message.chat.id,
-        text="*{}* пар{} всего!".format(subjects_number, grammatical_entity)
+        text="*{}* пар{} всего!".format(subjects_number, grammatical_entity),
+        parse_mode="markdown"
     )
     
     students[callback.message.chat.id].guard.drop()
@@ -178,7 +180,8 @@ async def show_edit(callback: CallbackQuery):
     await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text=subject.get()
+        text=subject.get(),
+        parse_mode="markdown"
     )
     
     students[callback.message.chat.id].guard.drop()

@@ -26,7 +26,8 @@ async def broadcast(message: Message):
     if message.text == "/broadcast":
         await bot.send_message(
             chat_id=message.chat.id,
-            text="No broadcast message was found! It's supposed to be right after the */broadcast* command."
+            text="No broadcast message was found! It's supposed to be right after the */broadcast* command.",
+            parse_mode="markdown"
         )
         return
     
@@ -49,6 +50,7 @@ async def broadcast(message: Message):
             await bot.send_message(
                 chat_id=chat_id,
                 text=BROADCAST_MESSAGE_TEMPLATE.format(broadcast_message=broadcast_message),
+                parse_mode="markdown",
                 disable_web_page_preview=True
             )
         except Exception:
@@ -79,5 +81,6 @@ async def reverse(message: Message):
     else:
         await bot.send_message(
             chat_id=message.chat.id,
-            text="If you are sure to reverse type of a week, type */reverse week*"
+            text="If you are sure to reverse type of a week, type */reverse week*",
+            parse_mode="markdown"
         )

@@ -58,7 +58,8 @@ async def weekly_schedule(callback: CallbackQuery):
         for weekday in WEEKDAYS:
             await bot.send_message(
                 chat_id=callback.message.chat.id,
-                text=schedule[weekday - 1]
+                text=schedule[weekday - 1],
+                parse_mode="markdown"
             )
     
     students[callback.message.chat.id].guard.drop()

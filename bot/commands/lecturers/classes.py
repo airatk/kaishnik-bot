@@ -65,7 +65,8 @@ async def one_day_lecturer_schedule(callback: CallbackQuery):
     await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text=message_text
+        text=message_text,
+        parse_mode="markdown"
     )
     
     students[callback.message.chat.id].guard.drop()
@@ -129,7 +130,8 @@ async def weekly_lecturer_schedule(callback: CallbackQuery):
         for weekday in WEEKDAYS:
             await bot.send_message(
                 chat_id=callback.message.chat.id,
-                text=schedule[weekday - 1]
+                text=schedule[weekday - 1],
+                parse_mode="markdown"
             )
     
     students[callback.message.chat.id].guard.drop()

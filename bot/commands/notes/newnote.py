@@ -42,7 +42,8 @@ async def add_note_hint(callback: CallbackQuery):
             "• Используй звёздочки, чтобы выделить \**жирным*\*\n"
             "• Используй нижнее подчёркивание, чтобы выделить \__курсивом_\_\n\n"
             "Напиши заметку и отправь решительно.".format(number=number)
-        )
+        ),
+        parse_mode="markdown"
     )
     
     students[callback.message.chat.id].guard.text = Commands.NOTES_ADD.value

@@ -25,6 +25,7 @@ async def unknown_command(message: Message):
     await bot.send_message(
         chat_id=message.chat.id,
         text=choice(REPLIES_TO_UNKNOWN_COMMAND if message.text.startswith("/") else REPLIES_TO_UNKNOWN_MESSAGE),
+        parse_mode="markdown",
         disable_web_page_preview=True
     )
 

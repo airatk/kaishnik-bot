@@ -16,5 +16,6 @@ from bot.shared.commands import Commands
 async def creator(message: Message):
     await bot.send_message(
         chat_id=message.chat.id,
-        text=CONTROL_PANEL
+        text=CONTROL_PANEL,
+        parse_mode="markdown"
     )

@@ -27,5 +27,6 @@ async def notes(message: Message):
             current=len(students[message.chat.id].notes),
             max=MAX_NOTES_NUMBER
         ),
+        parse_mode="markdown",
         reply_markup=action_chooser(has_notes=len(students[message.chat.id].notes) != 0)
     )

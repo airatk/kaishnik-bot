@@ -49,6 +49,7 @@ async def daily(callback: CallbackQuery):
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text=message_text,
+        parse_mode="markdown",
         disable_web_page_preview=True
     )
     

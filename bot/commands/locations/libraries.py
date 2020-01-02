@@ -53,7 +53,8 @@ async def send_library(callback: CallbackQuery):
     )
     await bot.send_message(
         chat_id=callback.message.chat.id,
-        text=LIBRARIES[number]["description"]
+        text=LIBRARIES[number]["description"],
+        parse_mode="markdown"
     )
     
     students[callback.message.chat.id].guard.drop()

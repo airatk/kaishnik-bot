@@ -31,6 +31,7 @@ async def login_on_command(message: Message):
             # Showing the warning to the old users
             warning="Все текущие данные, включая *заметки* и *изменённое расписание*, будут стёрты.\n\n" if students[message.chat.id].is_setup else ""
         ),
+        parse_mode="markdown",
         reply_markup=login_way_chooser(is_old=students[message.chat.id].is_setup)
     )
     

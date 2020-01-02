@@ -51,7 +51,8 @@ async def users(message: Message):
             number_group_only=sum(1 for student in students.values() if not student.is_full),
             number_unsetup=sum(1 for student in students.values() if not student.is_setup),
             total=len(students)
-        )
+        ),
+        parse_mode="markdown"
     )
 
 @dispatcher.message_handler(
@@ -85,7 +86,8 @@ async def get_metrics(message: Message):
             donate_request_number=metrics.donate,
             unknown_request_number=metrics.unknown,
             total_request_number=metrics.sum
-        )
+        ),
+        parse_mode="markdown"
     )
 
 @dispatcher.message_handler(
@@ -168,22 +170,24 @@ async def data(message: Message):
                     guard_text=students[chat_id].guard.text,
                     is_guard_message_none=students[chat_id].guard.message is None,
                     hashtag="data"
-                ),
-                parse_mode=None
+                )
             )
     
     if len(inactives_list) == 1:
         await bot.send_message(
             chat_id=message.chat.id,
-            text="There is 1 inactive user."
+            text="There is *1* inactive user.",
+            parse_mode="markdown"
         )
     elif len(inactives_list) != 0:
         await bot.send_message(
             chat_id=message.chat.id,
-            text="There are *{number}* inactive users.".format(number=len(inactives_list))
+            text="There are *{number}* inactive users.".format(number=len(inactives_list)),
+            parse_mode="markdown"
         )
     
     await bot.send_message(
         chat_id=message.chat.id,
-        text="*{shown}/{total}* users were shown!".format(shown=len(asked_users_list), total=len(students))
+        text="*{shown}/{total}* users were shown!".format(shown=len(asked_users_list), total=len(students)),
+        parse_mode="markdown"
     )

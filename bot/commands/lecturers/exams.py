@@ -39,7 +39,8 @@ async def lecturers_exams(callback: CallbackQuery):
     await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text=message_text
+        text=message_text,
+        parse_mode="markdown"
     )
     
     students[callback.message.chat.id].guard.drop()

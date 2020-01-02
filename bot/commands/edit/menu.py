@@ -23,6 +23,7 @@ async def edit(message: Message):
     await bot.send_message(
         chat_id=message.chat.id,
         text="Отредактировано пар: *{edited_number}*".format(edited_number=edited_number),
+        parse_mode="markdown",
         reply_markup=action_chooser(has_edits=edited_number != 0)
     )
     

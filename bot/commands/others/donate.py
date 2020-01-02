@@ -20,5 +20,6 @@ async def donate(message: Message):
     await bot.send_message(
         chat_id=message.chat.id,
         text=DONATE,
+        parse_mode="markdown",
         disable_web_page_preview=True
     )

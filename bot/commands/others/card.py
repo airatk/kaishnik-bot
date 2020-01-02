@@ -28,5 +28,6 @@ async def card(message: Message):
     
     await bot.send_message(
         chat_id=message.chat.id,
-        text="Номер твоего студенческого билета и твоей зачётной книжки: *{card}*".format(card=students[message.chat.id].card)
+        text="Номер твоего студенческого билета и твоей зачётной книжки: *{card}*".format(card=students[message.chat.id].card),
+        parse_mode="markdown"
     )

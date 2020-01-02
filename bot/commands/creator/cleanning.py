@@ -64,8 +64,7 @@ async def clear(message: Message):
                     guard_text=students[chat_id].guard.text,
                     is_guard_message_none=students[chat_id].guard.message is None,
                     hashtag="erased"
-                ),
-                parse_mode=None
+                )
             )
             
             del students[chat_id]
@@ -106,7 +105,8 @@ async def erase(message: Message):
             except Exception:
                 await bot.send_message(
                     chat_id=message.chat.id,
-                    text="*{invalid_chat_id}* cannot be a chat ID!".format(invalid_chat_id=possible_chat_id)
+                    text="*{invalid_chat_id}* cannot be a chat ID!".format(invalid_chat_id=possible_chat_id),
+                    parse_mode="markdown"
                 )
             else:
                 erase_list.append(chat_id)
@@ -144,8 +144,7 @@ async def erase(message: Message):
                     guard_text=students[chat_id].guard.text,
                     is_guard_message_none=students[chat_id].guard.message is None,
                     hashtag="erased"
-                ),
-                parse_mode=None
+                )
             )
             
             del students[chat_id]
@@ -181,7 +180,8 @@ async def drop(message: Message):
     else:
         await bot.send_message(
             chat_id=message.chat.id,
-            text="If you are sure to drop all users' data, type */drop all*"
+            text="If you are sure to drop all users' data, type */drop all*",
+            parse_mode="markdown"
         )
         return
     
@@ -204,6 +204,7 @@ async def drop(message: Message):
                     await bot.send_message(
                         chat_id=chat_id,
                         text=note,
+                        parse_mode="markdown",
                         disable_notification=True
                     )
                 
@@ -263,7 +264,8 @@ async def guarddrop(message):
             except Exception:
                 await bot.send_message(
                     chat_id=message.chat.id,
-                    text="*{invalid_chat_id}* cannot be a chat ID!".format(invalid_chat_id=possible_chat_id)
+                    text="*{invalid_chat_id}* cannot be a chat ID!".format(invalid_chat_id=possible_chat_id),
+                    parse_mode="markdown"
                 )
             else:
                 guarddrop_list.append(chat_id)

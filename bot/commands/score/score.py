@@ -167,7 +167,8 @@ async def show_subjects(callback: CallbackQuery):
         await bot.edit_message_text(
             chat_id=callback.message.chat.id,
             message_id=callback.message.message_id,
-            text=subjects[int(string_index)]
+            text=subjects[int(string_index)],
+            parse_mode="markdown"
         )
     else:
         await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
@@ -175,7 +176,8 @@ async def show_subjects(callback: CallbackQuery):
         for subject_score in subjects:
             await bot.send_message(
                 chat_id=callback.message.chat.id,
-                text=subject_score
+                text=subject_score,
+                parse_mode="markdown"
             )
         
         subjects_number: int = len(subjects)
@@ -188,7 +190,8 @@ async def show_subjects(callback: CallbackQuery):
             chat_id=callback.message.chat.id,
             text="*{subjects_number}* предмет{ending} всего!".format(
                 subjects_number=subjects_number, ending=ending
-            )
+            ),
+            parse_mode="markdown"
         )
     
     students[callback.message.chat.id].guard.drop()

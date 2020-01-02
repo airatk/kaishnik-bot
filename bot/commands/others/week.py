@@ -27,5 +27,6 @@ async def week(message: Message):
                 weekday=weekday, date=date,
                 type="чётная" if is_even() else "нечётная"
             )
-        )
+        ),
+        parse_mode="markdown"
     )

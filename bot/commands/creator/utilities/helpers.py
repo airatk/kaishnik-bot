@@ -29,7 +29,8 @@ async def update_progress_bar(loading_message, current_progress_bar: str, values
     await bot.edit_message_text(
         chat_id=loading_message.chat.id,
         message_id=loading_message.message_id,
-        text=next_progress_bar
+        text=next_progress_bar,
+        parse_mode="markdown"
     )
     
     return next_progress_bar

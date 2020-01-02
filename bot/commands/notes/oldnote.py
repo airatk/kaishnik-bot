@@ -47,7 +47,8 @@ async def show_all(callback: CallbackQuery):
     for note in students[callback.message.chat.id].notes:
         await bot.send_message(
             chat_id=callback.message.chat.id,
-            text=note
+            text=note,
+            parse_mode="markdown"
         )
     
     await bot.send_message(
@@ -55,7 +56,8 @@ async def show_all(callback: CallbackQuery):
         text="Заметок всего: *{current}/{max}*".format(
             current=len(students[callback.message.chat.id].notes),
             max=MAX_NOTES_NUMBER
-        )
+        ),
+        parse_mode="markdown"
     )
     
     students[callback.message.chat.id].guard.drop()
@@ -72,7 +74,8 @@ async def show_note(callback: CallbackQuery):
     await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
-        text=students[callback.message.chat.id].notes[number]
+        text=students[callback.message.chat.id].notes[number],
+        parse_mode="markdown"
     )
     
     students[callback.message.chat.id].guard.drop()
@@ -111,7 +114,8 @@ async def delete_note(callback: CallbackQuery):
         text=(
             "Заметка удалена! В ней было:\n\n"
             "{note}".format(note=students[callback.message.chat.id].notes[number])
-        )
+        ),
+        parse_mode="markdown"
     )
     
     students[callback.message.chat.id].guard.drop()
