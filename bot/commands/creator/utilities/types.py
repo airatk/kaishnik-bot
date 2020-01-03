@@ -9,7 +9,7 @@ class DataOption(Enum):
     FIRSTNAME: str = "firstname"
     NUMBER: str = "number"
     INDEX: str = "index"
-    FULLNAME: str = "fullname"
+    NAME: str = "name"
     GROUP: str = "group"
     YEAR: str = "year"
 
