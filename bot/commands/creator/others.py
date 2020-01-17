@@ -72,7 +72,7 @@ async def reverse(message: Message):
     (option, _) = parse_creator_request(message.text)
     
     if option == ReverseOption.WEEK.value:
-        save_data(file=IS_WEEK_REVERSED_FILE, object=not load_from(file=IS_WEEK_REVERSED_FILE))
+        save_data(file=IS_WEEK_REVERSED_FILE, object=not load_data(file=IS_WEEK_REVERSED_FILE))
         
         await bot.send_message(
             chat_id=message.chat.id,
