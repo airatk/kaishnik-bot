@@ -6,13 +6,11 @@ from bot import dispatcher
 
 from bot import students
 
-from bot.commands.creator.utilities.helpers import parse_creator_request
+from bot.commands.creator.utilities.helpers import parse_creator_query
 from bot.commands.creator.utilities.helpers import update_progress_bar
+from bot.commands.creator.utilities.helpers import collect_users_list
 from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import USER_DATA
-from bot.commands.creator.utilities.types import EraseOption
-from bot.commands.creator.utilities.types import DropOption
-from bot.commands.creator.utilities.types import GuarddropOption
 
 from bot.commands.start.utilities.keyboards import make_login
 
@@ -82,34 +80,7 @@ async def clear(message: Message):
     commands=[ Commands.ERASE.value ]
 )
 async def erase(message: Message):
-    (option, _) = parse_creator_request(message.text)
-    
-    erase_list: [Student] = []
-    
-    if option is None:
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text="No option has been found!"
-        )
-        return
-    elif option == EraseOption.ALL.value:
-        erase_list = list(students)
-    elif option == EraseOption.UNLOGIN.value:
-        erase_list = [ chat_id for chat_id in list(students) if not students[chat_id].is_setup ]
-    elif option == EraseOption.ME.value:
-        erase_list.append(message.chat.id)
-    else:
-        for possible_chat_id in message.text.split()[1:]:
-            try:
-                chat_id: int = int(possible_chat_id)
-            except Exception:
-                await bot.send_message(
-                    chat_id=message.chat.id,
-                    text="*{invalid_chat_id}* cannot be a chat ID!".format(invalid_chat_id=possible_chat_id),
-                    parse_mode="markdown"
-                )
-            else:
-                erase_list.append(chat_id)
+    erase_list: [int] = await collect_users_list(query_message=message)
     
     progress_bar: str = ""
     
@@ -119,7 +90,7 @@ async def erase(message: Message):
     )
     
     for (index, chat_id) in enumerate(erase_list):
-        progress_bar = update_progress_bar(
+        progress_bar = await update_progress_bar(
             loading_message=loading_message, current_progress_bar=progress_bar,
             values=erase_list, index=index
         )
@@ -171,19 +142,7 @@ async def erase(message: Message):
     commands=[ Commands.DROP.value ]
 )
 async def drop(message: Message):
-    (option, _) = parse_creator_request(message.text)
-    
-    drop_list: [Student] = []
-    
-    if option == DropOption.ALL.value:
-        drop_list = list(students)
-    else:
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text="If you are sure to drop all users' data, type */drop all*",
-            parse_mode="markdown"
-        )
-        return
+    drop_list: [int] = await collect_users_list(query_message=message)
     
     progress_bar: str = ""
     
@@ -245,30 +204,7 @@ async def drop(message: Message):
     commands=[ Commands.GUARDDROP.value ]
 )
 async def guarddrop(message):
-    (option, _) = parse_creator_request(message.text)
-    
-    guarddrop_list: [Student] = []
-    
-    if option is None:
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text="No option has been found!"
-        )
-        return
-    elif option == GuarddropOption.ALL.value:
-        guarddrop_list = list(students)
-    else:
-        for possible_chat_id in message.text.split()[1:]:
-            try:
-                chat_id: int = int(possible_chat_id)
-            except Exception:
-                await bot.send_message(
-                    chat_id=message.chat.id,
-                    text="*{invalid_chat_id}* cannot be a chat ID!".format(invalid_chat_id=possible_chat_id),
-                    parse_mode="markdown"
-                )
-            else:
-                guarddrop_list.append(chat_id)
+    guarddrop_list: [Student] = await collect_users_list(query_message=message)
     
     for chat_id in guarddrop_list:
         if chat_id in students:

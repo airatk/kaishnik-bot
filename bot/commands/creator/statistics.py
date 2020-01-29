@@ -7,13 +7,14 @@ from bot import dispatcher
 from bot import students
 from bot import metrics
 
-from bot.commands.creator.utilities.helpers import parse_creator_request
+from bot.commands.creator.utilities.helpers import parse_creator_query
 from bot.commands.creator.utilities.helpers import update_progress_bar
 from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import USERS_STATS
 from bot.commands.creator.utilities.constants import COMMAND_REQUESTS_STATS
 from bot.commands.creator.utilities.constants import USER_DATA
 from bot.commands.creator.utilities.types import DataOption
+from bot.commands.creator.utilities.types import Suboption
 
 from bot.shared.api.constants import INSTITUTES
 from bot.shared.api.student import Student
@@ -60,9 +61,9 @@ async def users(message: Message):
     commands=[ Commands.METRICS.value ]
 )
 async def get_metrics(message: Message):
-    (option, _) = parse_creator_request(message.text)
+    options: {str: str} = parse_creator_query(message.text)
     
-    if option == "drop" or metrics.day != datetime.today().isoweekday(): metrics.drop()
+    if options.get("", "") == "drop" or metrics.day != datetime.today().isoweekday(): metrics.drop()
     
     await bot.send_message(
         chat_id=message.chat.id,
@@ -95,49 +96,79 @@ async def get_metrics(message: Message):
     commands=[ Commands.DATA.value ]
 )
 async def data(message: Message):
-    (option, option_data) = parse_creator_request(message.text)
-    
-    full_users_list: [int] = list(students)[::-1]  # Reversing list of students to show new users first
-    asked_users_list: [int] = []
-    
-    if option == DataOption.ALL.value: asked_users_list = full_users_list
-    elif option == DataOption.UNLOGIN.value: asked_users_list = [ chat_id for chat_id in full_users_list if not students[chat_id].is_setup ]
-    elif option == DataOption.ME.value: asked_users_list = [ message.chat.id ]
-    elif option == DataOption.USERNAME.value or option == DataOption.FIRSTNAME.value:
-        progress_bar: str = ""
+    async def collect_asked_users() -> [int]:
+        options: {str: str} = parse_creator_query(message.text)
         
-        loading_message = await bot.send_message(
-            chat_id=message.chat.id,
-            text="Started searching..."
-        )
+        full_users_list: [int] = list(students)[::-1]  # Reversing list of students to show the new users first
+        asked_users_list: [int] = []
         
-        for (index, chat_id) in enumerate(full_users_list):
-            progress_bar = await update_progress_bar(
-                loading_message=loading_message, current_progress_bar=progress_bar,
-                values=full_users_list, index=index
+        if DataOption.IDS.value in options:
+            if options[DataOption.IDS.value] == Suboption.ALL.value:
+                return full_users_list
+            if options[DataOption.IDS.value] == Suboption.UNLOGIN.value:
+                asked_users_list += [ chat_id for chat_id in full_users_list if not students[chat_id].is_setup ]
+            if options[DataOption.IDS.value] == Suboption.ME.value:
+                asked_users_list.append(message.chat.id)
+            
+            asked_users_list += [ chat_id for chat_id in full_users_list if str(chat_id) in options[DataOption.IDS.value] ]
+        
+        if DataOption.USERNAME.value in options or DataOption.FIRSTNAME.value in options:
+            progress_bar: str = ""
+            
+            loading_message = await bot.send_message(
+                chat_id=message.chat.id,
+                text="Started searching..."
             )
             
-            try: chat: Chat = await bot.get_chat(chat_id=chat_id)
-            except Exception: pass
+            for (index, chat_id) in enumerate(full_users_list):
+                progress_bar = await update_progress_bar(
+                    loading_message=loading_message, current_progress_bar=progress_bar,
+                    values=full_users_list, index=index
+                )
+                
+                try:
+                    chat: Chat = await bot.get_chat(chat_id=chat_id)
+                except Exception:
+                    pass
+                
+                if (DataOption.USERNAME.value in options and options[DataOption.USERNAME.value] in chat.username) or (DataOption.FIRSTNAME.value in options and options[DataOption.FIRSTNAME.value] in chat.first_name):
+                    asked_users_list.append(chat_id)
+        
+        if DataOption.NUMBER.value in options:
+            asked_users_number: int = 0
             
-            if option == DataOption.USERNAME.value and option_data in chat.username: asked_users_list.append(chat_id)
-            elif option == DataOption.FIRSTNAME.value and option_data in chat.first_name: asked_users_list.append(chat_id)
-    elif option == DataOption.NUMBER.value: asked_users_list = full_users_list[:int(option_data)]
-    elif option == DataOption.INDEX.value: asked_users_list = [ full_users_list[int(option_data)] ] if len(full_users_list) < int(option_data) else []
-    elif option == DataOption.NAME.value: asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].name is not None and option_data in students[chat_id].name ]
-    elif option == DataOption.GROUP.value: asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].group is not None and option_data in students[chat_id].group ]
-    elif option == DataOption.YEAR.value: asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].year == option_data ]
-    else:
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text="Incorrect option!"
-        )
-        return
+            try:
+                asked_users_number = int(options[DataOption.NUMBER.value])
+            except Exception:
+                pass
+            
+            asked_users_list += full_users_list[:asked_users_number]
+        
+        if DataOption.INDEX.value in options:
+            try:
+                index = int(options[DataOption.INDEX.value])
+                asked_index_user = full_users_list[index]
+            except Exception:
+                pass
+            else:
+                asked_users_list.append(asked_index_user)
+        
+        if DataOption.NAME.value in options:
+            asked_users_list += [ chat_id for chat_id in full_users_list if students[chat_id].name is not None and options[DataOption.NAME.value] in students[chat_id].name ]
+        
+        if DataOption.GROUP.value in options:
+            asked_users_list += [ chat_id for chat_id in full_users_list if students[chat_id].group is not None and options[DataOption.GROUP.value] in students[chat_id].group ]
+        
+        if DataOption.YEAR.value in options:
+            asked_users_list += [ chat_id for chat_id in full_users_list if students[chat_id].year == options[DataOption.YEAR.value] ]
+        
+        return asked_users_list
     
+    asked_users_list: [int] = await collect_asked_users()
     inactives_list: [int] = []
     progress_bar: str = ""
     
-    loading_message = await bot.send_message(
+    loading_message: Message = await bot.send_message(
         chat_id=message.chat.id,
         text="Started showing..."
     )
