@@ -3,7 +3,7 @@ _telegram bot for students of KNRTU-KAI to make their daily routine more pleasan
 
 ### Stack
 * Python
-* aiogram, pyTelegramBotAPI
+* [aiogram][1]
 
 ## Reason
 The bot might be considered as `kai.ru` & `old.kai.ru` wrapper. Official mobile-unfriendly ugly inconvenient website had to be replaced by something more usable. Here the [@kaishnik_bot][2] comes up.
@@ -40,21 +40,22 @@ Type `python3 . -m 'launch mode'` to launch where `launch mode` is either `testi
 * **cancel** - отменить команду
 
 Each command has its own directory:
-```
-*command_name*/
-    *command_file*.py
-    *command_file*.py
-    guard.py
-    utilities/
-        keyboards.py
-        helpers.py
-        constants.py
-        types.py
-```
+
+    *command_name*/
+        *command_file*.py
+        *command_file*.py
+        guard.py
+        utilities/
+            keyboards.py
+            helpers.py
+            constants.py
+            types.py
+
 The structure is essential meanwhile all the noted files are optional. One-file commands are exceptions & are located at `bot/commands/others/` directory.
 
 ## Other stuff
 * `update-logs/` folder contains notes which were sent to users as update announcements.
+* `cas-external-login/` folder contains some information about loginning into CAS & its simple implementation.
 
 ## Design
 All the stuff was drawn using Pixelmator Pro. 
@@ -69,3 +70,4 @@ All the stuff was drawn using Pixelmator Pro.
 [4]: https://core.telegram.org/bots/api "Telegram Bot API official reference"
 [5]: https://github.com/AiratK/kaishnik-bot/blob/master/design/logo.png "kaishnik-bot logo"
 [6]: https://github.com/AiratK/kaishnik-bot/blob/master/design/poster.png "kaishnik-bot poster"
+[7]: https://www.pixelmator.com/pro "Pixelmator Pro"
