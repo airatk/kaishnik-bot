@@ -1,1 +1,0 @@
-MAX_CLASSES_NUMBER: int = 8

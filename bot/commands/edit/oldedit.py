@@ -13,6 +13,8 @@ from bot.shared.helpers import top_notification
 from bot.shared.api.subject import StudentSubject
 from bot.shared.calendar.constants import WEEKDAYS
 from bot.shared.calendar.week import WeekParity
+from bot.shared.data.helpers import save_data
+from bot.shared.data.constants import USERS_FILE
 from bot.shared.commands import Commands
 
 
@@ -223,6 +225,8 @@ async def delete_all(callback: CallbackQuery):
     )
     
     students[callback.message.chat.id].guard.drop()
+    
+    save_data(file=USERS_FILE, object=students)
 
 @dispatcher.callback_query_handler(
     lambda callback:
@@ -241,3 +245,5 @@ async def delete_edit(callback: CallbackQuery):
     )
     
     students[callback.message.chat.id].guard.drop()
+    
+    save_data(file=USERS_FILE, object=students)

@@ -50,6 +50,7 @@ class Commands(Enum):
     EDIT_ADD: str = "edit-add"
     EDIT_WEEKTYPE: str = "edit-weektype"
     EDIT_WEEKDAY: str = "edit-weekday"
+    EDIT_HOUR: str = "edit-hour"
     EDIT_TIME: str = "edit-time"
     EDIT_BUILDING: str = "edit-building"
     EDIT_AUDITORIUM: str = "edit-auditorium"

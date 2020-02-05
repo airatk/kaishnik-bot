@@ -7,11 +7,12 @@ from bot import dispatcher
 from bot import students
 
 from bot.commands.edit.utilities.keyboards import skip
-from bot.commands.edit.utilities.keyboards import weektype_editer
-from bot.commands.edit.utilities.keyboards import weekday_editer
-from bot.commands.edit.utilities.keyboards import hours_editer
-from bot.commands.edit.utilities.keyboards import buildings_editer
-from bot.commands.edit.utilities.keyboards import subject_type_editer
+from bot.commands.edit.utilities.keyboards import weektype_editor
+from bot.commands.edit.utilities.keyboards import weekday_editor
+from bot.commands.edit.utilities.keyboards import hour_editor
+from bot.commands.edit.utilities.keyboards import time_editor
+from bot.commands.edit.utilities.keyboards import buildings_editor
+from bot.commands.edit.utilities.keyboards import subject_type_editor
 
 from bot.shared.keyboards import cancel_option
 from bot.shared.helpers import top_notification
@@ -36,7 +37,7 @@ async def add_edit(callback: CallbackQuery):
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Выбери тип недели:",
-        reply_markup=weektype_editer()
+        reply_markup=weektype_editor()
     )
 
 @dispatcher.callback_query_handler(
@@ -55,7 +56,7 @@ async def add_weekday(callback: CallbackQuery):
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Выбери день:",
-        reply_markup=weekday_editer()
+        reply_markup=weekday_editor()
     )
 
 @dispatcher.callback_query_handler(
@@ -64,14 +65,30 @@ async def add_weekday(callback: CallbackQuery):
         Commands.EDIT_WEEKDAY.value in callback.data
 )
 @top_notification
-async def add_time(callback: CallbackQuery):
+async def add_hours(callback: CallbackQuery):
     students[callback.message.chat.id].edited_subject.weekday = int(callback.data.split()[1])
     
     await bot.edit_message_text(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
+        text="Выбери час начала пары:",
+        reply_markup=hour_editor()
+    )
+
+@dispatcher.callback_query_handler(
+    lambda callback:
+        students[callback.message.chat.id].guard.text == Commands.EDIT.value and
+        Commands.EDIT_HOUR.value in callback.data
+)
+@top_notification
+async def add_time(callback: CallbackQuery):
+    hour = int(callback.data.split()[1][:-3])
+    
+    await bot.edit_message_text(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
         text="Выбери время начала пары:",
-        reply_markup=hours_editer()
+        reply_markup=time_editor(hour=hour)
     )
 
 @dispatcher.callback_query_handler(
@@ -87,7 +104,7 @@ async def add_building(callback: CallbackQuery):
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         text="Выбери учебное здание:",
-        reply_markup=buildings_editer()
+        reply_markup=buildings_editor()
     )
 
 @dispatcher.callback_query_handler(
@@ -150,7 +167,7 @@ async def add_subject_type(message: Message):
         chat_id=students[message.chat.id].guard.message.chat.id,
         message_id=students[message.chat.id].guard.message.message_id,
         text="Выбери тип предмета:",
-        reply_markup=subject_type_editer()
+        reply_markup=subject_type_editor()
     )
     
     students[message.chat.id].guard.text = Commands.EDIT.value
