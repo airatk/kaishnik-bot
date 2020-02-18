@@ -44,7 +44,7 @@ def beautify_classes(raw_schedule: [{int: {str: str}}], is_next: bool, edited_su
                 
                 studentSubject: StudentSubject = StudentSubject()
                 
-                studentSubject.time = subject["dayTime"]
+                studentSubject.time = (subject["dayTime"], subject["disciplType"])
                 
                 # Do not show subject if there is its edited alternative
                 if studentSubject.begin_hour in [ begin_hour for (begin_hour, _) in subjects_list ]: continue

@@ -44,14 +44,27 @@ class Subject(ABC):
     
     
     @time.setter
-    def time(self, time: str):
+    def time(self, timeAndType: (str, str)):
+        try:
+            (time, type) = timeAndType
+        except (TypeError, ValueError):
+            time = timeAndType
+            type = None
+        
         (hours, minutes) = (int(time.split(":")[0]), int(time.split(":")[1]))
         
         self._begin_time = time
         self._begin_hour = hours
         
         begin_time: datetime = datetime(1, 1, 1, hours, minutes)  # Year, month, day are filled with nonsence
-        end_time: datetime = begin_time + timedelta(hours=1, minutes=30)  # Class duration is 1.5h
+        
+        if type == SubjectType.LAB.value:
+            duration: timedelta = timedelta(hours=3)  # Lab duration is 3h with a 40/10m long break
+            duration += timedelta(minutes=40) if begin_time.hour == 11 else timedelta(minutes=10)
+        else:
+            duration: timedelta = timedelta(hours=1, minutes=30)  # Class duration is 1.5h
+        
+        end_time: datetime = begin_time + duration
         
         self._time = self._time.format(begin_time=begin_time.strftime("%H:%M"), end_time=end_time.strftime("%H:%M"))
     

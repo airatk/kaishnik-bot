@@ -55,7 +55,7 @@ The structure is essential meanwhile all the noted files are optional. One-file 
 
 ## Other stuff
 * `update-logs/` folder contains notes which were sent to users as update announcements.
-* `cas-external-login/` folder contains some information about loginning into CAS & its simple implementation.
+* `cas-external-login/` folder contains some information about loginning into CAS & simple login implementation.
 
 ## Design
 All the stuff was drawn using Pixelmator Pro. 
