@@ -130,7 +130,7 @@
 - `https://kai.ru/c?ticket=ST-57258-dyxlPAcCeVEdgkYvNiAq-cas.kai.ru`
 
 
-# Scanning ports or `kai.ru` IP
+# Scanning ports of `kai.ru` IP
 
     Nmap scan report for 193.105.65.13
     Not shown: 996 filtered ports

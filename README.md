@@ -1,4 +1,7 @@
 # Каист
+
+[<img src="https://github.com/airatk/kaishnik-bot/blob/master/design/logo.png" alt="kaishnik-bot logo" align="right" width="175" />][2]
+
 _telegram bot for students of KNRTU-KAI to make their daily routine more pleasant_
 
 ### Stack
@@ -6,11 +9,11 @@ _telegram bot for students of KNRTU-KAI to make their daily routine more pleasan
 * [aiogram][1]
 
 ## Reason
-The bot might be considered as `kai.ru` & `old.kai.ru` wrapper. Official mobile-unfriendly ugly inconvenient website had to be replaced by something more usable. Here the [@kaishnik_bot][2] comes up.
+The bot might be considered as `kai.ru` & `old.kai.ru` wrapper. Official mobile-unfriendly ugly inconvenient website had to be replaced by something usable. Here the [@kaishnik_bot][2] comes up.
 
 ## Setup
 
-The time zone should be set to `Europe/Moscow` as well (since the university's located in Kazan in Moscow time zone).
+Since the university is located in Kazan which is the Moscow time zone, the time zone should be set to `Europe/Moscow`.
 
 ### Data
 There should be `data/` folder in the root directory of the bot. It should contant the following non-extension files with data in binary form:
@@ -19,8 +22,8 @@ There should be `data/` folder in the root directory of the bot. It should conta
 * `keys` file is used to store tokens & keys accessed using `config` module.
 
 ### Launch setup
-The `requirements.txt` file is included to the repository. So, enter `pip3 install -r requirements.txt` to get all the necessary stuff.
-Type `python3 . -m 'launch mode'` to launch where `launch mode` is either `testing` or `eternal`.
+The `requirements.txt` file is included to the repository. So, use `pip3 install -r requirements.txt` to get all the necessities.
+Use `python3 ./` to launch.
 
 ## Commands
 * **classes** - занятия
@@ -58,16 +61,14 @@ The structure is essential meanwhile all the noted files are optional. One-file 
 * `cas-external-login/` folder contains some information about loginning into CAS & simple login implementation.
 
 ## Design
-All the stuff was drawn using Pixelmator Pro. 
+All the stuff was drawn using [Pixelmator Pro][6]. 
 
-![kaishnik_bot logo][5]
-![kaishnik_bot poster][6]
+[![kaishnik_bot poster][5]][2]
 
 
 [1]: https://github.com/aiogram/aiogram "Repository of aiogram"
 [2]: https://telegram.me/kaishnik_bot "Open the bot in Telegram"
 [3]: https://telegram.me/BotFather "Open BotFather in Telegram"
 [4]: https://core.telegram.org/bots/api "Telegram Bot API official reference"
-[5]: https://github.com/AiratK/kaishnik-bot/blob/master/design/logo.png "kaishnik-bot logo"
-[6]: https://github.com/AiratK/kaishnik-bot/blob/master/design/poster.png "kaishnik-bot poster"
-[7]: https://www.pixelmator.com/pro "Pixelmator Pro"
+[5]: https://github.com/airatk/kaishnik-bot/blob/master/design/poster.png "kaishnik-bot poster"
+[6]: https://www.pixelmator.com/pro "Pixelmator Pro"
