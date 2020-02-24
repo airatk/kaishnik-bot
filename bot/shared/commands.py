@@ -12,6 +12,7 @@ class Commands(Enum):
     GUARDDROP: str = "guarddrop"
     BROADCAST: str = "broadcast"
     REVERSE: str = "reverse"
+    DAYOFF: str = "dayoff"
     
     CANCEL: str = "cancel"
     START: str = "start"

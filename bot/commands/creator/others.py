@@ -15,6 +15,7 @@ from bot.shared.api.student import Student
 from bot.shared.data.helpers import save_data
 from bot.shared.data.helpers import load_data
 from bot.shared.data.constants import IS_WEEK_REVERSED_FILE
+from bot.shared.data.constants import DAYOFFS
 from bot.shared.commands import Commands
 
 
@@ -84,4 +85,64 @@ async def reverse(message: Message):
     await bot.send_message(
         chat_id=message.chat.id,
         text="Week was #reversed!"
+    )
+
+@dispatcher.message_handler(
+    lambda message: message.chat.id == CREATOR,
+    commands=[ Commands.DAYOFF.value ]
+)
+async def dayoff(message: Message):
+    options: {str: str} = parse_creator_query(message.text)
+    
+    daysoffs: [(int, int)] = load_data(file=DAYOFFS)
+    
+    if "add" in options:
+        raw_date: str = options["add"]
+    elif "drop" in options:
+        raw_date: str = options["drop"]
+        
+        if raw_date == "all":
+            save_data(file=DAYOFFS, object=[])
+            
+            await bot.send_message(
+                chat_id=message.chat.id,
+                text="Dropped!"
+            )
+            
+            return
+    else:
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text="No options were found!"
+        )
+        return
+    
+    try:
+        parsed_date: [str] = raw_date.split("-")
+        dayoff: (int, int) = (int(parsed_date[0]), int(parsed_date[1]))
+    except Exception:
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text="Write date in following format: *26-07*",
+            parse_mode="markdown"
+        )
+        return
+    
+    if "add" in options:
+        daysoffs.append(dayoff)
+    elif "drop" in options:
+        try:
+            daysoffs.remove(dayoff)
+        except ValueError:
+            await bot.send_message(
+                chat_id=message.chat.id,
+                text="Not a dayoff!"
+            )
+            return
+    
+    save_data(file=DAYOFFS, object=daysoffs)
+    
+    await bot.send_message(
+        chat_id=message.chat.id,
+        text="Done!"
     )

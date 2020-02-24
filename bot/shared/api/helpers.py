@@ -4,6 +4,8 @@ from bot.shared.api.subject import LecturerSubject
 from bot.shared.calendar.constants import WEEKDAYS
 from bot.shared.calendar.constants import MONTHS
 from bot.shared.calendar.week import is_even
+from bot.shared.data.helpers import load_data
+from bot.shared.data.constants import DAYOFFS
 
 from datetime import datetime
 from datetime import timedelta
@@ -15,16 +17,21 @@ def beautify_classes(raw_schedule: [{int: {str: str}}], is_next: bool, edited_su
     today: datetime = datetime.today() + timedelta(days=7 if is_next else 0)
     today_weekday: int = today.isoweekday()
     
+    dayoffs: [(int, int)] = load_data(file=DAYOFFS)
+    
     for weekday in WEEKDAYS:
         # Date of each weekday
         date: datetime = today + timedelta(days=weekday - today_weekday)
+        
+        # Finding out if the day is dayoff
+        is_dayoff = (date.day, date.month) in dayoffs
         
         # Reseting `subjects_list` Adding the appropriate edited subjects to the schedule
         subjects_list: [(int, StudentSubject)] = [ (subject.begin_hour, subject) for subject in edited_subjects if (
             subject.weekday == weekday and (subject.is_even is None or subject.is_even == (not is_even() if is_next else is_even()))
         ) ]
         
-        if str(weekday) in raw_schedule:
+        if str(weekday) in raw_schedule and not is_dayoff:
             # Removing extraspaces
             raw_schedule[str(weekday)] = [ {
                     key: " ".join(value.split()) for (key, value) in subject.items()
@@ -64,9 +71,12 @@ def beautify_classes(raw_schedule: [{int: {str: str}}], is_next: bool, edited_su
         
         daily_schedule: str = "".join([ subject.get() for (_, subject) in subjects_list ])
         
+        if daily_schedule == "":
+            daily_schedule = "\n\nПраздничный выходной🥳" if is_dayoff else "\n\nВыходной"
+        
         weekly_schedule.append("".join([
             "*{weekday}, {day} {month}*".format(weekday=WEEKDAYS[weekday], day=int(date.strftime("%d")), month=MONTHS[date.strftime("%m")]),
-            daily_schedule if daily_schedule != "" else "\n\nВыходной"
+            daily_schedule
         ]))
     
     # Adding Sunday as well
