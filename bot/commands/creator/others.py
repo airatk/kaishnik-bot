@@ -69,6 +69,56 @@ async def broadcast(message: Message):
 
 @dispatcher.message_handler(
     lambda message: message.chat.id == CREATOR,
+    commands=[ Commands.POLL.value ]
+)
+async def poll(message: Message):
+    options: {str, str} = parse_creator_query(message.text)
+    
+    if "question" not in options:
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text="No question was found!"
+        )
+        return
+    
+    question: str = options["question"]
+    
+    answer_id: int = 1
+    answer_key: str = "answer1"
+    answers: [str] = []
+    
+    if answer_key not in options:
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text="No answers were found!"
+        )
+        return
+    
+    while answer_key in options:
+        answers.append(options[answer_key])
+        
+        answer_id += 1
+        answer_key = "answer{id}".format(id=answer_id)
+    
+    is_anonymous: bool = options.get("anonymous") == "true"
+    allows_multiple_answers: bool = options.get("multipleanswers") == "true"
+    is_closed: bool = options.get("closed") == "true"
+    
+    correct_option_id: str = options.get("correctoption")
+    correct_option_id: int = int(correct_option_id) if correct_option_id is not None else None
+    
+    await bot.send_poll(
+        chat_id=message.chat.id,
+        question=question,
+        options=answers,
+        is_anonymous=is_anonymous,
+        allows_multiple_answers=allows_multiple_answers,
+        is_closed=is_closed,
+        correct_option_id=correct_option_id
+    )
+
+@dispatcher.message_handler(
+    lambda message: message.chat.id == CREATOR,
     commands=[ Commands.REVERSE.value ]
 )
 async def reverse(message: Message):
