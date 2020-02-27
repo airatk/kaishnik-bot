@@ -61,7 +61,9 @@ CONTROL_PANEL: str = (
         "\t\t\t\[ drop: {\n"
             "\t\t\t\t\t\t\[ day-month ]\n"
             "\t\t\t\t\t\t\[ all ]\n"
-    "} }\n"
+        "\t\t\t} ]\n"
+        "\t\t\t\[ list ]\n"
+    "}\n"
     "\n*hashtags*\n"  # hashtags
     "# users\n"
     "# metrics\n"
