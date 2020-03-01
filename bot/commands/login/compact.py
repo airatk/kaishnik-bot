@@ -1,7 +1,6 @@
 from aiogram.types import CallbackQuery
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -33,9 +32,7 @@ async def login_compact(callback: CallbackQuery):
     students[callback.message.chat.id].is_setup = False
     students[callback.message.chat.id].is_full = False
     
-    guard_message = await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    guard_message = await callback.message.edit_text(
         text="Отправь номер своей группы.",
         reply_markup=cancel_option()
     )
@@ -45,13 +42,8 @@ async def login_compact(callback: CallbackQuery):
 
 @dispatcher.message_handler(lambda message: students[message.chat.id].guard.text == Commands.LOGIN_COMPACT.value)
 async def set_group(message: Message):
-    await bot.delete_message(
-        chat_id=message.chat.id,
-        message_id=message.message_id
-    )
-    await bot.edit_message_text(
-        chat_id=students[message.chat.id].guard.message.chat.id,
-        message_id=students[message.chat.id].guard.message.message_id,
+    await message.delete()
+    await students[message.chat.id].guard.message.edit_text(
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
     )
@@ -59,9 +51,7 @@ async def set_group(message: Message):
     students[message.chat.id].group = message.text
     
     if students[message.chat.id].group_schedule_id is None:
-        await bot.edit_message_text(
-            chat_id=students[message.chat.id].guard.message.chat.id,
-            message_id=students[message.chat.id].guard.message.message_id,
+        await students[message.chat.id].guard.message.edit_text(
             text=ResponseError.NO_GROUP.value,
             disable_web_page_preview=True
         )
@@ -69,13 +59,9 @@ async def set_group(message: Message):
         students[message.chat.id] = Student()  # Drop all the entered data
         return
     
-    await bot.edit_message_text(
-        chat_id=students[message.chat.id].guard.message.chat.id,
-        message_id=students[message.chat.id].guard.message.message_id,
-        text="Запомнено!"
-    )
-    await bot.send_message(
-        chat_id=message.chat.id,
+    await students[message.chat.id].guard.message.edit_text(text="Запомнено!")
+    
+    await message.answer(
         text=GUIDE_MESSAGE,
         parse_mode="markdown"
     )

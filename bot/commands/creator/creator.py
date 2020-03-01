@@ -1,6 +1,5 @@
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot.commands.creator.utilities.constants import CREATOR
@@ -14,8 +13,7 @@ from bot.shared.commands import Commands
     commands=[ Commands.CREATOR.value ]
 )
 async def creator(message: Message):
-    await bot.send_message(
-        chat_id=message.chat.id,
+    await message.answer(
         text=CONTROL_PANEL,
         parse_mode="markdown"
     )

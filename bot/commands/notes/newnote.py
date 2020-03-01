@@ -1,7 +1,6 @@
 from aiogram.types import CallbackQuery
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -25,18 +24,12 @@ async def add_note_hint(callback: CallbackQuery):
     number: int = len(students[callback.message.chat.id].notes) + 1
     
     if number > MAX_NOTES_NUMBER:
-        await bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
-            text="{max}-заметковый лимит уже достигнут.".format(max=MAX_NOTES_NUMBER)
-        )
+        await callback.message.edit_text(text="{max}-заметковый лимит уже достигнут.".format(max=MAX_NOTES_NUMBER))
         
         students[callback.message.chat.id].guard.drop()
         return
     
-    guard_message: Message = await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    guard_message: Message = await callback.message.edit_text(
         text=(
             "Добавляемая заметка будет *{number}* по счёту.\n\n"
             "• Используй звёздочки, чтобы выделить \**жирным*\*\n"
@@ -51,15 +44,8 @@ async def add_note_hint(callback: CallbackQuery):
 
 @dispatcher.message_handler(lambda message: students[message.chat.id].guard.text == Commands.NOTES_ADD.value)
 async def add_note(message: Message):
-    await bot.delete_message(
-        chat_id=message.chat.id,
-        message_id=message.message_id
-    )
-    await bot.edit_message_text(
-        chat_id=students[message.chat.id].guard.message.chat.id,
-        message_id=students[message.chat.id].guard.message.message_id,
-        text="Запомнено!"
-    )
+    await message.delete()
+    await students[message.chat.id].guard.message.edit_text(text="Запомнено!")
     
     students[message.chat.id].guard.drop()
     students[message.chat.id].notes.append(clarify_markdown(message.text))

@@ -1,6 +1,5 @@
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -21,8 +20,7 @@ from bot.shared.commands import Commands
 async def notes(message: Message):
     students[message.chat.id].guard.text = Commands.NOTES.value
     
-    await bot.send_message(
-        chat_id=message.chat.id,
+    await message.answer(
         text="Заметок всего: *{current}/{max}*".format(
             current=len(students[message.chat.id].notes),
             max=MAX_NOTES_NUMBER

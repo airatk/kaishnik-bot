@@ -1,6 +1,5 @@
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -20,8 +19,7 @@ from random import choice
 )
 @metrics.increment(Commands.EXAMS)
 async def exams(message: Message):
-    loading_message: Message = await bot.send_message(
-        chat_id=message.chat.id,
+    loading_message: Message = await message.answer(
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
     )
@@ -32,9 +30,7 @@ async def exams(message: Message):
         students[message.chat.id].another_group = request_entities[1]
         
         if students[message.chat.id].another_group is None:
-            await bot.edit_message_text(
-                chat_id=loading_message.chat.id,
-                message_id=loading_message.message_id,
+            await loading_message.edit_text(
                 text="Расписание экзаменов группы *{group}* получить не удалось :(".format(group=request_entities[1]),
                 parse_mode="markdown"
             )
@@ -48,9 +44,7 @@ async def exams(message: Message):
     elif len(exams) == 0: message_text: str = ResponseError.NO_DATA.value
     else: message_text: str = exams
     
-    await bot.edit_message_text(
-        chat_id=loading_message.chat.id,
-        message_id=loading_message.message_id,
+    await loading_message.edit_text(
         text=message_text,
         parse_mode="markdown",
         disable_web_page_preview=True

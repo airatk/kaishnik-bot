@@ -1,7 +1,6 @@
 from aiogram.types import CallbackQuery
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -27,8 +26,7 @@ from random import choice
 )
 @metrics.increment(Commands.LECTURERS)
 async def lecturers(message: Message):
-    guard_message: Message = await bot.send_message(
-        chat_id=message.chat.id,
+    guard_message: Message = await message.answer(
         text="Отправь фамилию или ФИО преподавателя.",
         reply_markup=cancel_option()
     )
@@ -38,22 +36,13 @@ async def lecturers(message: Message):
 
 @dispatcher.message_handler(lambda message: students[message.chat.id].guard.text == Commands.LECTURERS_NAME.value)
 async def find_lecturer(message: Message):
-    await bot.delete_message(
-        chat_id=message.chat.id,
-        message_id=message.message_id
-    )
-    await bot.edit_message_text(
-        chat_id=students[message.chat.id].guard.message.chat.id,
-        message_id=students[message.chat.id].guard.message.message_id,
-        text=choice(LOADING_REPLIES)
-    )
+    await message.delete()
+    await students[message.chat.id].guard.message.edit_text(text=choice(LOADING_REPLIES))
     
     names: [{str: str}] = get_lecturers_names(name_part=message.text)
     
     if names is None:
-        await bot.edit_message_text(
-            chat_id=students[message.chat.id].guard.message.chat.id,
-            message_id=students[message.chat.id].guard.message.message_id,
+        await students[message.chat.id].guard.message.edit_text(
             text=ResponseError.NO_RESPONSE.value,
             disable_web_page_preview=True
         )
@@ -61,27 +50,17 @@ async def find_lecturer(message: Message):
         students[message.chat.id].guard.drop()
         return
     elif len(names) == 0:
-        await bot.edit_message_text(
-            chat_id=students[message.chat.id].guard.message.chat.id,
-            message_id=students[message.chat.id].guard.message.message_id,
-            text="Ничего не найдено :("
-        )
+        await students[message.chat.id].guard.message.edit_text(text="Ничего не найдено :(")
         
         students[message.chat.id].guard.drop()
         return
     elif len(names) > MAX_LECTURERS_NUMBER:
-        await bot.edit_message_text(
-            chat_id=students[message.chat.id].guard.message.chat.id,
-            message_id=students[message.chat.id].guard.message.message_id,
-            text="Слишком мало букв, слишком много преподавателей…"
-        )
+        await students[message.chat.id].guard.message.edit_text(text="Слишком мало букв, слишком много преподавателей…")
         
         students[message.chat.id].guard.drop()
         return
     
-    await bot.edit_message_text(
-        chat_id=students[message.chat.id].guard.message.chat.id,
-        message_id=students[message.chat.id].guard.message.message_id,
+    await students[message.chat.id].guard.message.edit_text(
         text="Выбери преподавателя:",
         reply_markup=lecturer_chooser(names=names)
     )
@@ -95,9 +74,7 @@ async def find_lecturer(message: Message):
 )
 @top_notification
 async def lecturers_schedule_type(callback: CallbackQuery):
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="Тебе нужны преподавателевы:",
         reply_markup=lecturer_info_type_chooser(lecturer_id=callback.data.split()[1])
     )

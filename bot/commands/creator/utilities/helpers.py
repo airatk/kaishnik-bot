@@ -1,7 +1,5 @@
 from aiogram.types import Message
 
-from bot import bot
-
 from bot import students
 
 from bot.commands.creator.utilities.types import Suboption
@@ -10,7 +8,7 @@ from bot.shared.api.student import Student
 
 
 def parse_creator_query(query: str) -> {str: str}:
-    query_array: [str] = query.split()[1:]
+    query_array: [str] = query.split()
     query_dictionary: {str: str} = {}
     
     key: str = ""
@@ -45,9 +43,7 @@ async def update_progress_bar(loading_message, current_progress_bar: str, values
     
     if current_progress_bar == next_progress_bar: return current_progress_bar
     
-    await bot.edit_message_text(
-        chat_id=loading_message.chat.id,
-        message_id=loading_message.message_id,
+    await loading_message.edit_text(
         text=next_progress_bar,
         parse_mode="markdown"
     )
@@ -59,21 +55,18 @@ async def collect_users_list(query_message: Message) -> [int]:
     options: { str: str } = parse_creator_query(query_message.text)
 
     if "ids" not in options:
-        await bot.send_message(
-            chat_id=query_message.chat.id,
-            text="`ids` option has not been found!"
-        )
+        await query_message.answer(text="`ids` option has not been found!")
         return []
-
+    
     if options["ids"] == Suboption.ALL.value: return list(students)
-
+    
     users_list: [int] = []
-
+    
     if Suboption.UNLOGIN.value in options["ids"]:
         users_list += [ chat_id for chat_id in list(students) if not students[chat_id].is_setup ]
     elif Suboption.ME.value in options["ids"]:
         users_list.append(query_message.chat.id)
-
+    
     for possible_chat_id in options["ids"].split("&"):
         try:
             chat_id: int = int(possible_chat_id)
@@ -81,5 +74,5 @@ async def collect_users_list(query_message: Message) -> [int]:
             pass
         else:
             users_list.append(chat_id)
-
+    
     return users_list

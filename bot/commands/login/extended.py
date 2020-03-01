@@ -1,7 +1,6 @@
 from aiogram.types import CallbackQuery
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -39,9 +38,7 @@ async def login_extended(callback: CallbackQuery):
     students[callback.message.chat.id].is_setup = False
     students[callback.message.chat.id].is_full = True
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="Выбери институт (привет, ФМФ🌚):",
         reply_markup=institute_setter()
     )
@@ -55,9 +52,7 @@ async def login_extended(callback: CallbackQuery):
 )
 @top_notification
 async def set_institute(callback: CallbackQuery):
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text=choice(LOADING_REPLIES),
         parse_mode="markdown",
         disable_web_page_preview=True
@@ -73,9 +68,7 @@ async def set_institute(callback: CallbackQuery):
     years: {str: str} = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.YEARS)
     
     if len(years) == 0:
-        await bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
+        await callback.message.edit_text(
             text=ResponseError.NO_RESPONSE.value,
             disable_web_page_preview=True
         )
@@ -83,9 +76,7 @@ async def set_institute(callback: CallbackQuery):
         students[callback.message.chat.id] = Student()  # Drop all the entered data
         return
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="Выбери курс:",
         reply_markup=year_setter(years)
     )
@@ -97,9 +88,7 @@ async def set_institute(callback: CallbackQuery):
 )
 @top_notification
 async def set_year(callback: CallbackQuery):
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
     )
@@ -111,9 +100,7 @@ async def set_year(callback: CallbackQuery):
     groups: {str: str} = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.GROUPS)
     
     if len(groups) == 0:
-        await bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
+        await callback.message.edit_text(
             text=ResponseError.NO_RESPONSE.value,
             disable_web_page_preview=True
         )
@@ -121,9 +108,7 @@ async def set_year(callback: CallbackQuery):
         students[callback.message.chat.id] = Student()  # Drop all the entered data
         return
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="Выбери группу:",
         reply_markup=group_number_setter(groups)
     )
@@ -135,9 +120,7 @@ async def set_year(callback: CallbackQuery):
 )
 @top_notification
 async def set_group(callback: CallbackQuery):
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
     )
@@ -146,19 +129,13 @@ async def set_group(callback: CallbackQuery):
     students[callback.message.chat.id].group = callback.data.split()[1]
     
     if students[callback.message.chat.id].group_schedule_id is None and students[callback.message.chat.id].group_score_id is not None:
-        await bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
-            text=ResponseError.NO_GROUP.value
-        )
+        await callback.message.edit_text(text=ResponseError.NO_GROUP.value)
         
         students[callback.message.chat.id] = Student()  # Drop all the entered data
         return
     
     if students[callback.message.chat.id].group_score_id is None:
-        await bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
+        await callback.message.edit_text(
             text=ResponseError.NO_RESPONSE.value,
             disable_web_page_preview=True
         )
@@ -170,9 +147,7 @@ async def set_group(callback: CallbackQuery):
     names: {str: str} = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.NAMES)
     
     if len(names) == 0:
-        await bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
+        await callback.message.edit_text(
             text=ResponseError.NO_RESPONSE.value,
             disable_web_page_preview=True
         )
@@ -182,9 +157,7 @@ async def set_group(callback: CallbackQuery):
     
     students[callback.message.chat.id].names = { name_id: name for (name, name_id) in names.items() }
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="Выбери себя:",
         reply_markup=name_setter(names)
     )
@@ -196,9 +169,7 @@ async def set_group(callback: CallbackQuery):
 )
 @top_notification
 async def set_name(callback: CallbackQuery):
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
     )
@@ -208,9 +179,7 @@ async def set_name(callback: CallbackQuery):
     students[callback.message.chat.id].name = students[callback.message.chat.id].names[name]
     
     if students[callback.message.chat.id].name_id is None:
-        await bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
+        await callback.message.edit_text(
             text=ResponseError.NO_RESPONSE.value,
             disable_web_page_preview=True
         )
@@ -219,9 +188,7 @@ async def set_name(callback: CallbackQuery):
         return
     
     # Asking for student card number
-    guard_message = await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    guard_message = await callback.message.edit_text(
         text="Отправь номер зачётки.",
         reply_markup=cancel_option()
     )
@@ -231,13 +198,8 @@ async def set_name(callback: CallbackQuery):
 
 @dispatcher.message_handler(lambda message: students[message.chat.id].guard.text == Commands.LOGIN_SET_CARD.value)
 async def set_card(message: Message):
-    await bot.delete_message(
-        chat_id=message.chat.id,
-        message_id=message.message_id
-    )
-    await bot.edit_message_text(
-        chat_id=students[message.chat.id].guard.message.chat.id,
-        message_id=students[message.chat.id].guard.message.message_id,
+    await message.delete()
+    await students[message.chat.id].guard.message.edit_text(
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
     )
@@ -246,9 +208,7 @@ async def set_card(message: Message):
     last_available_semester: int = students[message.chat.id].get_last_available_semester()
     
     if last_available_semester is None:
-        await bot.edit_message_text(
-            chat_id=students[message.chat.id].guard.message.chat.id,
-            message_id=students[message.chat.id].guard.message.message_id,
+        await students[message.chat.id].guard.message.edit_text(
             text=ResponseError.NO_RESPONSE.value,
             disable_web_page_preview=True
         )
@@ -257,9 +217,7 @@ async def set_card(message: Message):
         return
     
     if last_available_semester == 0:
-        await bot.edit_message_text(
-            chat_id=students[message.chat.id].guard.message.chat.id,
-            message_id=students[message.chat.id].guard.message.message_id,
+        await students[message.chat.id].guard.message.edit_text(
             text=ResponseError.INCORRECT_CARD.value,
             reply_markup=cancel_option()
         )
@@ -267,13 +225,9 @@ async def set_card(message: Message):
         students[message.chat.id].card = None
         return
     
-    await bot.edit_message_text(
-        chat_id=students[message.chat.id].guard.message.chat.id,
-        message_id=students[message.chat.id].guard.message.message_id,
-        text="Запомнено!"
-    )
-    await bot.send_message(
-        chat_id=message.chat.id,
+    await students[message.chat.id].guard.message.edit_text(text="Запомнено!")
+    
+    await message.answer(
         text=GUIDE_MESSAGE,
         parse_mode="markdown"
     )

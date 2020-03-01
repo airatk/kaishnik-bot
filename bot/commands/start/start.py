@@ -1,7 +1,6 @@
 from aiogram.types import CallbackQuery
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -28,13 +27,9 @@ async def start_on_command(message: Message):
     
     save_data(file=USERS_FILE, object=students)
     
-    guard_message: Message = await bot.send_message(
-        chat_id=message.chat.id,
-        text="Йоу!"
-    )
+    guard_message: Message = await message.answer(text="Йоу!")
     
-    await bot.send_message(
-        chat_id=message.chat.id,
+    await message.answer(
         text="Для начала настрой меня на общение с тобой😏",
         reply_markup=make_login()
     )
@@ -47,6 +42,6 @@ async def start_on_command(message: Message):
 @metrics.increment(Commands.START)
 @top_notification
 async def start_on_callback(callback: CallbackQuery):
-    await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+    await callback.message.delete()
     
     await start_on_command(callback.message)

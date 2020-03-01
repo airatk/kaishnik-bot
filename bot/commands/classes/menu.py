@@ -1,6 +1,5 @@
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -25,8 +24,7 @@ async def menu(message: Message):
     request_entities: [str] = message.text.split()
     
     if len(request_entities) > 1:
-        loading_message: Message = await bot.send_message(
-            chat_id=message.chat.id,
+        loading_message: Message = await message.answer(
             text=choice(LOADING_REPLIES),
             disable_web_page_preview=True
         )
@@ -34,9 +32,7 @@ async def menu(message: Message):
         students[message.chat.id].another_group = request_entities[1]
         
         if students[message.chat.id].another_group is None:
-            await bot.edit_message_text(
-                chat_id=loading_message.chat.id,
-                message_id=loading_message.message_id,
+            await message.edit_text(
                 text="Расписание занятий группы *{group}* получить не удалось :(".format(group=request_entities[1]),
                 parse_mode="markdown"
             )
@@ -44,10 +40,9 @@ async def menu(message: Message):
             students[message.chat.id].guard.drop()
             return
         else:
-            await bot.delete_message(chat_id=loading_message.chat.id, message_id=loading_message.message_id)
+            await message.delete()
     
-    await bot.send_message(
-        chat_id=message.chat.id,
+    await message.answer(
         text="Тебе нужно расписание группы *{group}* на:".format(group=request_entities[1]) if len(request_entities) > 1 else "Тебе нужно расписание на:",
         parse_mode="markdown",
         reply_markup=schedule_type()

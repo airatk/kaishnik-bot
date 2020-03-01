@@ -1,6 +1,5 @@
 from aiogram.types import CallbackQuery
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -29,9 +28,7 @@ from random import choice
 )
 @top_notification
 async def lecturers_week_type_classes(callback: CallbackQuery):
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="Преподавателево расписание занятий на:",
         reply_markup=lecturer_weektype_chooser(lecturer_id=callback.data.split()[1])
     )
@@ -43,9 +40,7 @@ async def lecturers_week_type_classes(callback: CallbackQuery):
 )
 @top_notification
 async def one_day_lecturer_schedule(callback: CallbackQuery):
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
     )
@@ -62,9 +57,7 @@ async def one_day_lecturer_schedule(callback: CallbackQuery):
     elif len(schedule) == 0: message_text: str = ResponseError.NO_DATA.value
     else: message_text: str = schedule[int(weekday)]
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text=message_text,
         parse_mode="markdown"
     )
@@ -80,9 +73,7 @@ async def one_day_lecturer_schedule(callback: CallbackQuery):
 async def certain_date_schedule(callback: CallbackQuery):
     (weektype, lecturer_id) = callback.data.split()[1:]
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="Выбери нужный день:",
         reply_markup=lecturer_weekday_chooser(
             is_next=weektype == WeekType.NEXT.value,
@@ -97,9 +88,7 @@ async def certain_date_schedule(callback: CallbackQuery):
 )
 @top_notification
 async def weekly_lecturer_schedule(callback: CallbackQuery):
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
     )
@@ -113,23 +102,14 @@ async def weekly_lecturer_schedule(callback: CallbackQuery):
     )
     
     if schedule is None:
-        await bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
-            text=ResponseError.NO_RESPONSE.value
-        )
+        await callback.message.edit_text(text=ResponseError.NO_RESPONSE.value)
     elif len(schedule) == 0:
-        await bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
-            text=ResponseError.NO_DATA.value
-        )
+        await callback.message.edit_text(text=ResponseError.NO_DATA.value)
     else:
-        await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+        await callback.message.delete()
         
         for weekday in WEEKDAYS:
-            await bot.send_message(
-                chat_id=callback.message.chat.id,
+            await callback.message.answer(
                 text=schedule[weekday - 1],
                 parse_mode="markdown"
             )

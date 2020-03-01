@@ -1,6 +1,5 @@
 from aiogram.types import CallbackQuery
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -20,9 +19,7 @@ from bot.shared.commands import Commands
 )
 @top_notification
 async def s_s(callback: CallbackQuery):
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="У родного КАИ 1 спортивный комплекс из 3 составляющих:",
         reply_markup=sportscomplex_dialer()
     )
@@ -34,24 +31,17 @@ async def s_s(callback: CallbackQuery):
 )
 @top_notification
 async def send_sportscomplex(callback: CallbackQuery):
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
+    await callback.message.bot.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
     
     number: str = " ".join(callback.data.split()[1:])
     
-    await bot.delete_message(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id
-    )
-    await bot.send_venue(
-        chat_id=callback.message.chat.id,
+    await callback.message.delete()
+    await callback.message.answer_venue(
         latitude=SPORTSCOMPLEX[number]["latitude"],
         longitude=SPORTSCOMPLEX[number]["longitude"],
         title=SPORTSCOMPLEX[number]["title"],
         address=SPORTSCOMPLEX[number]["address"]
     )
-    await bot.send_message(
-        chat_id=callback.message.chat.id,
-        text=SPORTSCOMPLEX[number]["description"]
-    )
+    await message.answer(text=SPORTSCOMPLEX[number]["description"])
     
     students[callback.message.chat.id].guard.drop()

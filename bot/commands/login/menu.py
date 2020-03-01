@@ -1,7 +1,6 @@
 from aiogram.types import CallbackQuery
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -21,8 +20,7 @@ from bot.shared.commands import Commands
 )
 @metrics.increment(Commands.LOGIN)
 async def login_on_command(message: Message):
-    guard_message: Message = await bot.send_message(
-        chat_id=message.chat.id,
+    guard_message: Message = await message.answer(
         text=(
             "{warning}"
             "Студенческий билет и зачётка имеют одинаковый номер😉\n\n"
@@ -46,7 +44,7 @@ async def login_on_command(message: Message):
 @top_notification
 async def login_on_callback(callback: CallbackQuery):
     # Cleanning the chat
-    await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
-    await bot.delete_message(chat_id=students[callback.message.chat.id].guard.message.chat.id, message_id=students[callback.message.chat.id].guard.message.message_id)
+    await callback.message.delete()
+    await students[callback.message.chat.id].guard.message.delete()
     
     await login_on_command(callback.message)

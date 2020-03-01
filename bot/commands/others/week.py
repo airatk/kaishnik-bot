@@ -1,6 +1,5 @@
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -19,8 +18,7 @@ from bot.shared.commands import Commands
 async def week(message: Message):
     (weekday, date) = weekday_date()
     
-    await bot.send_message(
-        chat_id=message.chat.id,
+    await message.answer(
         text=(
             "{weekday}, {date}.\n"
             "Текущая неделя *{type}*.".format(

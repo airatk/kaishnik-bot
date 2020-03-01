@@ -1,6 +1,5 @@
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -20,8 +19,7 @@ from bot.shared.commands import Commands
 async def edit(message: Message):
     edited_number: int = len(students[message.chat.id].edited_subjects)
     
-    await bot.send_message(
-        chat_id=message.chat.id,
+    await message.answer(
         text="Отредактировано пар: *{edited_number}*".format(edited_number=edited_number),
         parse_mode="markdown",
         reply_markup=action_chooser(has_edits=edited_number != 0)

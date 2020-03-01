@@ -11,11 +11,20 @@ from datetime import datetime
 from datetime import timedelta
 
 
+# Removes extraspaces & standardizing values to string type
+def refine_raw_schedule(raw_schedule) -> [{str: str}]:
+    return [ {
+            key: " ".join(str(value).split()) for (key, value) in subject.items()
+        } for subject in raw_schedule
+    ]
+
+
 def beautify_classes(raw_schedule: [{int: {str: str}}], is_next: bool, edited_subjects: [StudentSubject]) -> [str]:
     weekly_schedule: [str] = []
     
     today: datetime = datetime.today() + timedelta(days=7 if is_next else 0)
     today_weekday: int = today.isoweekday()
+    is_asked_week_even = not is_even() if is_next else is_even()
     
     dayoffs: [(int, int)] = load_data(file=DAYOFFS)
     
@@ -27,26 +36,24 @@ def beautify_classes(raw_schedule: [{int: {str: str}}], is_next: bool, edited_su
         is_dayoff = (date.day, date.month) in dayoffs
         
         # Reseting `subjects_list` Adding the appropriate edited subjects to the schedule
-        subjects_list: [(int, StudentSubject)] = [ (subject.begin_hour, subject) for subject in edited_subjects if (
-            subject.weekday == weekday and (subject.is_even is None or subject.is_even == (not is_even() if is_next else is_even()))
-        ) ]
+        subjects_list: [(int, StudentSubject)] = [
+            (subject.begin_hour, subject) for subject in edited_subjects if (
+                subject.weekday == weekday and (subject.is_even is None or subject.is_even == is_asked_week_even)
+            )
+        ]
         
         if str(weekday) in raw_schedule and not is_dayoff:
-            # Removing extraspaces
-            raw_schedule[str(weekday)] = [ {
-                    key: " ".join(value.split()) for (key, value) in subject.items()
-                } for subject in raw_schedule[str(weekday)]
-            ]
+            raw_schedule[str(weekday)] = refine_raw_schedule(raw_schedule[str(weekday)])
             
             for subject in raw_schedule[str(weekday)]:
-                # No subjects - no schedule. For day-offs
+                # No subjects - no schedule. For dayoffs
                 if "День консультаций" in subject["disciplName"] or "Военная подготовка" in subject["disciplName"]: break
                 
                 # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
-                if (subject["dayDate"] == "неч") if (not is_even() if is_next else is_even()) else (subject["dayDate"] == "чет"): continue
+                if (subject["dayDate"] == "неч") if is_asked_week_even else (subject["dayDate"] == "чет"): continue
                 
                 # Do not show subjects with certain dates (21.09) on other dates (28 сентября)
-                day_month = "{}.{}".format(int(date.strftime("%d")), date.strftime("%m"))
+                day_month = "{day}.{month}".format(day=int(date.strftime("%d")), month=date.strftime("%m"))
                 if "." in subject["dayDate"] and day_month not in subject["dayDate"]: continue
                 
                 studentSubject: StudentSubject = StudentSubject()
@@ -87,11 +94,7 @@ def beautify_classes(raw_schedule: [{int: {str: str}}], is_next: bool, edited_su
     return weekly_schedule
 
 def beautify_exams(raw_schedule: [{int: {str: str}}]) -> str:
-    # Removing extraspaces & standardizing values to string type
-    raw_schedule = [ {
-            key: " ".join(str(value).split()) for (key, value) in subject.items()
-        } for subject in raw_schedule
-    ]
+    raw_schedule = refine_raw_schedule(raw_schedule)
     
     schedule: str = ""
     
@@ -115,6 +118,7 @@ def beautify_lecturers_classes(raw_schedule: [{int: {str: str}}], is_next: bool)
     
     today: datetime = datetime.today() + timedelta(days=7 if is_next else 0)
     today_weekday: int = today.isoweekday()
+    is_asked_week_even = not is_even() if is_next else is_even()
     
     for weekday in WEEKDAYS:
         # Date of each weekday
@@ -124,20 +128,14 @@ def beautify_lecturers_classes(raw_schedule: [{int: {str: str}}], is_next: bool)
         previous_time: str = ""
         
         if str(weekday) not in raw_schedule:
-            weekly_schedule.append("*{weekday}, {day} {month}*\n\nНет занятий".format(
-                weekday=WEEKDAYS[weekday], day=int(date.strftime("%d")), month=MONTHS[date.strftime("%m")]
-            ))
+            weekly_schedule.append("*{weekday}, {day} {month}*\n\nНет занятий".format(weekday=WEEKDAYS[weekday], day=int(date.strftime("%d")), month=MONTHS[date.strftime("%m")]))
             continue
         
-        # Removing extraspaces & standardizing values to string type
-        raw_schedule[str(weekday)] = [ {
-                key: " ".join(str(value).split()) for (key, value) in subject.items()
-            } for subject in raw_schedule[str(weekday)]
-        ]
+        raw_schedule[str(weekday)] = refine_raw_schedule(raw_schedule[str(weekday)])
         
         # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
         for subject in list(raw_schedule[str(weekday)]):
-            if subject["dayDate"] == "неч" if (not is_even() if is_next else is_even()) else subject["dayDate"] == "чет":
+            if subject["dayDate"] == "неч" if is_asked_week_even else subject["dayDate"] == "чет":
                 raw_schedule[str(weekday)].remove(subject)
         
         # Finnaly, setting subjects themselves
@@ -146,7 +144,7 @@ def beautify_lecturers_classes(raw_schedule: [{int: {str: str}}], is_next: bool)
             
             lecturerSubject: LecturerSubject = LecturerSubject()
             
-            lecturerSubject.time = subject["dayTime"]
+            lecturerSubject.time = (subject["dayTime"], subject["disciplType"])
             lecturerSubject.building = subject["buildNum"]
             lecturerSubject.auditorium = subject["audNum"]
             lecturerSubject.dates = subject["dayDate"]
@@ -162,20 +160,14 @@ def beautify_lecturers_classes(raw_schedule: [{int: {str: str}}], is_next: bool)
             daily_schedule = "".join([ daily_schedule, lecturerSubject.get() ])
         
         weekly_schedule.append("".join([
-            "*{weekday}, {day} {month}*".format(
-                weekday=WEEKDAYS[weekday], day=int(date.strftime("%d")), month=MONTHS[date.strftime("%m")]
-            ),
+            "*{weekday}, {day} {month}*".format(weekday=WEEKDAYS[weekday], day=int(date.strftime("%d")), month=MONTHS[date.strftime("%m")]),
             daily_schedule if daily_schedule != "" else "\n\nНет занятий"
         ]))
     
     return weekly_schedule
 
 def beautify_lecturers_exams(raw_schedule: [{int: {str: str}}]) -> str:
-    # Removing extraspaces & standardizing values to string type
-    raw_schedule = [ {
-            key: " ".join(str(value).split()) for (key, value) in subject.items()
-        } for subject in raw_schedule
-    ]
+    raw_schedule = refine_raw_schedule(raw_schedule)
     
     schedule: [(str, str)] = []
     

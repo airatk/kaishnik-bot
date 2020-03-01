@@ -1,7 +1,6 @@
 from aiogram.types import CallbackQuery
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -33,9 +32,7 @@ async def add_edit(callback: CallbackQuery):
     students[callback.message.chat.id].edited_subject = StudentSubject()
     students[callback.message.chat.id].edited_subject.dates = ""
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="Выбери тип недели:",
         reply_markup=weektype_editor()
     )
@@ -52,9 +49,7 @@ async def add_weekday(callback: CallbackQuery):
     if weektype != WeekParity.BOTH.value:
         students[callback.message.chat.id].edited_subject.is_even = weektype == WeekParity.EVEN.value
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="Выбери день:",
         reply_markup=weekday_editor()
     )
@@ -68,9 +63,7 @@ async def add_weekday(callback: CallbackQuery):
 async def add_hours(callback: CallbackQuery):
     students[callback.message.chat.id].edited_subject.weekday = int(callback.data.split()[1])
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="Выбери час начала пары:",
         reply_markup=hour_editor()
     )
@@ -84,9 +77,7 @@ async def add_hours(callback: CallbackQuery):
 async def add_time(callback: CallbackQuery):
     hour = int(callback.data.split()[1][:-3])
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="Выбери время начала пары:",
         reply_markup=time_editor(hour=hour)
     )
@@ -100,9 +91,7 @@ async def add_time(callback: CallbackQuery):
 async def add_building(callback: CallbackQuery):
     students[callback.message.chat.id].edited_subject.time = callback.data.split()[1]
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="Выбери учебное здание:",
         reply_markup=buildings_editor()
     )
@@ -116,9 +105,7 @@ async def add_building(callback: CallbackQuery):
 async def add_auditorium(callback: CallbackQuery):
     students[callback.message.chat.id].edited_subject.building = callback.data.split()[1]
     
-    guard_message: Message = await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    guard_message: Message = await callback.message.edit_text(
         text="Отправь номер аудитории (или где там у тебя пара).",
         reply_markup=skip(ACTION=Commands.EDIT_AUDITORIUM)
     )
@@ -139,15 +126,14 @@ async def skip_auditorium(callback: CallbackQuery):
 
 @dispatcher.message_handler(lambda message: students[message.chat.id].guard.text == Commands.EDIT_AUDITORIUM.value)
 async def add_subject_title(message: Message):
-    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    await message.delete()
     
     if students[message.chat.id].edited_subject.auditorium != "":
-        await bot.delete_message(chat_id=students[message.chat.id].guard.message.chat.id, message_id=students[message.chat.id].guard.message.message_id)
+        await students[message.chat.id].guard.message.delete()
         
         students[message.chat.id].edited_subject.auditorium = message.text
     
-    guard_message: Message = await bot.send_message(
-        chat_id=message.chat.id,
+    guard_message: Message = await message.answer(
         text="Отправь название предмета.",
         reply_markup=cancel_option()
     )
@@ -159,13 +145,8 @@ async def add_subject_title(message: Message):
 async def add_subject_type(message: Message):
     students[message.chat.id].edited_subject.title = " ".join([ message.text, "•" ])
     
-    await bot.delete_message(
-        chat_id=message.chat.id,
-        message_id=message.message_id
-    )
-    await bot.edit_message_text(
-        chat_id=students[message.chat.id].guard.message.chat.id,
-        message_id=students[message.chat.id].guard.message.message_id,
+    await message.delete()
+    await students[message.chat.id].guard.message.edit_text(
         text="Выбери тип предмета:",
         reply_markup=subject_type_editor()
     )
@@ -181,9 +162,7 @@ async def add_subject_type(message: Message):
 async def add_lecturer(callback: CallbackQuery):
     students[callback.message.chat.id].edited_subject.type = callback.data.split()[1]
     
-    guard_message: Message = await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    guard_message: Message = await callback.message.edit_text(
         text="Отправь имя преподавателя.",
         reply_markup=skip(ACTION=Commands.EDIT_LECTURER)
     )
@@ -204,15 +183,14 @@ async def skip_lecturer(callback: CallbackQuery):
 
 @dispatcher.message_handler(lambda message: students[message.chat.id].guard.text == Commands.EDIT_LECTURER.value)
 async def add_department(message: Message):
-    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    await message.delete()
     
     if students[message.chat.id].edited_subject.lecturer != "":
-        await bot.delete_message(chat_id=students[message.chat.id].guard.message.chat.id, message_id=students[message.chat.id].guard.message.message_id)
+        await students[message.chat.id].guard.message.delete()
         
         students[message.chat.id].edited_subject.lecturer = message.text
     
-    guard_message: Message = await bot.send_message(
-        chat_id=message.chat.id,
+    guard_message: Message = await message.answer(
         text="Отправь название кафедры.",
         reply_markup=skip(ACTION=Commands.EDIT_DEPARTMENT)
     )
@@ -233,17 +211,14 @@ async def skip_department(callback: CallbackQuery):
 
 @dispatcher.message_handler(lambda message: students[message.chat.id].guard.text == Commands.EDIT_DEPARTMENT.value)
 async def end_edit(message: Message):
-    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    await message.delete()
     
     if students[message.chat.id].edited_subject.department != "":
-        await bot.delete_message(chat_id=students[message.chat.id].guard.message.chat.id, message_id=students[message.chat.id].guard.message.message_id)
+        await students[message.chat.id].guard.message.delete()
         
         students[message.chat.id].edited_subject.department = message.text
     
-    await bot.send_message(
-        chat_id=message.chat.id,
-        text="Запомнено!"
-    )
+    await message.answer(text="Запомнено!")
     
     students[message.chat.id].guard.drop()
     students[message.chat.id].edited_subjects.append(students[message.chat.id].edited_subject)

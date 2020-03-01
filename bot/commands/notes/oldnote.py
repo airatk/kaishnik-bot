@@ -1,6 +1,5 @@
 from aiogram.types import CallbackQuery
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -24,9 +23,7 @@ async def choose_note(callback: CallbackQuery):
     if callback.data == Commands.NOTES_SHOW.value: ACTION: Commands = Commands.NOTES_SHOW
     elif callback.data == Commands.NOTES_DELETE.value: ACTION: Commands = Commands.NOTES_DELETE
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="Выбери заметку:",
         reply_markup=note_chooser(
             notes=students[callback.message.chat.id].notes,
@@ -42,17 +39,15 @@ async def choose_note(callback: CallbackQuery):
 )
 @top_notification
 async def show_all(callback: CallbackQuery):
-    await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+    await callback.message.delete()
     
     for note in students[callback.message.chat.id].notes:
-        await bot.send_message(
-            chat_id=callback.message.chat.id,
+        await callback.message.answer(
             text=note,
             parse_mode="markdown"
         )
     
-    await bot.send_message(
-        chat_id=callback.message.chat.id,
+    await callback.message.answer(
         text="Заметок всего: *{current}/{max}*".format(
             current=len(students[callback.message.chat.id].notes),
             max=MAX_NOTES_NUMBER
@@ -71,9 +66,7 @@ async def show_all(callback: CallbackQuery):
 async def show_note(callback: CallbackQuery):
     number: int = int(callback.data.split()[1])
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text=students[callback.message.chat.id].notes[number],
         parse_mode="markdown"
     )
@@ -88,11 +81,7 @@ async def show_note(callback: CallbackQuery):
 )
 @top_notification
 async def delete_all(callback: CallbackQuery):
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        text="Удалено!"
-    )
+    await callback.message.edit_text(text="Удалено!")
     
     students[callback.message.chat.id].guard.drop()
     students[callback.message.chat.id].notes = []
@@ -108,9 +97,7 @@ async def delete_all(callback: CallbackQuery):
 async def delete_note(callback: CallbackQuery):
     number: int = int(callback.data.split()[1])
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text=(
             "Заметка удалена! В ней было:\n\n"
             "{note}".format(note=students[callback.message.chat.id].notes[number])

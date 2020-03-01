@@ -1,7 +1,6 @@
 from aiogram.types import Chat
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -19,7 +18,7 @@ from bot.shared.commands import Commands
 )
 @metrics.increment(Commands.ME)
 async def me(message: Message):
-    chat: Chat = await bot.get_chat(chat_id=message.chat.id)
+    chat: Chat = await message.bot.get_chat(chat_id=message.chat.id)
     
     if students[message.chat.id].is_full:
         message_text = FULL_USER_INFO.format(
@@ -46,8 +45,4 @@ async def me(message: Message):
             edited_classes_number=len(students[message.chat.id].edited_subjects)
         )
     
-    await bot.send_message(
-        chat_id=message.chat.id,
-        text=message_text,
-        parse_mode=None
-    )
+    await message.answer(text=message_text)

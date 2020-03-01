@@ -1,6 +1,5 @@
 from aiogram.types import CallbackQuery
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -27,9 +26,7 @@ from random import choice
 )
 @top_notification
 async def daily(callback: CallbackQuery):
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
     )
@@ -45,9 +42,7 @@ async def daily(callback: CallbackQuery):
     elif len(schedule) == 0: message_text: str = ResponseError.NO_DATA.value
     else: message_text: str = schedule[int(weekday)]
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text=message_text,
         parse_mode="markdown",
         disable_web_page_preview=True
@@ -64,9 +59,7 @@ async def daily(callback: CallbackQuery):
 async def certain_date_schedule(callback: CallbackQuery):
     weektype: str = callback.data.split()[1]
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="Выбери нужный день:",
         reply_markup=weekday_chooser(is_next=weektype == WeekType.NEXT.value)
     )

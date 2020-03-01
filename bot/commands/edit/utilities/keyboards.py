@@ -119,11 +119,9 @@ def weektype_chooser(classes_on_both: int, classes_on_even: int, classes_on_odd:
     
     if classes_on_both + classes_on_even + classes_on_odd > 1:
         if ACTION is Commands.EDIT_SHOW_WEEKTYPE:
-            action: str = "показать все"
-            callback_action: str = Commands.EDIT_SHOW_ALL.value
+            (action, callback_action) = ("показать все", Commands.EDIT_SHOW_ALL.value)
         elif ACTION is Commands.EDIT_DELETE_WEEKTYPE:
-            action: str = "удалить все"
-            callback_action: str = Commands.EDIT_DELETE_ALL.value
+            (action, callback_action) = ("удалить все", Commands.EDIT_DELETE_ALL.value)
         
         weektype_chooser_keyboard.row(InlineKeyboardButton(text=action, callback_data=callback_action))
     
@@ -150,11 +148,9 @@ def weekday_chooser(weektype: str, subjects_number_by_weekdays: [int], ACTION: C
     
     if sum(subjects_number_by_weekdays) > 1:
         if ACTION is Commands.EDIT_SHOW_WEEKDAY:
-            action: str = "Показать все"
-            callback_action: str = Commands.EDIT_SHOW_ALL.value
+            (action, callback_action) = ("Показать все", Commands.EDIT_SHOW_ALL.value)
         elif ACTION is Commands.EDIT_DELETE_WEEKDAY:
-            action: str = "Удалить все"
-            callback_action: str = Commands.EDIT_DELETE_ALL.value
+            (action, callback_action) = ("Удалить все", Commands.EDIT_DELETE_ALL.value)
         
         weekday_chooser_keyboard.row(InlineKeyboardButton(text=action, callback_data=" ".join([
             callback_action, weektype
@@ -163,7 +159,8 @@ def weekday_chooser(weektype: str, subjects_number_by_weekdays: [int], ACTION: C
     weekday_chooser_keyboard.add(*[
         InlineKeyboardButton(
             text="{weekday_name} ({edits_number})".format(
-                weekday_name=weekday_name, edits_number=subjects_number_by_weekdays[weekday - 1]
+                weekday_name=weekday_name,
+                edits_number=subjects_number_by_weekdays[weekday - 1]
             ),
             callback_data=" ".join([ ACTION.value, weektype, str(weekday) ])
         ) for (weekday, weekday_name) in WEEKDAYS.items() if subjects_number_by_weekdays[weekday - 1] != 0
@@ -176,11 +173,9 @@ def edit_chooser(weektype: str, weekday: int, subjects: [StudentSubject], ACTION
     
     if len(subjects) > 1:
         if ACTION is Commands.EDIT_SHOW_EDIT:
-            action: str = "Показать все"
-            callback_action: str = Commands.EDIT_SHOW_ALL.value
+            (action, callback_action) = ("Показать все", Commands.EDIT_SHOW_ALL.value)
         elif ACTION is Commands.EDIT_DELETE_EDIT:
-            action: str = "Удалить все"
-            callback_action: str = Commands.EDIT_DELETE_ALL.value
+            (action, callback_action) = ("Удалить все", Commands.EDIT_DELETE_ALL.value)
         
         edit_chooser_keyboard.row(InlineKeyboardButton(text=action, callback_data=" ".join([
             callback_action, weektype, weekday

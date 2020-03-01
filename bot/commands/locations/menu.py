@@ -1,6 +1,5 @@
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -17,8 +16,7 @@ from bot.shared.commands import Commands
 )
 @metrics.increment(Commands.LOCATIONS)
 async def locations(message: Message):
-    await bot.send_message(
-        chat_id=message.chat.id,
+    await message.answer(
         text="Аж 4 варианта на выбор:",
         reply_markup=location_type_chooser()
     )

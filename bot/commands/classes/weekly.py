@@ -1,6 +1,5 @@
 from aiogram.types import CallbackQuery
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -24,9 +23,7 @@ from random import choice
 )
 @top_notification
 async def weekly_schedule(callback: CallbackQuery):
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
     )
@@ -39,25 +36,20 @@ async def weekly_schedule(callback: CallbackQuery):
     )
     
     if schedule is None:
-        await bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
+        await callback.message.edit_text(
             text=ResponseError.NO_RESPONSE.value,
             disable_web_page_preview=True
         )
     elif len(schedule) == 0:
-        await bot.edit_message_text(
-            chat_id=callback.message.chat.id,
-            message_id=callback.message.message_id,
+        await callback.message.edit_text(
             text=ResponseError.NO_DATA.value,
             disable_web_page_preview=True
         )
     else:
-        await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+        await callback.message.delete()
         
         for weekday in WEEKDAYS:
-            await bot.send_message(
-                chat_id=callback.message.chat.id,
+            await callback.message.answer(
                 text=schedule[weekday - 1],
                 parse_mode="markdown"
             )

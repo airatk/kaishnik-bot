@@ -1,6 +1,5 @@
 from aiogram.types import CallbackQuery
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -21,9 +20,7 @@ from bot.shared.commands import Commands
 )
 @top_notification
 async def libraries(callback: CallbackQuery):
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="У родного КАИ 5 библиотек:",
         reply_markup=libraries_dialer()
     )
@@ -35,24 +32,19 @@ async def libraries(callback: CallbackQuery):
 )
 @top_notification
 async def send_library(callback: CallbackQuery):
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
+    await callback.message.bot.send_chat_action(chat_id=callback.message.chat.id, action="find_location")
     
     number: str = callback.data.split()[1]
     building: str = LIBRARIES[number]["building"]
     
-    await bot.delete_message(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id
-    )
-    await bot.send_venue(
-        chat_id=callback.message.chat.id,
+    await callback.message.delete()
+    await callback.message.answer_venue(
         latitude=BUILDINGS[building]["latitude"],
         longitude=BUILDINGS[building]["longitude"],
         title=LIBRARIES[number]["title"],
         address=BUILDINGS[building]["address"]
     )
-    await bot.send_message(
-        chat_id=callback.message.chat.id,
+    await message.answer(
         text=LIBRARIES[number]["description"],
         parse_mode="markdown"
     )

@@ -23,11 +23,9 @@ def note_chooser(notes: [str], ACTION: Commands) -> InlineKeyboardMarkup:
     
     if len(notes) > 1:
         if ACTION is Commands.NOTES_SHOW:
-            text = "Показать все"
-            callback_action = Commands.NOTES_SHOW_ALL.value
+            (text, callback_action) = ("Показать все", Commands.NOTES_SHOW_ALL.value)
         elif ACTION is Commands.NOTES_DELETE:
-            text = "Удалить все"
-            callback_action = Commands.NOTES_DELETE_ALL.value
+            (text, callback_action) = ("Удалить все", Commands.NOTES_DELETE_ALL.value)
         
         note_chooser_keyboard.row(InlineKeyboardButton(text=text, callback_data=callback_action))
     

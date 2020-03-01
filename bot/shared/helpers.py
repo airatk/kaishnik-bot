@@ -1,20 +1,13 @@
-from aiogram import executor
+from aiogram.types import CallbackQuery
 
-from bot import bot
-from bot import dispatcher
-from bot import keys
+from typing import Callable
 
 
 # Used to show "Loading..." notification on the top in a cleverer way
-def top_notification(callback_handler):
-    async def wrapper(callback):
+def top_notification(callback_handler: Callable):
+    async def wrapper(callback: CallbackQuery):
         await callback_handler(callback)
         
-        await bot.answer_callback_query(callback_query_id=callback.id,cache_time=0)
-
+        await callback.answer(cache_time=0)
+    
     return wrapper
-
-
-# Launcher
-def main():
-    executor.start_polling(dispatcher)

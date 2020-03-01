@@ -1,7 +1,6 @@
 from aiogram.types import Chat
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -32,10 +31,9 @@ async def users(message: Message):
     years_stats: [str] = [ student.year for student in students.values() ]
     
     institutes_names: [str] = list(INSTITUTES.values())
-    years_names: [str] = [ str(i) for i in range(1, 7) ]  # 6 years maximum
+    years_names: [str] = [ str(year) for year in range(1, 7) ]  # 6 years maximum
     
-    await bot.send_message(
-        chat_id=message.chat.id,
+    await message.answer(
         text=USERS_STATS.format(
             faculty_1=institutes_names[0], number_faculty_1=institutes_stats.count(institutes_names[0]),
             faculty_2=institutes_names[1], number_faculty_2=institutes_stats.count(institutes_names[1]),
@@ -61,12 +59,11 @@ async def users(message: Message):
     commands=[ Commands.METRICS.value ]
 )
 async def get_metrics(message: Message):
-    options: {str: str} = parse_creator_query(message.text)
+    options: {str: str} = parse_creator_query(message.get_args())
     
-    if options.get("", "") == "drop" or metrics.day != datetime.today().isoweekday(): metrics.drop()
+    if options.get("") == "drop" or metrics.day != datetime.today().isoweekday(): metrics.drop()
     
-    await bot.send_message(
-        chat_id=message.chat.id,
+    await message.answer(
         text=COMMAND_REQUESTS_STATS.format(
             classes_request_number=metrics.classes,
             score_request_number=metrics.score,
@@ -97,7 +94,7 @@ async def get_metrics(message: Message):
 )
 async def data(message: Message):
     async def collect_asked_users() -> [int]:
-        options: {str: str} = parse_creator_query(message.text)
+        options: {str: str} = parse_creator_query(message.get_args())
         
         full_users_list: [int] = list(students)[::-1]  # Reversing list of students to show the new users first
         asked_users_list: [int] = []
@@ -105,8 +102,10 @@ async def data(message: Message):
         if DataOption.IDS.value in options:
             if options[DataOption.IDS.value] == Suboption.ALL.value:
                 return full_users_list
+            
             if options[DataOption.IDS.value] == Suboption.UNLOGIN.value:
                 asked_users_list += [ chat_id for chat_id in full_users_list if not students[chat_id].is_setup ]
+            
             if options[DataOption.IDS.value] == Suboption.ME.value:
                 asked_users_list.append(message.chat.id)
             
@@ -115,10 +114,7 @@ async def data(message: Message):
         if DataOption.USERNAME.value in options or DataOption.FIRSTNAME.value in options:
             progress_bar: str = ""
             
-            loading_message = await bot.send_message(
-                chat_id=message.chat.id,
-                text="Started searching..."
-            )
+            loading_message = await message.answer(text="Started searching...")
             
             for (index, chat_id) in enumerate(full_users_list):
                 progress_bar = await update_progress_bar(
@@ -127,7 +123,7 @@ async def data(message: Message):
                 )
                 
                 try:
-                    chat: Chat = await bot.get_chat(chat_id=chat_id)
+                    chat: Chat = await message.bot.get_chat(chat_id=chat_id)
                 except Exception:
                     pass
                 
@@ -135,12 +131,10 @@ async def data(message: Message):
                     asked_users_list.append(chat_id)
         
         if DataOption.NUMBER.value in options:
-            asked_users_number: int = 0
-            
             try:
-                asked_users_number = int(options[DataOption.NUMBER.value])
+                asked_users_number: int = int(options[DataOption.NUMBER.value])
             except Exception:
-                pass
+                asked_users_number: int = 0
             
             asked_users_list += full_users_list[:asked_users_number]
         
@@ -168,10 +162,7 @@ async def data(message: Message):
     inactives_list: [int] = []
     progress_bar: str = ""
     
-    loading_message: Message = await bot.send_message(
-        chat_id=message.chat.id,
-        text="Started showing..."
-    )
+    loading_message: Message = await message.answer(text="Started showing...")
     
     for (index, chat_id) in enumerate(asked_users_list):
         progress_bar = await update_progress_bar(
@@ -180,12 +171,11 @@ async def data(message: Message):
         )
         
         try:
-            chat: Chat = await bot.get_chat(chat_id=chat_id)
+            chat: Chat = await message.bot.get_chat(chat_id=chat_id)
         except Exception:
             inactives_list.append(chat_id)
         else:
-            await bot.send_message(
-                chat_id=message.chat.id,
+            await message.answer(
                 text=USER_DATA.format(
                     firstname=chat.first_name, lastname=chat.last_name, username=chat.username,
                     chat_id=chat_id,
@@ -205,20 +195,17 @@ async def data(message: Message):
             )
     
     if len(inactives_list) == 1:
-        await bot.send_message(
-            chat_id=message.chat.id,
+        await message.answer(
             text="There is *1* inactive user.",
             parse_mode="markdown"
         )
     elif len(inactives_list) != 0:
-        await bot.send_message(
-            chat_id=message.chat.id,
+        await message.answer(
             text="There are *{number}* inactive users.".format(number=len(inactives_list)),
             parse_mode="markdown"
         )
     
-    await bot.send_message(
-        chat_id=message.chat.id,
+    await message.answer(
         text="*{shown}/{total}* users were shown!".format(shown=len(asked_users_list), total=len(students)),
         parse_mode="markdown"
     )

@@ -1,6 +1,5 @@
 from aiogram.types import CallbackQuery
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
@@ -35,9 +34,7 @@ async def choose_weetype(callback: CallbackQuery):
         elif edited_subject.is_even is True: classes_on_even += 1
         elif edited_subject.is_even is False: classes_on_odd += 1
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text=(
             "В скобках указано количество отредактированных пар.\n\n"
             "Выбери тип недели:"
@@ -68,15 +65,11 @@ async def choose_weekday(callback: CallbackQuery):
     elif weektype == WeekParity.EVEN.value: is_even: bool = True
     elif weektype == WeekParity.ODD.value: is_even: bool = False
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="Выбери день:",
         reply_markup=weekday_chooser(
             weektype=callback.data.split()[1],
-            subjects_number_by_weekdays=[ sum(
-                1 for subject in students[callback.message.chat.id].edited_subjects if subject.is_even == is_even and subject.weekday == weekday
-            ) for weekday in WEEKDAYS ],
+            subjects_number_by_weekdays=[ sum(1 for subject in students[callback.message.chat.id].edited_subjects if subject.is_even == is_even and subject.weekday == weekday) for weekday in WEEKDAYS ],
             ACTION=ACTION
         )
     )
@@ -101,9 +94,7 @@ async def choose_edit(callback: CallbackQuery):
     
     subjects: {int: StudentSubject} = { index: subject for (index, subject) in enumerate(students[callback.message.chat.id].edited_subjects) if subject.is_even == is_even and subject.weekday == int(weekday) }
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text="Выбери пару:",
         reply_markup=edit_chooser(
             weektype=weektype,
@@ -121,7 +112,7 @@ async def choose_edit(callback: CallbackQuery):
 )
 @top_notification
 async def show_all(callback: CallbackQuery):
-    await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+    await callback.message.delete()
     
     request_enities: [str] = callback.data.split()[1:]
     
@@ -151,8 +142,7 @@ async def show_all(callback: CallbackQuery):
         
         if len(weektype_weekdays) > 1:
             for weektype_weekday in weektype_weekdays:
-                await bot.send_message(
-                    chat_id=callback.message.chat.id,
+                await callback.message.answer(
                     text=weektype_weekday,
                     parse_mode="markdown"
                 )
@@ -161,8 +151,7 @@ async def show_all(callback: CallbackQuery):
     elif subjects_number in range(2, 5): grammatical_entity: str = "ы"
     else: grammatical_entity: str = ""
     
-    await bot.send_message(
-        chat_id=callback.message.chat.id,
+    await callback.message.answer(
         text="*{}* пар{} всего!".format(subjects_number, grammatical_entity),
         parse_mode="markdown"
     )
@@ -179,9 +168,7 @@ async def show_edit(callback: CallbackQuery):
     index: int = int(callback.data.split()[1])
     subject: StudentSubject = students[callback.message.chat.id].edited_subjects[index]
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
+    await callback.message.edit_text(
         text=subject.get(),
         parse_mode="markdown"
     )
@@ -218,11 +205,7 @@ async def delete_all(callback: CallbackQuery):
                 if subject.weekday == weekday and subject.is_even == is_even:
                     students[callback.message.chat.id].edited_subjects.remove(subject)
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        text="Удалено!"
-    )
+    await callback.message.edit_text(text="Удалено!")
     
     students[callback.message.chat.id].guard.drop()
     
@@ -238,11 +221,7 @@ async def delete_edit(callback: CallbackQuery):
     index: int = int(callback.data.split()[1])
     students[callback.message.chat.id].edited_subjects.pop(index)
     
-    await bot.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        text="Удалено!"
-    )
+    await callback.message.edit_text(text="Удалено!")
     
     students[callback.message.chat.id].guard.drop()
     

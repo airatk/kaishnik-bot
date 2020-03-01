@@ -1,12 +1,10 @@
 from aiogram.types import Chat
 from aiogram.types import Message
 
-from bot import bot
 from bot import dispatcher
 
 from bot import students
 
-from bot.commands.creator.utilities.helpers import parse_creator_query
 from bot.commands.creator.utilities.helpers import update_progress_bar
 from bot.commands.creator.utilities.helpers import collect_users_list
 from bot.commands.creator.utilities.constants import CREATOR
@@ -29,10 +27,7 @@ async def clear(message: Message):
     progress_bar: str = ""
     students_list: [Student] = list(students)
     
-    loading_message = await bot.send_message(
-        chat_id=message.chat.id,
-        text="Started clearing..."
-    )
+    loading_message = await message.answer(text="Started clearing...")
     
     for (index, chat_id) in enumerate(students_list):
         progress_bar = await update_progress_bar(
@@ -40,13 +35,12 @@ async def clear(message: Message):
             values=students_list, index=index
         )
         
-        chat: Chat = await bot.get_chat(chat_id=chat_id)
+        chat: Chat = await message.bot.get_chat(chat_id=chat_id)
         
         try:
-            await bot.send_chat_action(chat_id=chat_id, action="typing")
+            await message.bot.send_chat_action(chat_id=chat_id, action="typing")
         except Exception:
-            await bot.send_message(
-                chat_id=message.chat.id,
+            await message.answer(
                 text=USER_DATA.format(
                     firstname=chat.first_name, lastname=chat.last_name, username=chat.username,
                     chat_id=chat_id,
@@ -70,10 +64,7 @@ async def clear(message: Message):
     
     save_data(file=USERS_FILE, object=students)
     
-    await bot.send_message(
-        chat_id=message.chat.id,
-        text="Cleared!" if is_cleared else "No users to clear!"
-    )
+    await message.answer(text="Cleared!" if is_cleared else "No users to clear!")
 
 @dispatcher.message_handler(
     lambda message: message.chat.id == CREATOR,
@@ -84,10 +75,7 @@ async def erase(message: Message):
     
     progress_bar: str = ""
     
-    loading_message: Message = await bot.send_message(
-        chat_id=message.chat.id,
-        text="Started erasing…"
-    )
+    loading_message: Message = await message.answer(text="Started erasing…")
     
     for (index, chat_id) in enumerate(erase_list):
         progress_bar = await update_progress_bar(
@@ -96,10 +84,9 @@ async def erase(message: Message):
         )
         
         if chat_id in students:
-            chat: Chat = await bot.get_chat(chat_id=chat_id)
+            chat: Chat = await message.bot.get_chat(chat_id=chat_id)
             
-            await bot.send_message(
-                chat_id=message.chat.id,
+            await message.answer(
                 text=USER_DATA.format(
                     firstname=chat.first_name, lastname=chat.last_name, username=chat.username,
                     chat_id=chat_id,
@@ -120,20 +107,13 @@ async def erase(message: Message):
             
             del students[chat_id]
         else:
-            await bot.send_message(
-                chat_id=message.chat.id,
-                text="{chat_id} doesn't use me!".format(chat_id=chat_id)
-            )
+            await message.answer(text="{chat_id} doesn't use me!".format(chat_id=chat_id))
             
             erase_list.remove(chat_id)
     
-    if len(erase_list) == 0:
-        await bot.delete_message(chat_id=message.chat.id, message_id=loading_message.message_id)
+    if len(erase_list) == 0: await message.bot.delete()
     
-    await bot.send_message(
-        chat_id=message.chat.id,
-        text="No users to erase!" if len(erase_list) == 0 else "Erased!"
-    )
+    await message.answer(text="No users to erase!" if len(erase_list) == 0 else "Erased!")
     
     save_data(file=USERS_FILE, object=students)
 
@@ -146,10 +126,7 @@ async def drop(message: Message):
     
     progress_bar: str = ""
     
-    loading_message: Message = await bot.send_message(
-        chat_id=message.chat.id,
-        text="Started dropping…"
-    )
+    loading_message: Message = await message.answer(text="Started dropping…")
     
     for (index, chat_id) in enumerate(drop_list):
         progress_bar = update_progress_bar(
@@ -160,28 +137,24 @@ async def drop(message: Message):
         try:
             if students[chat_id].notes != []:
                 for note in students[chat_id].notes:
-                    await bot.send_message(
-                        chat_id=chat_id,
+                    await message.answer(
                         text=note,
                         parse_mode="markdown",
                         disable_notification=True
                     )
                 
-                await bot.send_message(
-                    chat_id=chat_id,
+                await message.answer(
                     text="Твои заметки, чтобы ничего не потерялось.",
                     disable_notification=True
                 )
             
             students[chat_id]: Student = Student()
             
-            guard_message: Message = await bot.send_message(
-                chat_id=chat_id,
+            guard_message: Message = await message.answer(
                 text="Текущие настройки сброшены.",
                 disable_notification=True
             )
-            await bot.send_message(
-                chat_id=chat_id,
+            await message.answer(
                 text="Обнови данные:",
                 reply_markup=make_login(),
                 disable_notification=True
@@ -194,10 +167,7 @@ async def drop(message: Message):
     
     save_data(file=USERS_FILE, object=students)
     
-    await bot.send_message(
-        chat_id=message.chat.id,
-        text="Data was #dropped!"
-    )
+    await message.answer(text="Data was #dropped!")
 
 @dispatcher.message_handler(
     lambda message: message.chat.id == CREATOR,
@@ -210,14 +180,8 @@ async def guarddrop(message):
         if chat_id in students:
             students[chat_id].guard.drop()
         else:
-            await bot.send_message(
-                chat_id=message.chat.id,
-                text="{chat_id} doesn't use me!".format(chat_id=chat_id)
-            )
+            await message.answer(text="{chat_id} doesn't use me!".format(chat_id=chat_id))
             
             guarddrop_list.remove(chat_id)
     
-    await bot.send_message(
-        chat_id=message.chat.id,
-        text="No users to guarddrop!" if len(guarddrop_list) == 0 else "Guarddropped!"
-    )
+    await message.answer(text="No users to guarddrop!" if len(guarddrop_list) == 0 else "Guarddropped!")
