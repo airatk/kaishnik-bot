@@ -20,6 +20,6 @@ async def deny_access_on_message(message: Message):
 @dispatcher.callback_query_handler(lambda callback: not students[callback.message.chat.id].is_setup)
 @top_notification
 async def deny_access_on_callback(callback: CallbackQuery):
-    await callback.meesage.delete()
+    await callback.message.delete()
     
     await deny_access_on_message(callback.message)

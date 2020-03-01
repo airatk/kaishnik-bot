@@ -2,7 +2,6 @@ from bot.shared.api.student import Student
 
 from pickle import load
 from pickle import dump
-from pickle import HIGHEST_PROTOCOL
 
 from sys import argv
 
@@ -61,4 +60,4 @@ else:
     exit()
 
 with open(output_path, "wb") as output_file:
-    dump(output_data, output_file, HIGHEST_PROTOCOL)
+    dump(output_data, output_file, protocol=4)

@@ -111,7 +111,7 @@ async def erase(message: Message):
             
             erase_list.remove(chat_id)
     
-    if len(erase_list) == 0: await message.bot.delete()
+    if len(erase_list) == 0: await message.delete()
     
     await message.answer(text="No users to erase!" if len(erase_list) == 0 else "Erased!")
     

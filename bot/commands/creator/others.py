@@ -44,7 +44,7 @@ async def broadcast(message: Message):
         
         try:
             await message.answer(
-                text=options["message"] if "false" == options.get("signed") else BROADCAST_MESSAGE_TEMPLATE.format(broadcast_message=options["message"]),
+                text=options["message"] if options.get("signed") == "false" else BROADCAST_MESSAGE_TEMPLATE.format(broadcast_message=options["message"]),
                 parse_mode="markdown",
                 disable_web_page_preview=True
             )
@@ -54,51 +54,6 @@ async def broadcast(message: Message):
     await message.answer(
         text="Broadcasted to *{}* users!".format(len(broadcast_list)),
         parse_mode="markdown"
-    )
-
-@dispatcher.message_handler(
-    lambda message: message.chat.id == CREATOR,
-    commands=[ Commands.POLL.value ]
-)
-async def poll(message: Message):
-    options: {str, str} = parse_creator_query(message.get_agrs())
-    
-    if "question" not in options:
-        await message.answer(text="No question was found!")
-        return
-    
-    question: str = options["question"]
-    
-    if "answer1" not in options or "answer2" not in options:
-        await message.answer(text="Poll gotta have at least 2 answers!")
-        return
-    
-    answers: [str] = [ options["answer1"], options["answer2"] ]
-    last_answer_id: int = 2
-    
-    while True:
-        last_answer_id += 1
-        answer_key: str = "answer{id}".format(id=last_answer_id)
-        
-        if answer_key not in options: break
-        
-        answers.append(options[answer_key])
-    
-    is_anonymous: bool = options.get("anonymous") == "true"
-    allows_multiple_answers: bool = options.get("multipleanswers") == "true"
-    is_closed: bool = options.get("closed") == "true"
-    
-    correct_option_id: str = options.get("correctoption")
-    correct_option_id: int = int(correct_option_id) if correct_option_id is not None else None
-    
-    await message.bot.send_poll(
-        chat_id=message.chat.id,
-        question=question,
-        options=answers,
-        is_anonymous=is_anonymous,
-        allows_multiple_answers=allows_multiple_answers,
-        is_closed=is_closed,
-        correct_option_id=correct_option_id
     )
 
 @dispatcher.message_handler(

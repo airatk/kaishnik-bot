@@ -52,7 +52,7 @@ async def update_progress_bar(loading_message, current_progress_bar: str, values
 
 
 async def collect_users_list(query_message: Message) -> [int]:
-    options: { str: str } = parse_creator_query(query_message.text)
+    options: { str: str } = parse_creator_query(query_message.get_args())
 
     if "ids" not in options:
         await query_message.answer(text="`ids` option has not been found!")
