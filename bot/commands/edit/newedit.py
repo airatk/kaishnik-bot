@@ -2,7 +2,6 @@ from aiogram.types import CallbackQuery
 from aiogram.types import Message
 
 from bot import dispatcher
-
 from bot import students
 
 from bot.commands.edit.utilities.keyboards import skip

@@ -2,7 +2,6 @@ from aiogram.types import CallbackQuery
 from aiogram.types import Message
 
 from bot import dispatcher
-
 from bot import students
 from bot import metrics
 
@@ -74,7 +73,8 @@ async def choose_subjects_type(callback: CallbackQuery):
         
         students[callback.message.chat.id].guard.drop()
         return
-    elif len(students[callback.message.chat.id].scoretable) == 0:
+    
+    if len(students[callback.message.chat.id].scoretable) == 0:
         await callback.message.edit_text(text=ResponseError.NO_DATA.value)
         
         students[callback.message.chat.id].guard.drop()

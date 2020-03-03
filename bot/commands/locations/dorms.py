@@ -1,7 +1,6 @@
 from aiogram.types import CallbackQuery
 
 from bot import dispatcher
-
 from bot import students
 
 from bot.commands.locations.utilities.keyboards import dorms_dialer
@@ -42,6 +41,6 @@ async def send_dorm(callback: CallbackQuery):
         title=DORMS[number]["title"],
         address=DORMS[number]["address"]
     )
-    await message.answer(text=DORMS[number]["description"])
+    await callback.message.answer(text=DORMS[number]["description"])
     
     students[callback.message.chat.id].guard.drop()

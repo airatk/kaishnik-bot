@@ -1,7 +1,6 @@
 from aiogram.types import Message
 
 from bot import dispatcher
-
 from bot import students
 from bot import metrics
 
@@ -32,15 +31,15 @@ async def menu(message: Message):
         students[message.chat.id].another_group = request_entities[1]
         
         if students[message.chat.id].another_group is None:
-            await message.edit_text(
+            await loading_message.edit_text(
                 text="Расписание занятий группы *{group}* получить не удалось :(".format(group=request_entities[1]),
                 parse_mode="markdown"
             )
             
             students[message.chat.id].guard.drop()
             return
-        else:
-            await message.delete()
+        
+        await loading_message.delete()
     
     await message.answer(
         text="Тебе нужно расписание группы *{group}* на:".format(group=request_entities[1]) if len(request_entities) > 1 else "Тебе нужно расписание на:",

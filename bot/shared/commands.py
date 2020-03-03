@@ -78,6 +78,7 @@ class Commands(Enum):
     BRS: str = "brs"
     HELP: str = "help"
     DONATE: str = "donate"
-    ME: str = "me"
+    
+    SETTINGS: str = "settings"
     
     UNKNOWN: str = "unknown"

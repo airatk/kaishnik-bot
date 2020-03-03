@@ -10,9 +10,6 @@ from bot.shared.calendar.constants import WEEKDAYS
 from bot.shared.calendar.week import WeekParity
 from bot.shared.commands import Commands
 
-from datetime import datetime
-from datetime import timedelta
-
 
 def action_chooser(has_edits: bool) -> InlineKeyboardMarkup:
     action_chooser_keyboard: InlineKeyboardMarkup = cancel_option()

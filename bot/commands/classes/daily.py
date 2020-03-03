@@ -1,7 +1,6 @@
 from aiogram.types import CallbackQuery
 
 from bot import dispatcher
-
 from bot import students
 
 from bot.commands.classes.utilities.keyboards import weekday_chooser
@@ -11,11 +10,9 @@ from bot.shared.api.constants import LOADING_REPLIES
 from bot.shared.api.types import ScheduleType
 from bot.shared.api.types import ClassesOptionType
 from bot.shared.api.types import ResponseError
-from bot.shared.calendar.constants import WEEKDAYS
 from bot.shared.calendar.week import WeekType
 from bot.shared.commands import Commands
 
-from datetime import datetime
 from random import choice
 
 

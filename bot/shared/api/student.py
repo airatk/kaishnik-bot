@@ -6,15 +6,14 @@ from bot.shared.api.constants import SCORE_URL
 from bot.shared.api.constants import P_SUB
 from bot.shared.api.types import ScheduleType
 from bot.shared.api.types import ScoreDataType
-from bot.shared.api.types import ResponseError
 from bot.shared.api.subject import StudentSubject
 from bot.shared.guard import Guard
 
-from datetime import datetime
-from datetime import timedelta
-
 from requests import get
 from requests import post
+from requests.exceptions import ConnectionError
+
+from json.decoder import JSONDecodeError
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
@@ -193,7 +192,7 @@ class Student:
                 "p_p_resource_id": "getGroupsURL",
                 "query": group
             }).json()[0]["id"]
-        except Exception:
+        except (ConnectionError, JSONDecodeError, IndexError, KeyError):
             return None
     
     def get_schedule(self, TYPE: ScheduleType, is_next: bool = False) -> [str]:
@@ -206,16 +205,18 @@ class Student:
                 "p_p_resource_id": TYPE.value,
                 "groupId": self._group_schedule_id if is_own_group_asked else self._another_group
             }).json()
-        except Exception:
+        except (ConnectionError, JSONDecodeError, IndexError, KeyError):
             return None
         
-        if not response: return []
+        if not response:
+            return []
         
         self._another_group = None
-
+        
         if TYPE is ScheduleType.CLASSES:
             return beautify_classes(response, is_next, self._edited_subjects if is_own_group_asked else [])
-        elif TYPE is ScheduleType.EXAMS:
+        
+        if TYPE is ScheduleType.EXAMS:
             return beautify_exams(response)
     
     
@@ -236,7 +237,7 @@ class Student:
             # Fixing bad quality response
             for i in range(1, len(keys)): keys[i - 1] = keys[i - 1].replace(keys[i], "")
             for (i, key) in enumerate(keys): keys[i] = key[:-1] if key.endswith(" ") else key
-        except Exception:
+        except (ConnectionError, AttributeError, KeyError, IndexError):
             return dict()
         else:
             return dict(zip(keys, values))
@@ -258,7 +259,7 @@ class Student:
             if not selector: return 0
             
             return max([ int(option["value"]) for option in selector.find_all("option") ])
-        except Exception:
+        except ConnectionError:
             return None
     
     def get_scoretable(self, semester: str) -> [(str, str)]:
@@ -281,5 +282,5 @@ class Student:
             raw_scoretable: [[str]] = [ [ (data.text if data.text else "-") for data in row.find_all("td") ] for row in table.find_all("tr") ][2:]
             
             return beautify_scoretable(raw_scoretable)
-        except Exception:
+        except ConnectionError:
             return None

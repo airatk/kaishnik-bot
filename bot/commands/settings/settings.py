@@ -2,7 +2,6 @@ from aiogram.types import Chat
 from aiogram.types import Message
 
 from bot import dispatcher
-
 from bot import students
 from bot import metrics
 
@@ -14,10 +13,10 @@ from bot.shared.commands import Commands
 
 @dispatcher.message_handler(
     lambda message: students[message.chat.id].guard.text is None,
-    commands=[ Commands.ME.value ]
+    commands=[ Commands.SETTINGS.value ]
 )
-@metrics.increment(Commands.ME)
-async def me(message: Message):
+@metrics.increment(Commands.SETTINGS)
+async def settings(message: Message):
     chat: Chat = await message.bot.get_chat(chat_id=message.chat.id)
     
     if students[message.chat.id].is_full:
@@ -46,3 +45,6 @@ async def me(message: Message):
         )
     
     await message.answer(text=message_text)
+    
+    students[message.chat.id].guard.text = Commands.SETTINGS.value
+    students[message.chat.id].guard.drop()

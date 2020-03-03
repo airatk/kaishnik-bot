@@ -1,7 +1,6 @@
 from aiogram.types import CallbackQuery
 
 from bot import dispatcher
-
 from bot import students
 
 from bot.commands.locations.utilities.keyboards import buildings_dialer

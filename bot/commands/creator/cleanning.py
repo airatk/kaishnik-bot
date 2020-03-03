@@ -1,8 +1,9 @@
 from aiogram.types import Chat
 from aiogram.types import Message
+from aiogram.utils.exceptions import ChatNotFound
+from aiogram.utils.exceptions import Unauthorized
 
 from bot import dispatcher
-
 from bot import students
 
 from bot.commands.creator.utilities.helpers import update_progress_bar
@@ -35,11 +36,11 @@ async def clear(message: Message):
             values=students_list, index=index
         )
         
-        chat: Chat = await message.bot.get_chat(chat_id=chat_id)
-        
         try:
+            chat: Chat = await message.bot.get_chat(chat_id=chat_id)
+            
             await message.bot.send_chat_action(chat_id=chat_id, action="typing")
-        except Exception:
+        except ChatNotFound:
             await message.answer(
                 text=USER_DATA.format(
                     firstname=chat.first_name, lastname=chat.last_name, username=chat.username,
@@ -58,6 +59,11 @@ async def clear(message: Message):
                     hashtag="erased"
                 )
             )
+            
+            del students[chat_id]
+            is_cleared = True
+        except Unauthorized:
+            await message.answer(text="Troubles getting the chat, but the chat id was removed.")
             
             del students[chat_id]
             is_cleared = True
@@ -84,26 +90,29 @@ async def erase(message: Message):
         )
         
         if chat_id in students:
-            chat: Chat = await message.bot.get_chat(chat_id=chat_id)
-            
-            await message.answer(
-                text=USER_DATA.format(
-                    firstname=chat.first_name, lastname=chat.last_name, username=chat.username,
-                    chat_id=chat_id,
-                    institute=students[chat_id].institute,
-                    year=students[chat_id].year,
-                    group_number=students[chat_id].group,
-                    name=students[chat_id].name,
-                    card=students[chat_id].card,
-                    notes_number=len(students[chat_id].notes),
-                    edited_classes_number=len(students[chat_id].edited_subjects),
-                    fellow_students_number=len(students[chat_id].names),
-                    is_full=students[chat_id].is_full,
-                    guard_text=students[chat_id].guard.text,
-                    is_guard_message_none=students[chat_id].guard.message is None,
-                    hashtag="erased"
+            try:
+                chat: Chat = await message.bot.get_chat(chat_id=chat_id)
+            except Unauthorized:
+                await message.answer(text="Troubles getting the chat, but the chat id was removed.")
+            else:
+                await message.answer(
+                    text=USER_DATA.format(
+                        firstname=chat.first_name, lastname=chat.last_name, username=chat.username,
+                        chat_id=chat_id,
+                        institute=students[chat_id].institute,
+                        year=students[chat_id].year,
+                        group_number=students[chat_id].group,
+                        name=students[chat_id].name,
+                        card=students[chat_id].card,
+                        notes_number=len(students[chat_id].notes),
+                        edited_classes_number=len(students[chat_id].edited_subjects),
+                        fellow_students_number=len(students[chat_id].names),
+                        is_full=students[chat_id].is_full,
+                        guard_text=students[chat_id].guard.text,
+                        is_guard_message_none=students[chat_id].guard.message is None,
+                        hashtag="erased"
+                    )
                 )
-            )
             
             del students[chat_id]
         else:
@@ -162,7 +171,7 @@ async def drop(message: Message):
             
             students[message.chat.id].guard.text = Commands.START.value
             students[chat_id].guard.message = guard_message
-        except Exception:
+        except ChatNotFound:
             del students[chat_id]
     
     save_data(file=USERS_FILE, object=students)

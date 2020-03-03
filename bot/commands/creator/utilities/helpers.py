@@ -70,7 +70,7 @@ async def collect_users_list(query_message: Message) -> [int]:
     for possible_chat_id in options["ids"].split("&"):
         try:
             chat_id: int = int(possible_chat_id)
-        except Exception:
+        except ValueError:
             pass
         else:
             users_list.append(chat_id)

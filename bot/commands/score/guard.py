@@ -1,7 +1,6 @@
 from aiogram.types import Message
 
 from bot import dispatcher
-
 from bot import students
 
 from bot.shared.commands import Commands

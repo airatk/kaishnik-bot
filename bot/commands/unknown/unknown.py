@@ -1,8 +1,8 @@
 from aiogram.types import CallbackQuery
 from aiogram.types import Message
+from aiogram.utils.exceptions import MessageError
 
 from bot import dispatcher
-
 from bot import students
 from bot import metrics
 
@@ -18,7 +18,7 @@ from random import choice
 @dispatcher.message_handler(content_types=[
     "sticker", "photo", "video", "audio", "document", "voice", "video_note", "location", "contact"
 ])
-async def unknown_nontext_message(message: Message): await messange.delete()
+async def unknown_nontext_message(message: Message): await message.delete()
 
 @dispatcher.message_handler(content_types=[ "text" ])
 @metrics.increment(Commands.UNKNOWN)
@@ -35,7 +35,7 @@ async def unknown_command(message: Message):
 async def unknown_callback(callback: CallbackQuery):
     try:
         await callback.message.edit_text(text="Ой-ой-ой!🙆🏼‍♀️")
-    except Exception:
+    except MessageError:
         await callback.message.edit_text(text="Ой!🙆🏼‍♀️")
     
     students[callback.message.chat.id].guard.drop()

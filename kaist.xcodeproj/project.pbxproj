@@ -58,14 +58,13 @@
 		604B522723D2116700974049 /* keyboards.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = keyboards.py; sourceTree = "<group>"; };
 		604B522B23D2116700974049 /* guard.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = guard.py; sourceTree = "<group>"; };
 		604B522C23D2116700974049 /* __init__.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
-		604B522E23D2116700974049 /* me.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = me.py; sourceTree = "<group>"; };
 		604B522F23D2116700974049 /* __init__.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
 		604B523823D2116700974049 /* card.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = card.py; sourceTree = "<group>"; };
 		604B523A23D2116700974049 /* constants.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = constants.py; sourceTree = "<group>"; };
 		604B523E23D2116700974049 /* brs.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = brs.py; sourceTree = "<group>"; };
 		604B523F23D2116700974049 /* week.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = week.py; sourceTree = "<group>"; };
 		604B524023D2116700974049 /* donate.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = donate.py; sourceTree = "<group>"; };
-		604B524123D2116700974049 /* help.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = help.py; sourceTree = "<group>"; };
+		604B524123D2116700974049 /* help_command.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = help_command.py; sourceTree = "<group>"; };
 		604B524523D2116700974049 /* oldedit.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = oldedit.py; sourceTree = "<group>"; };
 		604B524623D2116700974049 /* __init__.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
 		604B524F23D2116700974049 /* keyboards.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = keyboards.py; sourceTree = "<group>"; };
@@ -114,6 +113,9 @@
 		604B52C623D2116700974049 /* update5.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = update5.txt; sourceTree = "<group>"; };
 		60A745E6240BA9AD00F83EC1 /* cas-external-login.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "cas-external-login.py"; sourceTree = "<group>"; };
 		60A745E7240BA9AD00F83EC1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		60A745E9240D28C800F83EC1 /* __init__.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
+		60A745EA240D28C800F83EC1 /* settings.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = settings.py; sourceTree = "<group>"; };
+		60A745EB240D28C800F83EC1 /* guard.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = guard.py; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -213,6 +215,7 @@
 				604B524423D2116700974049 /* edit */,
 				604B527E23D2116700974049 /* locations */,
 				604B522D23D2116700974049 /* others */,
+				60A745E8240D28C800F83EC1 /* settings */,
 				604B52A023D2116700974049 /* unknown */,
 			);
 			path = commands;
@@ -319,9 +322,8 @@
 				604B523F23D2116700974049 /* week.py */,
 				604B523823D2116700974049 /* card.py */,
 				604B523E23D2116700974049 /* brs.py */,
-				604B524123D2116700974049 /* help.py */,
+				604B524123D2116700974049 /* help_command.py */,
 				604B524023D2116700974049 /* donate.py */,
-				604B522E23D2116700974049 /* me.py */,
 				604B523923D2116700974049 /* utilities */,
 			);
 			path = others;
@@ -493,6 +495,17 @@
 			);
 			path = "cas-external-login";
 			sourceTree = "<group>";
+		};
+		60A745E8240D28C800F83EC1 /* settings */ = {
+			isa = PBXGroup;
+			children = (
+				60A745E9240D28C800F83EC1 /* __init__.py */,
+				60A745EA240D28C800F83EC1 /* settings.py */,
+				60A745EB240D28C800F83EC1 /* guard.py */,
+			);
+			name = settings;
+			path = bot/commands/settings;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 

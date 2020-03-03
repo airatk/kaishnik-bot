@@ -23,7 +23,7 @@ class Metrics:
         self._brs: int = 0
         self._help: int = 0
         self._donate: int = 0
-        self._me: int = 0
+        self._settings: int = 0
         self._unknown: int = 0
     
     
@@ -97,8 +97,8 @@ class Metrics:
         return self._donate
     
     @property
-    def me(self) -> int:
-        return self._me
+    def settings(self) -> int:
+        return self._settings
     
     @property
     def unknown(self) -> int:
@@ -124,7 +124,7 @@ class Metrics:
             self._brs +
             self._help +
             self._donate +
-            self._me +
+            self._settings +
             self._unknown
         )
     
@@ -154,7 +154,7 @@ class Metrics:
                 elif command is Commands.BRS: self._brs += 1
                 elif command is Commands.HELP: self._help += 1
                 elif command is Commands.DONATE: self._donate += 1
-                elif command is Commands.ME: self._me += 1
+                elif command is Commands.SETTINGS: self._settings += 1
                 elif command is Commands.UNKNOWN: self._unknown += 1
                 
                 await func(arg)

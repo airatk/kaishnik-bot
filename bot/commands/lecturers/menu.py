@@ -2,7 +2,6 @@ from aiogram.types import CallbackQuery
 from aiogram.types import Message
 
 from bot import dispatcher
-
 from bot import students
 from bot import metrics
 
@@ -49,12 +48,14 @@ async def find_lecturer(message: Message):
         
         students[message.chat.id].guard.drop()
         return
-    elif len(names) == 0:
+    
+    if len(names) == 0:
         await students[message.chat.id].guard.message.edit_text(text="Ничего не найдено :(")
         
         students[message.chat.id].guard.drop()
         return
-    elif len(names) > MAX_LECTURERS_NUMBER:
+    
+    if len(names) > MAX_LECTURERS_NUMBER:
         await students[message.chat.id].guard.message.edit_text(text="Слишком мало букв, слишком много преподавателей…")
         
         students[message.chat.id].guard.drop()

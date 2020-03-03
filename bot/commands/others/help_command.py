@@ -1,7 +1,6 @@
 from aiogram.types import Message
 
 from bot import dispatcher
-
 from bot import students
 from bot import metrics
 
@@ -15,7 +14,7 @@ from bot.shared.commands import Commands
     commands=[ Commands.HELP.value ]
 )
 @metrics.increment(Commands.HELP)
-async def help(message: Message):
+async def help_command(message: Message):
     await message.answer(
         text=HELP,
         parse_mode="markdown",

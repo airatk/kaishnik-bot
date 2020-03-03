@@ -1,7 +1,6 @@
 from aiogram.types import CallbackQuery
 
 from bot import dispatcher
-
 from bot import students
 
 from bot.commands.edit.utilities.keyboards import weektype_chooser
@@ -197,10 +196,8 @@ async def delete_all(callback: CallbackQuery):
         requested_weekday: int = int(request_enities[1])
         weekdays: {int: str} = { requested_weekday: WEEKDAYS[requested_weekday] }
     
-    subjects_number: int = 0
-    
-    for (weektype, is_even) in weektypes.items():
-        for (weekday, weekday_name) in weekdays.items():
+    for is_even in weektypes.values():
+        for weekday in weekdays:
             for subject in list(students[callback.message.chat.id].edited_subjects):
                 if subject.weekday == weekday and subject.is_even == is_even:
                     students[callback.message.chat.id].edited_subjects.remove(subject)

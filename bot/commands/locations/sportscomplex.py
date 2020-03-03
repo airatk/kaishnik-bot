@@ -1,7 +1,6 @@
 from aiogram.types import CallbackQuery
 
 from bot import dispatcher
-
 from bot import students
 
 from bot.commands.locations.utilities.keyboards import sportscomplex_dialer
@@ -42,6 +41,6 @@ async def send_sportscomplex(callback: CallbackQuery):
         title=SPORTSCOMPLEX[number]["title"],
         address=SPORTSCOMPLEX[number]["address"]
     )
-    await message.answer(text=SPORTSCOMPLEX[number]["description"])
+    await callback.message.answer(text=SPORTSCOMPLEX[number]["description"])
     
     students[callback.message.chat.id].guard.drop()

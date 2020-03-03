@@ -6,5 +6,5 @@ from bot import students
 from bot.shared.commands import Commands
 
 
-@dispatcher.message_handler(lambda message: students[message.chat.id].guard.text == Commands.CLASSES.value)
+@dispatcher.message_handler(lambda message: students[message.chat.id].guard.text == Commands.SETTINGS.value)
 async def guard(message: Message): await message.delete()

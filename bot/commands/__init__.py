@@ -14,4 +14,6 @@ from bot.commands import edit
 from bot.commands import locations
 from bot.commands import others
 
+from bot.commands import settings
+
 from bot.commands import unknown

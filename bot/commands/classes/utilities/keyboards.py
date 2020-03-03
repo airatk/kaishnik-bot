@@ -19,10 +19,12 @@ def schedule_type() -> InlineKeyboardMarkup:
     should_show_next_week: bool = tomorrow_weekday > 6
     
     schedule_type_keyboard.row(
-        InlineKeyboardButton(text="сегодня",
+        InlineKeyboardButton(
+            text="сегодня",
             callback_data=" ".join([ ClassesOptionType.DAILY.value, WeekType.CURRENT.value, str(today_weekday) ])
         ),
-        InlineKeyboardButton(text="завтра",
+        InlineKeyboardButton(
+            text="завтра",
             callback_data=" ".join([
                 ClassesOptionType.DAILY.value,
                 WeekType.NEXT.value if should_show_next_week else WeekType.CURRENT.value,
@@ -30,10 +32,12 @@ def schedule_type() -> InlineKeyboardMarkup:
             ])
         )
     )
-    schedule_type_keyboard.row(InlineKeyboardButton(text="текущую неделю",
+    schedule_type_keyboard.row(InlineKeyboardButton(
+        text="текущую неделю",
         callback_data=" ".join([ ClassesOptionType.WEEKDAYS.value, WeekType.CURRENT.value ])
     ))
-    schedule_type_keyboard.row(InlineKeyboardButton(text="следующую неделю",
+    schedule_type_keyboard.row(InlineKeyboardButton(
+        text="следующую неделю",
         callback_data=" ".join([ ClassesOptionType.WEEKDAYS.value, WeekType.NEXT.value ])
     ))
     
@@ -43,7 +47,8 @@ def schedule_type() -> InlineKeyboardMarkup:
 def weekday_chooser(is_next: bool) -> InlineKeyboardMarkup:
     weekday_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup()
     
-    weekday_chooser_keyboard.row(InlineKeyboardButton(text="Показать все",
+    weekday_chooser_keyboard.row(InlineKeyboardButton(
+        text="Показать все",
         callback_data=" ".join([
             ClassesOptionType.WEEKLY.value,
             WeekType.NEXT.value if is_next else WeekType.CURRENT.value

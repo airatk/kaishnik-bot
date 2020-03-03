@@ -2,7 +2,6 @@ from aiogram.types import CallbackQuery
 from aiogram.types import Message
 
 from bot import dispatcher
-
 from bot import students
 from bot import metrics
 
@@ -20,7 +19,7 @@ from bot.shared.commands import Commands
 )
 @metrics.increment(Commands.LOGIN)
 async def login_on_command(message: Message):
-    guard_message: Message = await message.answer(
+    await message.answer(
         text=(
             "{warning}"
             "Студенческий билет и зачётка имеют одинаковый номер😉\n\n"

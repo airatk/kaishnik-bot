@@ -9,15 +9,17 @@ from bot.shared.data.constants import KEYS_FILE
 from bot.shared.metrics import Metrics
 
 from config import Config
-import logging
+from logging import basicConfig
+from logging import NOTSET
 
 
 # Logger setup
-logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=logging.NOTSET)
+basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=NOTSET)
 
 
 # Initialising the bot components
-with open(KEYS_FILE) as keys_file: keys: Config = Config(keys_file)
+with open(KEYS_FILE) as keys_file:
+    keys: Config = Config(keys_file)
 
 bot: Bot = Bot(token=keys.TOKEN, proxy=PROXY)
 dispatcher: Dispatcher = Dispatcher(bot)

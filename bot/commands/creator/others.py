@@ -1,8 +1,7 @@
 from aiogram.types import Message
+from aiogram.utils.exceptions import ChatNotFound
 
 from bot import dispatcher
-
-from bot import students
 
 from bot.commands.creator.utilities.helpers import parse_creator_query
 from bot.commands.creator.utilities.helpers import update_progress_bar
@@ -48,7 +47,7 @@ async def broadcast(message: Message):
                 parse_mode="markdown",
                 disable_web_page_preview=True
             )
-        except Exception:
+        except ChatNotFound:
             await message.answer(text="{} is inactive! /clear?".format(chat_id))
     
     await message.answer(
@@ -79,12 +78,12 @@ async def reverse(message: Message):
 async def dayoff(message: Message):
     options: {str: str} = parse_creator_query(message.get_args())
     
-    dayoffs: {(int, int)} = load_data(file=DAYOFFS)
+    dayoff_dates: {(int, int)} = load_data(file=DAYOFFS)
     
     if options.get("") == "list":
-        dayoffs_list: str = "There are no dayoffs!" if len(dayoffs) == 0 else "*Dayoffs*\n"
+        dayoffs_list: str = "There are no dayoffs!" if len(dayoff_dates) == 0 else "*Dayoffs*\n"
         
-        for (day_index, month_index) in dayoffs:
+        for (day_index, month_index) in dayoff_dates:
             month: str = MONTHS["{month_index:02}".format(month_index=month_index)]
             dayoffs_list = "\n".join([ dayoffs_list, "• {day} {month}".format(day=day_index, month=month) ])
         
@@ -106,8 +105,8 @@ async def dayoff(message: Message):
         parsed_date: [str] = raw_date.split("-")
         
         try:
-            dayoff: (int, int) = (int(parsed_date[0]), int(parsed_date[1]))
-        except Exception:
+            dayoff_date: (int, int) = (int(parsed_date[0]), int(parsed_date[1]))
+        except ValueError:
             await message.answer(
                 text="Write date in the following format: *26-07*",
                 parse_mode="markdown"
@@ -115,19 +114,19 @@ async def dayoff(message: Message):
             return
         
         if "add" in options:
-            if dayoff not in dayoffs:
-                dayoffs.append(dayoff)
+            if dayoff_date not in dayoff_dates:
+                dayoff_dates.append(dayoff_date)
             else:
                 await message.answer(text="The dayoff have been added already!")
                 return
         elif "drop" in options:
-            if dayoff in dayoffs:
-                dayoffs.remove(dayoff)
+            if dayoff_date in dayoff_dates:
+                dayoff_dates.remove(dayoff_date)
             else:
                 await message.answer(text="Not a dayoff!")
                 return
         
-        save_data(file=DAYOFFS, object=dayoffs)
+        save_data(file=DAYOFFS, object=dayoff_dates)
         await message.answer(text="Done!")
     else:
         await message.answer(text="No options were found!")

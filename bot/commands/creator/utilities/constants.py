@@ -101,12 +101,12 @@ COMMAND_REQUESTS_STATS: str = (
     "/locations: {locations_request_number}\n"
     "/card: {card_request_number}\n"
     "/brs: {brs_request_number}\n"
-    "/me: {me_request_number}\n"
     "/cancel: {cancel_request_number}\n"
     "\n*setup*\n"  # setup commands requests number
     "/start: {start_request_number}\n"
     "/login: {login_request_number}\n"
     "unlogin: {unlogin_request_number}\n"
+    "/settings: {settings_request_number}\n"
     "\n*other*\n"  # uncategorised commands requests number
     "/edit: {edit_request_number}\n"
     "/help: {help_request_number}\n"

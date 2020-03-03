@@ -1,8 +1,9 @@
 from aiogram.types import Chat
 from aiogram.types import Message
+from aiogram.utils.exceptions import ChatNotFound
+from aiogram.utils.exceptions import Unauthorized
 
 from bot import dispatcher
-
 from bot import students
 from bot import metrics
 
@@ -16,7 +17,6 @@ from bot.commands.creator.utilities.types import DataOption
 from bot.commands.creator.utilities.types import Suboption
 
 from bot.shared.api.constants import INSTITUTES
-from bot.shared.api.student import Student
 from bot.shared.commands import Commands
 
 from datetime import datetime
@@ -58,7 +58,7 @@ async def users(message: Message):
     lambda message: message.chat.id == CREATOR,
     commands=[ Commands.METRICS.value ]
 )
-async def get_metrics(message: Message):
+async def metrics_command(message: Message):
     options: {str: str} = parse_creator_query(message.get_args())
     
     if options.get("") == "drop" or metrics.day != datetime.today().isoweekday(): metrics.drop()
@@ -74,11 +74,11 @@ async def get_metrics(message: Message):
             locations_request_number=metrics.locations,
             card_request_number=metrics.card,
             brs_request_number=metrics.brs,
-            me_request_number=metrics.me,
             cancel_request_number=metrics.cancel,
             start_request_number=metrics.start,
             login_request_number=metrics.login,
             unlogin_request_number=metrics.unlogin,
+            settings_request_number=metrics.settings,
             edit_request_number=metrics.edit,
             help_request_number=metrics.help,
             donate_request_number=metrics.donate,
@@ -124,16 +124,19 @@ async def data(message: Message):
                 
                 try:
                     chat: Chat = await message.bot.get_chat(chat_id=chat_id)
-                except Exception:
-                    pass
+                except (ChatNotFound, Unauthorized):
+                    chat: Chat = None
                 
-                if (DataOption.USERNAME.value in options and options[DataOption.USERNAME.value] in chat.username) or (DataOption.FIRSTNAME.value in options and options[DataOption.FIRSTNAME.value] in chat.first_name):
-                    asked_users_list.append(chat_id)
+                try:
+                    if (DataOption.USERNAME.value in options and options[DataOption.USERNAME.value] in chat.username) or (DataOption.FIRSTNAME.value in options and options[DataOption.FIRSTNAME.value] in chat.first_name):
+                        asked_users_list.append(chat_id)
+                except AttributeError:
+                    pass
         
         if DataOption.NUMBER.value in options:
             try:
                 asked_users_number: int = int(options[DataOption.NUMBER.value])
-            except Exception:
+            except ValueError:
                 asked_users_number: int = 0
             
             asked_users_list += full_users_list[:asked_users_number]
@@ -142,7 +145,7 @@ async def data(message: Message):
             try:
                 index = int(options[DataOption.INDEX.value])
                 asked_index_user = full_users_list[index]
-            except Exception:
+            except (ValueError, IndexError):
                 pass
             else:
                 asked_users_list.append(asked_index_user)
@@ -172,7 +175,9 @@ async def data(message: Message):
         
         try:
             chat: Chat = await message.bot.get_chat(chat_id=chat_id)
-        except Exception:
+        except (ChatNotFound, Unauthorized):
+            await message.answer(text="Troubles getting the chat with {chat_id} chat id.".format(chat_id=chat_id))
+            
             inactives_list.append(chat_id)
         else:
             await message.answer(
