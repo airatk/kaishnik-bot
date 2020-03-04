@@ -4,15 +4,13 @@ from aiogram.types import Message
 from bot import dispatcher
 from bot import students
 
-from bot.commands.login.utilities.constants import GUIDE_MESSAGE
+from bot.commands.login.menu import finish_login
 
 from bot.shared.keyboards import cancel_option
 from bot.shared.helpers import top_notification
 from bot.shared.api.constants import LOADING_REPLIES
 from bot.shared.api.types import ResponseError
 from bot.shared.api.student import Student
-from bot.shared.data.helpers import save_data
-from bot.shared.data.constants import USERS_FILE
 from bot.shared.commands import Commands
 
 from random import choice
@@ -58,14 +56,4 @@ async def set_group(message: Message):
         students[message.chat.id] = Student()  # Drop all the entered data
         return
     
-    await students[message.chat.id].guard.message.edit_text(text="Запомнено!")
-    
-    await message.answer(
-        text=GUIDE_MESSAGE,
-        parse_mode="markdown"
-    )
-    
-    students[message.chat.id].guard.drop()
-    students[message.chat.id].is_setup = True
-    
-    save_data(file=USERS_FILE, object=students)
+    await finish_login(message=message)

@@ -118,6 +118,16 @@ class Subject(ABC):
     @abstractmethod
     def get(self):
         pass
+    
+    def get_compact(self) -> str:
+        return "".join([
+            self._time,
+            self._building,
+            self._auditorium, "*",
+            self._compact_dates,
+            self._compact_type,
+            self._title[1:-1]
+        ]).replace("][", "•").replace("[ ", "").replace(" ]", "")
 
 
 class StudentSubject(Subject):
@@ -186,16 +196,6 @@ class StudentSubject(Subject):
             self._department
         ])
     
-    def get_compact(self) -> str:
-        return "".join([
-            self._time,
-            self._building,
-            self._auditorium, "*",
-            self._compact_dates,
-            self._compact_type,
-            self._title[1:-1]
-        ]).replace("][", "•").replace("[ ", "").replace(" ]", "")
-    
     def get_simple(self) -> str:
         return " ".join([ self._begin_time, self._title ]).replace("\n", "").replace("*", "")
 
@@ -213,10 +213,7 @@ class LecturerSubject(Subject):
     
     
     def get(self) -> str:
-        groups_output: str = ""
-        
-        for group in self._groups:
-            groups_output = "".join([ groups_output, "\n• У группы {}".format(group) ])
+        groups_output: str = "".join([ "\n• У группы {}".format(group) for group in self._groups ])
         
         return "".join([
             self._time,
@@ -225,6 +222,14 @@ class LecturerSubject(Subject):
             self._dates,
             self._title,
             self._type,
+            groups_output
+        ])
+    
+    def get_compact(self) -> str:
+        groups_output: str = "".join([ "\n• У группы {}".format(group) for group in self._groups ])
+        
+        return "".join([
+            super().get_compact(),
             groups_output
         ])
 

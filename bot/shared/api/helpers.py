@@ -114,7 +114,7 @@ def beautify_exams(raw_schedule: [{int: {str: str}}]) -> str:
     return schedule
 
 
-def beautify_lecturers_classes(raw_schedule: [{int: {str: str}}], is_next: bool) -> [str]:
+def beautify_lecturers_classes(raw_schedule: [{int: {str: str}}], is_next: bool, settings: object) -> [str]:
     weekly_schedule: [str] = []
     
     today: datetime = datetime.today() + timedelta(days=7 if is_next else 0)
@@ -158,11 +158,17 @@ def beautify_lecturers_classes(raw_schedule: [{int: {str: str}}], is_next: bool)
                 if previous_time == another_subject["dayTime"]:
                     lecturerSubject.groups.append(another_subject["group"])
             
-            daily_schedule = "".join([ daily_schedule, lecturerSubject.get() ])
+            daily_schedule = "".join([
+                daily_schedule,
+                lecturerSubject.get() if settings is None or settings.is_schedule_size_full else lecturerSubject.get_compact()
+            ])
+        
+        if daily_schedule == "":
+            daily_schedule = "\n\nНет занятий"
         
         weekly_schedule.append("".join([
             "*{weekday}, {day} {month}*".format(weekday=WEEKDAYS[weekday], day=int(date.strftime("%d")), month=MONTHS[date.strftime("%m")]),
-            daily_schedule if daily_schedule != "" else "\n\nНет занятий"
+            daily_schedule
         ]))
     
     return weekly_schedule

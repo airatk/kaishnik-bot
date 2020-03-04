@@ -20,7 +20,7 @@ def get_lecturers_names(name_part: str) -> [{str, str}]:
     except (ConnectionError, JSONDecodeError):
         return None
 
-def get_lecturers_schedule(lecturer_id: str, TYPE: ScheduleType, is_next: bool = False) -> [str]:
+def get_lecturers_schedule(lecturer_id: str, TYPE: ScheduleType, is_next: bool = False, settings: object = None) -> [str]:
     try:
         response: [{str, str}] = get(url=LECTURERS_SCHEDULE_URL, params={
             "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
@@ -35,7 +35,7 @@ def get_lecturers_schedule(lecturer_id: str, TYPE: ScheduleType, is_next: bool =
         return []
     
     if TYPE is ScheduleType.CLASSES:
-        return beautify_lecturers_classes(response, is_next)
+        return beautify_lecturers_classes(response, is_next, settings)
     
     if TYPE is ScheduleType.EXAMS:
         return beautify_lecturers_exams(response)

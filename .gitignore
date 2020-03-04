@@ -1,6 +1,7 @@
 # System stuff
 **/.DS_Store
 **/__pycache__/
+/env/
 
 # Bot stuff
 /data/

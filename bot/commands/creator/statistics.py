@@ -7,12 +7,12 @@ from bot import dispatcher
 from bot import students
 from bot import metrics
 
+from bot.commands.creator.utilities.helpers import get_user_data
 from bot.commands.creator.utilities.helpers import parse_creator_query
 from bot.commands.creator.utilities.helpers import update_progress_bar
 from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import USERS_STATS
 from bot.commands.creator.utilities.constants import COMMAND_REQUESTS_STATS
-from bot.commands.creator.utilities.constants import USER_DATA
 from bot.commands.creator.utilities.types import DataOption
 from bot.commands.creator.utilities.types import Suboption
 
@@ -180,24 +180,7 @@ async def data(message: Message):
             
             inactives_list.append(chat_id)
         else:
-            await message.answer(
-                text=USER_DATA.format(
-                    firstname=chat.first_name, lastname=chat.last_name, username=chat.username,
-                    chat_id=chat_id,
-                    institute=students[chat_id].institute,
-                    year=students[chat_id].year,
-                    group_number=students[chat_id].group,
-                    name=students[chat_id].name,
-                    card=students[chat_id].card,
-                    notes_number=len(students[chat_id].notes),
-                    edited_classes_number=len(students[chat_id].edited_subjects),
-                    fellow_students_number=len(students[chat_id].names),
-                    is_full=students[chat_id].is_full,
-                    guard_text=students[chat_id].guard.text,
-                    is_guard_message_none=students[chat_id].guard.message is None,
-                    hashtag="data"
-                )
-            )
+            await message.answer(text=get_user_data(chat=chat, student=students[chat_id], hashtag="data"))
     
     if len(inactives_list) == 1:
         await message.answer(

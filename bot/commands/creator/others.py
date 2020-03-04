@@ -42,7 +42,8 @@ async def broadcast(message: Message):
         )
         
         try:
-            await message.answer(
+            await message.bot.send_message(
+                chat_id=chat_id,
                 text=options["message"] if options.get("signed") == "false" else BROADCAST_MESSAGE_TEMPLATE.format(broadcast_message=options["message"]),
                 parse_mode="markdown",
                 disable_web_page_preview=True

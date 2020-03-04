@@ -48,7 +48,8 @@ async def one_day_lecturer_schedule(callback: CallbackQuery):
     schedule: [str] = get_lecturers_schedule(
         lecturer_id=lecturer_id,
         TYPE=ScheduleType.CLASSES,
-        is_next=weektype == WeekType.NEXT.value
+        is_next=weektype == WeekType.NEXT.value,
+        settings=students[callback.message.chat.id].settings
     )
     
     if schedule is None: message_text: str = ResponseError.NO_RESPONSE.value
@@ -96,7 +97,8 @@ async def weekly_lecturer_schedule(callback: CallbackQuery):
     schedule: [str] = get_lecturers_schedule(
         lecturer_id=lecturer_id,
         TYPE=ScheduleType.CLASSES,
-        is_next=weektype == WeekType.NEXT.value
+        is_next=weektype == WeekType.NEXT.value,
+        settings=students[callback.message.chat.id].settings
     )
     
     if schedule is None:

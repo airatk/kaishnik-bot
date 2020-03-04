@@ -20,30 +20,23 @@ from bot.shared.commands import Commands
 async def settings(message: Message):
     chat: Chat = await message.bot.get_chat(chat_id=message.chat.id)
     
-    if students[message.chat.id].is_full:
-        message_text = FULL_USER_INFO.format(
-            firstname=chat.first_name,
-            lastname=f" {chat.last_name}" if chat.last_name is not None else "",
-            username=f" @{chat.username}" if chat.username is not None else "",
-            chat_id=message.chat.id,
-            institute=students[message.chat.id].institute,
-            year=students[message.chat.id].year,
-            group_number=students[message.chat.id].group,
-            name=students[message.chat.id].name,
-            card=students[message.chat.id].card,
-            notes_number=len(students[message.chat.id].notes),
-            edited_classes_number=len(students[message.chat.id].edited_subjects)
-        )
-    else:
-        message_text = COMPACT_USER_INFO.format(
-            firstname=chat.first_name,
-            lastname=f" {chat.last_name}" if chat.last_name is not None else "",
-            username=f" @{chat.username}" if chat.username is not None else "",
-            chat_id=message.chat.id,
-            group_number=students[message.chat.id].group,
-            notes_number=len(students[message.chat.id].notes),
-            edited_classes_number=len(students[message.chat.id].edited_subjects)
-        )
+    info: {str: str} = {
+        "firstname": chat.first_name,
+        "lastname": " {lastname}".format(lastname=chat.last_name) if chat.last_name is not None else "",
+        "username": " @{username}".format(username=chat.username) if chat.username is not None else "",
+        "chat_id": message.chat.id,
+        "group": students[message.chat.id].group,
+        "notes_number": len(students[message.chat.id].notes),
+        "edited_classes_number": len(students[message.chat.id].edited_subjects)
+    }
+    
+    message_text: str = FULL_USER_INFO.format(
+        **info,
+        institute=students[message.chat.id].institute,
+        year=students[message.chat.id].year,
+        name=students[message.chat.id].name,
+        card=students[message.chat.id].card
+    ) if students[message.chat.id].is_full else COMPACT_USER_INFO.format(**info)
     
     # Removing emojies
     message_text = message_text.replace("\u2665 ", "").replace(" \u2665", "")

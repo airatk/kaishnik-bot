@@ -6,10 +6,10 @@ from aiogram.utils.exceptions import Unauthorized
 from bot import dispatcher
 from bot import students
 
+from bot.commands.creator.utilities.helpers import get_user_data
 from bot.commands.creator.utilities.helpers import update_progress_bar
 from bot.commands.creator.utilities.helpers import collect_users_list
 from bot.commands.creator.utilities.constants import CREATOR
-from bot.commands.creator.utilities.constants import USER_DATA
 
 from bot.commands.start.utilities.keyboards import make_login
 
@@ -41,24 +41,7 @@ async def clear(message: Message):
             
             await message.bot.send_chat_action(chat_id=chat_id, action="typing")
         except ChatNotFound:
-            await message.answer(
-                text=USER_DATA.format(
-                    firstname=chat.first_name, lastname=chat.last_name, username=chat.username,
-                    chat_id=chat_id,
-                    institute=students[chat_id].institute,
-                    year=students[chat_id].year,
-                    group_number=students[chat_id].group,
-                    name=students[chat_id].name,
-                    card=students[chat_id].card,
-                    notes_number=len(students[chat_id].notes),
-                    edited_classes_number=len(students[chat_id].edited_subjects),
-                    fellow_students_number=len(students[chat_id].names),
-                    is_full=students[chat_id].is_full,
-                    guard_text=students[chat_id].guard.text,
-                    is_guard_message_none=students[chat_id].guard.message is None,
-                    hashtag="erased"
-                )
-            )
+            await message.answer(text=get_user_data(chat=chat, student=students[chat_id], hashtag="erased"))
             
             del students[chat_id]
             is_cleared = True
@@ -95,24 +78,7 @@ async def erase(message: Message):
             except Unauthorized:
                 await message.answer(text="Troubles getting the chat, but the chat id was removed.")
             else:
-                await message.answer(
-                    text=USER_DATA.format(
-                        firstname=chat.first_name, lastname=chat.last_name, username=chat.username,
-                        chat_id=chat_id,
-                        institute=students[chat_id].institute,
-                        year=students[chat_id].year,
-                        group_number=students[chat_id].group,
-                        name=students[chat_id].name,
-                        card=students[chat_id].card,
-                        notes_number=len(students[chat_id].notes),
-                        edited_classes_number=len(students[chat_id].edited_subjects),
-                        fellow_students_number=len(students[chat_id].names),
-                        is_full=students[chat_id].is_full,
-                        guard_text=students[chat_id].guard.text,
-                        is_guard_message_none=students[chat_id].guard.message is None,
-                        hashtag="erased"
-                    )
-                )
+                await message.answer(text=get_user_data(chat=chat, student=students[chat_id], hashtag="erased"))
             
             del students[chat_id]
         else:

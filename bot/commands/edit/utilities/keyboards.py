@@ -64,7 +64,7 @@ def hour_editor() -> InlineKeyboardMarkup:
         InlineKeyboardButton(
             text="{:0=2d}:xx".format(hour),
             callback_data=" ".join([ Commands.EDIT_HOUR.value, "{:0=2d}:xx".format(hour) ])
-        ) for hour in range(8, 22)  # The working hours of the univeristy
+        ) for hour in range(6, 24)  # The working hours of the univeristy
     ])
     
     return hour_editor_keyboard
@@ -76,7 +76,7 @@ def time_editor(hour: int) -> InlineKeyboardMarkup:
         InlineKeyboardButton(
             text="{:0=2d}:{:0=2d}".format(hour, minute),
             callback_data=" ".join([ Commands.EDIT_TIME.value, "{:0=2d}:{:0=2d}".format(hour, minute) ])
-        ) for minute in range(0, 60, 5)  # Iterating every 5 minutes through an hour
+        ) for minute in range(0, 60, 5)  # Iterating every 5 minutes within an hour
     ])
     
     return time_editor_keyboard

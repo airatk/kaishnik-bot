@@ -1,14 +1,35 @@
+from aiogram.types import Chat
 from aiogram.types import Message
 
 from bot import students
 
+from bot.commands.creator.utilities.constants import USER_DATA
 from bot.commands.creator.utilities.types import Suboption
 
 from bot.shared.api.student import Student
 
 
+def get_user_data(chat: Chat, student: Student, hashtag: str) -> str:
+    return USER_DATA.format(
+        firstname=chat.first_name, lastname=chat.last_name, username=chat.username,
+        chat_id=chat.id,
+        institute=student.institute,
+        year=student.year,
+        group_number=student.group,
+        name=student.name,
+        card=student.card,
+        notes_number=len(student.notes),
+        edited_classes_number=len(student.edited_subjects),
+        fellow_students_number=len(student.names),
+        is_full=student.is_full,
+        guard_text=student.guard.text,
+        is_guard_message_none=student.guard.message is None,
+        hashtag=hashtag
+    )
+
+
 def parse_creator_query(query: str) -> {str: str}:
-    query_array: [str] = query.split()
+    query_array: [str] = query.split(" ")
     query_dictionary: {str: str} = {}
     
     key: str = ""
