@@ -80,5 +80,8 @@ class Commands(Enum):
     DONATE: str = "donate"
     
     SETTINGS: str = "settings"
+    SETTINGS_APPEARANCE: str = "settings-appearance"
+    SETTINGS_APPEARANCE_DONE: str = "settings-appearance-done"
+    SETTINGS_APPEARANCE_DROP: str = "settings-appearance-drop"
     
     UNKNOWN: str = "unknown"

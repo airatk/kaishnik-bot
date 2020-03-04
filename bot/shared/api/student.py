@@ -1,3 +1,5 @@
+from aiogram.types import Message
+
 from bot.shared.api.helpers import beautify_classes
 from bot.shared.api.helpers import beautify_exams
 from bot.shared.api.helpers import beautify_scoretable
@@ -7,7 +9,6 @@ from bot.shared.api.constants import P_SUB
 from bot.shared.api.types import ScheduleType
 from bot.shared.api.types import ScoreDataType
 from bot.shared.api.subject import StudentSubject
-from bot.shared.guard import Guard
 
 from requests import get
 from requests import post
@@ -17,6 +18,69 @@ from json.decoder import JSONDecodeError
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
+
+from enum import Enum
+
+
+class SettingsOption(Enum):
+    IS_SCHEDULE_SIZE_FULL: str = "is-schedule-size-full"
+    ARE_CLASSES_ON_DATES: str = "are-classes-on-dates"
+
+
+class Settings:
+    def __init__(self):
+        self._is_schedule_size_full: bool = True
+        self._are_classes_on_dates: bool = True
+    
+    
+    @property
+    def is_schedule_size_full(self) -> bool:
+        return self._is_schedule_size_full
+    
+    @property
+    def are_classes_on_dates(self) -> bool:
+        return self._are_classes_on_dates
+    
+    
+    @is_schedule_size_full.setter
+    def is_schedule_size_full(self, new_value):
+        self._is_schedule_size_full = new_value
+    
+    @are_classes_on_dates.setter
+    def are_classes_on_dates(self, new_value):
+        self._are_classes_on_dates = new_value
+    
+    
+    def drop(self):
+        self.__init__()
+
+
+class Guard:
+    def __init__(self):
+        self._text: str = None
+        self._message: Message = None
+    
+    
+    @property
+    def text(self) -> str:
+        return self._text
+    
+    @property
+    def message(self) -> Message:
+        return self._message
+    
+    
+    @text.setter
+    def text(self, text: str):
+        self._text = text
+    
+    @message.setter
+    def message(self, message: Message):
+        self._message = message
+    
+    
+    def drop(self):
+        self.__init__()
 
 
 class Student:
@@ -46,7 +110,9 @@ class Student:
         self._notes: [str] = []
         
         self._edited_subjects: [StudentSubject] = []
-        self._edited_subjectSubject = None
+        self._edited_subjectSubject: StudentSubject = None
+        
+        self._settings: {Settings: bool} = Settings()
         
         self._guard: Guard = Guard()
     
@@ -118,6 +184,10 @@ class Student:
     @property
     def edited_subject(self) -> StudentSubject:
         return self._edited_subject
+    
+    @property
+    def settings(self) -> {str: bool}:
+        return self._settings
     
     @property
     def guard(self) -> Guard:
@@ -214,7 +284,7 @@ class Student:
         self._another_group = None
         
         if TYPE is ScheduleType.CLASSES:
-            return beautify_classes(response, is_next, self._edited_subjects if is_own_group_asked else [])
+            return beautify_classes(response, is_next, self._edited_subjects if is_own_group_asked else [], self._settings)
         
         if TYPE is ScheduleType.EXAMS:
             return beautify_exams(response)

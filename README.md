@@ -37,10 +37,9 @@ Use `python3 ./` to launch.
 * **card** - номер зачётки
 * **brs** - что за БРС?
 * **edit** - изменить расписание
-* **login** - вход
-* **me** - ты
-* **donate** - сказать спасибо
+* **settings** - настройки
 * **help** - подсказки
+* **donate** - сказать спасибо
 * **cancel** - отменить команду
 
 Each command has its own directory:

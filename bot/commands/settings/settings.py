@@ -5,8 +5,9 @@ from bot import dispatcher
 from bot import students
 from bot import metrics
 
-from bot.commands.others.utilities.constants import FULL_USER_INFO
-from bot.commands.others.utilities.constants import COMPACT_USER_INFO
+from bot.commands.settings.utilities.keyboards import action_chooser
+from bot.commands.settings.utilities.constants import FULL_USER_INFO
+from bot.commands.settings.utilities.constants import COMPACT_USER_INFO
 
 from bot.shared.commands import Commands
 
@@ -44,7 +45,12 @@ async def settings(message: Message):
             edited_classes_number=len(students[message.chat.id].edited_subjects)
         )
     
-    await message.answer(text=message_text)
+    # Removing emojies
+    message_text = message_text.replace("\u2665 ", "").replace(" \u2665", "")
+    
+    await message.answer(
+        text=message_text,
+        reply_markup=action_chooser()
+    )
     
     students[message.chat.id].guard.text = Commands.SETTINGS.value
-    students[message.chat.id].guard.drop()

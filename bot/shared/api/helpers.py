@@ -19,7 +19,7 @@ def refine_raw_schedule(raw_schedule) -> [{str: str}]:
     ]
 
 
-def beautify_classes(raw_schedule: [{int: {str: str}}], is_next: bool, edited_subjects: [StudentSubject]) -> [str]:
+def beautify_classes(raw_schedule: [{int: {str: str}}], is_next: bool, edited_subjects: [StudentSubject], settings: object) -> [str]:
     weekly_schedule: [str] = []
     
     today: datetime = datetime.today() + timedelta(days=7 if is_next else 0)
@@ -52,9 +52,10 @@ def beautify_classes(raw_schedule: [{int: {str: str}}], is_next: bool, edited_su
                 # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
                 if (subject["dayDate"] == "неч") if is_asked_week_even else (subject["dayDate"] == "чет"): continue
                 
-                # Do not show subjects with certain dates (21.09) on other dates (28 сентября)
-                day_month = "{day}.{month}".format(day=int(date.strftime("%d")), month=date.strftime("%m"))
-                if "." in subject["dayDate"] and day_month not in subject["dayDate"]: continue
+                # Do not show subjects with certain dates (21.09) on other dates (28 сентября) if asked
+                if settings.are_classes_on_dates:
+                    day_month = "{day}.{month}".format(day=int(date.strftime("%d")), month=date.strftime("%m"))
+                    if "." in subject["dayDate"] and day_month not in subject["dayDate"]: continue
                 
                 studentSubject: StudentSubject = StudentSubject()
                 
@@ -76,7 +77,7 @@ def beautify_classes(raw_schedule: [{int: {str: str}}], is_next: bool, edited_su
         # Sort by begin_hour
         subjects_list.sort(key=lambda subject: subject[0])
         
-        daily_schedule: str = "".join([ subject.get() for (_, subject) in subjects_list ])
+        daily_schedule: str = "".join([ (subject.get() if settings.is_schedule_size_full else subject.get_compact()) for (_, subject) in subjects_list ])
         
         if daily_schedule == "":
             daily_schedule = "\n\nПраздничный выходной🥳" if is_dayoff else "\n\nВыходной"

@@ -14,7 +14,7 @@ from bot.shared.commands import Commands
     commands=[ Commands.HELP.value ]
 )
 @metrics.increment(Commands.HELP)
-async def help_command(message: Message):
+async def help(message: Message):
     await message.answer(
         text=HELP,
         parse_mode="markdown",

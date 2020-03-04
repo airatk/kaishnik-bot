@@ -14,6 +14,9 @@ class Subject(ABC):
         self._title: str      = "\n{title}*"
         self._type: str       = "\n_{type}_"
         
+        self._compact_dates: str = "\n({dates})"
+        self._compact_type: str  = "\n*{type}: *"
+        
         self._begin_time: int = None
         self._begin_hour: int = None
     
@@ -41,6 +44,10 @@ class Subject(ABC):
     @property
     def type(self) -> str:
         return self._type[2:-1]
+    
+    @property
+    def compact_type(self) -> str:
+        return self._compact_type[:-2]
     
     
     @time.setter
@@ -78,7 +85,12 @@ class Subject(ABC):
     
     @dates.setter
     def dates(self, dates: str):
-        self._dates = self._dates.format(dates=dates) if "." in dates or "/" in dates or "(" in dates else ""
+        if "." in dates or "/" in dates or "(" in dates:
+            self._dates = self._dates.format(dates=dates)
+            self._compact_dates = self._compact_dates.format(dates=dates)
+        else:
+            self._dates = ""
+            self._compact_dates = ""
     
     @title.setter
     def title(self, title: str):
@@ -86,11 +98,21 @@ class Subject(ABC):
     
     @type.setter
     def type(self, type: str):
-        if type == SubjectType.LECTURE.value: self._type = self._type.format(type="лекция")
-        elif type == SubjectType.PRACTICE.value: self._type = self._type.format(type="практика")
-        elif type == SubjectType.LAB.value: self._type = self._type.format(type="лабораторная работа")
-        elif type == SubjectType.CONSULTATION.value: self._type = self._type.format(type="консультация")
-        else: self._type = type
+        if type == SubjectType.LECTURE.value:
+            self._type = self._type.format(type="лекция")
+            self._compact_type = self._compact_type.format(type="Л")
+        elif type == SubjectType.PRACTICE.value:
+            self._type = self._type.format(type="практика")
+            self._compact_type = self._compact_type.format(type="П")
+        elif type == SubjectType.LAB.value:
+            self._type = self._type.format(type="лабораторная работа")
+            self._compact_type = self._compact_type.format(type="ЛР")
+        elif type == SubjectType.CONSULTATION.value:
+            self._type = self._type.format(type="консультация")
+            self._compact_type = self._compact_type.format(type="К")
+        else:
+            self._type = self._type.format(type=type)
+            self._compact_type = self._compact_type.format(type=type[:1].upper())
     
     
     @abstractmethod
@@ -163,7 +185,17 @@ class StudentSubject(Subject):
             self._lecturer,
             self._department
         ])
-
+    
+    def get_compact(self) -> str:
+        return "".join([
+            self._time,
+            self._building,
+            self._auditorium, "*",
+            self._compact_dates,
+            self._compact_type,
+            self._title[1:-1]
+        ]).replace("][", "•").replace("[ ", "").replace(" ]", "")
+    
     def get_simple(self) -> str:
         return " ".join([ self._begin_time, self._title ]).replace("\n", "").replace("*", "")
 
