@@ -76,7 +76,10 @@ async def collect_users_list(query_message: Message) -> [int]:
     options: { str: str } = parse_creator_query(query_message.get_args())
 
     if "ids" not in options:
-        await query_message.answer(text="`ids` option has not been found!")
+        await query_message.answer(
+            text="`ids` option has not been found!",
+            parse_mode="markdown"
+        )
         return []
     
     if options["ids"] == Suboption.ALL.value: return list(students)

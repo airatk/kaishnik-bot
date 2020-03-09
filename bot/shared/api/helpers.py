@@ -35,12 +35,15 @@ def beautify_classes(raw_schedule: [{int: {str: str}}], is_next: bool, edited_su
         # Finding out if the day is dayoff
         is_dayoff = (date.day, date.month) in dayoffs
         
-        # Reseting `subjects_list` Adding the appropriate edited subjects to the schedule
+        # Reseting the `subjects_list`. Adding the appropriate edited subjects to the schedule
         subjects_list: [(int, StudentSubject)] = [
             (subject.begin_hour, subject) for subject in edited_subjects if (
                 subject.weekday == weekday and (subject.is_even is None or subject.is_even == is_asked_week_even)
             )
         ]
+        
+        # Getting edited subjects begin hours
+        edited_subjects_begin_hours: [int] = [ begin_hour for (begin_hour, _) in subjects_list ]
         
         if str(weekday) in raw_schedule and not is_dayoff:
             raw_schedule[str(weekday)] = refine_raw_schedule(raw_schedule[str(weekday)])
@@ -62,7 +65,7 @@ def beautify_classes(raw_schedule: [{int: {str: str}}], is_next: bool, edited_su
                 studentSubject.time = (subject["dayTime"], subject["disciplType"])
                 
                 # Do not show subject if there is its edited alternative
-                if studentSubject.begin_hour in [ begin_hour for (begin_hour, _) in subjects_list ]: continue
+                if studentSubject.begin_hour in edited_subjects_begin_hours: continue
                 
                 studentSubject.building = subject["buildNum"]
                 studentSubject.auditorium = subject["audNum"]

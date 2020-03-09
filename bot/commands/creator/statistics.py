@@ -125,13 +125,12 @@ async def data(message: Message):
                 try:
                     chat: Chat = await message.bot.get_chat(chat_id=chat_id)
                 except (ChatNotFound, Unauthorized):
-                    chat: Chat = None
+                    continue
                 
-                try:
-                    if (DataOption.USERNAME.value in options and options[DataOption.USERNAME.value] in chat.username) or (DataOption.FIRSTNAME.value in options and options[DataOption.FIRSTNAME.value] in chat.first_name):
-                        asked_users_list.append(chat_id)
-                except AttributeError:
-                    pass
+                does_username_match = DataOption.USERNAME.value in options and (chat.username is not None and options[DataOption.USERNAME.value] in chat.username)
+                does_firstname_match = DataOption.FIRSTNAME.value in options and (chat.first_name is not None and options[DataOption.FIRSTNAME.value] in chat.first_name)
+                
+                if does_username_match or does_firstname_match: asked_users_list.append(chat_id)
         
         if DataOption.NUMBER.value in options:
             try:
@@ -176,7 +175,7 @@ async def data(message: Message):
         try:
             chat: Chat = await message.bot.get_chat(chat_id=chat_id)
         except (ChatNotFound, Unauthorized):
-            await message.answer(text="Troubles getting the chat with {chat_id} chat id.".format(chat_id=chat_id))
+            await message.answer(text="Troubles getting the {chat_id} chat.".format(chat_id=chat_id))
             
             inactives_list.append(chat_id)
         else:
@@ -192,6 +191,8 @@ async def data(message: Message):
             text="There are *{number}* inactive users.".format(number=len(inactives_list)),
             parse_mode="markdown"
         )
+    
+    if len(asked_users_list) == 0: await loading_message.delete()
     
     await message.answer(
         text="*{shown}/{total}* users were shown!".format(shown=len(asked_users_list), total=len(students)),

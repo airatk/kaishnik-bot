@@ -46,7 +46,7 @@ async def clear(message: Message):
             del students[chat_id]
             is_cleared = True
         except Unauthorized:
-            await message.answer(text="Troubles getting the chat, but the chat id was removed.")
+            await message.answer(text="Troubles getting the {chat_id} chat, but it was #erased.".format(chat_id=chat_id))
             
             del students[chat_id]
             is_cleared = True
@@ -86,7 +86,7 @@ async def erase(message: Message):
             
             erase_list.remove(chat_id)
     
-    if len(erase_list) == 0: await message.delete()
+    if len(erase_list) == 0: await loading_message.delete()
     
     await message.answer(text="No users to erase!" if len(erase_list) == 0 else "Erased!")
     
