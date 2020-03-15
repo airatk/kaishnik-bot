@@ -3,11 +3,13 @@ from aiogram.utils.exceptions import ChatNotFound
 
 from bot import dispatcher
 
-from bot.commands.creator.utilities.helpers import parse_creator_query
 from bot.commands.creator.utilities.helpers import update_progress_bar
-from bot.commands.creator.utilities.helpers import collect_users_list
+from bot.commands.creator.utilities.helpers import parse_creator_query
+from bot.commands.creator.utilities.helpers import collect_ids
 from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import BROADCAST_MESSAGE_TEMPLATE
+from bot.commands.creator.utilities.types import Option
+from bot.commands.creator.utilities.types import Suboption
 
 from bot.shared.api.student import Student
 from bot.shared.calendar.constants import MONTHS
@@ -25,14 +27,13 @@ from bot.shared.commands import Commands
 async def broadcast(message: Message):
     options: {str: str} = parse_creator_query(message.get_args())
     
-    if "message" not in options:
+    if Option.MESSAGE.value not in options:
         await message.answer(text="No broadcast message was found!")
         return
     
-    broadcast_list: [Student] = await collect_users_list(query_message=message)
+    broadcast_list: [Student] = await collect_ids(query_message=message)
     
     progress_bar: str = ""
-    
     loading_message: Message = await message.answer(text="Started broadcasting...")
     
     for (index, chat_id) in enumerate(broadcast_list):
@@ -44,7 +45,7 @@ async def broadcast(message: Message):
         try:
             await message.bot.send_message(
                 chat_id=chat_id,
-                text=options["message"] if options.get("signed") == "false" else BROADCAST_MESSAGE_TEMPLATE.format(broadcast_message=options["message"]),
+                text=options[Option.MESSAGE.value] if options.get(Option.SIGNED.value) == "false" else BROADCAST_MESSAGE_TEMPLATE.format(broadcast_message=options[Option.MESSAGE.value]),
                 parse_mode="markdown",
                 disable_web_page_preview=True
             )
@@ -61,7 +62,7 @@ async def broadcast(message: Message):
     commands=[ Commands.REVERSE.value ]
 )
 async def reverse(message: Message):
-    if "week" not in message.text:
+    if Suboption.WEEK.value not in message.text:
         await message.answer(
             text="If you are sure to reverse type of a week, type */reverse week*",
             parse_mode="markdown"
@@ -81,7 +82,7 @@ async def dayoff(message: Message):
     
     dayoff_dates: {(int, int)} = load_data(file=DAYOFFS)
     
-    if options.get("") == "list":
+    if options.get(Option.TO_SUBOPTION.value) == Suboption.LIST.value:
         dayoffs_list: str = "There are no dayoffs!" if len(dayoff_dates) == 0 else "*Dayoffs*\n"
         
         for (day_index, month_index) in dayoff_dates:
@@ -92,13 +93,13 @@ async def dayoff(message: Message):
             text=dayoffs_list,
             parse_mode="markdown"
         )
-    elif "add" in options or "drop" in options:
-        if "add" in options:
-            raw_date: str = options["add"]
-        elif "drop" in options:
-            raw_date: str = options["drop"]
+    elif Option.ADD.value in options or Option.DROP.value in options:
+        if Option.ADD.value in options:
+            raw_date: str = options[Option.ADD.value]
+        elif Option.DROP.value in options:
+            raw_date: str = options[Option.DROP.value]
             
-            if raw_date == "all":
+            if raw_date == Suboption.ALL.value:
                 save_data(file=DAYOFFS, object=[])
                 await message.answer(text="Dropped!")
                 return
@@ -114,13 +115,13 @@ async def dayoff(message: Message):
             )
             return
         
-        if "add" in options:
+        if Option.ADD.value in options:
             if dayoff_date not in dayoff_dates:
                 dayoff_dates.append(dayoff_date)
             else:
                 await message.answer(text="The dayoff have been added already!")
                 return
-        elif "drop" in options:
+        elif Option.DROP.value in options:
             if dayoff_date in dayoff_dates:
                 dayoff_dates.remove(dayoff_date)
             else:

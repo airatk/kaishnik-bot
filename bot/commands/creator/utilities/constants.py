@@ -9,7 +9,7 @@ CONTROL_PANEL: str = (
     "\n_{} - required, [] - optional_\n"
     "\n*stats*\n"  # commands of bot usage statistics
     "/users\n"
-    "/metrics [ drop ]\n"
+    "/metrics \[ drop ]\n"
     "/data {\n"
         "\t\t\t\[ ids: {\n"
               "\t\t\t\t\t\t\[ id&… ]\n"

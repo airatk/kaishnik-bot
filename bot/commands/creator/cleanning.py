@@ -6,9 +6,9 @@ from aiogram.utils.exceptions import Unauthorized
 from bot import dispatcher
 from bot import students
 
-from bot.commands.creator.utilities.helpers import get_user_data
 from bot.commands.creator.utilities.helpers import update_progress_bar
-from bot.commands.creator.utilities.helpers import collect_users_list
+from bot.commands.creator.utilities.helpers import get_user_data
+from bot.commands.creator.utilities.helpers import collect_ids
 from bot.commands.creator.utilities.constants import CREATOR
 
 from bot.commands.start.utilities.keyboards import make_login
@@ -25,9 +25,10 @@ from bot.shared.commands import Commands
 )
 async def clear(message: Message):
     is_cleared: bool = False
-    progress_bar: str = ""
+    
     students_list: [Student] = list(students)
     
+    progress_bar: str = ""
     loading_message = await message.answer(text="Started clearing...")
     
     for (index, chat_id) in enumerate(students_list):
@@ -38,7 +39,6 @@ async def clear(message: Message):
         
         try:
             chat: Chat = await message.bot.get_chat(chat_id=chat_id)
-            
             await message.bot.send_chat_action(chat_id=chat_id, action="typing")
         except ChatNotFound:
             await message.answer(text=get_user_data(chat=chat, student=students[chat_id], hashtag="erased"))
@@ -60,10 +60,9 @@ async def clear(message: Message):
     commands=[ Commands.ERASE.value ]
 )
 async def erase(message: Message):
-    erase_list: [int] = await collect_users_list(query_message=message)
+    erase_list: [int] = await collect_ids(query_message=message)
     
     progress_bar: str = ""
-    
     loading_message: Message = await message.answer(text="Started erasing…")
     
     for (index, chat_id) in enumerate(erase_list):
@@ -75,14 +74,14 @@ async def erase(message: Message):
         if chat_id in students:
             try:
                 chat: Chat = await message.bot.get_chat(chat_id=chat_id)
-            except Unauthorized:
-                await message.answer(text="Troubles getting the chat, but the chat id was removed.")
+            except (ChatNotFound, Unauthorized):
+                await message.answer(text="Troubles getting the chat, but the chat id was #erased.")
             else:
                 await message.answer(text=get_user_data(chat=chat, student=students[chat_id], hashtag="erased"))
             
             del students[chat_id]
         else:
-            await message.answer(text="{chat_id} doesn't use me!".format(chat_id=chat_id))
+            await message.answer(text="*{chat_id}* doesn't use me!".format(chat_id=chat_id))
             
             erase_list.remove(chat_id)
     
@@ -97,10 +96,9 @@ async def erase(message: Message):
     commands=[ Commands.DROP.value ]
 )
 async def drop(message: Message):
-    drop_list: [int] = await collect_users_list(query_message=message)
+    drop_list: [int] = await collect_ids(query_message=message)
     
     progress_bar: str = ""
-    
     loading_message: Message = await message.answer(text="Started dropping…")
     
     for (index, chat_id) in enumerate(drop_list):
@@ -126,7 +124,7 @@ async def drop(message: Message):
             students[chat_id]: Student = Student()
             
             guard_message: Message = await message.answer(
-                text="Текущие настройки сброшены.",
+                text="Текущие настройки сброшены!",
                 disable_notification=True
             )
             await message.answer(
@@ -149,7 +147,7 @@ async def drop(message: Message):
     commands=[ Commands.GUARDDROP.value ]
 )
 async def guarddrop(message):
-    guarddrop_list: [Student] = await collect_users_list(query_message=message)
+    guarddrop_list: [Student] = await collect_ids(query_message=message)
     
     for chat_id in guarddrop_list:
         if chat_id in students:

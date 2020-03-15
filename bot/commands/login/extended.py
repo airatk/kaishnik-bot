@@ -12,8 +12,8 @@ from bot.commands.login.utilities.keyboards import name_setter
 
 from bot.shared.keyboards import cancel_option
 from bot.shared.helpers import top_notification
-from bot.shared.api.constants import INSTITUTES
 from bot.shared.api.constants import LOADING_REPLIES
+from bot.shared.api.constants import INSTITUTES
 from bot.shared.api.types import ScoreDataType
 from bot.shared.api.types import ResponseError
 from bot.shared.api.student import Student
