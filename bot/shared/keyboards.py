@@ -4,9 +4,12 @@ from aiogram.types import InlineKeyboardButton
 from bot.shared.commands import Commands
 
 
-def cancel_option(row_width: int = 1) -> InlineKeyboardMarkup:
-    cancel_option_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=row_width)
+def cancel_button() -> InlineKeyboardButton:
+    return InlineKeyboardButton(text="отменить", callback_data=Commands.CANCEL.value)
+
+def canceler(row_width: int = 1) -> InlineKeyboardMarkup:
+    canceler_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=row_width)
     
-    cancel_option_keyboard.row(InlineKeyboardButton(text="отменить", callback_data=Commands.CANCEL.value))
+    canceler_keyboard.row(cancel_button())
     
-    return cancel_option_keyboard
+    return canceler_keyboard

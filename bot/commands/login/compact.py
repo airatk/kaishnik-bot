@@ -6,7 +6,7 @@ from bot import students
 
 from bot.commands.login.menu import finish_login
 
-from bot.shared.keyboards import cancel_option
+from bot.shared.keyboards import canceler
 from bot.shared.helpers import top_notification
 from bot.shared.api.constants import LOADING_REPLIES
 from bot.shared.api.types import ResponseError
@@ -31,7 +31,7 @@ async def login_compact(callback: CallbackQuery):
     
     guard_message = await callback.message.edit_text(
         text="Отправь номер своей группы.",
-        reply_markup=cancel_option()
+        reply_markup=canceler()
     )
     
     students[callback.message.chat.id].guard.text = Commands.LOGIN_COMPACT.value

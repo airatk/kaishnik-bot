@@ -66,9 +66,9 @@ async def collect_ids(query_message: Message) -> [int]:
     
     if options[Option.IDS.value] == Suboption.ALL.value:
         return list(students)
-    elif Suboption.UNLOGIN.value in options["ids"]:
+    if Suboption.UNLOGIN.value in options["ids"]:
         return [ chat_id for chat_id in list(students) if not students[chat_id].is_setup ]
-    elif Suboption.ME.value in options["ids"]:
+    if Suboption.ME.value in options["ids"]:
         return [ query_message.chat.id ]
     
     users_list: [int] = []

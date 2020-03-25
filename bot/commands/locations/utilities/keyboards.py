@@ -7,9 +7,13 @@ from bot.commands.locations.utilities.constants import SPORTSCOMPLEX
 from bot.commands.locations.utilities.constants import DORMS
 from bot.commands.locations.utilities.types import LocationType
 
+from bot.shared.keyboards import cancel_button
+
 
 def location_type_chooser() -> InlineKeyboardMarkup:
-    location_type_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup()
+    location_type_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
+    
+    location_type_chooser_keyboard.row(cancel_button())
     
     location_type_chooser_keyboard.row(InlineKeyboardButton(
         text="Учебные здания", callback_data=LocationType.BUILDING.value
@@ -30,6 +34,8 @@ def location_type_chooser() -> InlineKeyboardMarkup:
 def buildings_dialer() -> InlineKeyboardMarkup:
     buildings_dialer_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=4)
     
+    buildings_dialer_keyboard.row(cancel_button())
+    
     buildings_dialer_keyboard.add(*[
         InlineKeyboardButton(
             text=building, callback_data=" ".join([ LocationType.BUILDING.value, building ])
@@ -40,6 +46,8 @@ def buildings_dialer() -> InlineKeyboardMarkup:
 
 def libraries_dialer() -> InlineKeyboardMarkup:
     libraries_dialer_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=4)
+    
+    libraries_dialer_keyboard.row(cancel_button())
     
     libraries_dialer_keyboard.add(*[
         InlineKeyboardButton(
@@ -52,6 +60,8 @@ def libraries_dialer() -> InlineKeyboardMarkup:
 def sportscomplex_dialer() -> InlineKeyboardMarkup:
     sportscomplex_dialer_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
+    sportscomplex_dialer_keyboard.row(cancel_button())
+    
     sportscomplex_dialer_keyboard.add(*[
         InlineKeyboardButton(
             text=sportscomplex, callback_data=" ".join([ LocationType.SPORTSCOMPLEX.value, sportscomplex ])
@@ -62,6 +72,8 @@ def sportscomplex_dialer() -> InlineKeyboardMarkup:
 
 def dorms_dialer() -> InlineKeyboardMarkup:
     dorms_dialer_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=4)
+    
+    dorms_dialer_keyboard.row(cancel_button())
     
     dorms_dialer_keyboard.add(*[
         InlineKeyboardButton(

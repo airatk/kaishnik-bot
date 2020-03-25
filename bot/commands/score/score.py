@@ -83,12 +83,12 @@ async def choose_subjects_type(callback: CallbackQuery):
     (has_exams, has_tests, has_graded_tests) = (False, False, False)
     
     for (_, subject_score) in students[callback.message.chat.id].scoretable:
-        if SubjectScoreType.EXAM.value in subject_score: has_exams = True
-        elif SubjectScoreType.TEST.value in subject_score: has_tests = True
-        elif SubjectScoreType.GRADED_TEST.value in subject_score: has_graded_tests = True
+        has_exams |= SubjectScoreType.EXAM.value in subject_score
+        has_tests |= SubjectScoreType.TEST.value in subject_score
+        has_graded_tests |= SubjectScoreType.GRADED_TEST.value in subject_score
     
     await callback.message.edit_text(
-        text="Выбери тип:",
+        text="Выбери тип предметов:",
         reply_markup=subjects_type_chooser(has_exams=has_exams, has_tests=has_tests, has_graded_tests=has_graded_tests)
     )
 

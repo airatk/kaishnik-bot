@@ -12,7 +12,7 @@ from bot.commands.edit.utilities.keyboards import time_editor
 from bot.commands.edit.utilities.keyboards import buildings_editor
 from bot.commands.edit.utilities.keyboards import subject_type_editor
 
-from bot.shared.keyboards import cancel_option
+from bot.shared.keyboards import canceler
 from bot.shared.helpers import top_notification
 from bot.shared.api.subject import StudentSubject
 from bot.shared.calendar.week import WeekParity
@@ -134,7 +134,7 @@ async def add_subject_title(message: Message):
     
     guard_message: Message = await message.answer(
         text="Отправь название предмета.",
-        reply_markup=cancel_option()
+        reply_markup=canceler()
     )
     
     students[message.chat.id].guard.text = Commands.EDIT_SUBJECT_TITLE.value

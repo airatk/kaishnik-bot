@@ -36,7 +36,7 @@
       selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/airatk/Documents/alight.software/bots/telegram/kaist-bot"
+      customWorkingDirectory = "/Users/airatk/Documents/alight.software/others/bots/telegram/kaist-bot"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"

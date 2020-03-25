@@ -40,7 +40,6 @@ Use `python3 ./` to launch.
 * **settings** - настройки
 * **help** - подсказки
 * **donate** - сказать спасибо
-* **cancel** - отменить команду
 
 Each command has its own directory:
 

@@ -7,6 +7,7 @@ from bot import students
 from bot.commands.notes.utilities.helpers import clarify_markdown
 from bot.commands.notes.utilities.constants import MAX_NOTES_NUMBER
 
+from bot.shared.keyboards import canceler
 from bot.shared.helpers import top_notification
 from bot.shared.data.helpers import save_data
 from bot.shared.data.constants import USERS_FILE
@@ -20,9 +21,9 @@ from bot.shared.commands import Commands
 )
 @top_notification
 async def add_note_hint(callback: CallbackQuery):
-    number: int = len(students[callback.message.chat.id].notes) + 1
+    note_number: int = len(students[callback.message.chat.id].notes) + 1
     
-    if number > MAX_NOTES_NUMBER:
+    if note_number > MAX_NOTES_NUMBER:
         await callback.message.edit_text(text="{max}-заметковый лимит уже достигнут.".format(max=MAX_NOTES_NUMBER))
         
         students[callback.message.chat.id].guard.drop()
@@ -30,12 +31,13 @@ async def add_note_hint(callback: CallbackQuery):
     
     guard_message: Message = await callback.message.edit_text(
         text=(
-            "Добавляемая заметка будет *{number}* по счёту.\n\n"
+            "Добавляемая заметка будет *{note_number}* по счёту.\n\n"
             "• Используй звёздочки, чтобы выделить \**жирным*\*\n"
             "• Используй нижнее подчёркивание, чтобы выделить \__курсивом_\_\n\n"
-            "Напиши заметку и отправь решительно.".format(number=number)
+            "Напиши заметку и отправь решительно.".format(note_number=note_number)
         ),
-        parse_mode="markdown"
+        parse_mode="markdown",
+        reply_markup=canceler()
     )
     
     students[callback.message.chat.id].guard.text = Commands.NOTES_ADD.value

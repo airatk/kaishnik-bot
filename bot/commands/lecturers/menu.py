@@ -9,7 +9,7 @@ from bot.commands.lecturers.utilities.keyboards import lecturer_chooser
 from bot.commands.lecturers.utilities.keyboards import lecturer_info_type_chooser
 from bot.commands.lecturers.utilities.constants import MAX_LECTURERS_NUMBER
 
-from bot.shared.keyboards import cancel_option
+from bot.shared.keyboards import canceler
 from bot.shared.helpers import top_notification
 from bot.shared.api.constants import LOADING_REPLIES
 from bot.shared.api.types import ResponseError
@@ -27,7 +27,7 @@ from random import choice
 async def lecturers(message: Message):
     guard_message: Message = await message.answer(
         text="Отправь фамилию или ФИО преподавателя.",
-        reply_markup=cancel_option()
+        reply_markup=canceler()
     )
     
     students[message.chat.id].guard.text = Commands.LECTURERS_NAME.value

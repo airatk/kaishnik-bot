@@ -10,7 +10,7 @@ from bot.commands.login.utilities.keyboards import year_setter
 from bot.commands.login.utilities.keyboards import group_number_setter
 from bot.commands.login.utilities.keyboards import name_setter
 
-from bot.shared.keyboards import cancel_option
+from bot.shared.keyboards import canceler
 from bot.shared.helpers import top_notification
 from bot.shared.api.constants import LOADING_REPLIES
 from bot.shared.api.constants import INSTITUTES
@@ -106,7 +106,7 @@ async def set_year(callback: CallbackQuery):
         return
     
     await callback.message.edit_text(
-        text="Выбери группу:",
+        text="Выбери номер группы:",
         reply_markup=group_number_setter(groups)
     )
 
@@ -187,7 +187,7 @@ async def set_name(callback: CallbackQuery):
     # Asking for student card number
     guard_message = await callback.message.edit_text(
         text="Отправь номер зачётки.",
-        reply_markup=cancel_option()
+        reply_markup=canceler()
     )
     
     students[callback.message.chat.id].guard.text = Commands.LOGIN_SET_CARD.value
@@ -216,7 +216,7 @@ async def set_card(message: Message):
     if last_available_semester == 0:
         await students[message.chat.id].guard.message.edit_text(
             text=ResponseError.INCORRECT_CARD.value,
-            reply_markup=cancel_option()
+            reply_markup=canceler()
         )
         
         students[message.chat.id].card = None

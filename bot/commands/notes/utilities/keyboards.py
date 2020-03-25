@@ -3,12 +3,14 @@ from aiogram.types import InlineKeyboardButton
 
 from bot.commands.notes.utilities.constants import MAX_SYMBOLS_NUMBER
 
-from bot.shared.keyboards import cancel_option
+from bot.shared.keyboards import cancel_button
 from bot.shared.commands import Commands
 
 
 def action_chooser(has_notes: bool) -> InlineKeyboardMarkup:
-    action_chooser_keyboard: InlineKeyboardMarkup = cancel_option()
+    action_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
+    
+    action_chooser_keyboard.row(cancel_button())
     
     action_chooser_keyboard.row(InlineKeyboardButton(text="добавить", callback_data=Commands.NOTES_ADD.value))
     
@@ -19,15 +21,20 @@ def action_chooser(has_notes: bool) -> InlineKeyboardMarkup:
     return action_chooser_keyboard
 
 def note_chooser(notes: [str], ACTION: Commands) -> InlineKeyboardMarkup:
-    note_chooser_keyboard: InlineKeyboardMarkup = cancel_option()
+    note_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
     if len(notes) > 1:
         if ACTION is Commands.NOTES_SHOW:
-            (text, callback_action) = ("Показать все", Commands.NOTES_SHOW_ALL.value)
+            (text, callback_action) = ("показать все", Commands.NOTES_SHOW_ALL.value)
         elif ACTION is Commands.NOTES_DELETE:
-            (text, callback_action) = ("Удалить все", Commands.NOTES_DELETE_ALL.value)
+            (text, callback_action) = ("удалить все", Commands.NOTES_DELETE_ALL.value)
         
-        note_chooser_keyboard.row(InlineKeyboardButton(text=text, callback_data=callback_action))
+        note_chooser_keyboard.row(
+            cancel_button(),
+            InlineKeyboardButton(text=text, callback_data=callback_action)
+        )
+    else:
+        note_chooser_keyboard.row(cancel_button())
     
     note_chooser_keyboard.add(*[
         InlineKeyboardButton(

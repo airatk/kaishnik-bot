@@ -15,7 +15,6 @@ from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import USERS_STATS
 from bot.commands.creator.utilities.constants import COMMAND_REQUESTS_STATS
 from bot.commands.creator.utilities.types import Option
-from bot.commands.creator.utilities.types import Suboption
 
 from bot.shared.api.constants import INSTITUTES
 from bot.shared.commands import Commands
@@ -157,7 +156,7 @@ async def data(message: Message):
     elif Option.GROUP.value in options:
         asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].group is not None and options[Option.GROUP.value] in students[chat_id].group ]
     elif Option.YEAR.value in options:
-        asked_users_list == [ chat_id for chat_id in full_users_list if students[chat_id].year == options[Option.YEAR.value] ]
+        asked_users_list = [ chat_id for chat_id in full_users_list if students[chat_id].year == options[Option.YEAR.value] ]
     
     progress_bar = ""
     loading_message: Message = await message.answer(text="Started showing...")

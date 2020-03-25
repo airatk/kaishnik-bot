@@ -3,7 +3,7 @@ from aiogram.types import InlineKeyboardButton
 
 from bot.commands.locations.utilities.constants import BUILDINGS
 
-from bot.shared.keyboards import cancel_option
+from bot.shared.keyboards import cancel_button
 from bot.shared.api.subject import StudentSubject
 from bot.shared.api.subject import SubjectType
 from bot.shared.calendar.constants import WEEKDAYS
@@ -12,7 +12,9 @@ from bot.shared.commands import Commands
 
 
 def action_chooser(has_edits: bool) -> InlineKeyboardMarkup:
-    action_chooser_keyboard: InlineKeyboardMarkup = cancel_option()
+    action_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
+    
+    action_chooser_keyboard.row(cancel_button())
     
     action_chooser_keyboard.row(InlineKeyboardButton(text="изменить", callback_data=Commands.EDIT_ADD.value))
     
@@ -24,15 +26,20 @@ def action_chooser(has_edits: bool) -> InlineKeyboardMarkup:
 
 
 def skip(ACTION: Commands) -> InlineKeyboardMarkup:
-    skip_keyboard: InlineKeyboardMarkup = cancel_option()
+    skip_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
     
-    skip_keyboard.row(InlineKeyboardButton(text="пропустить", callback_data=ACTION.value))
+    skip_keyboard.add(*[
+        cancel_button(),
+        InlineKeyboardButton(text="пропустить", callback_data=ACTION.value)
+    ])
     
     return skip_keyboard
 
 
 def weektype_editor() -> InlineKeyboardMarkup:
-    weektype_editor_keyboard: InlineKeyboardMarkup = cancel_option()
+    weektype_editor_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
+    
+    weektype_editor_keyboard.row(cancel_button())
     
     weektype_editor_keyboard.row(InlineKeyboardButton(text="каждая", callback_data=" ".join([
         Commands.EDIT_WEEKTYPE.value, WeekParity.BOTH.value
@@ -47,7 +54,9 @@ def weektype_editor() -> InlineKeyboardMarkup:
     return weektype_editor_keyboard
 
 def weekday_editor() -> InlineKeyboardMarkup:
-    weekday_editor_keyboard: InlineKeyboardMarkup = cancel_option()
+    weekday_editor_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
+    
+    weekday_editor_keyboard.row(cancel_button())
     
     weekday_editor_keyboard.add(*[
         InlineKeyboardButton(
@@ -58,7 +67,9 @@ def weekday_editor() -> InlineKeyboardMarkup:
     return weekday_editor_keyboard
 
 def hour_editor() -> InlineKeyboardMarkup:
-    hour_editor_keyboard: InlineKeyboardMarkup = cancel_option(row_width=2)
+    hour_editor_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
+    
+    hour_editor_keyboard.row(cancel_button())
     
     hour_editor_keyboard.add(*[
         InlineKeyboardButton(
@@ -70,7 +81,9 @@ def hour_editor() -> InlineKeyboardMarkup:
     return hour_editor_keyboard
 
 def time_editor(hour: int) -> InlineKeyboardMarkup:
-    time_editor_keyboard: InlineKeyboardMarkup = cancel_option(row_width=2)
+    time_editor_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
+    
+    time_editor_keyboard.row(cancel_button())
     
     time_editor_keyboard.add(*[
         InlineKeyboardButton(
@@ -82,7 +95,9 @@ def time_editor(hour: int) -> InlineKeyboardMarkup:
     return time_editor_keyboard
 
 def buildings_editor() -> InlineKeyboardMarkup:
-    buildings_editor_keyboard: InlineKeyboardMarkup = cancel_option(row_width=4)
+    buildings_editor_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=4)
+    
+    buildings_editor_keyboard.row(cancel_button())
     
     buildings_editor_keyboard.add(*[
         InlineKeyboardButton(
@@ -93,7 +108,9 @@ def buildings_editor() -> InlineKeyboardMarkup:
     return buildings_editor_keyboard
 
 def subject_type_editor() -> InlineKeyboardMarkup:
-    subject_type_editor_keyboard: InlineKeyboardMarkup = cancel_option()
+    subject_type_editor_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
+    
+    subject_type_editor_keyboard.row(cancel_button())
     
     subject_type_editor_keyboard.row(InlineKeyboardButton(text="лекция", callback_data=" ".join([
         Commands.EDIT_SUBJECT_TYPE.value, SubjectType.LECTURE.value
@@ -112,7 +129,7 @@ def subject_type_editor() -> InlineKeyboardMarkup:
 
 
 def weektype_chooser(classes_on_both: int, classes_on_even: int, classes_on_odd: int, ACTION: Commands) -> InlineKeyboardMarkup:
-    weektype_chooser_keyboard: InlineKeyboardMarkup = cancel_option()
+    weektype_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
     if classes_on_both + classes_on_even + classes_on_odd > 1:
         if ACTION is Commands.EDIT_SHOW_WEEKTYPE:
@@ -120,7 +137,12 @@ def weektype_chooser(classes_on_both: int, classes_on_even: int, classes_on_odd:
         elif ACTION is Commands.EDIT_DELETE_WEEKTYPE:
             (action, callback_action) = ("удалить все", Commands.EDIT_DELETE_ALL.value)
         
-        weektype_chooser_keyboard.row(InlineKeyboardButton(text=action, callback_data=callback_action))
+        weektype_chooser_keyboard.row(
+            cancel_button(),
+            InlineKeyboardButton(text=action, callback_data=callback_action)
+        )
+    else:
+        weektype_chooser_keyboard.row(cancel_button())
     
     if classes_on_both != 0:
         weektype_chooser_keyboard.row(InlineKeyboardButton(
@@ -141,17 +163,20 @@ def weektype_chooser(classes_on_both: int, classes_on_even: int, classes_on_odd:
     return weektype_chooser_keyboard
 
 def weekday_chooser(weektype: str, subjects_number_by_weekdays: [int], ACTION: Commands) -> InlineKeyboardMarkup:
-    weekday_chooser_keyboard: InlineKeyboardMarkup = cancel_option()
+    weekday_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
     if sum(subjects_number_by_weekdays) > 1:
         if ACTION is Commands.EDIT_SHOW_WEEKDAY:
-            (action, callback_action) = ("Показать все", Commands.EDIT_SHOW_ALL.value)
+            (action, callback_action) = ("показать все", Commands.EDIT_SHOW_ALL.value)
         elif ACTION is Commands.EDIT_DELETE_WEEKDAY:
-            (action, callback_action) = ("Удалить все", Commands.EDIT_DELETE_ALL.value)
+            (action, callback_action) = ("удалить все", Commands.EDIT_DELETE_ALL.value)
         
-        weekday_chooser_keyboard.row(InlineKeyboardButton(text=action, callback_data=" ".join([
-            callback_action, weektype
-        ])))
+        weekday_chooser_keyboard.row(
+            cancel_button(),
+            InlineKeyboardButton(text=action, callback_data=" ".join([ callback_action, weektype ]))
+        )
+    else:
+        weekday_chooser_keyboard.row(cancel_button())
     
     weekday_chooser_keyboard.add(*[
         InlineKeyboardButton(
@@ -166,17 +191,20 @@ def weekday_chooser(weektype: str, subjects_number_by_weekdays: [int], ACTION: C
     return weekday_chooser_keyboard
 
 def edit_chooser(weektype: str, weekday: int, subjects: [StudentSubject], ACTION: Commands) -> InlineKeyboardMarkup:
-    edit_chooser_keyboard: InlineKeyboardMarkup = cancel_option()
+    edit_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
     if len(subjects) > 1:
         if ACTION is Commands.EDIT_SHOW_EDIT:
-            (action, callback_action) = ("Показать все", Commands.EDIT_SHOW_ALL.value)
+            (action, callback_action) = ("показать все", Commands.EDIT_SHOW_ALL.value)
         elif ACTION is Commands.EDIT_DELETE_EDIT:
-            (action, callback_action) = ("Удалить все", Commands.EDIT_DELETE_ALL.value)
+            (action, callback_action) = ("удалить все", Commands.EDIT_DELETE_ALL.value)
         
-        edit_chooser_keyboard.row(InlineKeyboardButton(text=action, callback_data=" ".join([
-            callback_action, weektype, weekday
-        ])))
+        edit_chooser_keyboard.row(
+            cancel_button(),
+            InlineKeyboardButton(text=action, callback_data=" ".join([ callback_action, weektype, weekday ]))
+        )
+    else:
+        edit_chooser_keyboard.row(cancel_button())
     
     edit_chooser_keyboard.add(*[
         InlineKeyboardButton(

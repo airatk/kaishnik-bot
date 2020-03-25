@@ -1,6 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
+from bot.shared.keyboards import cancel_button
 from bot.shared.api.types import ClassesOptionType
 from bot.shared.calendar.constants import WEEKDAYS
 from bot.shared.calendar.constants import MONTHS
@@ -11,14 +12,14 @@ from datetime import timedelta
 
 
 def schedule_type() -> InlineKeyboardMarkup:
-    schedule_type_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup()
+    schedule_type_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
     
     # Decrementing to turn both variables into schedule array indeces
     today_weekday: int = datetime.today().isoweekday() - 1
     tomorrow_weekday: int = today_weekday + 1
     should_show_next_week: bool = tomorrow_weekday > 6
     
-    schedule_type_keyboard.row(
+    schedule_type_keyboard.add(*[
         InlineKeyboardButton(
             text="сегодня",
             callback_data=" ".join([ ClassesOptionType.DAILY.value, WeekType.CURRENT.value, str(today_weekday) ])
@@ -31,7 +32,7 @@ def schedule_type() -> InlineKeyboardMarkup:
                 str(0 if should_show_next_week else tomorrow_weekday)
             ])
         )
-    )
+    ])
     schedule_type_keyboard.row(InlineKeyboardButton(
         text="текущую неделю",
         callback_data=" ".join([ ClassesOptionType.WEEKDAYS.value, WeekType.CURRENT.value ])
@@ -41,19 +42,24 @@ def schedule_type() -> InlineKeyboardMarkup:
         callback_data=" ".join([ ClassesOptionType.WEEKDAYS.value, WeekType.NEXT.value ])
     ))
     
+    schedule_type_keyboard.row(cancel_button())
+    
     return schedule_type_keyboard
 
 
 def weekday_chooser(is_next: bool) -> InlineKeyboardMarkup:
-    weekday_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup()
+    weekday_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
-    weekday_chooser_keyboard.row(InlineKeyboardButton(
-        text="Показать все",
-        callback_data=" ".join([
-            ClassesOptionType.WEEKLY.value,
-            WeekType.NEXT.value if is_next else WeekType.CURRENT.value
-        ])
-    ))
+    weekday_chooser_keyboard.row(
+        cancel_button(),
+        InlineKeyboardButton(
+            text="показать все",
+            callback_data=" ".join([
+                ClassesOptionType.WEEKLY.value,
+                WeekType.NEXT.value if is_next else WeekType.CURRENT.value
+            ])
+        )
+    )
     
     today: datetime = datetime.today()
     today_weekday: int = today.isoweekday()

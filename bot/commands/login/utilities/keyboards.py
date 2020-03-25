@@ -1,13 +1,15 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
-from bot.shared.keyboards import cancel_option
+from bot.shared.keyboards import cancel_button
 from bot.shared.api.constants import INSTITUTES
 from bot.shared.commands import Commands
 
 
 def login_way_chooser(is_old: bool) -> InlineKeyboardMarkup:
-    setup_way_chooser_keyboard: InlineKeyboardMarkup = cancel_option() if is_old else InlineKeyboardMarkup()
+    setup_way_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
+    
+    if is_old: setup_way_chooser_keyboard.row(cancel_button())
     
     setup_way_chooser_keyboard.row(InlineKeyboardButton(text="с зачёткой", callback_data=Commands.LOGIN_EXTENDED.value))
     setup_way_chooser_keyboard.row(InlineKeyboardButton(text="без зачётки", callback_data=Commands.LOGIN_COMPACT.value))
@@ -16,7 +18,9 @@ def login_way_chooser(is_old: bool) -> InlineKeyboardMarkup:
 
 
 def institute_setter() -> InlineKeyboardMarkup:
-    institute_setter_keyboard: InlineKeyboardMarkup = cancel_option()
+    institute_setter_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
+    
+    institute_setter_keyboard.row(cancel_button())
     
     institute_setter_keyboard.add(*[
         InlineKeyboardButton(
@@ -27,7 +31,9 @@ def institute_setter() -> InlineKeyboardMarkup:
     return institute_setter_keyboard
 
 def year_setter(years: {str: str}) -> InlineKeyboardMarkup:
-    year_setter_keyboard: InlineKeyboardMarkup = cancel_option(row_width=2)
+    year_setter_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
+    
+    year_setter_keyboard.row(cancel_button())
     
     year_setter_keyboard.add(*[
         InlineKeyboardButton(
@@ -38,7 +44,9 @@ def year_setter(years: {str: str}) -> InlineKeyboardMarkup:
     return year_setter_keyboard
 
 def group_number_setter(groups: {str: str}) -> InlineKeyboardMarkup:
-    group_number_setter_keyboard: InlineKeyboardMarkup = cancel_option(row_width=2)
+    group_number_setter_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=3)
+    
+    group_number_setter_keyboard.row(cancel_button())
     
     group_number_setter_keyboard.add(*[
         InlineKeyboardButton(
@@ -49,7 +57,9 @@ def group_number_setter(groups: {str: str}) -> InlineKeyboardMarkup:
     return group_number_setter_keyboard
 
 def name_setter(names: {str: str}) -> InlineKeyboardMarkup:
-    name_setter_keyboard: InlineKeyboardMarkup = cancel_option()
+    name_setter_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
+    
+    name_setter_keyboard.row(cancel_button())
     
     name_setter_keyboard.add(*[
         InlineKeyboardButton(

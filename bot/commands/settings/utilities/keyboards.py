@@ -1,6 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
+from bot.shared.keyboards import cancel_button
 from bot.shared.api.student import Settings
 from bot.shared.api.student import SettingsOption
 from bot.shared.commands import Commands
@@ -10,6 +11,8 @@ def action_chooser() -> InlineKeyboardMarkup:
     action_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
     action_chooser_keyboard.add(*[
+        cancel_button(),
+        
         InlineKeyboardButton(text="Сменить пользователя", callback_data=Commands.LOGIN.value),
         InlineKeyboardButton(text="Изменить отображение", callback_data=Commands.SETTINGS_APPEARANCE.value)
     ])
