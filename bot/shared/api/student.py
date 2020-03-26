@@ -22,33 +22,15 @@ from bs4.element import Tag
 from enum import Enum
 
 
-class SettingsOption(Enum):
-    IS_SCHEDULE_SIZE_FULL: str = "is-schedule-size-full"
-    ARE_CLASSES_ON_DATES: str = "are-classes-on-dates"
-
-
 class Settings:
+    class Option(Enum):
+        IS_SCHEDULE_SIZE_FULL: str = "is-schedule-size-full"
+        ARE_CLASSES_ON_DATES: str = "are-classes-on-dates"
+    
+    
     def __init__(self):
-        self._is_schedule_size_full: bool = True
-        self._are_classes_on_dates: bool = True
-    
-    
-    @property
-    def is_schedule_size_full(self) -> bool:
-        return self._is_schedule_size_full
-    
-    @property
-    def are_classes_on_dates(self) -> bool:
-        return self._are_classes_on_dates
-    
-    
-    @is_schedule_size_full.setter
-    def is_schedule_size_full(self, new_value):
-        self._is_schedule_size_full = new_value
-    
-    @are_classes_on_dates.setter
-    def are_classes_on_dates(self, new_value):
-        self._are_classes_on_dates = new_value
+        self.is_schedule_size_full: bool = True
+        self.are_classes_on_dates: bool = True
     
     
     def drop(self):
@@ -57,26 +39,8 @@ class Settings:
 
 class Guard:
     def __init__(self):
-        self._text: str = None
-        self._message: Message = None
-    
-    
-    @property
-    def text(self) -> str:
-        return self._text
-    
-    @property
-    def message(self) -> Message:
-        return self._message
-    
-    
-    @text.setter
-    def text(self, text: str):
-        self._text = text
-    
-    @message.setter
-    def message(self, message: Message):
-        self._message = message
+        self.text: str = None
+        self.message: Message = None
     
     
     def drop(self):
@@ -84,196 +48,96 @@ class Guard:
 
 
 class Student:
+    class Type(Enum):
+        EXTENDED: str = "extended"
+        COMPACT: str = "compact"
+    
+    
     def __init__(self):
-        self._is_setup: bool = False
-        self._is_full: bool = None
+        self.is_setup: bool = False
+        self.type: Student.Type = None
         
-        self._institute: str = None
-        self._institute_id: str = None
+        self.institute: str = None
+        self.institute_id: str = None
         
-        self._year: str = None
+        self.year: str = None
         
         self._group: str = None
-        self._group_schedule_id: str = None
-        self._group_score_id: str = None
-        
-        self._another_group: str = None
+        self.group_schedule_id: str = None
+        self.group_score_id: str = None
         
         self._name: str = None
-        self._name_id: str = None
-        self._names: {str, str} = {}
+        self.name_id: str = None
         
-        self._card: str = None
+        self.card: str = None
         
-        self._scoretable: [(str, str)] = None
+        self.notes: [str] = []
+        self.edited_subjects: [StudentSubject] = []
         
-        self._notes: [str] = []
+        self.settings: Settings = Settings()
         
-        self._edited_subjects: [StudentSubject] = []
-        self._edited_subjectSubject: StudentSubject = None
         
-        self._settings: {Settings: bool} = Settings()
+        # State savers
+        self._another_group_schedule_id: str = None
         
-        self._guard: Guard = Guard()
+        self.names: {str, str} = {}
+        self.scoretable: [(str, str)] = None
+        self.edited_subjectSubject: StudentSubject = None
+        
+        self.guard: Guard = Guard()
     
-    
-    @property
-    def is_setup(self) -> bool:
-        return self._is_setup
-    
-    @property
-    def is_full(self) -> bool:
-        return self._is_full
-    
-    @property
-    def institute(self) -> str:
-        return self._institute
-    
-    @property
-    def institute_id(self) -> str:
-        return self._institute_id
-    
-    @property
-    def year(self) -> str:
-        return self._year
     
     @property
     def group(self) -> str:
         return self._group
     
     @property
-    def group_schedule_id(self) -> str:
-        return self._group_schedule_id
-    
-    @property
-    def group_score_id(self) -> str:
-        return self._group_score_id
-    
-    @property
-    def another_group(self) -> str:
-        return self._another_group
+    def another_group_schedule_id(self) -> str:
+        return self._another_group_schedule_id
     
     @property
     def name(self) -> str:
         return self._name
     
-    @property
-    def name_id(self) -> str:
-        return self._name_id
-    
-    @property
-    def names(self) -> {str, str}:
-        return self._names
-    
-    @property
-    def card(self) -> str:
-        return self._card
-    
-    @property
-    def scoretable(self) -> [(str, str)]:
-        return self._scoretable
-    
-    @property
-    def notes(self) -> [str]:
-        return self._notes
-    
-    @property
-    def edited_subjects(self) -> [StudentSubject]:
-        return self._edited_subjects
-    
-    @property
-    def edited_subject(self) -> StudentSubject:
-        return self._edited_subject
-    
-    @property
-    def settings(self) -> {str: bool}:
-        return self._settings
-    
-    @property
-    def guard(self) -> Guard:
-        return self._guard
-    
-    
-    @is_setup.setter
-    def is_setup(self, new_value: bool):
-        self._is_setup = new_value
-    
-    @is_full.setter
-    def is_full(self, new_value: bool):
-        self._is_full = new_value
-    
-    @institute.setter
-    def institute(self, new_value: str):
-        self._institute = new_value
-
-    @institute_id.setter
-    def institute_id(self, new_value: str):
-        self._institute_id = new_value
-    
-    @year.setter
-    def year(self, new_value: str):
-        self._year = new_value
     
     @group.setter
     def group(self, new_value: str):
         self._group = new_value
-        self._group_schedule_id = self.get_schedule_id(group=new_value)
-        self._group_score_id = self.get_dictionary_of(ScoreDataType.GROUPS).get(new_value) if self._is_full else None
+        
+        self.group_schedule_id = self.get_schedule_id()
+        self.group_score_id = self.get_dictionary_of(ScoreDataType.GROUPS).get(new_value) if self.type is Student.Type.EXTENDED else None
     
-    @another_group.setter
+    @another_group_schedule_id.setter
     def another_group(self, new_value: str):
-        self._another_group = None if new_value is None else self.get_schedule_id(group=new_value)
+        self._another_group_schedule_id = None if new_value is None else self.get_schedule_id(another_group=new_value)
     
     @name.setter
     def name(self, new_value: str):
         self._name = new_value
-        self._name_id = self.get_dictionary_of(ScoreDataType.NAMES).get(new_value)
-    
-    @names.setter
-    def names(self, new_value: {str, str}):
-        self._names = new_value
-    
-    @card.setter
-    def card(self, new_value: str):
-        self._card = new_value
-    
-    @scoretable.setter
-    def scoretable(self, new_value: [(str, str)]):
-        self._scoretable = new_value
-    
-    @notes.setter
-    def notes(self, new_value: [str]):
-        self._notes = new_value
-    
-    @edited_subjects.setter
-    def edited_subjects(self, new_value: [StudentSubject]):
-        self._edited_subjects = new_value
-    
-    @edited_subject.setter
-    def edited_subject(self, new_value: StudentSubject):
-        self._edited_subject = new_value
+        
+        self.name_id = self.get_dictionary_of(ScoreDataType.NAMES).get(new_value)
     
     
-    def get_schedule_id(self, group: str) -> str:
+    def get_schedule_id(self, another_group: str = None) -> str:
         try:
             return get(url=SCHEDULE_URL, params={
                 "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
                 "p_p_lifecycle": "2",
                 "p_p_resource_id": "getGroupsURL",
-                "query": group
+                "query": self._group if another_group is None else another_group
             }).json()[0]["id"]
         except (ConnectionError, JSONDecodeError, IndexError, KeyError):
             return None
     
     def get_schedule(self, TYPE: ScheduleType, is_next: bool = False) -> [str]:
-        is_own_group_asked: bool = self._another_group is None
+        is_own_group_asked: bool = self._another_group_schedule_id is None
         
         try:
             response: [{int: {str: str}}] = get(url=SCHEDULE_URL, params={
                 "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
                 "p_p_lifecycle": "2",
                 "p_p_resource_id": TYPE.value,
-                "groupId": self._group_schedule_id if is_own_group_asked else self._another_group
+                "groupId": self.group_schedule_id if is_own_group_asked else self._another_group_schedule_id
             }).json()
         except (ConnectionError, JSONDecodeError, IndexError, KeyError):
             return None
@@ -281,10 +145,10 @@ class Student:
         if not response:
             return []
         
-        self._another_group = None
+        self._another_group_schedule_id = None
         
         if TYPE is ScheduleType.CLASSES:
-            return beautify_classes(response, is_next, self._edited_subjects if is_own_group_asked else [], self._settings)
+            return beautify_classes(response, is_next, self.edited_subjects if is_own_group_asked else [], self.settings)
         
         if TYPE is ScheduleType.EXAMS:
             return beautify_exams(response)
@@ -293,9 +157,9 @@ class Student:
     def get_dictionary_of(self, TYPE: ScoreDataType) -> {str: str}:
         try:
             page: str = get(url=SCORE_URL, params={
-                "p_fac": self._institute_id,
-                "p_kurs": self._year,
-                "p_group": self._group_score_id
+                "p_fac": self.institute_id,
+                "p_kurs": self.year,
+                "p_group": self.group_score_id
             }).content.decode("CP1251")
             
             soup: BeautifulSoup = BeautifulSoup(page, "html.parser")
@@ -316,11 +180,11 @@ class Student:
         try:
             page: str = post(SCORE_URL, data={
                 "p_sub": P_SUB,
-                "p_fac": self._institute_id,
-                "p_kurs": self._year,
-                "p_group": self._group_score_id,
-                "p_stud": self._name_id,
-                "p_zach": self._card
+                "p_fac": self.institute_id,
+                "p_kurs": self.year,
+                "p_group": self.group_score_id,
+                "p_stud": self.name_id,
+                "p_zach": self.card
             }).content.decode("CP1251")
             
             soup: BeautifulSoup = BeautifulSoup(page, "html.parser")
@@ -336,11 +200,11 @@ class Student:
         try:
             page: str = post(SCORE_URL, data={
                 "p_sub": P_SUB,
-                "p_fac": self._institute_id,
-                "p_kurs": self._year,
-                "p_group": self._group_score_id,
-                "p_stud": self._name_id,
-                "p_zach": self._card,
+                "p_fac": self.institute_id,
+                "p_kurs": self.year,
+                "p_group": self.group_score_id,
+                "p_stud": self.name_id,
+                "p_zach": self.card,
                 "semestr": semester
             }).content.decode("CP1251")
             

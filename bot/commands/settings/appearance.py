@@ -7,7 +7,7 @@ from bot import students
 from bot.commands.settings.utilities.keyboards import appearance_chooser
 
 from bot.shared.helpers import top_notification
-from bot.shared.api.student import SettingsOption
+from bot.shared.api.student import Settings
 from bot.shared.data.helpers import save_data
 from bot.shared.data.constants import USERS_FILE
 from bot.shared.commands import Commands
@@ -20,9 +20,9 @@ from bot.shared.commands import Commands
 )
 @top_notification
 async def appearance(callback: CallbackQuery):
-    if SettingsOption.IS_SCHEDULE_SIZE_FULL.value in callback.data:
+    if Settings.Option.IS_SCHEDULE_SIZE_FULL.value in callback.data:
         students[callback.message.chat.id].settings.is_schedule_size_full = not students[callback.message.chat.id].settings.is_schedule_size_full
-    elif SettingsOption.ARE_CLASSES_ON_DATES.value in callback.data:
+    elif Settings.Option.ARE_CLASSES_ON_DATES.value in callback.data:
         students[callback.message.chat.id].settings.are_classes_on_dates = not students[callback.message.chat.id].settings.are_classes_on_dates
     
     reply_markup: InlineKeyboardMarkup = appearance_chooser(settings=students[callback.message.chat.id].settings)

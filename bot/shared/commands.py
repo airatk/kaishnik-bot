@@ -74,7 +74,6 @@ class Commands(Enum):
     LOCATIONS: str = "locations"
     
     WEEK: str = "week"
-    CARD: str = "card"
     BRS: str = "brs"
     HELP: str = "help"
     DONATE: str = "donate"
@@ -84,4 +83,6 @@ class Commands(Enum):
     SETTINGS_APPEARANCE_DONE: str = "settings-appearance-done"
     SETTINGS_APPEARANCE_DROP: str = "settings-appearance-drop"
     
-    UNKNOWN: str = "unknown"
+    UNKNOWN_NONTEXT_MESSAGE: str = "unknown-nontext-message"
+    UNKNOWN_TEXT_MESSAGE: str = "unknown-text-message"
+    UNKNOWN_CALLBACK: str = "unknown-callback"

@@ -76,7 +76,7 @@ def beautify_classes(raw_schedule: [{int: {str: str}}], is_next: bool, edited_su
                 studentSubject.department = subject["orgUnitName"]
                 
                 subjects_list.append((studentSubject.begin_hour, studentSubject))
-            
+        
         # Sort by begin_hour
         subjects_list.sort(key=lambda subject: subject[0])
         

@@ -27,7 +27,7 @@ async def login_compact(callback: CallbackQuery):
     students[callback.message.chat.id] = Student()
     
     students[callback.message.chat.id].is_setup = False
-    students[callback.message.chat.id].is_full = False
+    students[callback.message.chat.id].type = Student.Type.COMPACT
     
     guard_message = await callback.message.edit_text(
         text="Отправь номер своей группы.",

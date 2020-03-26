@@ -6,6 +6,13 @@ from enum import Enum
 
 
 class Subject(ABC):
+    class Type(Enum):
+        LECTURE: str = "лек"
+        PRACTICE: str = "пр"
+        LAB: str = "л.р."
+        CONSULTATION: str = "конс"
+    
+    
     def __init__(self):
         self._time: str       = "\n\n*[ {begin_time} - {end_time} ]"
         self._building: str   = "[ {building}"
@@ -65,7 +72,7 @@ class Subject(ABC):
         
         begin_time: datetime = datetime(1, 1, 1, hours, minutes)  # Year, month, day are filled with nonsence
         
-        if type == SubjectType.LAB.value:
+        if type == Subject.Type.LAB.value:
             duration: timedelta = timedelta(hours=3)  # Lab duration is 3h with a 40/10m long break
             duration += timedelta(minutes=40) if begin_time.hour == 11 else timedelta(minutes=10)
         else:
@@ -98,16 +105,16 @@ class Subject(ABC):
     
     @type.setter
     def type(self, type: str):
-        if type == SubjectType.LECTURE.value:
+        if type == Subject.Type.LECTURE.value:
             self._type = self._type.format(type="лекция")
             self._compact_type = self._compact_type.format(type="Л")
-        elif type == SubjectType.PRACTICE.value:
+        elif type == Subject.Type.PRACTICE.value:
             self._type = self._type.format(type="практика")
             self._compact_type = self._compact_type.format(type="П")
-        elif type == SubjectType.LAB.value:
+        elif type == Subject.Type.LAB.value:
             self._type = self._type.format(type="лабораторная работа")
             self._compact_type = self._compact_type.format(type="ЛР")
-        elif type == SubjectType.CONSULTATION.value:
+        elif type == Subject.Type.CONSULTATION.value:
             self._type = self._type.format(type="консультация")
             self._compact_type = self._compact_type.format(type="К")
         else:
@@ -232,10 +239,3 @@ class LecturerSubject(Subject):
             super().get_compact(),
             groups_output
         ])
-
-
-class SubjectType(Enum):
-    LECTURE: str = "лек"
-    PRACTICE: str = "пр"
-    LAB: str = "л.р."
-    CONSULTATION: str = "конс"

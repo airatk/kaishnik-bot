@@ -17,6 +17,7 @@ from bot.commands.creator.utilities.constants import COMMAND_REQUESTS_STATS
 from bot.commands.creator.utilities.types import Option
 
 from bot.shared.api.constants import INSTITUTES
+from bot.shared.api.student import Student
 from bot.shared.commands import Commands
 
 from datetime import datetime
@@ -35,20 +36,21 @@ async def users(message: Message):
     
     await message.answer(
         text=USERS_STATS.format(
-            faculty_1=institutes_names[0], number_faculty_1=institutes_stats.count(institutes_names[0]),
-            faculty_2=institutes_names[1], number_faculty_2=institutes_stats.count(institutes_names[1]),
-            faculty_3=institutes_names[2], number_faculty_3=institutes_stats.count(institutes_names[2]),
-            faculty_4=institutes_names[3], number_faculty_4=institutes_stats.count(institutes_names[3]),
-            faculty_5=institutes_names[4], number_faculty_5=institutes_stats.count(institutes_names[4]),
-            faculty_6=institutes_names[5], number_faculty_6=institutes_stats.count(institutes_names[5]),
-            year_1=years_names[0], number_year_1=years_stats.count(years_names[0]),
-            year_2=years_names[1], number_year_2=years_stats.count(years_names[1]),
-            year_3=years_names[2], number_year_3=years_stats.count(years_names[2]),
-            year_4=years_names[3], number_year_4=years_stats.count(years_names[3]),
-            year_5=years_names[4], number_year_5=years_stats.count(years_names[4]),
-            year_6=years_names[5], number_year_6=years_stats.count(years_names[5]),
-            number_group_only=sum(1 for student in students.values() if not student.is_full),
-            number_unsetup=sum(1 for student in students.values() if not student.is_setup),
+            faculty_1=institutes_names[0], faculty_1_number=institutes_stats.count(institutes_names[0]),
+            faculty_2=institutes_names[1], faculty_2_number=institutes_stats.count(institutes_names[1]),
+            faculty_3=institutes_names[2], faculty_3_number=institutes_stats.count(institutes_names[2]),
+            faculty_4=institutes_names[3][2:-2], faculty_4_number=institutes_stats.count(institutes_names[3]),
+            faculty_5=institutes_names[4], faculty_5_number=institutes_stats.count(institutes_names[4]),
+            faculty_6=institutes_names[5], faculty_6_number=institutes_stats.count(institutes_names[5]),
+            year_1=years_names[0], year_1_number=years_stats.count(years_names[0]),
+            year_2=years_names[1], year_2_number=years_stats.count(years_names[1]),
+            year_3=years_names[2], year_3_number=years_stats.count(years_names[2]),
+            year_4=years_names[3], year_4_number=years_stats.count(years_names[3]),
+            year_5=years_names[4], year_5_number=years_stats.count(years_names[4]),
+            year_6=years_names[5], year_6_number=years_stats.count(years_names[5]),
+            extended_number=sum(1 for student in students.values() if student.type is Student.Type.EXTENDED),
+            compact_number=sum(1 for student in students.values() if student.type is Student.Type.COMPACT),
+            unsetup_number=sum(1 for student in students.values() if not student.is_setup),
             total=len(students)
         ),
         parse_mode="markdown"
@@ -68,21 +70,20 @@ async def metrics_command(message: Message):
             classes_request_number=metrics.classes,
             score_request_number=metrics.score,
             lecturers_request_number=metrics.lecturers,
-            week_request_number=metrics.week,
             notes_request_number=metrics.notes,
+            week_request_number=metrics.week,
             exams_request_number=metrics.exams,
             locations_request_number=metrics.locations,
-            card_request_number=metrics.card,
             brs_request_number=metrics.brs,
+            edit_request_number=metrics.edit,
+            settings_request_number=metrics.settings,
+            help_request_number=metrics.help,
+            donate_request_number=metrics.donate,
             cancel_request_number=metrics.cancel,
             start_request_number=metrics.start,
             login_request_number=metrics.login,
             unlogin_request_number=metrics.unlogin,
-            settings_request_number=metrics.settings,
-            edit_request_number=metrics.edit,
-            help_request_number=metrics.help,
-            donate_request_number=metrics.donate,
-            unknown_request_number=metrics.unknown,
+            unknown_nontext_message_request_number=metrics.unknown_nontext_message, unknown_text_message_request_number=metrics.unknown_text_message, unknown_callback_request_number=metrics.unknown_callback,
             total_request_number=metrics.sum
         ),
         parse_mode="markdown"

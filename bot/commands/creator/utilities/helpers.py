@@ -99,8 +99,8 @@ def get_user_data(chat: Chat, student: Student, hashtag: str) -> str:
         notes_number=len(student.notes),
         edited_classes_number=len(student.edited_subjects),
         fellow_students_number=len(student.names),
-        is_full=student.is_full,
+        type=student.type.value,
         guard_text=student.guard.text,
-        is_guard_message_none=student.guard.message is None,
+        guard_message="None" if student.guard.message is None else student.guard.message.text,
         hashtag=hashtag
     )

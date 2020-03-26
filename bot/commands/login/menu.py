@@ -20,7 +20,6 @@ from bot.shared.data.constants import USERS_FILE
             students[callback.message.chat.id].guard.text == Commands.SETTINGS.value
         ) and callback.data == Commands.LOGIN.value
 )
-@metrics.increment(Commands.LOGIN)
 @top_notification
 async def login_on_callback(callback: CallbackQuery):
     # Cleanning the chat

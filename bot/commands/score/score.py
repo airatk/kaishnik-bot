@@ -13,6 +13,7 @@ from bot.shared.helpers import top_notification
 from bot.shared.api.constants import LOADING_REPLIES
 from bot.shared.api.types import SubjectScoreType
 from bot.shared.api.types import ResponseError
+from bot.shared.api.student import Student
 from bot.shared.commands import Commands
 
 from random import choice
@@ -24,9 +25,9 @@ from random import choice
 )
 @metrics.increment(Commands.SCORE)
 async def score(message: Message):
-    if not students[message.chat.id].is_full:
+    if students[message.chat.id].type is not Student.Type.EXTENDED:
         await message.answer(text="Не доступно :(")
-        await message.answer(text="Чтобы видеть номер зачётки и баллы, нужно перенастроиться с зачёткой, отправив /login")
+        await message.answer(text="Чтобы видеть баллы, нужно перенастроиться с зачёткой, отправив /login")
         return
     
     loading_message: Message = await message.answer(

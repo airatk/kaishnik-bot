@@ -10,6 +10,7 @@ from bot.commands.settings.utilities.constants import FULL_USER_INFO
 from bot.commands.settings.utilities.constants import COMPACT_USER_INFO
 
 from bot.shared.commands import Commands
+from bot.shared.api.student import Student
 
 
 @dispatcher.message_handler(
@@ -30,19 +31,14 @@ async def settings(message: Message):
         "edited_classes_number": len(students[message.chat.id].edited_subjects)
     }
     
-    message_text: str = FULL_USER_INFO.format(
-        **info,
-        institute=students[message.chat.id].institute,
-        year=students[message.chat.id].year,
-        name=students[message.chat.id].name,
-        card=students[message.chat.id].card
-    ) if students[message.chat.id].is_full else COMPACT_USER_INFO.format(**info)
-    
-    # Removing emojies
-    message_text = message_text.replace("\u2665 ", "").replace(" \u2665", "")
-    
     await message.answer(
-        text=message_text,
+        text=FULL_USER_INFO.format(
+            **info,
+            institute=students[message.chat.id].institute[2:-2],  # Removing emojies
+            year=students[message.chat.id].year,
+            name=students[message.chat.id].name,
+            card=students[message.chat.id].card
+        ) if students[message.chat.id].type is Student.Type.EXTENDED else COMPACT_USER_INFO.format(**info),
         reply_markup=action_chooser()
     )
     

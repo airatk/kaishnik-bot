@@ -28,7 +28,7 @@ async def exams(message: Message):
     if len(request_entities) > 1:
         students[message.chat.id].another_group = request_entities[1]
         
-        if students[message.chat.id].another_group is None:
+        if students[message.chat.id].another_group_schedule_id is None:
             await loading_message.edit_text(
                 text="Расписание экзаменов группы *{group}* получить не удалось :(".format(group=request_entities[1]),
                 parse_mode="markdown"

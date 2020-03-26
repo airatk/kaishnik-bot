@@ -18,11 +18,12 @@ from random import choice
 @dispatcher.message_handler(content_types=[
     "sticker", "photo", "video", "audio", "document", "voice", "video_note", "location", "contact"
 ])
+@metrics.increment(Commands.UNKNOWN_NONTEXT_MESSAGE)
 async def unknown_nontext_message(message: Message): await message.delete()
 
 @dispatcher.message_handler(content_types=[ "text" ])
-@metrics.increment(Commands.UNKNOWN)
-async def unknown_command(message: Message):
+@metrics.increment(Commands.UNKNOWN_TEXT_MESSAGE)
+async def unknown_text_message(message: Message):
     await message.answer(
         text=choice(REPLIES_TO_UNKNOWN_COMMAND if message.is_command() else REPLIES_TO_UNKNOWN_MESSAGE),
         parse_mode="markdown",
@@ -30,7 +31,7 @@ async def unknown_command(message: Message):
     )
 
 @dispatcher.callback_query_handler(lambda callback: True)
-@metrics.increment(Commands.UNKNOWN)
+@metrics.increment(Commands.UNKNOWN_CALLBACK)
 @top_notification
 async def unknown_callback(callback: CallbackQuery):
     try:

@@ -5,7 +5,7 @@ from bot.commands.locations.utilities.constants import BUILDINGS
 
 from bot.shared.keyboards import cancel_button
 from bot.shared.api.subject import StudentSubject
-from bot.shared.api.subject import SubjectType
+from bot.shared.api.subject import Subject
 from bot.shared.calendar.constants import WEEKDAYS
 from bot.shared.calendar.week import WeekParity
 from bot.shared.commands import Commands
@@ -113,16 +113,16 @@ def subject_type_editor() -> InlineKeyboardMarkup:
     subject_type_editor_keyboard.row(cancel_button())
     
     subject_type_editor_keyboard.row(InlineKeyboardButton(text="лекция", callback_data=" ".join([
-        Commands.EDIT_SUBJECT_TYPE.value, SubjectType.LECTURE.value
+        Commands.EDIT_SUBJECT_TYPE.value, Subject.Type.LECTURE.value
     ])))
     subject_type_editor_keyboard.row(InlineKeyboardButton(text="практика", callback_data=" ".join([
-        Commands.EDIT_SUBJECT_TYPE.value, SubjectType.PRACTICE.value
+        Commands.EDIT_SUBJECT_TYPE.value, Subject.Type.PRACTICE.value
     ])))
     subject_type_editor_keyboard.row(InlineKeyboardButton(text="лабораторная работа", callback_data=" ".join([
-        Commands.EDIT_SUBJECT_TYPE.value, SubjectType.LAB.value
+        Commands.EDIT_SUBJECT_TYPE.value, Subject.Type.LAB.value
     ])))
     subject_type_editor_keyboard.row(InlineKeyboardButton(text="консультация", callback_data=" ".join([
-        Commands.EDIT_SUBJECT_TYPE.value, SubjectType.CONSULTATION.value
+        Commands.EDIT_SUBJECT_TYPE.value, Subject.Type.CONSULTATION.value
     ])))
     
     return subject_type_editor_keyboard

@@ -5,157 +5,81 @@ from datetime import datetime
 
 class Metrics:
     def __init__(self):
-        self._day: int = datetime.today().isoweekday()
+        self.day: int = datetime.today().isoweekday()
         
-        self._cancel: int = 0
-        self._start: int = 0
-        self._login: int = 0
-        self._unlogin: int = 0
-        self._classes: int = 0
-        self._exams: int = 0
-        self._lecturers: int = 0
-        self._score: int = 0
-        self._notes: int = 0
-        self._edit: int = 0
-        self._locations: int = 0
-        self._week: int = 0
-        self._card: int = 0
-        self._brs: int = 0
-        self._help: int = 0
-        self._donate: int = 0
-        self._settings: int = 0
-        self._unknown: int = 0
-    
-    
-    @property
-    def day(self) -> int:
-        return self._day
-    
-    
-    @property
-    def cancel(self) -> int:
-        return self._cancel
-    
-    @property
-    def start(self) -> int:
-        return self._start
-    
-    @property
-    def login(self) -> int:
-        return self._login
-    
-    @property
-    def unlogin(self) -> int:
-        return self._unlogin
-    
-    @property
-    def classes(self) -> int:
-        return self._classes
-    
-    @property
-    def exams(self) -> int:
-        return self._exams
-    
-    @property
-    def lecturers(self) -> int:
-        return self._lecturers
-    
-    @property
-    def score(self) -> int:
-        return self._score
-    
-    @property
-    def notes(self) -> int:
-        return self._notes
-    
-    @property
-    def edit(self) -> int:
-        return self._edit
-    
-    @property
-    def locations(self) -> int:
-        return self._locations
-    
-    @property
-    def week(self) -> int:
-        return self._week
-    
-    @property
-    def card(self) -> int:
-        return self._card
-    
-    @property
-    def brs(self) -> int:
-        return self._brs
-    
-    @property
-    def help(self) -> int:
-        return self._help
-    
-    @property
-    def donate(self) -> int:
-        return self._donate
-    
-    @property
-    def settings(self) -> int:
-        return self._settings
-    
-    @property
-    def unknown(self) -> int:
-        return self._unknown
+        self.cancel: int = 0
+        self.start: int = 0
+        self.login: int = 0
+        self.unlogin: int = 0
+        self.classes: int = 0
+        self.exams: int = 0
+        self.lecturers: int = 0
+        self.score: int = 0
+        self.notes: int = 0
+        self.edit: int = 0
+        self.locations: int = 0
+        self.week: int = 0
+        self.brs: int = 0
+        self.help: int = 0
+        self.donate: int = 0
+        self.settings: int = 0
+        self.unknown_nontext_message: int = 0
+        self.unknown_text_message: int = 0
+        self.unknown_callback: int = 0
     
     
     @property
     def sum(self) -> int:
         return (
-            self._cancel +
-            self._start +
-            self._login +
-            self._unlogin +
-            self._classes +
-            self._exams +
-            self._lecturers +
-            self._score +
-            self._notes +
-            self._edit +
-            self._locations +
-            self._week +
-            self._card +
-            self._brs +
-            self._help +
-            self._donate +
-            self._settings +
-            self._unknown
+            self.cancel +
+            self.start +
+            self.login +
+            self.unlogin +
+            self.classes +
+            self.exams +
+            self.lecturers +
+            self.score +
+            self.notes +
+            self.edit +
+            self.locations +
+            self.week +
+            self.brs +
+            self.help +
+            self.donate +
+            self.settings +
+            self.unknown_nontext_message +
+            self.unknown_text_message +
+            self.unknown_callback
         )
     
     
     def drop(self):
         self.__init__()
     
-    
     def increment(self, command: Commands):
         def outter(func):
             async def inner(arg):
-                if self._day != datetime.today().isoweekday(): self.drop()
+                if self.day != datetime.today().isoweekday(): self.drop()
                 
-                if command is Commands.CANCEL: self._cancel += 1
-                elif command is Commands.START: self._start += 1
-                elif command is Commands.LOGIN: self._login += 1
-                elif command is Commands.UNLOGIN: self._unlogin += 1
-                elif command is Commands.CLASSES: self._classes += 1
-                elif command is Commands.EXAMS: self._exams += 1
-                elif command is Commands.LECTURERS: self._lecturers += 1
-                elif command is Commands.SCORE: self._score += 1
-                elif command is Commands.NOTES: self._notes += 1
-                elif command is Commands.EDIT: self._edit += 1
-                elif command is Commands.LOCATIONS: self._locations += 1
-                elif command is Commands.WEEK: self._week += 1
-                elif command is Commands.CARD: self._card += 1
-                elif command is Commands.BRS: self._brs += 1
-                elif command is Commands.HELP: self._help += 1
-                elif command is Commands.DONATE: self._donate += 1
-                elif command is Commands.SETTINGS: self._settings += 1
-                elif command is Commands.UNKNOWN: self._unknown += 1
+                if command is Commands.CANCEL: self.cancel += 1
+                elif command is Commands.START: self.start += 1
+                elif command is Commands.LOGIN: self.login += 1
+                elif command is Commands.UNLOGIN: self.unlogin += 1
+                elif command is Commands.CLASSES: self.classes += 1
+                elif command is Commands.EXAMS: self.exams += 1
+                elif command is Commands.LECTURERS: self.lecturers += 1
+                elif command is Commands.SCORE: self.score += 1
+                elif command is Commands.NOTES: self.notes += 1
+                elif command is Commands.EDIT: self.edit += 1
+                elif command is Commands.LOCATIONS: self.locations += 1
+                elif command is Commands.WEEK: self.week += 1
+                elif command is Commands.BRS: self.brs += 1
+                elif command is Commands.HELP: self.help += 1
+                elif command is Commands.DONATE: self.donate += 1
+                elif command is Commands.SETTINGS: self.settings += 1
+                elif command is Commands.UNKNOWN_NONTEXT_MESSAGE: self.unknown_nontext_message += 1
+                elif command is Commands.UNKNOWN_TEXT_MESSAGE: self.unknown_text_message += 1
+                elif command is Commands.UNKNOWN_CALLBACK: self.unknown_callback += 1
                 
                 await func(arg)
             return inner
