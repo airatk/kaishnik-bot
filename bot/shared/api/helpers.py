@@ -1,4 +1,4 @@
-from bot.shared.api.types import SubjectScoreType
+from bot.shared.api.types import ScoreType
 from bot.shared.api.subject import StudentSubject
 from bot.shared.api.subject import LecturerSubject
 from bot.shared.calendar.constants import WEEKDAYS
@@ -209,10 +209,10 @@ def beautify_scoretable(raw_scoretable: [[str]]) -> [(str, str)]:
         unstyled_title: str = subject[1].replace("(экз.)", "").replace("(зач.)", "").replace("(зач./оц.)", "")
         title: str = "*{title}*".format(title=unstyled_title)
         
-        if "(экз.)" in subject[1]: score_type: str = "".join([ "\n_", SubjectScoreType.EXAM.value, "_\n" ])
-        elif "(зач.)" in subject[1]: score_type: str = "".join([ "\n_", SubjectScoreType.TEST.value, "_\n" ])
-        elif "(зач./оц.)" in subject[1]: score_type: str = "".join([ "\n_", SubjectScoreType.GRADED_TEST.value, "_\n" ])
-        else: score_type: str = "".join([ "\n_", SubjectScoreType.OTHER.value, "_\n" ])
+        if "(экз.)" in subject[1]: score_type: str = "".join([ "\n_", ScoreType.EXAM.value, "_\n" ])
+        elif "(зач.)" in subject[1]: score_type: str = "".join([ "\n_", ScoreType.TEST.value, "_\n" ])
+        elif "(зач./оц.)" in subject[1]: score_type: str = "".join([ "\n_", ScoreType.GRADED_TEST.value, "_\n" ])
+        else: score_type: str = "".join([ "\n_", ScoreType.OTHER.value, "_\n" ])
         
         certification1: str = "\n• 1 аттестация: {gained} / {max}".format(gained=subject[2], max=subject[3])
         certification2: str = "\n• 2 аттестация: {gained} / {max}".format(gained=subject[4], max=subject[5])

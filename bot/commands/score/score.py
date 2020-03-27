@@ -8,10 +8,11 @@ from bot import metrics
 from bot.commands.score.utilities.keyboards import semester_chooser
 from bot.commands.score.utilities.keyboards import subjects_type_chooser
 from bot.commands.score.utilities.keyboards import subject_chooser
+from bot.commands.score.utilities.helpers import collect_subjects
 
 from bot.shared.helpers import top_notification
 from bot.shared.api.constants import LOADING_REPLIES
-from bot.shared.api.types import SubjectScoreType
+from bot.shared.api.types import ScoreType
 from bot.shared.api.types import ResponseError
 from bot.shared.api.student import Student
 from bot.shared.commands import Commands
@@ -24,7 +25,7 @@ from random import choice
     commands=[ Commands.SCORE.value ]
 )
 @metrics.increment(Commands.SCORE)
-async def score(message: Message):
+async def choose_semester(message: Message):
     if students[message.chat.id].type is not Student.Type.EXTENDED:
         await message.answer(text="Не доступно :(")
         await message.answer(text="Чтобы видеть баллы, нужно перенастроиться с зачёткой, отправив /login")
@@ -83,10 +84,10 @@ async def choose_subjects_type(callback: CallbackQuery):
     
     (has_exams, has_tests, has_graded_tests) = (False, False, False)
     
-    for (_, subject_score) in students[callback.message.chat.id].scoretable:
-        has_exams |= SubjectScoreType.EXAM.value in subject_score
-        has_tests |= SubjectScoreType.TEST.value in subject_score
-        has_graded_tests |= SubjectScoreType.GRADED_TEST.value in subject_score
+    for (_, score) in students[callback.message.chat.id].scoretable:
+        has_exams |= ScoreType.EXAM.value in score
+        has_tests |= (ScoreType.TEST.value in score and ScoreType.GRADED_TEST.value not in score)
+        has_graded_tests |= ScoreType.GRADED_TEST.value in score
     
     await callback.message.edit_text(
         text="Выбери тип предметов:",
@@ -100,22 +101,11 @@ async def choose_subjects_type(callback: CallbackQuery):
 )
 @top_notification
 async def choose_subject(callback: CallbackQuery):
-    if callback.data == Commands.SCORE_ALL.value:
-        subjects: [str] = [ title for (title, _) in students[callback.message.chat.id].scoretable ]
-        ACTION: Commands = Commands.SCORE_ALL
-    elif callback.data == Commands.SCORE_EXAMS.value:
-        subjects: [str] = [ title for (title, subject_score) in students[callback.message.chat.id].scoretable if SubjectScoreType.EXAM.value in subject_score ]
-        ACTION: Commands = Commands.SCORE_EXAMS
-    elif callback.data == Commands.SCORE_TESTS.value:
-        subjects: [str] = [ title for (title, subject_score) in students[callback.message.chat.id].scoretable if SubjectScoreType.TEST.value in subject_score ]
-        ACTION: Commands = Commands.SCORE_TESTS
-    elif callback.data == Commands.SCORE_GRADED_TESTS.value:
-        subjects: [str] = [ title for (title, subject_score) in students[callback.message.chat.id].scoretable if SubjectScoreType.GRADED_TEST.value in subject_score ]
-        ACTION: Commands = Commands.SCORE_GRADED_TESTS
+    subjects: [str] = collect_subjects(type=callback.data, scoretable=students[callback.message.chat.id].scoretable, attribute_index=0)
     
     await callback.message.edit_text(
         text="Выбери предмет:",
-        reply_markup=subject_chooser(subjects=subjects, ACTION=ACTION)
+        reply_markup=subject_chooser(subjects=subjects, type=callback.data)
     )
 
 @dispatcher.callback_query_handler(
@@ -129,16 +119,9 @@ async def choose_subject(callback: CallbackQuery):
 )
 @top_notification
 async def show_subjects(callback: CallbackQuery):
-    (action, string_index) = callback.data.split()
+    (type, string_index) = callback.data.split()
     
-    if action == Commands.SCORE_ALL.value:
-        subjects: [str] = [ subject_score for (_, subject_score) in students[callback.message.chat.id].scoretable ]
-    elif action == Commands.SCORE_EXAMS.value:
-        subjects: [str] = [ subject_score for (_, subject_score) in students[callback.message.chat.id].scoretable if SubjectScoreType.EXAM.value in subject_score ]
-    elif action == Commands.SCORE_TESTS.value:
-        subjects: [str] = [ subject_score for (_, subject_score) in students[callback.message.chat.id].scoretable if SubjectScoreType.TEST.value in subject_score ]
-    elif action == Commands.SCORE_GRADED_TESTS.value:
-        subjects: [str] = [ subject_score for (_, subject_score) in students[callback.message.chat.id].scoretable if SubjectScoreType.GRADED_TEST.value in subject_score ]
+    subjects: [str] = collect_subjects(type=type, scoretable=students[callback.message.chat.id].scoretable, attribute_index=1)
     
     if string_index != "None":
         await callback.message.edit_text(
@@ -148,9 +131,9 @@ async def show_subjects(callback: CallbackQuery):
     else:
         await callback.message.delete()
         
-        for subject_score in subjects:
+        for score in subjects:
             await callback.message.answer(
-                text=subject_score,
+                text=score,
                 parse_mode="markdown"
             )
         

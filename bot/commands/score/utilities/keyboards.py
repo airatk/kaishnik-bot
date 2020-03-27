@@ -45,20 +45,20 @@ def subjects_type_chooser(has_exams: bool, has_tests: bool, has_graded_tests: bo
     
     return subjects_type_chooser_keyboard
 
-def subject_chooser(subjects: [str], ACTION: Commands) -> InlineKeyboardMarkup:
+def subject_chooser(subjects: [str], type: str) -> InlineKeyboardMarkup:
     subject_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
     subject_chooser_keyboard.row(
         cancel_button(),
         InlineKeyboardButton(
             text="показать все",
-            callback_data=" ".join([ ACTION.value, "None" ])
+            callback_data=" ".join([ type, "None" ])
         )
     )
     
     subject_chooser_keyboard.add(*[
         InlineKeyboardButton(
-            text=title, callback_data=" ".join([ ACTION.value, str(index) ])
+            text=title, callback_data=" ".join([ type, str(index) ])
         ) for (index, title) in enumerate(subjects)
     ])
     

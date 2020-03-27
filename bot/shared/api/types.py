@@ -16,7 +16,7 @@ class ClassesOptionType(Enum):
     WEEKDAYS: str = "weekdays"
     WEEKLY: str = "weekly"
 
-class SubjectScoreType(Enum):
+class ScoreType(Enum):
     EXAM: str = "экзамен"
     TEST: str = "зачёт"
     GRADED_TEST: str = "зачёт с оценкой"
