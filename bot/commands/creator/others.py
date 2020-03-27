@@ -46,7 +46,8 @@ async def broadcast(message: Message):
                 chat_id=chat_id,
                 text=options[Option.MESSAGE.value] if options.get(Option.SIGNED.value) == "false" else BROADCAST_MESSAGE_TEMPLATE.format(broadcast_message=options[Option.MESSAGE.value]),
                 parse_mode="markdown",
-                disable_web_page_preview=True
+                disable_web_page_preview=True,
+                disable_notification=options.get(Option.NOTIFY.value) == "false"
             )
         except ChatNotFound:
             await message.answer(text="{} is inactive! /clear?".format(chat_id))

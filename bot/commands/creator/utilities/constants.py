@@ -49,6 +49,7 @@ CONTROL_PANEL: str = (
             "\t\t\t\t\t\t\[ all ]\[ unlogin ]\[ me ]\n"
         "\t\t\t} }\n"
         "\t\t\t\[ signed: false ]\n"
+        "\t\t\t\[ notify: false ]\n"
     "}\n"
     "/reverse { week }\n"
     "/dayoff {\n"
