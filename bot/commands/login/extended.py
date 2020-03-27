@@ -123,7 +123,10 @@ async def set_group(callback: CallbackQuery):
     )
     
     # Setting group
-    students[callback.message.chat.id].group = callback.data.split()[1]
+    callback_data = callback.data.split()
+    
+    students[callback.message.chat.id].group = callback_data[1]
+    students[callback.message.chat.id].group_score_id = callback_data[2]
     
     if students[callback.message.chat.id].group_schedule_id is None and students[callback.message.chat.id].group_score_id is not None:
         await callback.message.edit_text(text=ResponseError.NO_GROUP.value)
@@ -172,8 +175,10 @@ async def set_name(callback: CallbackQuery):
     )
     
     # Setting name
-    name: str = callback.data.split()[1]
-    students[callback.message.chat.id].name = students[callback.message.chat.id].names[name]
+    name_id: str = callback.data.split()[1]
+    
+    students[callback.message.chat.id].name = students[callback.message.chat.id].names[name_id]
+    students[callback.message.chat.id].name_id = name_id
     
     if students[callback.message.chat.id].name_id is None:
         await callback.message.edit_text(

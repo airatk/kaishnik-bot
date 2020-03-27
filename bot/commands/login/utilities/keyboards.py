@@ -50,8 +50,8 @@ def group_number_setter(groups: {str: str}) -> InlineKeyboardMarkup:
     
     group_number_setter_keyboard.add(*[
         InlineKeyboardButton(
-            text=group, callback_data=" ".join([ Commands.LOGIN_SET_GROUP.value, group ])
-        ) for group in groups
+            text=group, callback_data=" ".join([ Commands.LOGIN_SET_GROUP.value, group, group_id ])
+        ) for (group, group_id) in groups.items()
     ])
     
     return group_number_setter_keyboard

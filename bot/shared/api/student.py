@@ -66,7 +66,7 @@ class Student:
         self.group_schedule_id: str = None
         self.group_score_id: str = None
         
-        self._name: str = None
+        self.name: str = None
         self.name_id: str = None
         
         self.card: str = None
@@ -95,30 +95,18 @@ class Student:
     def another_group_schedule_id(self) -> str:
         return self._another_group_schedule_id
     
-    @property
-    def name(self) -> str:
-        return self._name
-    
     
     @group.setter
     def group(self, new_value: str):
         self._group = new_value
-        
-        self.group_schedule_id = self.get_schedule_id()
-        self.group_score_id = self.get_dictionary_of(ScoreDataType.GROUPS).get(new_value) if self.type is Student.Type.EXTENDED else None
+        self.group_schedule_id = self._get_group_schedule_id()
     
     @another_group_schedule_id.setter
     def another_group(self, new_value: str):
-        self._another_group_schedule_id = None if new_value is None else self.get_schedule_id(another_group=new_value)
-    
-    @name.setter
-    def name(self, new_value: str):
-        self._name = new_value
-        
-        self.name_id = self.get_dictionary_of(ScoreDataType.NAMES).get(new_value)
+        self._another_group_schedule_id = None if new_value is None else self._get_group_schedule_id(another_group=new_value)
     
     
-    def get_schedule_id(self, another_group: str = None) -> str:
+    def _get_group_schedule_id(self, another_group: str = None) -> str:
         try:
             return get(url=SCHEDULE_URL, params={
                 "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
@@ -128,6 +116,7 @@ class Student:
             }).json()[0]["id"]
         except (ConnectionError, JSONDecodeError, IndexError, KeyError):
             return None
+    
     
     def get_schedule(self, TYPE: ScheduleType, is_next: bool = False) -> [str]:
         is_own_group_asked: bool = self._another_group_schedule_id is None
@@ -162,8 +151,8 @@ class Student:
                 "p_group": self.group_score_id
             }).content.decode("CP1251")
             
-            soup: BeautifulSoup = BeautifulSoup(page, "html.parser")
-            selector: Tag = soup.find(name="select", attrs={ "name": TYPE.value })
+            parsed_page: BeautifulSoup = BeautifulSoup(page, "html.parser")
+            selector: Tag = parsed_page.find(name="select", attrs={ "name": TYPE.value })
             
             keys: [str] = [ option.text for option in selector.find_all("option") ][1:]
             values: [str] = [ option["value"] for option in selector.find_all("option") ][1:]
@@ -187,8 +176,8 @@ class Student:
                 "p_zach": self.card
             }).content.decode("CP1251")
             
-            soup: BeautifulSoup = BeautifulSoup(page, "html.parser")
-            selector: Tag = soup.find(name="select", attrs={ "name": "semestr" })
+            parsed_page: BeautifulSoup = BeautifulSoup(page, "html.parser")
+            selector: Tag = parsed_page.find(name="select", attrs={ "name": "semestr" })
             
             if not selector: return 0
             
@@ -208,8 +197,8 @@ class Student:
                 "semestr": semester
             }).content.decode("CP1251")
             
-            soup: BeautifulSoup = BeautifulSoup(page, features="html.parser")
-            table: Tag = soup.html.find(name="table", attrs={ "id": "reyt" })
+            parsed_page: BeautifulSoup = BeautifulSoup(page, features="html.parser")
+            table: Tag = parsed_page.find(name="table", attrs={ "id": "reyt" })
             
             if not table: return []
             

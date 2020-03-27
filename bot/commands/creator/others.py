@@ -11,7 +11,6 @@ from bot.commands.creator.utilities.constants import BROADCAST_MESSAGE_TEMPLATE
 from bot.commands.creator.utilities.types import Option
 from bot.commands.creator.utilities.types import Suboption
 
-from bot.shared.api.student import Student
 from bot.shared.calendar.constants import MONTHS
 from bot.shared.data.helpers import save_data
 from bot.shared.data.helpers import load_data
@@ -31,7 +30,7 @@ async def broadcast(message: Message):
         await message.answer(text="No broadcast message was found!")
         return
     
-    broadcast_list: [Student] = await collect_ids(query_message=message)
+    broadcast_list: [int] = await collect_ids(query_message=message)
     
     progress_bar: str = ""
     loading_message: Message = await message.answer(text="Started broadcasting...")

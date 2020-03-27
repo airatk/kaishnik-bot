@@ -26,7 +26,7 @@ from bot.shared.commands import Commands
 async def clear(message: Message):
     is_cleared: bool = False
     
-    students_list: [Student] = list(students)
+    students_list: [int] = list(students)
     
     progress_bar: str = ""
     loading_message = await message.answer(text="Started clearing...")
@@ -110,24 +110,28 @@ async def drop(message: Message):
         try:
             if students[chat_id].notes != []:
                 for note in students[chat_id].notes:
-                    await message.answer(
+                    await message.bot.send_message(
+                        chat_id=chat_id,
                         text=note,
                         parse_mode="markdown",
                         disable_notification=True
                     )
                 
-                await message.answer(
+                await message.bot.send_message(
+                    chat_id=chat_id,
                     text="Твои заметки, чтобы ничего не потерялось.",
                     disable_notification=True
                 )
             
             students[chat_id]: Student = Student()
             
-            guard_message: Message = await message.answer(
+            guard_message: Message = await message.bot.send_message(
+                chat_id=chat_id,
                 text="Текущие настройки сброшены!",
                 disable_notification=True
             )
-            await message.answer(
+            await message.bot.send_message(
+                chat_id=chat_id,
                 text="Обнови данные:",
                 reply_markup=make_login(),
                 disable_notification=True
