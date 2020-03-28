@@ -1,5 +1,6 @@
-from aiogram.types import Chat
 from aiogram.types import Message
+from aiogram.types import Chat
+from aiogram.types import ChatType
 
 from bot import dispatcher
 from bot import students
@@ -14,7 +15,13 @@ from bot.shared.api.student import Student
 
 
 @dispatcher.message_handler(
-    lambda message: students[message.chat.id].guard.text is None,
+    lambda message: message.chat.type != ChatType.PRIVATE,
+    commands=[ Commands.SETTINGS.value ]
+)
+@dispatcher.message_handler(
+    lambda message:
+        message.chat.type == ChatType.PRIVATE and
+        students[message.chat.id].guard.text is None,
     commands=[ Commands.SETTINGS.value ]
 )
 @metrics.increment(Commands.SETTINGS)
@@ -22,10 +29,9 @@ async def settings(message: Message):
     chat: Chat = await message.bot.get_chat(chat_id=message.chat.id)
     
     info: {str: str} = {
-        "firstname": chat.first_name,
-        "lastname": " {lastname}".format(lastname=chat.last_name) if chat.last_name is not None else "",
+        "fullname": chat.full_name,
         "username": " @{username}".format(username=chat.username) if chat.username is not None else "",
-        "chat_id": message.chat.id,
+        "chat_id": message.chat.id if message.chat.type == ChatType.PRIVATE else (-message.chat.id - 1_000_000_000_000),
         "group": students[message.chat.id].group,
         "notes_number": len(students[message.chat.id].notes),
         "edited_classes_number": len(students[message.chat.id].edited_subjects)

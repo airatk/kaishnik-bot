@@ -8,6 +8,11 @@
 
 /* Begin PBXFileReference section */
 		600CE53C242E3F3300E18D69 /* helpers.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = helpers.py; sourceTree = "<group>"; };
+		600CE53F242F5E9700E18D69 /* __init__.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
+		600CE540242F607D00E18D69 /* permissions.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = permissions.py; sourceTree = "<group>"; };
+		600CE542242F633400E18D69 /* helpers.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = helpers.py; sourceTree = "<group>"; };
+		600CE54424308ABD00E18D69 /* update6.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = update6.txt; sourceTree = "<group>"; };
+		600CE54524308B5100E18D69 /* update7.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = update7.txt; sourceTree = "<group>"; };
 		604B51A323D2116600974049 /* __main__.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = __main__.py; sourceTree = "<group>"; };
 		604B51A723D2116600974049 /* keys */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = keys; sourceTree = "<group>"; };
 		604B51AB23D2116600974049 /* requirements.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = requirements.txt; sourceTree = "<group>"; };
@@ -36,7 +41,7 @@
 		604B51EF23D2116700974049 /* cleanning.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = cleanning.py; sourceTree = "<group>"; };
 		604B51F023D2116700974049 /* statistics.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = statistics.py; sourceTree = "<group>"; };
 		604B51F123D2116700974049 /* others.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = others.py; sourceTree = "<group>"; };
-		604B51F223D2116700974049 /* creator.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = creator.py; sourceTree = "<group>"; };
+		604B51F223D2116700974049 /* menu.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = menu.py; sourceTree = "<group>"; };
 		604B51F423D2116700974049 /* cancel.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = cancel.py; sourceTree = "<group>"; };
 		604B51F523D2116700974049 /* __init__.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
 		604B51FA23D2116700974049 /* weekly.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = weekly.py; sourceTree = "<group>"; };
@@ -120,6 +125,24 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		600CE53E242F5E8700E18D69 /* permissions */ = {
+			isa = PBXGroup;
+			children = (
+				600CE53F242F5E9700E18D69 /* __init__.py */,
+				600CE540242F607D00E18D69 /* permissions.py */,
+				600CE541242F631F00E18D69 /* utilities */,
+			);
+			path = permissions;
+			sourceTree = "<group>";
+		};
+		600CE541242F631F00E18D69 /* utilities */ = {
+			isa = PBXGroup;
+			children = (
+				600CE542242F633400E18D69 /* helpers.py */,
+			);
+			path = utilities;
+			sourceTree = "<group>";
+		};
 		604B4F5923D20A1D00974049 = {
 			isa = PBXGroup;
 			children = (
@@ -203,6 +226,7 @@
 			children = (
 				604B522C23D2116700974049 /* __init__.py */,
 				604B51DC23D2116700974049 /* creator */,
+				600CE53E242F5E8700E18D69 /* permissions */,
 				604B51F323D2116700974049 /* cancel */,
 				604B521F23D2116700974049 /* start */,
 				604B52AB23D2116700974049 /* login */,
@@ -224,7 +248,7 @@
 			isa = PBXGroup;
 			children = (
 				604B51DD23D2116700974049 /* __init__.py */,
-				604B51F223D2116700974049 /* creator.py */,
+				604B51F223D2116700974049 /* menu.py */,
 				604B51F023D2116700974049 /* statistics.py */,
 				604B51EF23D2116700974049 /* cleanning.py */,
 				604B51F123D2116700974049 /* others.py */,
@@ -482,6 +506,8 @@
 				604B52C323D2116700974049 /* update3.txt */,
 				604B52C523D2116700974049 /* update4.txt */,
 				604B52C623D2116700974049 /* update5.txt */,
+				600CE54424308ABD00E18D69 /* update6.txt */,
+				600CE54524308B5100E18D69 /* update7.txt */,
 			);
 			path = "update-logs";
 			sourceTree = "<group>";

@@ -9,7 +9,7 @@ from bot.shared.commands import Commands
 
 
 @dispatcher.message_handler(
-    lambda message: message.chat.id == CREATOR,
+    lambda message: message.from_user.id == CREATOR,
     commands=[ Commands.CREATOR.value ]
 )
 async def creator(message: Message):

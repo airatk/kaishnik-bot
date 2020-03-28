@@ -1,5 +1,6 @@
-from aiogram.types import CallbackQuery
 from aiogram.types import Message
+from aiogram.types import CallbackQuery
+from aiogram.types import ChatType
 
 from bot import dispatcher
 from bot import students
@@ -14,6 +15,7 @@ from bot.commands.edit.utilities.keyboards import subject_type_editor
 
 from bot.shared.keyboards import canceler
 from bot.shared.helpers import top_notification
+from bot.shared.constants import BOT_ADDRESSING
 from bot.shared.api.subject import StudentSubject
 from bot.shared.calendar.week import WeekParity
 from bot.shared.data.helpers import save_data
@@ -123,8 +125,21 @@ async def skip_auditorium(callback: CallbackQuery):
     
     await add_subject_title(callback.message)
 
-@dispatcher.message_handler(lambda message: students[message.chat.id].guard.text == Commands.EDIT_AUDITORIUM.value)
+@dispatcher.message_handler(
+    lambda message:
+        message.chat.type != ChatType.PRIVATE and
+        message.text is not None and message.text.startswith(BOT_ADDRESSING) and
+        students[message.chat.id].guard.text == Commands.EDIT_AUDITORIUM.value
+)
+@dispatcher.message_handler(
+    lambda message:
+        message.chat.type == ChatType.PRIVATE and
+        students[message.chat.id].guard.text == Commands.EDIT_AUDITORIUM.value
+)
 async def add_subject_title(message: Message):
+    # Getting rid of the bot addressing
+    if message.chat.type != ChatType.PRIVATE: message.text = message.text[len(BOT_ADDRESSING):]
+    
     await message.delete()
     
     if students[message.chat.id].edited_subject.auditorium != "":
@@ -140,8 +155,21 @@ async def add_subject_title(message: Message):
     students[message.chat.id].guard.text = Commands.EDIT_SUBJECT_TITLE.value
     students[message.chat.id].guard.message = guard_message
 
-@dispatcher.message_handler(lambda message: students[message.chat.id].guard.text == Commands.EDIT_SUBJECT_TITLE.value)
+@dispatcher.message_handler(
+    lambda message:
+        message.chat.type != ChatType.PRIVATE and
+        message.text is not None and message.text.startswith(BOT_ADDRESSING) and
+        students[message.chat.id].guard.text == Commands.EDIT_SUBJECT_TITLE.value
+)
+@dispatcher.message_handler(
+    lambda message:
+        message.chat.type == ChatType.PRIVATE and
+        students[message.chat.id].guard.text == Commands.EDIT_SUBJECT_TITLE.value
+)
 async def add_subject_type(message: Message):
+    # Getting rid of the bot addressing
+    if message.chat.type != ChatType.PRIVATE: message.text = message.text[len(BOT_ADDRESSING):]
+    
     students[message.chat.id].edited_subject.title = " ".join([ message.text, "•" ])
     
     await message.delete()
@@ -180,8 +208,21 @@ async def skip_lecturer(callback: CallbackQuery):
     
     await add_department(callback.message)
 
-@dispatcher.message_handler(lambda message: students[message.chat.id].guard.text == Commands.EDIT_LECTURER.value)
+@dispatcher.message_handler(
+    lambda message:
+        message.chat.type != ChatType.PRIVATE and
+        message.text is not None and message.text.startswith(BOT_ADDRESSING) and
+        students[message.chat.id].guard.text == Commands.EDIT_LECTURER.value
+)
+@dispatcher.message_handler(
+    lambda message:
+        message.chat.type == ChatType.PRIVATE and
+        students[message.chat.id].guard.text == Commands.EDIT_LECTURER.value
+)
 async def add_department(message: Message):
+    # Getting rid of the bot addressing
+    if message.chat.type != ChatType.PRIVATE: message.text = message.text[len(BOT_ADDRESSING):]
+    
     await message.delete()
     
     if students[message.chat.id].edited_subject.lecturer != "":
@@ -208,8 +249,21 @@ async def skip_department(callback: CallbackQuery):
     
     await end_edit(callback.message)
 
-@dispatcher.message_handler(lambda message: students[message.chat.id].guard.text == Commands.EDIT_DEPARTMENT.value)
+@dispatcher.message_handler(
+    lambda message:
+        message.chat.type != ChatType.PRIVATE and
+        message.text is not None and message.text.startswith(BOT_ADDRESSING) and
+        students[message.chat.id].guard.text == Commands.EDIT_DEPARTMENT.value
+)
+@dispatcher.message_handler(
+    lambda message:
+        message.chat.type == ChatType.PRIVATE and
+        students[message.chat.id].guard.text == Commands.EDIT_DEPARTMENT.value
+)
 async def end_edit(message: Message):
+    # Getting rid of the bot addressing
+    if message.chat.type != ChatType.PRIVATE: message.text = message.text[len(BOT_ADDRESSING):]
+    
     await message.delete()
     
     if students[message.chat.id].edited_subject.department != "":

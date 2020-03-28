@@ -1,5 +1,5 @@
-from aiogram.types import CallbackQuery
 from aiogram.types import Message
+from aiogram.types import CallbackQuery
 
 from bot import dispatcher
 from bot import students
@@ -36,9 +36,8 @@ async def start_on_command(message: Message):
     students[message.chat.id].guard.text = Commands.START.value
     students[message.chat.id].guard.message = guard_message
 
-# ... & any callback
+# ...& on any callback
 @dispatcher.callback_query_handler(lambda callback: callback.message.chat.id not in students)
-@metrics.increment(Commands.START)
 @top_notification
 async def start_on_callback(callback: CallbackQuery):
     await callback.message.delete()

@@ -7,6 +7,7 @@ class Metrics:
     def __init__(self):
         self.day: int = datetime.today().isoweekday()
         
+        self.no_permissions: int = 0
         self.cancel: int = 0
         self.start: int = 0
         self.login: int = 0
@@ -31,6 +32,7 @@ class Metrics:
     @property
     def sum(self) -> int:
         return (
+            self.no_permissions +
             self.cancel +
             self.start +
             self.login +
@@ -61,7 +63,8 @@ class Metrics:
             async def inner(arg):
                 if self.day != datetime.today().isoweekday(): self.drop()
                 
-                if command is Commands.CANCEL: self.cancel += 1
+                if command is Commands.NO_PERMISSIONS: self.no_permissions += 1
+                elif command is Commands.CANCEL: self.cancel += 1
                 elif command is Commands.START: self.start += 1
                 elif command is Commands.LOGIN: self.login += 1
                 elif command is Commands.UNLOGIN: self.unlogin += 1

@@ -1,5 +1,5 @@
-from aiogram.types import Chat
 from aiogram.types import Message
+from aiogram.types import Chat
 
 from bot import students
 
@@ -66,14 +66,20 @@ async def collect_ids(query_message: Message) -> [int]:
     
     if options[Option.IDS.value] == Suboption.ALL.value:
         return list(students)
-    if Suboption.UNLOGIN.value in options["ids"]:
-        return [ chat_id for chat_id in list(students) if not students[chat_id].is_setup ]
-    if Suboption.ME.value in options["ids"]:
+    if Suboption.UNLOGIN.value in options[Option.IDS.value]:
+        return [ chat_id for chat_id in students if not students[chat_id].is_setup ]
+    if Suboption.ME.value in options[Option.IDS.value]:
         return [ query_message.chat.id ]
+    if Suboption.EXTENDED.value in options[Option.IDS.value]:
+        return [ chat_id for chat_id in students if students[chat_id].type is Student.Type.EXTENDED ]
+    if Suboption.COMPACT.value in options[Option.IDS.value]:
+        return [ chat_id for chat_id in students if students[chat_id].type is Student.Type.COMPACT ]
+    if Suboption.GROUP_CHAT.value in options[Option.IDS.value]:
+        return [ chat_id for chat_id in students if students[chat_id].type is Student.Type.GROUP_CHAT ]
     
     users_list: [int] = []
     
-    for possible_chat_id in options["ids"].split("&"):
+    for possible_chat_id in options[Option.IDS.value].split("&"):
         try:
             chat_id: int = int(possible_chat_id)
         except ValueError:
@@ -89,8 +95,9 @@ async def collect_ids(query_message: Message) -> [int]:
 
 def get_user_data(chat: Chat, student: Student, hashtag: str) -> str:
     return USER_DATA.format(
-        firstname=chat.first_name, lastname=chat.last_name, username=chat.username,
+        fullname=chat.full_name, username=chat.username,
         chat_id=chat.id,
+        type="none" if student.type is None else student.type.value,
         institute=student.institute,
         year=student.year,
         group_number=student.group,
@@ -99,7 +106,6 @@ def get_user_data(chat: Chat, student: Student, hashtag: str) -> str:
         notes_number=len(student.notes),
         edited_classes_number=len(student.edited_subjects),
         fellow_students_number=len(student.names),
-        type=student.type.value,
         guard_text=student.guard.text,
         guard_message="None" if student.guard.message is None else student.guard.message.text,
         hashtag=hashtag

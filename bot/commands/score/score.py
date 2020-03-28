@@ -1,5 +1,6 @@
-from aiogram.types import CallbackQuery
 from aiogram.types import Message
+from aiogram.types import CallbackQuery
+from aiogram.types import ChatType
 
 from bot import dispatcher
 from bot import students
@@ -21,14 +22,23 @@ from random import choice
 
 
 @dispatcher.message_handler(
-    lambda message: students[message.chat.id].guard.text is None,
+    lambda message: message.chat.type != ChatType.PRIVATE,
+    commands=[ Commands.SCORE.value ]
+)
+@dispatcher.message_handler(
+    lambda message:
+        message.chat.type == ChatType.PRIVATE and
+        students[message.chat.id].guard.text is None,
     commands=[ Commands.SCORE.value ]
 )
 @metrics.increment(Commands.SCORE)
 async def choose_semester(message: Message):
     if students[message.chat.id].type is not Student.Type.EXTENDED:
         await message.answer(text="Не доступно :(")
-        await message.answer(text="Чтобы видеть баллы, нужно перенастроиться с зачёткой, отправив /login")
+        
+        if message.chat.type == ChatType.PRIVATE:
+            await message.answer(text="Чтобы видеть баллы, нужно перенастроиться с зачёткой, отправив /login")
+        
         return
     
     loading_message: Message = await message.answer(

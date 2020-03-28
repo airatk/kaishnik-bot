@@ -51,6 +51,8 @@ class Student:
     class Type(Enum):
         EXTENDED: str = "extended"
         COMPACT: str = "compact"
+        
+        GROUP_CHAT: str = "group-chat"
     
     
     def __init__(self):

@@ -1,5 +1,7 @@
 from bot.commands import creator
 
+from bot.commands import permissions
+
 from bot.commands import cancel
 
 from bot.commands import start

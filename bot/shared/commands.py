@@ -15,7 +15,10 @@ class Commands(Enum):
     REVERSE: str = "reverse"
     DAYOFF: str = "dayoff"
     
+    NO_PERMISSIONS: str = "no-permissions"
+    
     CANCEL: str = "cancel"
+    
     START: str = "start"
     
     LOGIN: str = "login"

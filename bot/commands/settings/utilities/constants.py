@@ -1,5 +1,5 @@
 FULL_USER_INFO: str = (
-    "{firstname}{lastname}{username}\n"
+    "{fullname}{username}\n"
     "chat id {chat_id}\n"
     "\n"
     "{institute}, {year} курс\n"
@@ -13,7 +13,7 @@ FULL_USER_INFO: str = (
 )
 
 COMPACT_USER_INFO: str = (
-    "{firstname}{lastname}{username}\n"
+    "{fullname}{username}\n"
     "chat id {chat_id}\n"
     "\n"
     "Группа {group}\n"

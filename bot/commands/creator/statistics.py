@@ -1,5 +1,5 @@
-from aiogram.types import Chat
 from aiogram.types import Message
+from aiogram.types import Chat
 from aiogram.utils.exceptions import ChatNotFound
 from aiogram.utils.exceptions import Unauthorized
 
@@ -24,7 +24,7 @@ from datetime import datetime
 
 
 @dispatcher.message_handler(
-    lambda message: message.chat.id == CREATOR,
+    lambda message: message.from_user.id == CREATOR,
     commands=[ Commands.USERS.value ]
 )
 async def users(message: Message):
@@ -48,8 +48,12 @@ async def users(message: Message):
             year_4=years_names[3], year_4_number=years_stats.count(years_names[3]),
             year_5=years_names[4], year_5_number=years_stats.count(years_names[4]),
             year_6=years_names[5], year_6_number=years_stats.count(years_names[5]),
-            extended_number=sum(1 for student in students.values() if student.type is Student.Type.EXTENDED),
-            compact_number=sum(1 for student in students.values() if student.type is Student.Type.COMPACT),
+            type_1=Student.Type.EXTENDED.value,
+            type_1_number=sum(1 for student in students.values() if student.type is Student.Type.EXTENDED),
+            type_2=Student.Type.COMPACT.value,
+            type_2_number=sum(1 for student in students.values() if student.type is Student.Type.COMPACT),
+            type_3=Student.Type.GROUP_CHAT.value,
+            type_3_number=sum(1 for student in students.values() if student.type is Student.Type.GROUP_CHAT),
             unsetup_number=sum(1 for student in students.values() if not student.is_setup),
             total=len(students)
         ),
@@ -57,7 +61,7 @@ async def users(message: Message):
     )
 
 @dispatcher.message_handler(
-    lambda message: message.chat.id == CREATOR,
+    lambda message: message.from_user.id == CREATOR,
     commands=[ Commands.METRICS.value ]
 )
 async def metrics_command(message: Message):
@@ -84,13 +88,14 @@ async def metrics_command(message: Message):
             login_request_number=metrics.login,
             unlogin_request_number=metrics.unlogin,
             unknown_nontext_message_request_number=metrics.unknown_nontext_message, unknown_text_message_request_number=metrics.unknown_text_message, unknown_callback_request_number=metrics.unknown_callback,
+            no_permissions_number=metrics.no_permissions,
             total_request_number=metrics.sum
         ),
         parse_mode="markdown"
     )
 
 @dispatcher.message_handler(
-    lambda message: message.chat.id == CREATOR,
+    lambda message: message.from_user.id == CREATOR,
     commands=[ Commands.DATA.value ]
 )
 async def data(message: Message):

@@ -1,4 +1,5 @@
 from aiogram.types import Message
+from aiogram.types import ChatType
 
 from bot import dispatcher
 from bot import students
@@ -13,7 +14,13 @@ from random import choice
 
 
 @dispatcher.message_handler(
-    lambda message: students[message.chat.id].guard.text is None,
+    lambda message: message.chat.type != ChatType.PRIVATE,
+    commands=[ Commands.CLASSES.value ]
+)
+@dispatcher.message_handler(
+    lambda message:
+        message.chat.type == ChatType.PRIVATE and
+        students[message.chat.id].guard.text is None,
     commands=[ Commands.CLASSES.value ]
 )
 @metrics.increment(Commands.CLASSES)

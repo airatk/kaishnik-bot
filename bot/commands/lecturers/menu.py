@@ -1,5 +1,6 @@
-from aiogram.types import CallbackQuery
 from aiogram.types import Message
+from aiogram.types import CallbackQuery
+from aiogram.types import ChatType
 
 from bot import dispatcher
 from bot import students
@@ -11,6 +12,7 @@ from bot.commands.lecturers.utilities.constants import MAX_LECTURERS_NUMBER
 
 from bot.shared.keyboards import canceler
 from bot.shared.helpers import top_notification
+from bot.shared.constants import BOT_ADDRESSING
 from bot.shared.api.constants import LOADING_REPLIES
 from bot.shared.api.types import ResponseError
 from bot.shared.api.lecturers import get_lecturers_names
@@ -20,7 +22,13 @@ from random import choice
 
 
 @dispatcher.message_handler(
-    lambda message: students[message.chat.id].guard.text is None,
+    lambda message: message.chat.type != ChatType.PRIVATE,
+    commands=[ Commands.LECTURERS.value ]
+)
+@dispatcher.message_handler(
+    lambda message:
+        message.chat.type == ChatType.PRIVATE and
+        students[message.chat.id].guard.text is None,
     commands=[ Commands.LECTURERS.value ]
 )
 @metrics.increment(Commands.LECTURERS)
@@ -33,8 +41,21 @@ async def lecturers(message: Message):
     students[message.chat.id].guard.text = Commands.LECTURERS_NAME.value
     students[message.chat.id].guard.message = guard_message
 
-@dispatcher.message_handler(lambda message: students[message.chat.id].guard.text == Commands.LECTURERS_NAME.value)
+@dispatcher.message_handler(
+    lambda message:
+        message.chat.type != ChatType.PRIVATE and
+        message.text is not None and message.text.startswith(BOT_ADDRESSING) and
+        students[message.chat.id].guard.text == Commands.LECTURERS_NAME.value
+)
+@dispatcher.message_handler(
+    lambda message:
+        message.chat.type == ChatType.PRIVATE and
+        students[message.chat.id].guard.text == Commands.LECTURERS_NAME.value
+)
 async def find_lecturer(message: Message):
+    # Getting rid of the bot addressing
+    if message.chat.type != ChatType.PRIVATE: message.text = message.text[len(BOT_ADDRESSING):]
+    
     await message.delete()
     await students[message.chat.id].guard.message.edit_text(text=choice(LOADING_REPLIES))
     

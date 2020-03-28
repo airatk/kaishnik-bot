@@ -28,6 +28,10 @@ class Suboption(Enum):
     UNLOGIN: str = "unlogin"
     ME: str = "me"
     
+    EXTENDED: str = "extended"
+    COMPACT: str = "compact"
+    GROUP_CHAT: str = "group-chat"
+    
     LIST: str = "list"
     
     WEEK: str = "week"

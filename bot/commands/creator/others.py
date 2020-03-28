@@ -20,7 +20,7 @@ from bot.shared.commands import Commands
 
 
 @dispatcher.message_handler(
-    lambda message: message.chat.id == CREATOR,
+    lambda message: message.from_user.id == CREATOR,
     commands=[ Commands.BROADCAST.value ]
 )
 async def broadcast(message: Message):
@@ -58,7 +58,7 @@ async def broadcast(message: Message):
     )
 
 @dispatcher.message_handler(
-    lambda message: message.chat.id == CREATOR,
+    lambda message: message.from_user.id == CREATOR,
     commands=[ Commands.REVERSE.value ]
 )
 async def reverse(message: Message):
@@ -74,7 +74,7 @@ async def reverse(message: Message):
     await message.answer(text="Week was #reversed!")
 
 @dispatcher.message_handler(
-    lambda message: message.chat.id == CREATOR,
+    lambda message: message.from_user.id == CREATOR,
     commands=[ Commands.DAYOFF.value ]
 )
 async def dayoff(message: Message):

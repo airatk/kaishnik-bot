@@ -1,5 +1,6 @@
-from aiogram.types import CallbackQuery
 from aiogram.types import Message
+from aiogram.types import CallbackQuery
+from aiogram.types import ChatType
 
 from bot import dispatcher
 from bot import students
@@ -12,6 +13,7 @@ from bot.commands.login.utilities.keyboards import name_setter
 
 from bot.shared.keyboards import canceler
 from bot.shared.helpers import top_notification
+from bot.shared.constants import BOT_ADDRESSING
 from bot.shared.api.constants import LOADING_REPLIES
 from bot.shared.api.constants import INSTITUTES
 from bot.shared.api.types import ScoreDataType
@@ -29,8 +31,7 @@ from random import choice
 )
 @top_notification
 async def login_extended(callback: CallbackQuery):
-    # Resetting the user
-    students[callback.message.chat.id] = Student()
+    students[callback.message.chat.id] = Student()  # Resetting the user
     
     students[callback.message.chat.id].is_setup = False
     students[callback.message.chat.id].type = Student.Type.EXTENDED
@@ -198,8 +199,21 @@ async def set_name(callback: CallbackQuery):
     students[callback.message.chat.id].guard.text = Commands.LOGIN_SET_CARD.value
     students[callback.message.chat.id].guard.message = guard_message
 
-@dispatcher.message_handler(lambda message: students[message.chat.id].guard.text == Commands.LOGIN_SET_CARD.value)
+@dispatcher.message_handler(
+    lambda message:
+        message.chat.type != ChatType.PRIVATE and
+        message.text is not None and message.text.startswith(BOT_ADDRESSING) and
+        students[message.chat.id].guard.text == Commands.LOGIN_SET_CARD.value
+)
+@dispatcher.message_handler(
+    lambda message:
+        message.chat.type == ChatType.PRIVATE and
+        students[message.chat.id].guard.text == Commands.LOGIN_SET_CARD.value
+)
 async def set_card(message: Message):
+    # Getting rid of the bot addressing
+    if message.chat.type != ChatType.PRIVATE: message.text = message.text[len(BOT_ADDRESSING):]
+    
     await message.delete()
     await students[message.chat.id].guard.message.edit_text(
         text=choice(LOADING_REPLIES),

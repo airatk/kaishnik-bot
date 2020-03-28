@@ -1,8 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
-from bot.commands.locations.utilities.constants import BUILDINGS
-
 from bot.shared.keyboards import cancel_button
 from bot.shared.api.subject import StudentSubject
 from bot.shared.api.subject import Subject
@@ -95,6 +93,8 @@ def time_editor(hour: int) -> InlineKeyboardMarkup:
     return time_editor_keyboard
 
 def buildings_editor() -> InlineKeyboardMarkup:
+    from bot.commands.locations.utilities.constants import BUILDINGS
+    
     buildings_editor_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=4)
     
     buildings_editor_keyboard.row(cancel_button())
