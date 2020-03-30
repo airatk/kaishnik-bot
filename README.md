@@ -1,6 +1,6 @@
 # Каист
 
-[<img src="https://github.com/airatk/kaishnik-bot/blob/master/design/logo.png" alt="kaishnik-bot logo" align="right" width="175" />][2]
+[<img src="https://github.com/airatk/kaishnik-bot/blob/master/design/logo/logo.png" alt="kaishnik-bot logo" align="right" width="175" />][2]
 
 _telegram bot for students of KNRTU-KAI to make their daily routine more pleasant_
 
@@ -43,14 +43,15 @@ Use `python3 ./` to launch.
 Each command has its own directory:
 
     *command_name*/
-        *command_file*.py
-        *command_file*.py
-        guard.py
-        utilities/
-            keyboards.py
-            helpers.py
-            constants.py
-            types.py
+    ├── __init__.py
+    ├── *commands_file*.py
+    ├── *commands_file*.py
+    ├── guard.py
+    └── utilities/
+        ├── keyboards.py
+        ├── helpers.py
+        ├── constants.py
+        └── types.py
 
 The structure is essential meanwhile all the noted files are optional. One-file commands are exceptions & are located at `bot/commands/others/` directory.
 
@@ -68,5 +69,5 @@ All the stuff was drawn using [Pixelmator Pro][6].
 [2]: https://telegram.me/kaishnik_bot "Open the bot in Telegram"
 [3]: https://telegram.me/BotFather "Open BotFather in Telegram"
 [4]: https://core.telegram.org/bots/api "Telegram Bot API official reference"
-[5]: https://github.com/airatk/kaishnik-bot/blob/master/design/poster.png "kaishnik-bot poster"
+[5]: https://github.com/airatk/kaishnik-bot/blob/master/design/poster/poster.png "kaishnik-bot poster"
 [6]: https://www.pixelmator.com/pro "Pixelmator Pro"

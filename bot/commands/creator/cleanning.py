@@ -61,6 +61,12 @@ async def clear(message: Message):
 async def erase(message: Message):
     erase_list: [int] = await collect_ids(query_message=message)
     
+    if len(erase_list) == len(students):
+        students.clear()
+        
+        await message.answer(text="All users were #erased!")
+        return
+    
     progress_bar: str = ""
     loading_message: Message = await message.answer(text="Started erasing…")
     
@@ -87,7 +93,7 @@ async def erase(message: Message):
     if len(erase_list) == 0:
         await loading_message.edit_text(text="No users to erase!")
     else:
-        await message.answer(text="Users were #erased!")
+        await message.answer(text="{users_number} users were #erased!".format(users_number=len(erase_list)))
         
         save_data(file=USERS_FILE, object=students)
 
