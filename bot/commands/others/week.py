@@ -7,6 +7,7 @@ from bot import metrics
 
 from bot.shared.calendar.week import is_even
 from bot.shared.calendar.week import weekday_date
+from bot.shared.calendar.week import get_week_number
 from bot.shared.commands import Commands
 
 
@@ -27,9 +28,11 @@ async def week(message: Message):
     await message.answer(
         text=(
             "{weekday}, {date}.\n"
-            "Текущая неделя *{type}*.".format(
+            "Текущая неделя *{type}*,\n"
+            "*#{number}* с начала семестра.".format(
                 weekday=weekday, date=date,
-                type="чётная" if is_even() else "нечётная"
+                type="чётная" if is_even() else "нечётная",
+                number=get_week_number()
             )
         ),
         parse_mode="markdown"

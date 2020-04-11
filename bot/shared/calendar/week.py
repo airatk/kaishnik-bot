@@ -4,6 +4,7 @@ from bot.shared.data.helpers import load_data
 from bot.shared.data.constants import IS_WEEK_REVERSED_FILE
 
 from datetime import datetime
+from datetime import date
 from enum import Enum
 
 
@@ -12,6 +13,15 @@ def is_even() -> bool:
 
 def is_week_reversed() -> bool:
     return load_data(file=IS_WEEK_REVERSED_FILE)
+
+
+def get_week_number() -> int:
+    (current_year, current_week, _) = datetime.today().isocalendar()
+    
+    semester_1st_day = date(current_year, 2 if datetime.today().month < 9 else 9, 1)
+    first_week = semester_1st_day.isocalendar()[1]
+    
+    return current_week - first_week + (0 if semester_1st_day.isoweekday() == 7 else 1)
 
 
 def weekday_date() -> (str, str):
