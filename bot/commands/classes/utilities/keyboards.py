@@ -14,7 +14,7 @@ from datetime import timedelta
 def schedule_type() -> InlineKeyboardMarkup:
     schedule_type_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
     
-    # Decrementing to turn both variables into schedule array indeces
+    # Decrementing to turn both variables into schedule array indices
     today_weekday: int = datetime.today().isoweekday() - 1
     tomorrow_weekday: int = today_weekday + 1
     should_show_next_week: bool = tomorrow_weekday > 6

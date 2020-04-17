@@ -28,7 +28,7 @@ CONTROL_PANEL: str = (
         "\t\t\t\[ year: {} ]\n"
     "}\n"
     "\n"
-    "*cleanning*\n"
+    "*cleaning*\n"
     "/clear\n"
     "/erase { ids: {\n"
         "\t\t\t\[ id&… ]\n"

@@ -11,7 +11,7 @@ from datetime import datetime
 from datetime import timedelta
 
 
-# Removes extraspaces & standardizing values to string type
+# Removes extra spaces & standardising values to string type
 def refine_raw_schedule(raw_schedule) -> [{str: str}]:
     return [ {
             key: " ".join(str(value).split()) for (key, value) in subject.items()
@@ -142,7 +142,7 @@ def beautify_lecturers_classes(raw_schedule: [{int: {str: str}}], is_next: bool,
             if subject["dayDate"] == "неч" if is_asked_week_even else subject["dayDate"] == "чет":
                 raw_schedule[str(weekday)].remove(subject)
         
-        # Finnaly, setting subjects themselves
+        # Finally, setting subjects themselves
         for subject in raw_schedule[str(weekday)]:
             if previous_time == subject["dayTime"]: continue
             

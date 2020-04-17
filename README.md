@@ -9,14 +9,14 @@ _telegram bot for students of KNRTU-KAI to make their daily routine more pleasan
 * [aiogram][1]
 
 ## Reason
-The bot might be considered as `kai.ru` & `old.kai.ru` wrapper. Official mobile-unfriendly ugly inconvenient website had to be replaced by something usable. Here the [@kaishnik_bot][2] comes up.
+The bot might be considered as `kai.ru` & `old.kai.ru` wrapper. Official mobile-unfriendly ugly inconvenient website had to be replaced by something usable. Here the [@kaishnik_bot][2] comes in.
 
 ## Setup
 
 Since the university is located in Kazan which is the Moscow time zone, the time zone should be set to `Europe/Moscow`.
 
 ### Data
-There should be `data/` folder in the root directory of the bot. It should contant the following non-extension files with data in binary form:
+There should be `data/` folder in the root directory of the bot. It should contain the following non-extension files with data in binary form:
 * `users` file with dictionary which contains `chat_id: Student` pairs.
 * `is_week_reversed` file with a boolean value which is used to define the correct type of a week. 
 * `dayoffs` file with list of `(int, int)` tuples to store dayoffs. 
@@ -57,7 +57,7 @@ The structure is essential meanwhile all the noted files are optional. One-file 
 
 ## Other stuff
 * `update-logs/` folder contains notes which were sent to users as update announcements.
-* `cas-external-login/` folder contains some information about loginning into CAS & simple login implementation.
+* `cas-external-login/` folder contains some information about logging in CAS & simple login implementation.
 
 ## Design
 All the stuff was drawn using [Pixelmator Pro][6]. 

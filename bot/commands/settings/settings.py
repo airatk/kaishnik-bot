@@ -40,7 +40,7 @@ async def settings(message: Message):
     await message.answer(
         text=FULL_USER_INFO.format(
             **info,
-            institute=students[message.chat.id].institute[2:-2],  # Removing emojies
+            institute=students[message.chat.id].institute[2:-2],  # Removing emojis
             year=students[message.chat.id].year,
             name=students[message.chat.id].name,
             card=students[message.chat.id].card

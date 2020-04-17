@@ -1,5 +1,5 @@
 
-# Loginning from `cas.kai.ru`
+# Logging in from `cas.kai.ru`
 
 ### `cURL`
     curl 'https://cas.kai.ru:8443/cas/login' \

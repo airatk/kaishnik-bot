@@ -27,7 +27,8 @@ async def week(message: Message):
     
     await message.answer(
         text=(
-            "{weekday}, {date}.\n"
+            "*{weekday}, {date}*\n"
+            "\n"
             "Текущая неделя *{type}*,\n"
             "*#{number}* с начала семестра.".format(
                 weekday=weekday, date=date,

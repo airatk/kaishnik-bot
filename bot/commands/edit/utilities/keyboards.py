@@ -73,7 +73,7 @@ def hour_editor() -> InlineKeyboardMarkup:
         InlineKeyboardButton(
             text="{:0=2d}:xx".format(hour),
             callback_data=" ".join([ Commands.EDIT_HOUR.value, "{:0=2d}:xx".format(hour) ])
-        ) for hour in range(6, 24)  # The working hours of the univeristy
+        ) for hour in range(6, 24)  # The working hours of the university
     ])
     
     return hour_editor_keyboard

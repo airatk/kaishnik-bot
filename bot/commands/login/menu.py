@@ -24,7 +24,7 @@ from bot.shared.data.constants import USERS_FILE
 )
 @top_notification
 async def login_on_callback(callback: CallbackQuery):
-    # Cleanning the chat
+    # Cleaning the chat
     await callback.message.delete()
     if students[callback.message.chat.id].guard.text == Commands.START.value: await students[callback.message.chat.id].guard.message.delete()
     

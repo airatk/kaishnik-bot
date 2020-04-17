@@ -38,7 +38,7 @@
 		604B51E523D2116700974049 /* constants.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = constants.py; sourceTree = "<group>"; };
 		604B51E623D2116700974049 /* types.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = types.py; sourceTree = "<group>"; };
 		604B51EE23D2116700974049 /* helpers.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = helpers.py; sourceTree = "<group>"; };
-		604B51EF23D2116700974049 /* cleanning.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = cleanning.py; sourceTree = "<group>"; };
+		604B51EF23D2116700974049 /* cleaning.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = cleaning.py; sourceTree = "<group>"; };
 		604B51F023D2116700974049 /* statistics.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = statistics.py; sourceTree = "<group>"; };
 		604B51F123D2116700974049 /* others.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = others.py; sourceTree = "<group>"; };
 		604B51F223D2116700974049 /* menu.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = menu.py; sourceTree = "<group>"; };
@@ -122,6 +122,7 @@
 		60A745EE240E603F00F83EC1 /* keyboards.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = keyboards.py; sourceTree = "<group>"; };
 		60A745EF240E671900F83EC1 /* constants.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = constants.py; sourceTree = "<group>"; };
 		60A745F0240E935400F83EC1 /* appearance.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = appearance.py; sourceTree = "<group>"; };
+		60ECF6F02449F74D001B1A0C /* update8.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = update8.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -250,7 +251,7 @@
 				604B51DD23D2116700974049 /* __init__.py */,
 				604B51F223D2116700974049 /* menu.py */,
 				604B51F023D2116700974049 /* statistics.py */,
-				604B51EF23D2116700974049 /* cleanning.py */,
+				604B51EF23D2116700974049 /* cleaning.py */,
 				604B51F123D2116700974049 /* others.py */,
 				604B51E423D2116700974049 /* utilities */,
 			);
@@ -508,6 +509,7 @@
 				604B52C623D2116700974049 /* update5.txt */,
 				600CE54424308ABD00E18D69 /* update6.txt */,
 				600CE54524308B5100E18D69 /* update7.txt */,
+				60ECF6F02449F74D001B1A0C /* update8.txt */,
 			);
 			path = "update-logs";
 			sourceTree = "<group>";

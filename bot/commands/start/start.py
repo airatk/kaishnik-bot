@@ -14,7 +14,7 @@ from bot.shared.data.constants import USERS_FILE
 from bot.shared.commands import Commands
 
 
-# Accepting old users on `/start` command whole new users on any messsage...
+# Accepting old users on `/start` command whole new users on any message...
 @dispatcher.message_handler(
     lambda message:
         message.text == "/" + Commands.START.value or
