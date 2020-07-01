@@ -33,7 +33,20 @@ from random import choice
 )
 @metrics.increment(Commands.LECTURERS)
 async def lecturers(message: Message):
-    guard_message: Message = await message.answer(
+    guard_message: Message = await message.answer(text=choice(LOADING_REPLIES))
+    
+    students[message.chat.id].lecturers_names = get_lecturers_names()
+    
+    if students[message.chat.id].lecturers_names is None:
+        await guard_message.edit_text(
+            text=ResponseError.NO_RESPONSE.value,
+            disable_web_page_preview=True
+        )
+        
+        students[message.chat.id].guard.drop()
+        return
+    
+    await guard_message.edit_text(
         text="Отправь фамилию или ФИО преподавателя.",
         reply_markup=canceler()
     )
@@ -57,18 +70,9 @@ async def find_lecturer(message: Message):
     if message.chat.type != ChatType.PRIVATE: message.text = message.text[len(BOT_ADDRESSING):]
     
     await message.delete()
-    await students[message.chat.id].guard.message.edit_text(text=choice(LOADING_REPLIES))
     
-    names: [{str: str}] = get_lecturers_names(name_part=message.text)
-    
-    if names is None:
-        await students[message.chat.id].guard.message.edit_text(
-            text=ResponseError.NO_RESPONSE.value,
-            disable_web_page_preview=True
-        )
-        
-        students[message.chat.id].guard.drop()
-        return
+    name_part: str = message.text
+    names: [{str: str}] = [ name for name in students[message.chat.id].lecturers_names if name_part in name["lecturer"] ]
     
     if len(names) == 0:
         await students[message.chat.id].guard.message.edit_text(text="Ничего не найдено :(")

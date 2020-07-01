@@ -82,9 +82,11 @@ class Student:
         # State savers
         self._another_group_schedule_id: str = None
         
-        self.names: {str, str} = {}
+        self.group_names: {str, str} = {}
         self.scoretable: [(str, str)] = None
-        self.edited_subjectSubject: StudentSubject = None
+        self.edited_subject: StudentSubject = None
+        
+        self.lecturers_names: [{str: str}] = None
         
         self.guard: Guard = Guard()
     

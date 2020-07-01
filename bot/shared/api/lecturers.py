@@ -9,13 +9,13 @@ from requests.exceptions import ConnectionError
 from json.decoder import JSONDecodeError
 
 
-def get_lecturers_names(name_part: str) -> [{str, str}]:
+def get_lecturers_names() -> [{str, str}]:
     try:
         return get(LECTURERS_SCHEDULE_URL, params={
             "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
             "p_p_lifecycle": "2",
             "p_p_resource_id": "getLecturersURL",
-            "query": name_part
+            "query": "_"  # Underscore symbol to get all the names
         }).json()
     except (ConnectionError, JSONDecodeError):
         return None

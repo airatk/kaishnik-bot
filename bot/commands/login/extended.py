@@ -145,9 +145,9 @@ async def set_group(callback: CallbackQuery):
         return
     
     # Asking for name
-    names: {str: str} = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.NAMES)
+    group_names: {str: str} = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.NAMES)
     
-    if len(names) == 0:
+    if len(group_names) == 0:
         await callback.message.edit_text(
             text=ResponseError.NO_RESPONSE.value,
             disable_web_page_preview=True
@@ -156,11 +156,11 @@ async def set_group(callback: CallbackQuery):
         students[callback.message.chat.id] = Student()  # Drop all the entered data
         return
     
-    students[callback.message.chat.id].names = { name_id: name for (name, name_id) in names.items() }
+    students[callback.message.chat.id].group_names = { name_id: name for (name, name_id) in group_names.items() }
     
     await callback.message.edit_text(
         text="Выбери себя:",
-        reply_markup=name_setter(names)
+        reply_markup=name_setter(names=group_names)
     )
 
 @dispatcher.callback_query_handler(
@@ -178,7 +178,7 @@ async def set_name(callback: CallbackQuery):
     # Setting name
     name_id: str = callback.data.split()[1]
     
-    students[callback.message.chat.id].name = students[callback.message.chat.id].names[name_id]
+    students[callback.message.chat.id].name = students[callback.message.chat.id].group_names[name_id]
     students[callback.message.chat.id].name_id = name_id
     
     if students[callback.message.chat.id].name_id is None:

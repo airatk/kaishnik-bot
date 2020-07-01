@@ -31,7 +31,7 @@ async def login_compact(callback: CallbackQuery):
     students[callback.message.chat.id].is_setup = False
     students[callback.message.chat.id].type = Student.Type.COMPACT if callback.message.chat.type == ChatType.PRIVATE else Student.Type.GROUP_CHAT
     
-    guard_message = await callback.message.edit_text(
+    guard_message: Message = await callback.message.edit_text(
         text="Отправь номер своей группы.",
         reply_markup=canceler()
     )
