@@ -2,6 +2,7 @@ from aiogram.types import Message
 from aiogram.types import Chat
 from aiogram.utils.exceptions import ChatNotFound
 from aiogram.utils.exceptions import Unauthorized
+from aiogram.utils.exceptions import TelegramAPIError
 
 from bot import dispatcher
 from bot import students
@@ -36,16 +37,14 @@ async def clear(message: Message):
         )
         
         try:
-            chat: Chat = await message.bot.get_chat(chat_id=chat_id)
-            
             await message.bot.send_chat_action(chat_id=chat_id, action="typing")
-        except Unauthorized:
-            await message.answer(text="Troubles getting the {chat_id} chat, but it was #erased.".format(chat_id=chat_id))
-            
-            del students[chat_id]
-            is_cleared = True
-        except ChatNotFound:
-            await message.answer(text=get_user_data(chat=chat, student=students[chat_id], hashtag="erased"))
+        except (ChatNotFound, Unauthorized):
+            try:
+                chat: Chat = await message.bot.get_chat(chat_id=chat_id)
+            except TelegramAPIError:
+                await message.answer(text="Troubles getting the {chat_id} chat, but it was #erased.".format(chat_id=chat_id))
+            else:
+                await message.answer(text=get_user_data(chat=chat, student=students[chat_id], hashtag="erased"))
             
             del students[chat_id]
             is_cleared = True

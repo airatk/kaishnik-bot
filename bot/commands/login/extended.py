@@ -8,7 +8,7 @@ from bot import students
 from bot.commands.login.menu import finish_login
 from bot.commands.login.utilities.keyboards import institute_setter
 from bot.commands.login.utilities.keyboards import year_setter
-from bot.commands.login.utilities.keyboards import group_number_setter
+from bot.commands.login.utilities.keyboards import group_setter
 from bot.commands.login.utilities.keyboards import name_setter
 
 from bot.shared.keyboards import canceler
@@ -108,7 +108,7 @@ async def set_year(callback: CallbackQuery):
     
     await callback.message.edit_text(
         text="Выбери номер группы:",
-        reply_markup=group_number_setter(groups)
+        reply_markup=group_setter(groups)
     )
 
 @dispatcher.callback_query_handler(
@@ -192,7 +192,7 @@ async def set_name(callback: CallbackQuery):
     
     # Asking for student card number
     guard_message = await callback.message.edit_text(
-        text="Отправь номер зачётки.",
+        text="Отправь номер студенческого или зачётки.",
         reply_markup=canceler()
     )
     

@@ -32,7 +32,7 @@ def appearance_chooser(settings: Settings) -> InlineKeyboardMarkup:
     ))
     
     appearance_chooser_keyboard.row(InlineKeyboardButton(
-        text="• все пары по датам" if settings.are_classes_on_dates else "все пары всегда •",
+        text="• пары по датам" if settings.are_classes_on_dates else "все пары •",
         callback_data=" ".join([ Commands.SETTINGS_APPEARANCE.value, Settings.Option.ARE_CLASSES_ON_DATES.value ])
     ))
     

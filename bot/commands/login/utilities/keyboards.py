@@ -47,18 +47,18 @@ def year_setter(years: {str: str}) -> InlineKeyboardMarkup:
     
     return year_setter_keyboard
 
-def group_number_setter(groups: {str: str}) -> InlineKeyboardMarkup:
-    group_number_setter_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=3)
+def group_setter(groups: {str: str}) -> InlineKeyboardMarkup:
+    group_setter_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=3)
     
-    group_number_setter_keyboard.row(cancel_button())
+    group_setter_keyboard.row(cancel_button())
     
-    group_number_setter_keyboard.add(*[
+    group_setter_keyboard.add(*[
         InlineKeyboardButton(
             text=group, callback_data=" ".join([ Commands.LOGIN_SET_GROUP.value, group, group_id ])
         ) for (group, group_id) in groups.items()
     ])
     
-    return group_number_setter_keyboard
+    return group_setter_keyboard
 
 def name_setter(names: {str: str}) -> InlineKeyboardMarkup:
     name_setter_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)

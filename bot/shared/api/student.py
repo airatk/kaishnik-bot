@@ -110,14 +110,18 @@ class Student:
     
     def _get_group_schedule_id(self, another_group: str = None) -> str:
         try:
-            return get(url=SCHEDULE_URL, params={
+            groups = get(url=SCHEDULE_URL, params={
                 "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
                 "p_p_lifecycle": "2",
                 "p_p_resource_id": "getGroupsURL",
                 "query": self._group if another_group is None else another_group
-            }).json()[0]["id"]
+            }).json()
         except (ConnectionError, JSONDecodeError, IndexError, KeyError):
             return None
+        
+        if len(groups) != 1: return None  # User has to send exactly his group
+        
+        return groups[0]["id"]
     
     
     def get_schedule(self, TYPE: ScheduleType, is_next: bool = False) -> [str]:

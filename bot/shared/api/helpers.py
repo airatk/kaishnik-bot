@@ -93,7 +93,7 @@ def beautify_classes(raw_schedule: [{int: {str: str}}], is_next: bool, edited_su
     # Adding Sunday as well
     date: datetime = today + timedelta(days=7 - today.isoweekday())
     
-    weekly_schedule.append("*Воскресенье, {day} {month}*\n\nОднозначно выходной".format(day=int(date.strftime("%d")), month=MONTHS[date.strftime("%m")]))
+    weekly_schedule.append("*Воскресенье, {day} {month}*\n\nВыходной".format(day=int(date.strftime("%d")), month=MONTHS[date.strftime("%m")]))
     
     return weekly_schedule
 

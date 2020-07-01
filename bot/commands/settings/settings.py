@@ -31,7 +31,7 @@ async def settings(message: Message):
     info: {str: str} = {
         "fullname": chat.full_name,
         "username": " @{username}".format(username=chat.username) if chat.username is not None else "",
-        "chat_id": message.chat.id if message.chat.type == ChatType.PRIVATE else (-message.chat.id - 1_000_000_000_000),
+        "chat_id": message.chat.id if message.chat.type == ChatType.PRIVATE else -(message.chat.id + 1_000_000_000_000),
         "group": students[message.chat.id].group,
         "notes_number": len(students[message.chat.id].notes),
         "edited_classes_number": len(students[message.chat.id].edited_subjects)
