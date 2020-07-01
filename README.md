@@ -18,7 +18,6 @@ Since the university is located in Kazan which is the Moscow time zone, the time
 ### Data
 There should be `data/` folder in the root directory of the bot. It should contain the following non-extension files with data in binary form:
 * `users` file with dictionary which contains `chat_id: Student` pairs.
-* `is_week_reversed` file with a boolean value which is used to define the correct type of a week. 
 * `dayoffs` file with list of `(int, int)` tuples to store dayoffs. 
 * `keys` file is used to store tokens & keys accessed using `config` module.
 

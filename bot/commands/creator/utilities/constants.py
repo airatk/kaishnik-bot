@@ -61,7 +61,6 @@ CONTROL_PANEL: str = (
         "\t\t\t\[ signed: false ]\n"
         "\t\t\t\[ notify: false ]\n"
     "}\n"
-    "/reverse { week }\n"
     "/dayoff {\n"
         "\t\t\t\[ add: { day-month } ]\n"
         "\t\t\t\[ drop: {\n"
@@ -78,8 +77,7 @@ CONTROL_PANEL: str = (
     "# erased\n"
     "# broadcast\n"
     "# dropped\n"
-    "# guarddropped\n"
-    "# reversed"
+    "# guarddropped"
 )
 
 USERS_STATS: str = (

@@ -1,7 +1,5 @@
 from bot.shared.calendar.constants import WEEKDAYS
 from bot.shared.calendar.constants import MONTHS
-from bot.shared.data.helpers import load_data
-from bot.shared.data.constants import IS_WEEK_REVERSED_FILE
 
 from datetime import datetime
 from datetime import date
@@ -9,11 +7,7 @@ from enum import Enum
 
 
 def is_even() -> bool:
-    return datetime.today().isocalendar()[1] % 2 == (1 if is_week_reversed() else 0)
-
-def is_week_reversed() -> bool:
-    return load_data(file=IS_WEEK_REVERSED_FILE)
-
+    return get_week_number() % 2 == 0
 
 def get_week_number() -> int:
     (current_year, current_week, _) = datetime.today().isocalendar()

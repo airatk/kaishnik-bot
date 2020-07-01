@@ -14,7 +14,6 @@ from bot.commands.creator.utilities.types import Suboption
 from bot.shared.calendar.constants import MONTHS
 from bot.shared.data.helpers import save_data
 from bot.shared.data.helpers import load_data
-from bot.shared.data.constants import IS_WEEK_REVERSED_FILE
 from bot.shared.data.constants import DAYOFFS
 from bot.shared.commands import Commands
 
@@ -56,22 +55,6 @@ async def broadcast(message: Message):
         text="Broadcasted to *{}* users!".format(len(broadcast_list)),
         parse_mode="markdown"
     )
-
-@dispatcher.message_handler(
-    lambda message: message.from_user.id == CREATOR,
-    commands=[ Commands.REVERSE.value ]
-)
-async def reverse(message: Message):
-    if Suboption.WEEK.value not in message.text:
-        await message.answer(
-            text="If you are sure to reverse type of a week, type */reverse week*",
-            parse_mode="markdown"
-        )
-        return
-    
-    save_data(file=IS_WEEK_REVERSED_FILE, object=not load_data(file=IS_WEEK_REVERSED_FILE))
-    
-    await message.answer(text="Week was #reversed!")
 
 @dispatcher.message_handler(
     lambda message: message.from_user.id == CREATOR,
