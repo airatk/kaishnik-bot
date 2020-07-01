@@ -72,3 +72,14 @@ def name_setter(names: {str: str}) -> InlineKeyboardMarkup:
     ])
     
     return name_setter_keyboard
+
+
+def againer() -> InlineKeyboardMarkup:
+    againer_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
+    
+    againer_keyboard.add(*[
+        cancel_button(),
+        InlineKeyboardButton(text="продолжить", callback_data=Commands.LOGIN_COMPACT.value)
+    ])
+    
+    return againer_keyboard

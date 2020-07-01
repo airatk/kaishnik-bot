@@ -55,7 +55,7 @@ async def unknown_text_message(message: Message):
 @top_notification
 async def unknown_callback(callback: CallbackQuery):
     try:
-        await callback.message.edit_text(text="Ой-ой-ой!🙆🏼‍♀️")
+        await callback.message.edit_text(text="Ой-ой!🙆🏼‍♀️")
     except MessageError:
         await callback.message.edit_text(text="Ой!🙆🏼‍♀️")
     

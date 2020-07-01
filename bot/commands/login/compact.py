@@ -6,6 +6,7 @@ from bot import dispatcher
 from bot import students
 
 from bot.commands.login.menu import finish_login
+from bot.commands.login.utilities.keyboards import againer
 
 from bot.shared.keyboards import canceler
 from bot.shared.helpers import top_notification
@@ -64,10 +65,12 @@ async def set_group(message: Message):
     if students[message.chat.id].group_schedule_id is None:
         await students[message.chat.id].guard.message.edit_text(
             text=ResponseError.NO_GROUP.value,
+            reply_markup=againer(),
             disable_web_page_preview=True
         )
         
         students[message.chat.id] = Student()  # Drop all the entered data
+        students[message.chat.id].guard.text = Commands.LOGIN.value  # Return to /login after the data drop
         return
     
     await finish_login(message=message)
