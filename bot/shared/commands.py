@@ -24,6 +24,8 @@ class Commands(Enum):
     LOGIN: str = "login"
     LOGIN_EXTENDED: str = "login-extended"
     LOGIN_COMPACT: str = "login-сompact"
+    LOGIN_WRONG_GROUP_GUESS: str = "login-wrong-group-guess"
+    LOGIN_CORRECT_GROUP_GUESS: str = "login-correct-group-guess"
     LOGIN_SET_INSTITUTE: str = "login-set-institute-"
     LOGIN_SET_YEAR: str = "login-set-year-"
     LOGIN_SET_GROUP: str = "login-set-group-"

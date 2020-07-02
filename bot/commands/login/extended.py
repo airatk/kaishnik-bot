@@ -33,7 +33,6 @@ from random import choice
 async def login_extended(callback: CallbackQuery):
     students[callback.message.chat.id] = Student()  # Resetting the user
     
-    students[callback.message.chat.id].is_setup = False
     students[callback.message.chat.id].type = Student.Type.EXTENDED
     
     await callback.message.edit_text(

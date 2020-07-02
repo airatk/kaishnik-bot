@@ -83,3 +83,15 @@ def againer() -> InlineKeyboardMarkup:
     ])
     
     return againer_keyboard
+
+def guess_approver() -> InlineKeyboardMarkup:
+    guess_approver_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
+    
+    guess_approver_keyboard.row(cancel_button())
+    
+    guess_approver_keyboard.add(*[
+        InlineKeyboardButton(text="нет", callback_data=Commands.LOGIN_WRONG_GROUP_GUESS.value),
+        InlineKeyboardButton(text="да", callback_data=Commands.LOGIN_CORRECT_GROUP_GUESS.value),
+    ])
+    
+    return guess_approver_keyboard

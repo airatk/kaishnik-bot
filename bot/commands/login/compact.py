@@ -7,6 +7,7 @@ from bot import students
 
 from bot.commands.login.menu import finish_login
 from bot.commands.login.utilities.keyboards import againer
+from bot.commands.login.utilities.keyboards import guess_approver
 
 from bot.shared.keyboards import canceler
 from bot.shared.helpers import top_notification
@@ -17,18 +18,67 @@ from bot.shared.api.student import Student
 from bot.shared.commands import Commands
 
 from random import choice
+from re import Match
+from re import search
 
 
 @dispatcher.callback_query_handler(
     lambda callback:
+        callback.message.chat.type != ChatType.PRIVATE and
         students[callback.message.chat.id].guard.text == Commands.LOGIN.value and
         callback.data == Commands.LOGIN_COMPACT.value
 )
 @top_notification
+async def login_compact_guess_group(callback: CallbackQuery):
+    await callback.message.edit_text(
+        text=choice(LOADING_REPLIES),
+        disable_web_page_preview=True
+    )
+    
+    students[callback.message.chat.id] = Student()  # Resetting user
+    students[callback.message.chat.id].type = Student.Type.GROUP_CHAT
+    
+    guess: Match = search("[0-9][0-9][0-9][0-9][0-9]?[0-9]?", callback.message.chat.title)
+    
+    if guess is not None:
+        students[callback.message.chat.id].group = guess.group()
+    
+    # If the guess was unsuccessful, go the usual login way (including user reset)
+    if students[callback.message.chat.id].group_schedule_id is None:
+        await login_compact(callback=callback)
+        return
+    
+    await callback.message.edit_text(
+        text="*{possible_group}* — это твоя группа, верно?".format(possible_group=guess.group()),
+        reply_markup=guess_approver(),
+        parse_mode="markdown"
+    )
+    
+    students[callback.message.chat.id].guard.text = Commands.LOGIN_COMPACT.value
+    students[callback.message.chat.id].guard.message = callback.message
+
+@dispatcher.callback_query_handler(
+    lambda callback:
+        students[callback.message.chat.id].guard.text == Commands.LOGIN_COMPACT.value and
+        callback.data == Commands.LOGIN_CORRECT_GROUP_GUESS.value
+)
+@top_notification
+async def finish_login_compact_with_correct_group_guess(callback: CallbackQuery):
+    await finish_login(message=callback.message)
+
+
+@dispatcher.callback_query_handler(
+    lambda callback: (
+            students[callback.message.chat.id].guard.text == Commands.LOGIN.value and
+            callback.data == Commands.LOGIN_COMPACT.value
+        ) or (
+            students[callback.message.chat.id].guard.text == Commands.LOGIN_COMPACT.value and
+            callback.data == Commands.LOGIN_WRONG_GROUP_GUESS.value
+        )
+)
+@top_notification
 async def login_compact(callback: CallbackQuery):
     students[callback.message.chat.id] = Student()  # Resetting user
-    
-    students[callback.message.chat.id].is_setup = False
     students[callback.message.chat.id].type = Student.Type.COMPACT if callback.message.chat.type == ChatType.PRIVATE else Student.Type.GROUP_CHAT
     
     guard_message: Message = await callback.message.edit_text(
