@@ -6,9 +6,9 @@ from bot import dispatcher
 from bot import students
 from bot import metrics
 
-from bot.commands.lecturers.utilities.keyboards import lecturer_chooser
-from bot.commands.lecturers.utilities.keyboards import lecturer_info_type_chooser
-from bot.commands.lecturers.utilities.constants import MAX_LECTURERS_NUMBER
+from bot.commands.schedule.lecturers.utilities.keyboards import lecturer_chooser
+from bot.commands.schedule.lecturers.utilities.keyboards import lecturer_info_type_chooser
+from bot.commands.schedule.lecturers.utilities.constants import MAX_LECTURERS_NUMBER
 
 from bot.shared.keyboards import canceler
 from bot.shared.helpers import top_notification

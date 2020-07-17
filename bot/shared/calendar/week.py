@@ -19,14 +19,14 @@ def get_week_number() -> int:
 
 
 def weekday_date() -> (str, str):
-    date: datetime = datetime.today()
-    weekday: int = date.isoweekday()
+    day_date: datetime = datetime.today()
+    weekday: int = day_date.isoweekday()
     
     return (
         WEEKDAYS[weekday] if weekday < 7 else "Воскресенье",
         "{day} {month}".format(
-            day=int(date.strftime("%d")),  # int()-cast is used to replace "01 апреля" with "1 апреля"
-            month=MONTHS[date.strftime("%m")]
+            day=int(day_date.strftime("%d")),  # int()-cast is used to replace "01 апреля" with "1 апреля"
+            month=MONTHS[day_date.strftime("%m")]
         )
     )
 

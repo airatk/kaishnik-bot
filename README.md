@@ -52,7 +52,7 @@ Each command has its own directory:
         ├── constants.py
         └── types.py
 
-The structure is essential meanwhile all the noted files are optional. One-file commands are exceptions & are located at `bot/commands/others/` directory.
+The structure is essential meanwhile all the noted files are optional. One-file commands are exceptions, and are located at `bot/commands/others/` directory. `bot/commands/schedule/` directory is also an exception, and may be considered as a super-command which consists of 3 similar, but separate commands. 
 
 ## Other stuff
 * `update-logs/` folder contains notes which were sent to users as update announcements.

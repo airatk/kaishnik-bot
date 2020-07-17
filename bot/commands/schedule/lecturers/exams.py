@@ -34,7 +34,8 @@ async def lecturers_exams(callback: CallbackQuery):
     
     await callback.message.edit_text(
         text=message_text,
-        parse_mode="markdown"
+        parse_mode="markdown",
+        disable_web_page_preview=True
     )
     
     students[callback.message.chat.id].guard.drop()
