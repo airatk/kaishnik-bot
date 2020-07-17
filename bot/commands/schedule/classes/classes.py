@@ -8,6 +8,7 @@ from bot import metrics
 
 from bot.commands.schedule.utilities.keyboards import time_period_chooser
 from bot.commands.schedule.utilities.classes import common_day_schedule
+from bot.commands.schedule.utilities.classes import common_weektype_selection
 from bot.commands.schedule.utilities.classes import common_day_selection
 from bot.commands.schedule.utilities.classes import common_week_schedule
 
@@ -63,11 +64,20 @@ async def menu(message: Message):
 @dispatcher.callback_query_handler(
     lambda callback:
         students[callback.message.chat.id].guard.text == Commands.CLASSES.value and
-        ClassesOptionType.DAILY.value in callback.data
+        ClassesOptionType.DAY.value in callback.data
 )
 @top_notification
 async def day_schedule(callback: CallbackQuery):
     await common_day_schedule(command=Commands.CLASSES, callback=callback)
+
+@dispatcher.callback_query_handler(
+    lambda callback:
+        students[callback.message.chat.id].guard.text == Commands.CLASSES.value and
+        ClassesOptionType.WEEKTYPES.value in callback.data
+)
+@top_notification
+async def weektype_selection(callback: CallbackQuery):
+    await common_weektype_selection(command=Commands.CLASSES, callback=callback)
 
 @dispatcher.callback_query_handler(
     lambda callback:
@@ -81,7 +91,7 @@ async def day_selection(callback: CallbackQuery):
 @dispatcher.callback_query_handler(
     lambda callback:
         students[callback.message.chat.id].guard.text == Commands.CLASSES.value and
-        ClassesOptionType.WEEKLY.value in callback.data
+        ClassesOptionType.WEEK.value in callback.data
 )
 @top_notification
 async def week_schedule(callback: CallbackQuery):

@@ -1,3 +1,4 @@
+from aiogram.types import Message
 from aiogram.types import CallbackQuery
 
 from bot import dispatcher
@@ -7,6 +8,19 @@ from bot import metrics
 from bot.shared.helpers import top_notification
 from bot.shared.commands import Commands
 
+
+@dispatcher.message_handler(
+    lambda message: message.chat.id in students,
+    commands=[ Commands.CANCEL.value ]
+)
+async def cancel_on_message(message: Message):
+    if students[message.chat.id].guard.text is None:
+        await message.answer(text="Запущенных команд нет. Отправь какую-нибудь☺️")
+        return
+    
+    students[message.chat.id].guard.drop()
+    
+    await message.answer(text="Отменено!")
 
 @dispatcher.callback_query_handler(
     lambda callback:
@@ -18,10 +32,4 @@ from bot.shared.commands import Commands
 async def cancel_on_callback(callback: CallbackQuery):
     await callback.message.delete()
     
-    if students[callback.message.chat.id].guard.text is None:
-        await callback.message.answer(text="Запущенных команд нет. Отправь какую-нибудь☺️")
-        return
-    
-    students[callback.message.chat.id].guard.drop()
-    
-    await callback.message.answer(text="Отменено!")
+    await cancel_on_message(message=callback.message)

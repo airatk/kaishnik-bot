@@ -4,6 +4,7 @@ from bot.shared.api.subject import LecturerSubject
 from bot.shared.calendar.constants import WEEKDAYS
 from bot.shared.calendar.constants import MONTHS
 from bot.shared.calendar.week import is_even
+from bot.shared.calendar.week import WeekType
 from bot.shared.data.helpers import load_data
 from bot.shared.data.constants import DAYOFFS
 
@@ -19,12 +20,17 @@ def refine_raw_schedule(raw_schedule) -> [{str: str}]:
     ]
 
 
-def beautify_classes(raw_schedule: [{int: {str: str}}], is_next: bool, edited_subjects: [StudentSubject], settings: object) -> [str]:
+def beautify_classes(raw_schedule: [{int: {str: str}}], weektype: str, edited_subjects: [StudentSubject], settings: object) -> [str]:
     weekly_schedule: [str] = []
     
-    today: datetime = datetime.today() + timedelta(days=7 if is_next else 0)
+    week_shift: int = 0
+    
+    if weektype == WeekType.NEXT.value: week_shift = 7
+    elif weektype == WeekType.PREVIOUS.value: week_shift = -7
+    
+    today: datetime = datetime.today() + timedelta(days=week_shift)
     today_weekday: int = today.isoweekday()
-    is_asked_week_even = not is_even() if is_next else is_even()
+    is_asked_week_even = is_even() if week_shift == 0 else not is_even()
     
     dayoffs: [(int, int)] = load_data(file=DAYOFFS)
     
@@ -117,12 +123,17 @@ def beautify_exams(raw_schedule: [{int: {str: str}}]) -> str:
     return schedule
 
 
-def beautify_lecturers_classes(raw_schedule: [{int: {str: str}}], is_next: bool, settings: object) -> [str]:
+def beautify_lecturers_classes(raw_schedule: [{int: {str: str}}], weektype: str, settings: object) -> [str]:
     weekly_schedule: [str] = []
     
-    today: datetime = datetime.today() + timedelta(days=7 if is_next else 0)
+    week_shift: int = 0
+    
+    if weektype == WeekType.NEXT.value: week_shift = 7
+    elif weektype == WeekType.PREVIOUS.value: week_shift = -7
+    
+    today: datetime = datetime.today() + timedelta(days=week_shift)
     today_weekday: int = today.isoweekday()
-    is_asked_week_even = not is_even() if is_next else is_even()
+    is_asked_week_even = is_even() if week_shift == 0 else not is_even()
     
     for weekday in WEEKDAYS:
         # Date of each weekday

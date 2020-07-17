@@ -126,7 +126,7 @@ class Student:
         return groups[0]["id"]
     
     
-    def get_schedule(self, TYPE: ScheduleType, is_next: bool = False) -> [str]:
+    def get_schedule(self, TYPE: ScheduleType, weektype: str = None) -> [str]:
         is_own_group_asked: bool = self._another_group_schedule_id is None
         
         try:
@@ -145,7 +145,7 @@ class Student:
         self._another_group_schedule_id = None
         
         if TYPE is ScheduleType.CLASSES:
-            return beautify_classes(response, is_next, self.edited_subjects if is_own_group_asked else [], self.settings)
+            return beautify_classes(response, weektype, self.edited_subjects if is_own_group_asked else [], self.settings)
         
         if TYPE is ScheduleType.EXAMS:
             return beautify_exams(response)
