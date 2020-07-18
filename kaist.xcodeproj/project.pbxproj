@@ -13,6 +13,7 @@
 		600CE542242F633400E18D69 /* helpers.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = helpers.py; sourceTree = "<group>"; };
 		600CE54424308ABD00E18D69 /* update6.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = update6.txt; sourceTree = "<group>"; };
 		600CE54524308B5100E18D69 /* update7.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = update7.txt; sourceTree = "<group>"; };
+		6047DBB924C359BD0052EA20 /* dice.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = dice.py; sourceTree = "<group>"; };
 		604B51A323D2116600974049 /* __main__.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = __main__.py; sourceTree = "<group>"; };
 		604B51A723D2116600974049 /* keys */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = keys; sourceTree = "<group>"; };
 		604B51AB23D2116600974049 /* requirements.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = requirements.txt; sourceTree = "<group>"; };
@@ -334,6 +335,7 @@
 				604B523E23D2116700974049 /* brs.py */,
 				604B524123D2116700974049 /* help.py */,
 				604B524023D2116700974049 /* donate.py */,
+				6047DBB924C359BD0052EA20 /* dice.py */,
 				604B523923D2116700974049 /* utilities */,
 			);
 			path = others;

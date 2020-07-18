@@ -23,6 +23,7 @@ class Metrics:
         self.brs: int = 0
         self.help: int = 0
         self.donate: int = 0
+        self.dice: int = 0
         self.settings: int = 0
         self.unknown_nontext_message: int = 0
         self.unknown_text_message: int = 0
@@ -48,6 +49,7 @@ class Metrics:
             self.brs +
             self.help +
             self.donate +
+            self.dice +
             self.settings +
             self.unknown_nontext_message +
             self.unknown_text_message +
@@ -79,6 +81,7 @@ class Metrics:
                 elif command is Commands.BRS: self.brs += 1
                 elif command is Commands.HELP: self.help += 1
                 elif command is Commands.DONATE: self.donate += 1
+                elif command is Commands.DICE: self.dice += 1
                 elif command is Commands.SETTINGS: self.settings += 1
                 elif command is Commands.UNKNOWN_NONTEXT_MESSAGE: self.unknown_nontext_message += 1
                 elif command is Commands.UNKNOWN_TEXT_MESSAGE: self.unknown_text_message += 1

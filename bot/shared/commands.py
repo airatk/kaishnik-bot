@@ -82,6 +82,7 @@ class Commands(Enum):
     BRS: str = "brs"
     HELP: str = "help"
     DONATE: str = "donate"
+    DICE: str = "dice"
     
     SETTINGS: str = "settings"
     SETTINGS_APPEARANCE: str = "settings-appearance"

@@ -1,5 +1,5 @@
 aiodns==2.0.0
-aiogram==2.6.1
+aiogram==2.9.2
 aiohttp==3.6.2
 aiohttp-socks==0.3.4
 async-timeout==3.0.1
