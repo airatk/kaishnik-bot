@@ -46,7 +46,7 @@ response_on_cas = get(
 )
 
 
-# Getting the needed data
+# Getting needed data
 token_JSESSIONID = response_on_cas.history[1].cookies["JSESSIONID"]
 
 response_on_kai = get(

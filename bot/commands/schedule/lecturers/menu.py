@@ -71,8 +71,8 @@ async def find_lecturer(message: Message):
     
     await message.delete()
     
-    name_part: str = message.text
-    names: [{str: str}] = [ name for name in students[message.chat.id].lecturers_names if name_part in name["lecturer"] ]
+    name_part: str = message.text.lower()
+    names: [{str: str}] = [ name for name in students[message.chat.id].lecturers_names if name_part in name["lecturer"].lower() ]
     
     if len(names) == 0:
         await students[message.chat.id].guard.message.edit_text(text="Ничего не найдено :(")
