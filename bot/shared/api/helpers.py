@@ -103,13 +103,18 @@ def beautify_classes(raw_schedule: [{int: {str: str}}], weektype: str, edited_su
     
     return weekly_schedule
 
-def beautify_exams(raw_schedule: [{int: {str: str}}]) -> str:
+def beautify_exams(raw_schedule: [{int: {str: str}}], settings: object) -> str:
     raw_schedule = refine_raw_schedule(raw_schedule)
     
     schedule: str = ""
     
     for subject in raw_schedule:
-        time_place: str = "\n\n*[ {date}, {time} ][ {building}, {auditorium} ]*".format(
+        time_place: str = "\n\n*[ {date}, {time} ][ {building}, {auditorium} ]*"
+        
+        if not settings.is_schedule_size_full:
+            time_place = time_place.replace("][", "•").replace("[ ", "").replace(" ]", "")
+        
+        time_place = time_place.format(
             date=subject["examDate"], time=subject["examTime"],
             building=subject["buildNum"] + "ка", auditorium=subject["audNum"]
         )
@@ -187,13 +192,18 @@ def beautify_lecturers_classes(raw_schedule: [{int: {str: str}}], weektype: str,
     
     return weekly_schedule
 
-def beautify_lecturers_exams(raw_schedule: [{int: {str: str}}]) -> str:
+def beautify_lecturers_exams(raw_schedule: [{int: {str: str}}], settings: object) -> str:
     raw_schedule = refine_raw_schedule(raw_schedule)
     
     schedule: [(str, str)] = []
     
     for subject in raw_schedule:
-        time_place: str = "\n\n*[ {date}, {time} ][ {building}, {auditorium} ]*".format(
+        time_place: str = "\n\n*[ {date}, {time} ][ {building}, {auditorium} ]*"
+        
+        if not settings.is_schedule_size_full:
+            time_place = time_place.replace("][", "•").replace("[ ", "").replace(" ]", "")
+        
+        time_place = time_place.format(
             date=subject["examDate"], time=subject["examTime"],
             building=subject["buildNum"] + "ка", auditorium=subject["audNum"]
         )

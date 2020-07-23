@@ -26,7 +26,11 @@ async def lecturers_exams(callback: CallbackQuery):
     )
     
     lecturer_id: str = callback.data.split()[1]
-    schedule: [str] = get_lecturers_schedule(lecturer_id=lecturer_id, TYPE=ScheduleType.EXAMS)
+    schedule: [str] = get_lecturers_schedule(
+        lecturer_id=lecturer_id,
+        TYPE=ScheduleType.EXAMS,
+        settings=students[callback.message.chat.id].settings
+    )
     
     if schedule is None: message_text: str = ResponseError.NO_RESPONSE.value
     elif len(schedule) == 0: message_text: str = ResponseError.NO_DATA.value

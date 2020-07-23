@@ -148,7 +148,7 @@ class Student:
             return beautify_classes(response, weektype, self.edited_subjects if is_own_group_asked else [], self.settings)
         
         if TYPE is ScheduleType.EXAMS:
-            return beautify_exams(response)
+            return beautify_exams(response, self.settings)
     
     
     def get_dictionary_of(self, TYPE: ScoreDataType) -> {str: str}:

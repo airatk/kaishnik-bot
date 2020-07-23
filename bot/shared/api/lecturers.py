@@ -38,4 +38,4 @@ def get_lecturers_schedule(lecturer_id: str, TYPE: ScheduleType, weektype: str =
         return beautify_lecturers_classes(response, weektype, settings)
     
     if TYPE is ScheduleType.EXAMS:
-        return beautify_lecturers_exams(response)
+        return beautify_lecturers_exams(response, settings)
