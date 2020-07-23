@@ -47,9 +47,10 @@ async def add_note_hint(callback: CallbackQuery):
 
 @dispatcher.message_handler(
     lambda message:
-        message.chat.type != ChatType.PRIVATE and
-        message.text is not None and message.text.startswith(BOT_ADDRESSING) and
-        students[message.chat.id].guard.text == Commands.NOTES_ADD.value
+        message.chat.type != ChatType.PRIVATE and (
+            message.text is not None and message.text.startswith(BOT_ADDRESSING) or
+            message.reply_to_message is not None and message.reply_to_message.from_user.is_bot
+        ) and students[message.chat.id].guard.text == Commands.NOTES_ADD.value
 )
 @dispatcher.message_handler(
     lambda message:
@@ -58,7 +59,7 @@ async def add_note_hint(callback: CallbackQuery):
 )
 async def add_note(message: Message):
     # Getting rid of the bot addressing
-    if message.chat.type != ChatType.PRIVATE: message.text = message.text[len(BOT_ADDRESSING):]
+    if message.chat.type != ChatType.PRIVATE: message.text = message.text.replace(BOT_ADDRESSING, "")
     
     await message.delete()
     await students[message.chat.id].guard.message.edit_text(text="Запомнено!")

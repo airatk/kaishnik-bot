@@ -50,10 +50,11 @@ async def login_on_command(message: Message):
         )
     else:
         text: str = (
-            "Текстовые сообщения должны начинаться с обращения {bot_addressing}, команды — не должны:\n"
+            "Текстовые сообщения должны начинаться с обращения {bot_addressing} либо быть реплаями, команды — не должны:\n"
             "\n"
             "• /command\n"
-            "• {bot_addressing} текст"
+            "• {bot_addressing} текст\n"
+            "• текст (в случае, если реплай)"
         ).format(bot_addressing=BOT_ADDRESSING[:-1])
     
     # Showing the warning to the old users

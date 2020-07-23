@@ -204,7 +204,7 @@ class StudentSubject(Subject):
         ])
     
     def get_simple(self) -> str:
-        return " ".join([ self._begin_time, self._title ]).replace("\n", "").replace("*", "")
+        return " ".join([ self._begin_time, self._title ]).replace("\n", "").replace("*", "").replace(" •", "")
 
 
 class LecturerSubject(Subject):
