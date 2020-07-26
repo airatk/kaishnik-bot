@@ -1,13 +1,10 @@
 from aiogram.types import Message
-from aiogram.types import Chat
-from aiogram.utils.exceptions import ChatNotFound
-from aiogram.utils.exceptions import Unauthorized
-from aiogram.utils.exceptions import TelegramAPIError
 
 from bot import dispatcher
 from bot import students
 
 from bot.commands.creator.utilities.helpers import update_progress_bar
+from bot.commands.creator.utilities.helpers import try_get_chat
 from bot.commands.creator.utilities.helpers import get_user_data
 from bot.commands.creator.utilities.helpers import collect_ids
 from bot.commands.creator.utilities.constants import CREATOR
@@ -36,15 +33,16 @@ async def clear(message: Message):
             values=students_list, index=index
         )
         
-        try:
-            await message.bot.send_chat_action(chat_id=chat_id, action="typing")
-        except (ChatNotFound, Unauthorized):
-            try:
-                chat: Chat = await message.bot.get_chat(chat_id=chat_id)
-            except TelegramAPIError:
-                await message.answer(text="Troubles getting the {chat_id} chat, but it was #erased.".format(chat_id=chat_id))
-            else:
-                await message.answer(text=get_user_data(chat=chat, student=students[chat_id], hashtag="erased"))
+        (chat, error_text) = await try_get_chat(chat_id=chat_id)
+        
+        if chat is None:
+            await message.answer(
+                text="\n\n".join([ error_text, get_user_data(
+                    student=students[chat_id],
+                    hashtag="erased",
+                    chat_id=chat_id
+                ) ])
+            )
             
             del students[chat_id]
             is_cleared = True
@@ -76,12 +74,15 @@ async def erase(message: Message):
         )
         
         if chat_id in students:
-            try:
-                chat: Chat = await message.bot.get_chat(chat_id=chat_id)
-            except (ChatNotFound, Unauthorized):
-                await message.answer(text="Troubles getting the chat, but the chat id was #erased.")
-            else:
-                await message.answer(text=get_user_data(chat=chat, student=students[chat_id], hashtag="erased"))
+            (chat, error_text) = await try_get_chat(chat_id=chat_id)
+            
+            await message.answer(
+                text="\n\n".join([ error_text, get_user_data(
+                    student=students[chat_id],
+                    hashtag="erased",
+                    chat_id=chat_id, chat=chat
+                ) ][1 if error_text is None else 0:])
+            )
             
             del students[chat_id]
         else:
@@ -143,12 +144,12 @@ async def drop(message: Message):
         except ChatNotFound:
             del students[chat_id]
     
-    save_data(file=USERS_FILE, object=students)
-    
     if len(drop_list) == 0:
         await loading_message.edit_text(text="No users to drop!")
     else:
         await message.answer(text="Data was #dropped!")
+        
+        save_data(file=USERS_FILE, object=students)
 
 @dispatcher.message_handler(
     lambda message: message.from_user.id == CREATOR,

@@ -1,6 +1,13 @@
 from aiogram.types import Message
 from aiogram.types import Chat
 
+from aiogram.utils.exceptions import CantInitiateConversation
+from aiogram.utils.exceptions import UserDeactivated
+from aiogram.utils.exceptions import BotBlocked
+from aiogram.utils.exceptions import BotKicked
+from aiogram.utils.exceptions import ChatNotFound
+
+from bot import bot
 from bot import students
 
 from bot.commands.creator.utilities.constants import USER_DATA
@@ -93,10 +100,30 @@ async def collect_ids(query_message: Message) -> [int]:
     return users_list
 
 
-def get_user_data(chat: Chat, student: Student, hashtag: str) -> str:
+async def try_get_chat(chat_id: int) -> (Chat, str):
+    chat: Chat = None
+    error_text: str = None
+    
+    try:
+        chat = await bot.get_chat(chat_id=chat_id)
+    except CantInitiateConversation:
+        error_text = "User {chat_id} have never initiated a conversation with the bot.".format(chat_id=chat_id)
+    except UserDeactivated:
+        error_text = "User {chat_id} is deactivated.".format(chat_id=chat_id)
+    except BotBlocked:
+        error_text = "User {chat_id} blocked the bot.".format(chat_id=chat_id)
+    except BotKicked:
+        error_text = "Bot was kicked from {chat_id} group chat.".format(chat_id=chat_id)
+    except ChatNotFound:
+        error_text = "Couldn't find {chat_id} chat.".format(chat_id=chat_id)
+    
+    return (chat, error_text)
+
+
+def get_user_data(student: Student, hashtag: str, chat_id: int, chat: Chat = None) -> str:
     return USER_DATA.format(
-        fullname=chat.full_name, username=chat.username,
-        chat_id=chat.id,
+        fullname="none" if chat is None else chat.full_name, username="none" if chat is None else chat.username,
+        chat_id=chat_id,
         type="none" if student.type is None else student.type.value,
         institute=student.institute,
         year=student.year,
@@ -105,8 +132,8 @@ def get_user_data(chat: Chat, student: Student, hashtag: str) -> str:
         card=student.card,
         notes_number=len(student.notes),
         edited_classes_number=len(student.edited_subjects),
-        fellow_students_number=len(student.names),
+        fellow_students_number=len(student.group_names),
         guard_text=student.guard.text,
-        guard_message="None" if student.guard.message is None else student.guard.message.text,
+        guard_message="none" if student.guard.message is None else student.guard.message.text,
         hashtag=hashtag
     )

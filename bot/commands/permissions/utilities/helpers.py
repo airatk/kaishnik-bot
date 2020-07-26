@@ -3,8 +3,6 @@ from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
 from aiogram.types import ChatMember
 
-from bot.shared.constants import BOT_ADDRESSING
-
 
 async def get_bot_member(message: Message) -> ChatMember:
     bot_user = await message.bot.me
@@ -14,11 +12,13 @@ async def get_bot_member(message: Message) -> ChatMember:
 
 
 async def check_permissions_in_group_chat_on_command(message: Message) -> bool:
-    if not message.text.startswith(BOT_ADDRESSING) and not message.is_command(): return False
+    if message.chat.type == ChatType.PRIVATE: return False
+    
+    if not (message.is_command() or message.reply_to_message is not None and message.reply_to_message.from_user.is_bot): return False
     
     bot_member = await get_bot_member(message=message)
     
-    return message.chat.type != ChatType.PRIVATE and not (bot_member.is_chat_admin() and bot_member.can_delete_messages)
+    return not (bot_member.is_chat_admin() and bot_member.can_delete_messages)
 
 async def check_permissions_in_group_chat_on_callback(callback: CallbackQuery) -> bool:
     return await check_permissions_in_group_chat_on_command(message=callback.message)

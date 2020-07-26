@@ -1,7 +1,4 @@
 from aiogram.types import Message
-from aiogram.types import Chat
-from aiogram.utils.exceptions import ChatNotFound
-from aiogram.utils.exceptions import Unauthorized
 
 from bot import dispatcher
 from bot import students
@@ -10,6 +7,7 @@ from bot import metrics
 from bot.commands.creator.utilities.helpers import update_progress_bar
 from bot.commands.creator.utilities.helpers import parse_creator_query
 from bot.commands.creator.utilities.helpers import collect_ids
+from bot.commands.creator.utilities.helpers import try_get_chat
 from bot.commands.creator.utilities.helpers import get_user_data
 from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import USERS_STATS
@@ -77,6 +75,7 @@ async def metrics_command(message: Message):
             notes_request_number=metrics.notes,
             week_request_number=metrics.week,
             exams_request_number=metrics.exams,
+            dice_request_number=metrics.dice,
             locations_request_number=metrics.locations,
             brs_request_number=metrics.brs,
             edit_request_number=metrics.edit,
@@ -86,9 +85,11 @@ async def metrics_command(message: Message):
             cancel_request_number=metrics.cancel,
             start_request_number=metrics.start,
             login_request_number=metrics.login,
-            unlogin_request_number=metrics.unlogin,
-            unknown_nontext_message_request_number=metrics.unknown_nontext_message, unknown_text_message_request_number=metrics.unknown_text_message, unknown_callback_request_number=metrics.unknown_callback,
+            unknown_nontext_message_request_number=metrics.unknown_nontext_message,
+            unknown_text_message_request_number=metrics.unknown_text_message,
+            unknown_callback_request_number=metrics.unknown_callback,
             no_permissions_number=metrics.no_permissions,
+            unlogin_request_number=metrics.unlogin,
             total_request_number=metrics.sum
         ),
         parse_mode="markdown"
@@ -99,11 +100,13 @@ async def metrics_command(message: Message):
     commands=[ Commands.DATA.value ]
 )
 async def data(message: Message):
-    if message.get_args() == "":
+    raw_options: str = message.get_args()
+    
+    if raw_options == "":
         await message.answer(text="No options were found!")
         return
     
-    options: {str: str} = parse_creator_query(message.get_args())
+    options: {str: str} = parse_creator_query(raw_options)
     
     full_users_list: [int] = list(students)[::-1]  # Reversing list of students to show the new users first
     asked_users_list: [int] = []
@@ -122,16 +125,17 @@ async def data(message: Message):
                 values=full_users_list, index=index
             )
             
-            try:
-                chat: Chat = await message.bot.get_chat(chat_id=chat_id)
-            except (ChatNotFound, Unauthorized):
-                await message.answer(text="Troubles getting the {chat_id} chat.".format(chat_id=chat_id))
+            (chat, error_message) = await try_get_chat(chat_id=chat_id)
+            
+            if chat is None:
+                await message.answer(text=error_message)
                 continue
             
             does_username_match = Option.USERNAME.value in options and (chat.username is not None and options[Option.USERNAME.value] in chat.username)
             does_firstname_match = Option.FIRSTNAME.value in options and (chat.first_name is not None and options[Option.FIRSTNAME.value] in chat.first_name)
             
-            if does_username_match or does_firstname_match: asked_users_list.append(chat_id)
+            if does_username_match or does_firstname_match:
+                asked_users_list.append(chat_id)
     elif Option.NUMBER.value in options:
         try:
             asked_users_number: int = int(options[Option.NUMBER.value])
@@ -173,14 +177,20 @@ async def data(message: Message):
             values=asked_users_list, index=index
         )
         
-        try:
-            chat: Chat = await message.bot.get_chat(chat_id=chat_id)
-        except (ChatNotFound, Unauthorized):
-            await message.answer(text="Troubles getting the {chat_id} chat.".format(chat_id=chat_id))
+        (chat, error_message) = await try_get_chat(chat_id=chat_id)
+        
+        if chat is None:
+            await message.answer(text=error_message)
             
             inactives_list.append(chat_id)
         else:
-            await message.answer(text=get_user_data(chat=chat, student=students[chat_id], hashtag="data"))
+            await message.answer(
+                text=get_user_data(
+                    student=students[chat_id],
+                    hashtag="data",
+                    chat_id=chat_id, chat=chat
+                )
+            )
     
     if len(inactives_list) != 0:
         await message.answer(

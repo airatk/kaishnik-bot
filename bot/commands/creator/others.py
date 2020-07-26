@@ -67,9 +67,10 @@ async def dayoff(message: Message):
     
     if options.get(Option.TO_SUBOPTION.value) == Suboption.LIST.value:
         dayoffs_list: str = "There are no dayoffs!" if len(dayoff_dates) == 0 else "*Dayoffs*\n"
+        month: str = ""
         
         for (day_index, month_index) in dayoff_dates:
-            month: str = MONTHS["{month_index:02}".format(month_index=month_index)]
+            month = MONTHS["{month_index:02}".format(month_index=month_index)]
             dayoffs_list = "\n".join([ dayoffs_list, "• {day} {month}".format(day=day_index, month=month) ])
         
         await message.answer(
@@ -112,6 +113,7 @@ async def dayoff(message: Message):
                 return
         
         save_data(file=DAYOFFS, object=dayoff_dates)
+        
         await message.answer(text="Done!")
     else:
         await message.answer(text="No options were found!")
