@@ -13,6 +13,7 @@ from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import USERS_STATS
 from bot.commands.creator.utilities.constants import COMMAND_REQUESTS_STATS
 from bot.commands.creator.utilities.types import Option
+from bot.commands.creator.utilities.types import Suboption
 
 from bot.shared.api.constants import INSTITUTES
 from bot.shared.api.student import Student
@@ -65,7 +66,7 @@ async def users(message: Message):
 async def metrics_command(message: Message):
     options: {str: str} = parse_creator_query(message.get_args())
     
-    if options.get("") == "drop" or metrics.day != datetime.today().isoweekday(): metrics.drop()
+    if options.get("") == Suboption.DROP.value or metrics.day != datetime.today().isoweekday(): metrics.drop()
     
     await message.answer(
         text=COMMAND_REQUESTS_STATS.format(

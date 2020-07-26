@@ -1,13 +1,21 @@
 from aiogram.types import Message
 
+from aiogram.utils.exceptions import CantInitiateConversation
+from aiogram.utils.exceptions import UserDeactivated
+from aiogram.utils.exceptions import BotBlocked
+from aiogram.utils.exceptions import BotKicked
+from aiogram.utils.exceptions import ChatNotFound
+
 from bot import dispatcher
 from bot import students
 
 from bot.commands.creator.utilities.helpers import update_progress_bar
+from bot.commands.creator.utilities.helpers import parse_creator_query
 from bot.commands.creator.utilities.helpers import try_get_chat
 from bot.commands.creator.utilities.helpers import get_user_data
 from bot.commands.creator.utilities.helpers import collect_ids
 from bot.commands.creator.utilities.constants import CREATOR
+from bot.commands.creator.utilities.types import Suboption
 
 from bot.shared.api.student import Student
 from bot.shared.data.helpers import save_data
@@ -104,50 +112,56 @@ async def erase(message: Message):
 async def drop(message: Message):
     drop_list: [int] = await collect_ids(query_message=message)
     
-    progress_bar: str = ""
-    loading_message: Message = await message.answer(text="Started dropping…")
+    options: {str: str} = parse_creator_query(message.get_args())
     
-    for (index, chat_id) in enumerate(drop_list):
-        progress_bar = await update_progress_bar(
-            loading_message=loading_message, current_progress_bar=progress_bar,
-            values=drop_list, index=index
-        )
+    if options.get("") == Suboption.SILENTLY.value:
+        for chat_id in drop_list:
+            students[chat_id]: Student = Student()
+    else:
+        progress_bar: str = ""
+        loading_message: Message = await message.answer(text="Started dropping…")
         
-        try:
-            if students[chat_id].notes != []:
-                for note in students[chat_id].notes:
+        for (index, chat_id) in enumerate(drop_list):
+            progress_bar = await update_progress_bar(
+                loading_message=loading_message, current_progress_bar=progress_bar,
+                values=drop_list, index=index
+            )
+            
+            try:
+                if students[chat_id].notes != []:
+                    for note in students[chat_id].notes:
+                        await message.bot.send_message(
+                            chat_id=chat_id,
+                            text=note,
+                            parse_mode="markdown",
+                            disable_notification=True
+                        )
+                    
                     await message.bot.send_message(
                         chat_id=chat_id,
-                        text=note,
-                        parse_mode="markdown",
+                        text="Твои заметки, чтобы ничего не потерялось.",
                         disable_notification=True
                     )
                 
+                students[chat_id]: Student = Student()
+                
                 await message.bot.send_message(
                     chat_id=chat_id,
-                    text="Твои заметки, чтобы ничего не потерялось.",
+                    text="Текущие настройки сброшены!",
                     disable_notification=True
                 )
-            
-            students[chat_id]: Student = Student()
-            
-            await message.bot.send_message(
-                chat_id=chat_id,
-                text="Текущие настройки сброшены!",
-                disable_notification=True
-            )
-            await message.bot.send_message(
-                chat_id=chat_id,
-                text="Обнови данные — /login",
-                disable_notification=True
-            )
-        except ChatNotFound:
-            del students[chat_id]
+                await message.bot.send_message(
+                    chat_id=chat_id,
+                    text="Обнови данные — /login",
+                    disable_notification=True
+                )
+            except (CantInitiateConversation, UserDeactivated, BotBlocked, BotKicked, ChatNotFound):
+                del students[chat_id]
     
     if len(drop_list) == 0:
         await loading_message.edit_text(text="No users to drop!")
     else:
-        await message.answer(text="Data was #dropped!")
+        await message.answer(text="{users_number} users were #dropped!".format(users_number=len(drop_list)))
         
         save_data(file=USERS_FILE, object=students)
 

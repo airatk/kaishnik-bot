@@ -35,3 +35,6 @@ class Suboption(Enum):
     LIST: str = "list"
     
     WEEK: str = "week"
+    
+    DROP: str = "drop"
+    SILENTLY: str = "silently"
