@@ -10,7 +10,7 @@ from bot.commands.edit.utilities.keyboards import edit_chooser
 from bot.shared.helpers import top_notification
 from bot.shared.api.subject import StudentSubject
 from bot.shared.calendar.constants import WEEKDAYS
-from bot.shared.calendar.week import WeekParity
+from bot.shared.calendar.types import WeekParity
 from bot.shared.data.helpers import save_data
 from bot.shared.data.constants import USERS_FILE
 from bot.shared.commands import Commands

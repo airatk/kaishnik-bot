@@ -31,11 +31,19 @@ def get_lecturers_schedule(lecturer_id: str, TYPE: ScheduleType, weektype: str =
     except (ConnectionError, JSONDecodeError):
         return None
     
-    if not response:
-        return []
+    if not response: return []
     
     if TYPE is ScheduleType.CLASSES:
-        return beautify_lecturers_classes(response, weektype, settings)
+        return beautify_lecturers_classes(
+            raw_schedule=response,
+            weektype=weektype,
+            settings=settings
+        )
     
     if TYPE is ScheduleType.EXAMS:
-        return beautify_lecturers_exams(response, settings)
+        return beautify_lecturers_exams(
+            raw_schedule=response,
+            settings=settings
+        )
+    
+    return None

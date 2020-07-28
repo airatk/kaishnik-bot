@@ -5,7 +5,7 @@ from bot.shared.keyboards import cancel_button
 from bot.shared.api.subject import StudentSubject
 from bot.shared.api.subject import Subject
 from bot.shared.calendar.constants import WEEKDAYS
-from bot.shared.calendar.week import WeekParity
+from bot.shared.calendar.types import WeekParity
 from bot.shared.commands import Commands
 
 

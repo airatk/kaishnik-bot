@@ -233,7 +233,10 @@ async def set_card(message: Message):
     
     if last_available_semester == 0:
         await students[message.chat.id].guard.message.edit_text(
-            text=ResponseError.INCORRECT_CARD.value,
+            text=" ".join([
+                ResponseError.INCORRECT_CARD.value,
+                "Исправляйся."
+            ]),
             reply_markup=canceler()
         )
         

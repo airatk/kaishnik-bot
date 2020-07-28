@@ -69,12 +69,12 @@ async def finish_login_compact_with_correct_group_guess(callback: CallbackQuery)
 
 @dispatcher.callback_query_handler(
     lambda callback: (
-            students[callback.message.chat.id].guard.text == Commands.LOGIN.value and
-            callback.data == Commands.LOGIN_COMPACT.value
-        ) or (
-            students[callback.message.chat.id].guard.text == Commands.LOGIN_COMPACT.value and
-            callback.data == Commands.LOGIN_WRONG_GROUP_GUESS.value
-        )
+        students[callback.message.chat.id].guard.text == Commands.LOGIN.value and
+        callback.data == Commands.LOGIN_COMPACT.value
+    ) or (
+        students[callback.message.chat.id].guard.text == Commands.LOGIN_COMPACT.value and
+        callback.data == Commands.LOGIN_WRONG_GROUP_GUESS.value
+    )
 )
 @top_notification
 async def login_compact(callback: CallbackQuery):
@@ -115,7 +115,10 @@ async def set_group(message: Message):
     
     if students[message.chat.id].group_schedule_id is None:
         await students[message.chat.id].guard.message.edit_text(
-            text=ResponseError.NO_GROUP.value,
+            text="\n\n".join([
+                ResponseError.NO_GROUP.value,
+                "Попробуешь ввести другую?"
+            ]),
             reply_markup=againer(),
             disable_web_page_preview=True
         )

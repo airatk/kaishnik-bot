@@ -118,10 +118,12 @@ class Student:
                 "p_p_resource_id": "getGroupsURL",
                 "query": self._group if another_group is None else another_group
             }).json()
-        except (ConnectionError, JSONDecodeError, IndexError, KeyError):
+        except (ConnectionError, JSONDecodeError):
             return None
         
         if len(groups) != 1: return None  # User has to send exactly his group
+        
+        if "id" not in groups[0]: return None
         
         return groups[0]["id"]
     
@@ -136,19 +138,26 @@ class Student:
                 "p_p_resource_id": TYPE.value,
                 "groupId": self.group_schedule_id if is_own_group_asked else self._another_group_schedule_id
             }).json()
-        except (ConnectionError, JSONDecodeError, IndexError, KeyError):
+        except (ConnectionError, JSONDecodeError):
             return None
         
-        if not response:
-            return []
+        if not response: return []
         
         self._another_group_schedule_id = None
         
         if TYPE is ScheduleType.CLASSES:
-            return beautify_classes(response, weektype, self.edited_subjects if is_own_group_asked else [], self.settings)
+            return beautify_classes(
+                raw_schedule=response,
+                weektype=weektype,
+                edited_subjects=self.edited_subjects if is_own_group_asked else [],
+                settings=self.settings
+            )
         
         if TYPE is ScheduleType.EXAMS:
-            return beautify_exams(response, self.settings)
+            return beautify_exams(
+                raw_schedule=response,
+                settings=self.settings
+            )
     
     
     def get_dictionary_of(self, TYPE: ScoreDataType) -> {str: str}:
@@ -168,7 +177,7 @@ class Student:
             # Fixing bad quality response
             for i in range(1, len(keys)): keys[i - 1] = keys[i - 1].replace(keys[i], "")
             for (i, key) in enumerate(keys): keys[i] = key[:-1] if key.endswith(" ") else key
-        except (ConnectionError, AttributeError, KeyError, IndexError):
+        except (ConnectionError, AttributeError, KeyError):
             return dict()
         else:
             return dict(zip(keys, values))
@@ -190,7 +199,7 @@ class Student:
             if not selector: return 0
             
             return max([ int(option["value"]) for option in selector.find_all("option") ])
-        except ConnectionError:
+        except (ConnectionError, ValueError, KeyError):
             return None
     
     def get_scoretable(self, semester: str) -> [(str, str)]:
@@ -212,6 +221,6 @@ class Student:
             
             raw_scoretable: [[str]] = [ [ (data.text if data.text else "-") for data in row.find_all("td") ] for row in table.find_all("tr") ][2:]
             
-            return beautify_scoretable(raw_scoretable)
-        except ConnectionError:
+            return beautify_scoretable(raw_scoretable=raw_scoretable)
+        except (ConnectionError, AttributeError):
             return None

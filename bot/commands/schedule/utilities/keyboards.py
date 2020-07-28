@@ -5,7 +5,7 @@ from bot.shared.keyboards import cancel_button
 from bot.shared.api.types import ClassesOptionType
 from bot.shared.calendar.constants import WEEKDAYS
 from bot.shared.calendar.constants import MONTHS
-from bot.shared.calendar.week import WeekType
+from bot.shared.calendar.types import WeekType
 
 from datetime import datetime
 from datetime import timedelta

@@ -3,8 +3,8 @@ from bot.shared.api.subject import StudentSubject
 from bot.shared.api.subject import LecturerSubject
 from bot.shared.calendar.constants import WEEKDAYS
 from bot.shared.calendar.constants import MONTHS
-from bot.shared.calendar.week import is_even
-from bot.shared.calendar.week import WeekType
+from bot.shared.calendar.helpers import is_even
+from bot.shared.calendar.types import WeekType
 from bot.shared.data.helpers import load_data
 from bot.shared.data.constants import DAYOFFS
 
@@ -20,7 +20,7 @@ def refine_raw_schedule(raw_schedule) -> [{str: str}]:
     ]
 
 
-def beautify_classes(raw_schedule: [{int: {str: str}}], weektype: str, edited_subjects: [StudentSubject], settings: object) -> [str]:
+def beautify_classes(raw_schedule: [{str: {str: str}}], weektype: str, edited_subjects: [StudentSubject], settings: object) -> [str]:
     weekly_schedule: [str] = []
     
     week_shift: int = 0
@@ -103,7 +103,7 @@ def beautify_classes(raw_schedule: [{int: {str: str}}], weektype: str, edited_su
     
     return weekly_schedule
 
-def beautify_exams(raw_schedule: [{int: {str: str}}], settings: object) -> str:
+def beautify_exams(raw_schedule: [{str: {str: str}}], settings: object) -> str:
     raw_schedule = refine_raw_schedule(raw_schedule)
     
     schedule: str = ""
@@ -112,7 +112,7 @@ def beautify_exams(raw_schedule: [{int: {str: str}}], settings: object) -> str:
         time_place: str = "\n\n*[ {date}, {time} ][ {building}, {auditorium} ]*"
         
         if not settings.is_schedule_size_full:
-            time_place = time_place.replace("][", "•").replace("[ ", "").replace(" ]", "")
+            time_place = time_place.replace("][", "•").replace(" ]", "").replace("[ ", "")
         
         time_place = time_place.format(
             date=subject["examDate"], time=subject["examTime"],
@@ -128,7 +128,7 @@ def beautify_exams(raw_schedule: [{int: {str: str}}], settings: object) -> str:
     return schedule
 
 
-def beautify_lecturers_classes(raw_schedule: [{int: {str: str}}], weektype: str, settings: object) -> [str]:
+def beautify_lecturers_classes(raw_schedule: [{str: {str: str}}], weektype: str, settings: object) -> [str]:
     weekly_schedule: [str] = []
     
     week_shift: int = 0
@@ -192,7 +192,7 @@ def beautify_lecturers_classes(raw_schedule: [{int: {str: str}}], weektype: str,
     
     return weekly_schedule
 
-def beautify_lecturers_exams(raw_schedule: [{int: {str: str}}], settings: object) -> str:
+def beautify_lecturers_exams(raw_schedule: [{str: {str: str}}], settings: object) -> str:
     raw_schedule = refine_raw_schedule(raw_schedule)
     
     schedule: [(str, str)] = []
@@ -201,7 +201,7 @@ def beautify_lecturers_exams(raw_schedule: [{int: {str: str}}], settings: object
         time_place: str = "\n\n*[ {date}, {time} ][ {building}, {auditorium} ]*"
         
         if not settings.is_schedule_size_full:
-            time_place = time_place.replace("][", "•").replace("[ ", "").replace(" ]", "")
+            time_place = time_place.replace("][", "•").replace(" ]", "").replace("[ ", "")
         
         time_place = time_place.format(
             date=subject["examDate"], time=subject["examTime"],
@@ -249,8 +249,9 @@ def beautify_scoretable(raw_scoretable: [[str]]) -> [(str, str)]:
         )
         debts: str = "\n• Долги: {}".format(subject[10])
         
-        scoretable.append(
-            (unstyled_title, "".join([ title, score_type, certification1, certification2, certification3, score_sum, debts ]))
-        )
+        scoretable.append((
+            unstyled_title,
+            "".join([ title, score_type, certification1, certification2, certification3, score_sum, debts ])
+        ))
     
     return scoretable

@@ -5,9 +5,9 @@ from bot import dispatcher
 from bot import students
 from bot import metrics
 
-from bot.shared.calendar.week import is_even
-from bot.shared.calendar.week import weekday_date
-from bot.shared.calendar.week import get_week_number
+from bot.shared.calendar.helpers import is_even
+from bot.shared.calendar.helpers import weekday_date
+from bot.shared.calendar.helpers import get_week_number
 from bot.shared.commands import Commands
 
 

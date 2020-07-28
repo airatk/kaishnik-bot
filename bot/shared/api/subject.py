@@ -14,15 +14,15 @@ class Subject(ABC):
     
     
     def __init__(self):
-        self._time: str       = "\n\n*[ {begin_time} - {end_time} ]"
-        self._building: str   = "[ {building}"
+        self._time: str = "\n\n*[ {begin_time} - {end_time} ]"
+        self._building: str = "[ {building}"
         self._auditorium: str = "{auditorium} ]"
-        self._dates: str      = "\n[ {dates} ]"
-        self._title: str      = "\n{title}*"
-        self._type: str       = "\n_{type}_"
+        self._dates: str = "\n[ {dates} ]"
+        self._title: str = "\n{title}*"
+        self._type: str = "\n_{type}_"
         
         self._compact_dates: str = "\n({dates})"
-        self._compact_type: str  = "\n*{type}: *"
+        self._compact_type: str = "\n*{type}: *"
         
         self._begin_time: int = None
         self._begin_hour: int = None
@@ -141,7 +141,7 @@ class StudentSubject(Subject):
     def __init__(self):
         super().__init__()
         
-        self._lecturer: str   = "\n@ {lecturer}"
+        self._lecturer: str = "\n@ {lecturer}"
         self._department: str = "\n§ {department}"
         
         self._is_even: bool = None
@@ -235,7 +235,4 @@ class LecturerSubject(Subject):
     def get_compact(self) -> str:
         groups_output: str = "".join([ "\n• У группы {}".format(group) for group in self._groups ])
         
-        return "".join([
-            super().get_compact(),
-            groups_output
-        ])
+        return "".join([ super().get_compact(), groups_output ])
