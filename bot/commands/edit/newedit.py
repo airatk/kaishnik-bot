@@ -275,7 +275,13 @@ async def end_edit(message: Message):
         
         students[message.chat.id].edited_subject.department = message.text
     
-    await message.answer(text="Запомнено!")
+    await message.answer(
+        text="".join([
+            "Запомнено!",
+            students[message.chat.id].edited_subject.get()
+        ]),
+        parse_mode="markdown"
+    )
     
     students[message.chat.id].guard.drop()
     students[message.chat.id].edited_subjects.append(students[message.chat.id].edited_subject)

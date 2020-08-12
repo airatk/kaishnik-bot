@@ -14,10 +14,7 @@ from datetime import timedelta
 
 # Removes extra spaces & standardising values to string type
 def refine_raw_schedule(raw_schedule) -> [{str: str}]:
-    return [ {
-            key: " ".join(str(value).split()) for (key, value) in subject.items()
-        } for subject in raw_schedule
-    ]
+    return map(lambda subject: { key: " ".join(str(value).split()) for (key, value) in subject.items() }, raw_schedule)
 
 
 def beautify_classes(raw_schedule: [{str: {str: str}}], weektype: str, edited_subjects: [StudentSubject], settings: object) -> [str]:
@@ -179,7 +176,7 @@ def beautify_lecturers_classes(raw_schedule: [{str: {str: str}}], weektype: str,
             
             daily_schedule = "".join([
                 daily_schedule,
-                lecturerSubject.get() if settings is None or settings.is_schedule_size_full else lecturerSubject.get_compact()
+                lecturerSubject.get() if settings.is_schedule_size_full else lecturerSubject.get_compact()
             ])
         
         if daily_schedule == "":

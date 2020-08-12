@@ -171,12 +171,12 @@ class Student:
             parsed_page: BeautifulSoup = BeautifulSoup(page, "html.parser")
             selector: Tag = parsed_page.find(name="select", attrs={ "name": TYPE.value })
             
-            keys: [str] = [ option.text for option in selector.find_all("option") ][1:]
-            values: [str] = [ option["value"] for option in selector.find_all("option") ][1:]
+            keys: [str] = map(lambda option: option.text, selector.find_all("option"))[1:]
+            values: [str] = map(lambda option: option["value"], selector.find_all("option"))[1:]
             
             # Fixing bad quality response
             for i in range(1, len(keys)): keys[i - 1] = keys[i - 1].replace(keys[i], "")
-            for (i, key) in enumerate(keys): keys[i] = key[:-1] if key.endswith(" ") else key
+            kyes = map(lambda key: key[:-1] if key.endswith(" ") else key, keys)
         except (ConnectionError, AttributeError, KeyError):
             return dict()
         else:
@@ -198,7 +198,7 @@ class Student:
             
             if not selector: return 0
             
-            return max([ int(option["value"]) for option in selector.find_all("option") ])
+            return max(map(lambda option: int(option["value"]), selector.find_all("option")))
         except (ConnectionError, ValueError, KeyError):
             return None
     
