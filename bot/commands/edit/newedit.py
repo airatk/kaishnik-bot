@@ -287,4 +287,4 @@ async def end_edit(message: Message):
     students[message.chat.id].edited_subjects.append(students[message.chat.id].edited_subject)
     students[message.chat.id].edited_subject = None
     
-    save_data(file=USERS_FILE, object=students)
+    save_data(file=USERS_FILE, data=students)

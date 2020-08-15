@@ -206,7 +206,7 @@ async def delete_all(callback: CallbackQuery):
     
     students[callback.message.chat.id].guard.drop()
     
-    save_data(file=USERS_FILE, object=students)
+    save_data(file=USERS_FILE, data=students)
 
 @dispatcher.callback_query_handler(
     lambda callback:
@@ -222,4 +222,4 @@ async def delete_edit(callback: CallbackQuery):
     
     students[callback.message.chat.id].guard.drop()
     
-    save_data(file=USERS_FILE, object=students)
+    save_data(file=USERS_FILE, data=students)

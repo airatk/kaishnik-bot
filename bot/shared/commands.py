@@ -11,9 +11,8 @@ class Commands(Enum):
     DROP: str = "drop"
     GUARDDROP: str = "guarddrop"
     BROADCAST: str = "broadcast"
-    POLL: str = "poll"
-    REVERSE: str = "reverse"
     DAYOFF: str = "dayoff"
+    BACKUP: str = "backup"
     
     NO_PERMISSIONS: str = "no-permissions"
     

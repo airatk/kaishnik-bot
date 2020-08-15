@@ -58,11 +58,11 @@ class Subject(ABC):
     
     
     @time.setter
-    def time(self, timeAndType: (str, str)):
+    def time(self, time_and_type: (str, str)):
         try:
-            (time, type) = timeAndType
+            (time, type) = time_and_type
         except (TypeError, ValueError):
-            time = timeAndType
+            time = time_and_type
             type = None
         
         (hours, minutes) = (int(time.split(":")[0]), int(time.split(":")[1]))

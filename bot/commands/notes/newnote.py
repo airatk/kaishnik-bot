@@ -67,4 +67,4 @@ async def add_note(message: Message):
     students[message.chat.id].guard.drop()
     students[message.chat.id].notes.append(clarify_markdown(message.text))
     
-    save_data(file=USERS_FILE, object=students)
+    save_data(file=USERS_FILE, data=students)

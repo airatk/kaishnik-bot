@@ -81,4 +81,4 @@ async def finish_login(message: Message):
     students[message.chat.id].guard.drop()
     students[message.chat.id].is_setup = True
     
-    save_data(file=USERS_FILE, object=students)
+    save_data(file=USERS_FILE, data=students)

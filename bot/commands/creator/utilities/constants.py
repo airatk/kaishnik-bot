@@ -72,6 +72,7 @@ CONTROL_PANEL: str = (
         "\t\t\t} ]\n"
         "\t\t\t\[ list ]\n"
     "}\n"
+    "/backup\n"
     "\n"
     "*hashtags*\n"
     "# users\n"

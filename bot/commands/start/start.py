@@ -24,7 +24,7 @@ from bot.shared.commands import Commands
 async def start_on_command(message: Message):
     students[message.chat.id] = Student()
     
-    save_data(file=USERS_FILE, object=students)
+    save_data(file=USERS_FILE, data=students)
     
     guard_message: Message = await message.answer(text="Йоу!")
     

@@ -57,4 +57,4 @@ async def appearance_done(callback: CallbackQuery):
     
     students[callback.message.chat.id].guard.drop()
     
-    save_data(file=USERS_FILE, object=students)
+    save_data(file=USERS_FILE, data=students)

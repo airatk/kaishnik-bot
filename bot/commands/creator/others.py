@@ -14,6 +14,8 @@ from bot.commands.creator.utilities.types import Suboption
 from bot.shared.calendar.constants import MONTHS
 from bot.shared.data.helpers import save_data
 from bot.shared.data.helpers import load_data
+from bot.shared.data.helpers import get_users_data
+from bot.shared.data.helpers import get_users_json
 from bot.shared.data.constants import DAYOFFS
 from bot.shared.commands import Commands
 
@@ -84,7 +86,7 @@ async def dayoff(message: Message):
             raw_date: str = options[Option.DROP.value]
             
             if raw_date == Suboption.ALL.value:
-                save_data(file=DAYOFFS, object=[])
+                save_data(file=DAYOFFS, data=[])
                 await message.answer(text="Dropped!")
                 return
         
@@ -112,8 +114,16 @@ async def dayoff(message: Message):
                 await message.answer(text="Not a dayoff!")
                 return
         
-        save_data(file=DAYOFFS, object=dayoff_dates)
+        save_data(file=DAYOFFS, data=dayoff_dates)
         
         await message.answer(text="Done!")
     else:
         await message.answer(text="No options were found!")
+
+@dispatcher.message_handler(
+    lambda message: message.from_user.id == CREATOR,
+    commands=[ Commands.BACKUP.value ]
+)
+async def backup(message: Message):
+    await message.answer_document(document=get_users_data())
+    await message.answer_document(document=get_users_json())

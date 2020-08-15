@@ -85,7 +85,7 @@ async def delete_all(callback: CallbackQuery):
     students[callback.message.chat.id].guard.drop()
     students[callback.message.chat.id].notes = []
     
-    save_data(file=USERS_FILE, object=students)
+    save_data(file=USERS_FILE, data=students)
 
 @dispatcher.callback_query_handler(
     lambda callback:
@@ -107,4 +107,4 @@ async def delete_note(callback: CallbackQuery):
     students[callback.message.chat.id].guard.drop()
     del students[callback.message.chat.id].notes[number]
     
-    save_data(file=USERS_FILE, object=students)
+    save_data(file=USERS_FILE, data=students)

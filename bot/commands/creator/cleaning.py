@@ -57,7 +57,7 @@ async def clear(message: Message):
     
     await message.answer(text="Cleared!" if is_cleared else "No users to clear!")
     
-    save_data(file=USERS_FILE, object=students)
+    save_data(file=USERS_FILE, data=students)
 
 @dispatcher.message_handler(
     lambda message: message.from_user.id == CREATOR,
@@ -103,7 +103,7 @@ async def erase(message: Message):
     else:
         await message.answer(text="{users_number} users were #erased!".format(users_number=len(erase_list)))
         
-        save_data(file=USERS_FILE, object=students)
+        save_data(file=USERS_FILE, data=students)
 
 @dispatcher.message_handler(
     lambda message: message.from_user.id == CREATOR,
@@ -163,7 +163,7 @@ async def drop(message: Message):
     else:
         await message.answer(text="{users_number} users were #dropped!".format(users_number=len(drop_list)))
         
-        save_data(file=USERS_FILE, object=students)
+        save_data(file=USERS_FILE, data=students)
 
 @dispatcher.message_handler(
     lambda message: message.from_user.id == CREATOR,

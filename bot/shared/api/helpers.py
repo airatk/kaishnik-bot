@@ -63,22 +63,22 @@ def beautify_classes(raw_schedule: [{str: {str: str}}], weektype: str, edited_su
                     day_month = "{day}.{month}".format(day=int(date.strftime("%d")), month=date.strftime("%m"))
                     if "." in subject["dayDate"] and day_month not in subject["dayDate"]: continue
                 
-                studentSubject: StudentSubject = StudentSubject()
+                student_subject: StudentSubject = StudentSubject()
                 
-                studentSubject.time = (subject["dayTime"], subject["disciplType"])
+                student_subject.time = (subject["dayTime"], subject["disciplType"])
                 
                 # Do not show subject if there is its edited alternative
-                if studentSubject.begin_hour in edited_subjects_begin_hours: continue
+                if student_subject.begin_hour in edited_subjects_begin_hours: continue
                 
-                studentSubject.building = subject["buildNum"]
-                studentSubject.auditorium = subject["audNum"]
-                studentSubject.dates = subject["dayDate"]
-                studentSubject.title = subject["disciplName"]
-                studentSubject.type = subject["disciplType"]
-                studentSubject.lecturer = subject["prepodName"]
-                studentSubject.department = subject["orgUnitName"]
+                student_subject.building = subject["buildNum"]
+                student_subject.auditorium = subject["audNum"]
+                student_subject.dates = subject["dayDate"]
+                student_subject.title = subject["disciplName"]
+                student_subject.type = subject["disciplType"]
+                student_subject.lecturer = subject["prepodName"]
+                student_subject.department = subject["orgUnitName"]
                 
-                subjects_list.append((studentSubject.begin_hour, studentSubject))
+                subjects_list.append((student_subject.begin_hour, student_subject))
         
         # Sort by begin_hour
         subjects_list.sort(key=lambda subject: subject[0])
@@ -159,24 +159,24 @@ def beautify_lecturers_classes(raw_schedule: [{str: {str: str}}], weektype: str,
         for subject in raw_schedule[str(weekday)]:
             if previous_time == subject["dayTime"]: continue
             
-            lecturerSubject: LecturerSubject = LecturerSubject()
+            lecturer_subject: LecturerSubject = LecturerSubject()
             
-            lecturerSubject.time = (subject["dayTime"], subject["disciplType"])
-            lecturerSubject.building = subject["buildNum"]
-            lecturerSubject.auditorium = subject["audNum"]
-            lecturerSubject.dates = subject["dayDate"]
-            lecturerSubject.title = subject["disciplName"]
-            lecturerSubject.type = subject["disciplType"]
+            lecturer_subject.time = (subject["dayTime"], subject["disciplType"])
+            lecturer_subject.building = subject["buildNum"]
+            lecturer_subject.auditorium = subject["audNum"]
+            lecturer_subject.dates = subject["dayDate"]
+            lecturer_subject.title = subject["disciplName"]
+            lecturer_subject.type = subject["disciplType"]
             
             previous_time = subject["dayTime"]
             
             for another_subject in raw_schedule[str(weekday)]:
                 if previous_time == another_subject["dayTime"]:
-                    lecturerSubject.groups.append(another_subject["group"])
+                    lecturer_subject.groups.append(another_subject["group"])
             
             daily_schedule = "".join([
                 daily_schedule,
-                lecturerSubject.get() if settings.is_schedule_size_full else lecturerSubject.get_compact()
+                lecturer_subject.get() if settings.is_schedule_size_full else lecturer_subject.get_compact()
             ])
         
         if daily_schedule == "":
