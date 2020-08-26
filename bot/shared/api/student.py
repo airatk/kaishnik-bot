@@ -83,6 +83,7 @@ class Student:
         self._another_group_schedule_id: str = None
         
         self.group_names: {str, str} = {}
+        self.classes_offline: [str] = []
         self.scoretable: [(str, str)] = None
         self.edited_subject: StudentSubject = None
         
@@ -146,12 +147,16 @@ class Student:
         self._another_group_schedule_id = None
         
         if TYPE is ScheduleType.CLASSES:
-            return beautify_classes(
+            classes: [str] = beautify_classes(
                 raw_schedule=response,
                 weektype=weektype,
                 edited_subjects=self.edited_subjects if is_own_group_asked else [],
                 settings=self.settings
             )
+            
+            self.classes_offline = classes
+            
+            return classes
         
         if TYPE is ScheduleType.EXAMS:
             return beautify_exams(

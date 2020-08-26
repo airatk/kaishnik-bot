@@ -114,12 +114,13 @@ async def drop(message: Message):
     
     options: {str: str} = parse_creator_query(message.get_args())
     
+    loading_message: Message = await message.answer(text="Started dropping…")
+    
     if options.get("") == Suboption.SILENTLY.value:
         for chat_id in drop_list:
             students[chat_id]: Student = Student()
     else:
         progress_bar: str = ""
-        loading_message: Message = await message.answer(text="Started dropping…")
         
         for (index, chat_id) in enumerate(drop_list):
             progress_bar = await update_progress_bar(
@@ -161,6 +162,7 @@ async def drop(message: Message):
     if len(drop_list) == 0:
         await loading_message.edit_text(text="No users to drop!")
     else:
+        await loading_message.delete()
         await message.answer(text="{users_number} users were #dropped!".format(users_number=len(drop_list)))
         
         save_data(file=USERS_FILE, data=students)

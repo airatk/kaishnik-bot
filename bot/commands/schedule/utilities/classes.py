@@ -48,6 +48,14 @@ async def common_day_schedule(command: Commands, callback: CallbackQuery):
         disable_web_page_preview=True
     )
     
+    if command is Commands.CLASSES and schedule is None and students[callback.message.chat.id].classes_offline != []:
+        await callback.message.answer(
+            text=students[callback.message.chat.id].classes_offline[int(weekday)],
+            parse_mode="markdown"
+        )
+        
+        await callback.message.answer(text="Отображено расписание, сохранённое ранее.")
+    
     students[callback.message.chat.id].guard.drop()
 
 async def common_weektype_selection(command: Commands, callback: CallbackQuery):
@@ -108,6 +116,15 @@ async def common_week_schedule(command: Commands, callback: CallbackQuery):
             text=ResponseError.NO_RESPONSE.value,
             disable_web_page_preview=True
         )
+        
+        if command is Commands.CLASSES and students[callback.message.chat.id].classes_offline != []:
+            for weekday in WEEKDAYS:
+                await callback.message.answer(
+                    text=students[callback.message.chat.id].classes_offline[weekday - 1],
+                    parse_mode="markdown"
+                )
+            
+            await callback.message.answer(text="Отображено расписание, сохранённое ранее.")
     elif len(schedule) == 0:
         await callback.message.edit_text(
             text=ResponseError.NO_DATA.value,
