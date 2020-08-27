@@ -15,6 +15,7 @@ from bot.commands.creator.utilities.helpers import try_get_chat
 from bot.commands.creator.utilities.helpers import get_user_data
 from bot.commands.creator.utilities.helpers import collect_ids
 from bot.commands.creator.utilities.constants import CREATOR
+from bot.commands.creator.utilities.types import Option
 from bot.commands.creator.utilities.types import Suboption
 
 from bot.shared.api.student import Student
@@ -116,7 +117,7 @@ async def drop(message: Message):
     
     loading_message: Message = await message.answer(text="Started dropping…")
     
-    if options.get("") == Suboption.SILENTLY.value:
+    if options.get(Option.TO_SUBOPTION.value) == Suboption.SILENTLY.value:
         for chat_id in drop_list:
             students[chat_id]: Student = Student()
     else:
@@ -146,14 +147,24 @@ async def drop(message: Message):
                 
                 students[chat_id]: Student = Student()
                 
+                drop_message_entities: [str] = [ "Текущие настройки сброшены!", "Обнови данные — /login" ]
+                
+                if Option.MESSAGE.value in options:
+                    drop_message_part_1: str = options[Option.MESSAGE.value]
+                    drop_message_part_2: str = "\n".join(drop_message_entities)
+                else:
+                    drop_message_part_1: str = drop_message_entities[0]
+                    drop_message_part_2: str = drop_message_entities[1]
+                
                 await message.bot.send_message(
                     chat_id=chat_id,
-                    text="Текущие настройки сброшены!",
+                    text=drop_message_part_1,
+                    parse_mode="markdown",
                     disable_notification=True
                 )
                 await message.bot.send_message(
                     chat_id=chat_id,
-                    text="Обнови данные — /login",
+                    text=drop_message_part_2,
                     disable_notification=True
                 )
             except (CantInitiateConversation, UserDeactivated, BotBlocked, BotKicked, ChatNotFound):
