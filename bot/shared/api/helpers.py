@@ -29,14 +29,14 @@ def beautify_classes(raw_schedule: [{str: {str: str}}], weektype: str, edited_su
     today_weekday: int = today.isoweekday()
     is_asked_week_even = is_even() if week_shift == 0 else not is_even()
     
-    dayoffs: [(int, int)] = load_data(file=DAYOFFS)
+    dayoffs: {(int, int): str} = load_data(file=DAYOFFS)
     
     for weekday in WEEKDAYS:
         # Date of each weekday
         date: datetime = today + timedelta(days=weekday - today_weekday)
         
-        # Finding out if the day is dayoff
-        is_dayoff = (date.day, date.month) in dayoffs
+        # Setting up date to search among dayoffs
+        possible_dayoff = (date.day, date.month)
         
         # Reseting the `subjects_list`. Adding the appropriate edited subjects to the schedule
         subjects_list: [(int, StudentSubject)] = [
@@ -48,7 +48,7 @@ def beautify_classes(raw_schedule: [{str: {str: str}}], weektype: str, edited_su
         # Getting edited subjects begin hours
         edited_subjects_begin_hours: [int] = [ begin_hour for (begin_hour, _) in subjects_list ]
         
-        if str(weekday) in raw_schedule and not is_dayoff:
+        if str(weekday) in raw_schedule and possible_dayoff not in dayoffs:
             raw_schedule[str(weekday)] = refine_raw_schedule(raw_schedule[str(weekday)])
             
             for subject in raw_schedule[str(weekday)]:
@@ -86,7 +86,7 @@ def beautify_classes(raw_schedule: [{str: {str: str}}], weektype: str, edited_su
         daily_schedule: str = "".join([ (subject.get() if settings.is_schedule_size_full else subject.get_compact()) for (_, subject) in subjects_list ])
         
         if daily_schedule == "":
-            daily_schedule = "\n\nПраздничный выходной🥳" if is_dayoff else "\n\nВыходной"
+            daily_schedule = "\n\n{dayoff_message}".format(dayoff_message=dayoffs[possible_dayoff] if possible_dayoff in dayoffs else "Выходной")
         
         weekly_schedule.append("".join([
             "*{weekday}, {day} {month}*".format(weekday=WEEKDAYS[weekday], day=int(date.strftime("%d")), month=MONTHS[date.strftime("%m")]),

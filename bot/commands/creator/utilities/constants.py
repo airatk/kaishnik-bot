@@ -68,6 +68,7 @@ CONTROL_PANEL: str = (
     "/dayoff {\n"
         "\t\t\t\[ list ]\n"
         "\t\t\t\[ add: { day-month } ]\n"
+        "\t\t\t\[ message: {} ]\n"
         "\t\t\t\[ drop: {\n"
             "\t\t\t\t\t\t\[ day-month ]\n"
             "\t\t\t\t\t\t\[ all ]\n"

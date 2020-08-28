@@ -65,15 +65,15 @@ async def broadcast(message: Message):
 async def dayoff(message: Message):
     options: {str: str} = parse_creator_query(message.get_args())
     
-    dayoff_dates: {(int, int)} = load_data(file=DAYOFFS)
+    dayoff_dates: {(int, int): str} = load_data(file=DAYOFFS)
     
     if options.get(Option.TO_SUBOPTION.value) == Suboption.LIST.value:
         dayoffs_list: str = "There are no dayoffs!" if len(dayoff_dates) == 0 else "*Dayoffs*\n"
         month: str = ""
         
-        for (day_index, month_index) in dayoff_dates:
-            month = MONTHS["{month_index:02}".format(month_index=month_index)]
-            dayoffs_list = "\n".join([ dayoffs_list, "• {day} {month}".format(day=day_index, month=month) ])
+        for (dayoff_date, dayoff_message) in dayoff_dates.items():
+            month = MONTHS["{month_index:02}".format(month_index=dayoff_date[1])]
+            dayoffs_list = "\n".join([ dayoffs_list, "• {day} {month}: {dayoff_message}".format(day=dayoff_date[0], month=month, dayoff_message=dayoff_message) ])
         
         await message.answer(
             text=dayoffs_list,
@@ -86,7 +86,7 @@ async def dayoff(message: Message):
             raw_date: str = options[Option.DROP.value]
             
             if raw_date == Suboption.ALL.value:
-                save_data(file=DAYOFFS, data=[])
+                save_data(file=DAYOFFS, data={})
                 await message.answer(text="Dropped!")
                 return
         
@@ -103,13 +103,13 @@ async def dayoff(message: Message):
         
         if Option.ADD.value in options:
             if dayoff_date not in dayoff_dates:
-                dayoff_dates.append(dayoff_date)
+                dayoff_dates[dayoff_date] = options[Option.MESSAGE.value] if Option.MESSAGE.value in options else "Выходной"
             else:
                 await message.answer(text="The dayoff have been added already!")
                 return
         elif Option.DROP.value in options:
             if dayoff_date in dayoff_dates:
-                dayoff_dates.remove(dayoff_date)
+                del dayoff_dates[dayoff_date]
             else:
                 await message.answer(text="Not a dayoff!")
                 return
