@@ -11,7 +11,7 @@ def is_even() -> bool:
 def get_week_number() -> int:
     (current_year, current_week, _) = datetime.today().isocalendar()
     
-    semester_1st_day = date(current_year, 2 if datetime.today().month < 9 else 9, 1)
+    semester_1st_day = date(current_year, 2 if datetime.today().month < 8 else 9, 1)
     first_week = semester_1st_day.isocalendar()[1]
     
     return current_week - first_week + (0 if semester_1st_day.isoweekday() == 7 else 1)

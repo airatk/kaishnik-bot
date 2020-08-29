@@ -29,7 +29,7 @@ def beautify_classes(raw_schedule: [{str: {str: str}}], weektype: str, edited_su
     today_weekday: int = today.isoweekday()
     is_asked_week_even = is_even() if week_shift == 0 else not is_even()
     
-    dayoffs: {(int, int): str} = load_data(file=DAYOFFS)
+    dayoffs: {(int, int): str} = load_data(file=DAYOFFS) if settings.are_classes_on_dates else {}
     
     for weekday in WEEKDAYS:
         # Date of each weekday
@@ -43,7 +43,7 @@ def beautify_classes(raw_schedule: [{str: {str: str}}], weektype: str, edited_su
             (subject.begin_hour, subject) for subject in edited_subjects if (
                 subject.weekday == weekday and (subject.is_even is None or subject.is_even == is_asked_week_even)
             )
-        ]
+        ] if possible_dayoff not in dayoffs else []
         
         # Getting edited subjects begin hours
         edited_subjects_begin_hours: [int] = [ begin_hour for (begin_hour, _) in subjects_list ]

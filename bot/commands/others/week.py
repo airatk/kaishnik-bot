@@ -25,16 +25,28 @@ from bot.shared.commands import Commands
 async def week(message: Message):
     (weekday, date) = weekday_date()
     
-    await message.answer(
-        text=(
-            "*{weekday}, {date}*\n"
-            "\n"
+    week_number: int = get_week_number()
+    
+    if week_number > 0:
+        week_message: str = (
             "Текущая неделя *{type}*,\n"
             "*#{number}* с начала семестра.".format(
-                weekday=weekday, date=date,
                 type="чётная" if is_even() else "нечётная",
-                number=get_week_number()
+                number=week_number
             )
-        ),
+        )
+    else:
+        week_number = -week_number + 1
+        
+        week_message: str = "До начала семестра меньше *{week_number}* недел{ending}.".format(
+            week_number=week_number,
+            ending="и" if week_number == 1 else "ь"
+        )
+    
+    await message.answer(
+        text="\n\n".join([
+            "*{weekday}, {date}*".format(weekday=weekday, date=date),
+            week_message
+        ]),
         parse_mode="markdown"
     )
