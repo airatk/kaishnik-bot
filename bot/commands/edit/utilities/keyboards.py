@@ -104,6 +104,12 @@ def buildings_editor() -> InlineKeyboardMarkup:
             text=building, callback_data=" ".join([ Commands.EDIT_BUILDING.value, building ])
         ) for building in BUILDINGS
     ])
+    buildings_editor_keyboard.row(
+        InlineKeyboardButton(
+            text="СК Олимп",
+            callback_data=" ".join([ Commands.EDIT_BUILDING.value, "Олимп" ])
+        )
+    )
     
     return buildings_editor_keyboard
 

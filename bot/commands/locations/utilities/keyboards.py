@@ -22,7 +22,7 @@ def location_type_chooser() -> InlineKeyboardMarkup:
         text="Библиотеки", callback_data=LocationType.LIBRARY.value
     ))
     location_type_chooser_keyboard.row(InlineKeyboardButton(
-        text="СК «Олимп»", callback_data=LocationType.SPORTSCOMPLEX.value
+        text="СК Олимп", callback_data=LocationType.SPORTSCOMPLEX.value
     ))
     location_type_chooser_keyboard.row(InlineKeyboardButton(
         text="Общежития", callback_data=LocationType.DORM.value
