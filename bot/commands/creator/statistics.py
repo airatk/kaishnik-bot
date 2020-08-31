@@ -27,8 +27,8 @@ from datetime import datetime
     commands=[ Commands.USERS.value ]
 )
 async def users(message: Message):
-    institutes_stats: [str] = [ student.institute for student in students.values() ]
-    years_stats: [str] = [ student.year for student in students.values() ]
+    institutes_stats: [str] = [ student.institute for student in students.values() if student.is_setup ]
+    years_stats: [str] = [ student.year for student in students.values() if student.is_setup ]
     
     institutes_names: [str] = list(INSTITUTES.values())
     years_names: [str] = [ str(year) for year in range(1, 7) ]  # 6 years maximum
@@ -48,11 +48,11 @@ async def users(message: Message):
             year_5=years_names[4], year_5_number=years_stats.count(years_names[4]),
             year_6=years_names[5], year_6_number=years_stats.count(years_names[5]),
             type_1=Student.Type.EXTENDED.value,
-            type_1_number=sum(1 for student in students.values() if student.type is Student.Type.EXTENDED),
+            type_1_number=sum(1 for student in students.values() if student.is_setup and student.type is Student.Type.EXTENDED),
             type_2=Student.Type.COMPACT.value,
-            type_2_number=sum(1 for student in students.values() if student.type is Student.Type.COMPACT),
+            type_2_number=sum(1 for student in students.values() if student.is_setup and student.type is Student.Type.COMPACT),
             type_3=Student.Type.GROUP_CHAT.value,
-            type_3_number=sum(1 for student in students.values() if student.type is Student.Type.GROUP_CHAT),
+            type_3_number=sum(1 for student in students.values() if student.is_setup and student.type is Student.Type.GROUP_CHAT),
             unsetup_number=sum(1 for student in students.values() if not student.is_setup),
             total=len(students)
         ),
