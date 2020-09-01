@@ -53,7 +53,7 @@ def time_period_chooser(lecturer_id: str = "None") -> InlineKeyboardMarkup:
             ])
         ),
         InlineKeyboardButton(
-            text="неделю",
+            text="неделю или день",
             callback_data=" ".join([ ClassesOptionType.WEEKTYPES.value, lecturer_id ])
         )
     ])
@@ -66,14 +66,14 @@ def weektype_chooser(lecturer_id: str = "None") -> InlineKeyboardMarkup:
     weektype_chooser_keyboard.row(cancel_button())
     
     weektype_chooser_keyboard.add(*[
-        InlineKeyboardButton(text="предыдущая", callback_data=" ".join([
-            ClassesOptionType.WEEKDAYS.value, WeekType.PREVIOUS.value, lecturer_id
+        InlineKeyboardButton(text="следующая", callback_data=" ".join([
+            ClassesOptionType.WEEKDAYS.value, WeekType.NEXT.value, lecturer_id
         ])),
         InlineKeyboardButton(text="текущая", callback_data=" ".join([
             ClassesOptionType.WEEKDAYS.value, WeekType.CURRENT.value, lecturer_id
         ])),
-        InlineKeyboardButton(text="следующая", callback_data=" ".join([
-            ClassesOptionType.WEEKDAYS.value, WeekType.NEXT.value, lecturer_id
+        InlineKeyboardButton(text="предыдущая", callback_data=" ".join([
+            ClassesOptionType.WEEKDAYS.value, WeekType.PREVIOUS.value, lecturer_id
         ]))
     ])
     
