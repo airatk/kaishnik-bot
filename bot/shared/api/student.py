@@ -154,7 +154,8 @@ class Student:
                 settings=self.settings
             )
             
-            self.classes_offline = classes
+            if is_own_group_asked:
+                self.classes_offline = classes
             
             return classes
         

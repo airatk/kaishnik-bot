@@ -24,6 +24,7 @@ async def common_day_schedule(command: Commands, callback: CallbackQuery):
     
     (weektype, weekday, lecturer_id) = callback.data.split()[1:]
     schedule: [str] = None
+    is_own_group_asked: bool = students[callback.message.chat.id].another_group_schedule_id is None
     
     if command is Commands.CLASSES:
         schedule = students[callback.message.chat.id].get_schedule(
@@ -48,7 +49,7 @@ async def common_day_schedule(command: Commands, callback: CallbackQuery):
         disable_web_page_preview=True
     )
     
-    if command is Commands.CLASSES and schedule is None and students[callback.message.chat.id].classes_offline != []:
+    if command is Commands.CLASSES and is_own_group_asked and schedule is None and students[callback.message.chat.id].classes_offline != []:
         await callback.message.answer(
             text=students[callback.message.chat.id].classes_offline[int(weekday)],
             parse_mode="markdown"
