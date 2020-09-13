@@ -142,9 +142,9 @@ class Student:
         except (ConnectionError, JSONDecodeError):
             return None
         
-        if not response: return []
-        
         self._another_group_schedule_id = None
+        
+        if not response: return []
         
         if TYPE is ScheduleType.CLASSES:
             classes: [str] = beautify_classes(

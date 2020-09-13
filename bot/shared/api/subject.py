@@ -104,22 +104,32 @@ class Subject(ABC):
         self._title = self._title.format(title=title)
     
     @type.setter
-    def type(self, type: str):
+    def type(self, types: (str, bool)):
+        type: str = types[0]
+        is_multigroup: bool = types[1]
+        
         if type == Subject.Type.LECTURE.value:
-            self._type = self._type.format(type="лекция")
-            self._compact_type = self._compact_type.format(type="Л")
+            full_type: str = "лекция"
+            compact_type: str = "Л"
         elif type == Subject.Type.PRACTICE.value:
-            self._type = self._type.format(type="практика")
-            self._compact_type = self._compact_type.format(type="П")
+            full_type: str = "практика"
+            compact_type: str = "П"
         elif type == Subject.Type.LAB.value:
-            self._type = self._type.format(type="лабораторная работа")
-            self._compact_type = self._compact_type.format(type="ЛР")
+            full_type: str = "лабораторная работа"
+            compact_type: str = "ЛР"
         elif type == Subject.Type.CONSULTATION.value:
-            self._type = self._type.format(type="консультация")
-            self._compact_type = self._compact_type.format(type="К")
+            full_type: str = "консультация"
+            compact_type: str = "К"
         else:
-            self._type = self._type.format(type=type)
-            self._compact_type = self._compact_type.format(type=type[:1].upper())
+            full_type: str = type
+            compact_type: str = type[:1].upper()
+        
+        if is_multigroup:
+            full_type = " ".join([ full_type, "(потоковая)" ])
+            compact_type = " ".join([ compact_type, "(п)" ])
+        
+        self._type = self._type.format(type=full_type)
+        self._compact_type = self._compact_type.format(type=compact_type)
     
     
     @abstractmethod

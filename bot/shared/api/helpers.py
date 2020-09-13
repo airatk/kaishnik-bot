@@ -74,7 +74,7 @@ def beautify_classes(raw_schedule: [{str: {str: str}}], weektype: str, edited_su
                 student_subject.auditorium = subject["audNum"]
                 student_subject.dates = subject["dayDate"]
                 student_subject.title = subject["disciplName"]
-                student_subject.type = subject["disciplType"]
+                student_subject.type = (subject["disciplType"], subject.get("potok", "") != "")
                 student_subject.lecturer = subject["prepodName"]
                 student_subject.department = subject["orgUnitName"]
                 
