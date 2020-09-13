@@ -92,22 +92,22 @@ async def choose_subjects_type(callback: CallbackQuery):
         students[callback.message.chat.id].guard.drop()
         return
     
-    (has_exams, has_tests, has_graded_tests) = (False, False, False)
+    (has_exams, has_courseworks, has_tests) = (False, False, False)
     
     for (_, score) in students[callback.message.chat.id].scoretable:
         has_exams |= ScoreType.EXAM.value in score
-        has_tests |= (ScoreType.TEST.value in score and ScoreType.GRADED_TEST.value not in score)
-        has_graded_tests |= ScoreType.GRADED_TEST.value in score
+        has_courseworks |= ScoreType.COURSEWORK.value in score
+        has_tests |= ScoreType.TEST.value in score
     
     await callback.message.edit_text(
         text="Выбери тип предметов:",
-        reply_markup=subjects_type_chooser(has_exams=has_exams, has_tests=has_tests, has_graded_tests=has_graded_tests)
+        reply_markup=subjects_type_chooser(has_exams=has_exams, has_courseworks=has_courseworks, has_tests=has_tests)
     )
 
 @dispatcher.callback_query_handler(
     lambda callback:
         students[callback.message.chat.id].guard.text == Commands.SCORE.value and
-        callback.data in [ Commands.SCORE_ALL.value, Commands.SCORE_EXAMS.value, Commands.SCORE_TESTS.value, Commands.SCORE_GRADED_TESTS.value ]
+        callback.data in [ Commands.SCORE_ALL.value, Commands.SCORE_EXAMS.value, Commands.SCORE_COURSEWORKS.value, Commands.SCORE_TESTS.value ]
 )
 @top_notification
 async def choose_subject(callback: CallbackQuery):
@@ -123,8 +123,8 @@ async def choose_subject(callback: CallbackQuery):
         students[callback.message.chat.id].guard.text == Commands.SCORE.value and (
             Commands.SCORE_ALL.value in callback.data or
             Commands.SCORE_EXAMS.value in callback.data or
-            Commands.SCORE_TESTS.value in callback.data or
-            Commands.SCORE_GRADED_TESTS.value in callback.data
+            Commands.SCORE_COURSEWORKS.value in callback.data or
+            Commands.SCORE_TESTS.value in callback.data
         )
 )
 @top_notification

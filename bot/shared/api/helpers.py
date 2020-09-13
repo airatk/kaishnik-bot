@@ -228,8 +228,8 @@ def beautify_scoretable(raw_scoretable: [[str]]) -> [(str, str)]:
         title: str = "*{title}*".format(title=unstyled_title)
         
         if "(экз.)" in subject[1]: score_type: str = "".join([ "\n_", ScoreType.EXAM.value, "_\n" ])
+        elif "(зач./оц.)" in subject[1]: score_type: str = "".join([ "\n_", ScoreType.COURSEWORK.value, "_\n" ])
         elif "(зач.)" in subject[1]: score_type: str = "".join([ "\n_", ScoreType.TEST.value, "_\n" ])
-        elif "(зач./оц.)" in subject[1]: score_type: str = "".join([ "\n_", ScoreType.GRADED_TEST.value, "_\n" ])
         else: score_type: str = "".join([ "\n_", ScoreType.OTHER.value, "_\n" ])
         
         certification1: str = "\n• 1 аттестация: {gained} / {max}".format(gained=subject[2], max=subject[3])

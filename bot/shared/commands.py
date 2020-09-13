@@ -42,8 +42,8 @@ class Commands(Enum):
     SCORE_SEMESTER: str = "score-semester"
     SCORE_ALL: str = "score-all"
     SCORE_EXAMS: str = "score-exams"
+    SCORE_COURSEWORKS: str = "score-courseworks"
     SCORE_TESTS: str = "score-test"
-    SCORE_GRADED_TESTS: str = "score-graded-test"
     
     NOTES: str = "notes"
     NOTES_ADD: str = "notes-add"

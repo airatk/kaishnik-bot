@@ -19,8 +19,8 @@ class ClassesOptionType(Enum):
 
 class ScoreType(Enum):
     EXAM: str = "экзамен"
+    COURSEWORK: str = "курсовая работа"
     TEST: str = "зачёт"
-    GRADED_TEST: str = "зачёт с оценкой"
     OTHER: str = "другое"
 
 

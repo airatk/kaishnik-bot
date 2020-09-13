@@ -19,10 +19,10 @@ def semester_chooser(semesters_number: int) -> InlineKeyboardMarkup:
     
     return semester_chooser_keyboard
 
-def subjects_type_chooser(has_exams: bool, has_tests: bool, has_graded_tests: bool) -> InlineKeyboardMarkup:
+def subjects_type_chooser(has_exams: bool, has_tests: bool, has_courseworks: bool) -> InlineKeyboardMarkup:
     subjects_type_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
-    if has_exams or has_tests or has_graded_tests:
+    if has_exams or has_courseworks or has_tests:
         subjects_type_chooser_keyboard.row(
             cancel_button(),
             InlineKeyboardButton(
@@ -34,13 +34,13 @@ def subjects_type_chooser(has_exams: bool, has_tests: bool, has_graded_tests: bo
         subjects_type_chooser_keyboard.row(InlineKeyboardButton(
             text="экзамены", callback_data=Commands.SCORE_EXAMS.value
         ))
+    if has_courseworks:
+        subjects_type_chooser_keyboard.row(InlineKeyboardButton(
+            text="курсовые работы", callback_data=Commands.SCORE_COURSEWORKS.value
+        ))
     if has_tests:
         subjects_type_chooser_keyboard.row(InlineKeyboardButton(
             text="зачёты", callback_data=Commands.SCORE_TESTS.value
-        ))
-    if has_graded_tests:
-        subjects_type_chooser_keyboard.row(InlineKeyboardButton(
-            text="зачёты с оценкой", callback_data=Commands.SCORE_GRADED_TESTS.value
         ))
     
     return subjects_type_chooser_keyboard
