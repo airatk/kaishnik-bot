@@ -189,7 +189,7 @@ async def add_subject_type(message: Message):
 )
 @top_notification
 async def add_lecturer(callback: CallbackQuery):
-    students[callback.message.chat.id].edited_subject.type = callback.data.split()[1]
+    students[callback.message.chat.id].edited_subject.type = (callback.data.split()[1], False)
     
     guard_message: Message = await callback.message.edit_text(
         text="Отправь имя преподавателя.",
