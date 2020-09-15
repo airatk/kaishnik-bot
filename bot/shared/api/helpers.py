@@ -166,7 +166,7 @@ def beautify_lecturers_classes(raw_schedule: [{str: {str: str}}], weektype: str,
             lecturer_subject.auditorium = subject["audNum"]
             lecturer_subject.dates = subject["dayDate"]
             lecturer_subject.title = subject["disciplName"]
-            lecturer_subject.type = subject["disciplType"]
+            lecturer_subject.type = (subject["disciplType"], False)
             
             previous_time = subject["dayTime"]
             
