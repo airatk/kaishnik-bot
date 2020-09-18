@@ -1,5 +1,4 @@
 from aiogram.types import Message
-from aiogram.utils.exceptions import ChatNotFound
 
 from bot import dispatcher
 
@@ -50,7 +49,7 @@ async def broadcast(message: Message):
                 disable_web_page_preview=True,
                 disable_notification=options.get(Option.NOTIFY.value) == "false"
             )
-        except ChatNotFound:
+        except Exception:
             await message.answer(text="{} is inactive! /clear?".format(chat_id))
     
     await message.answer(

@@ -116,6 +116,8 @@ async def try_get_chat(chat_id: int) -> (Chat, str):
         error_text = "Bot was kicked from {chat_id} group chat.".format(chat_id=chat_id)
     except ChatNotFound:
         error_text = "Couldn't find {chat_id} chat.".format(chat_id=chat_id)
+    except Exception:
+        error_text = "Unknown error causes unavailability of {chat_id} chat.".format(chat_id=chat_id)
     
     return (chat, error_text)
 
