@@ -58,6 +58,9 @@ def beautify_classes(raw_schedule: [{str: {str: str}}], weektype: str, edited_su
                 # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
                 if (subject["dayDate"] == "неч") if is_asked_week_even else (subject["dayDate"] == "чет"): continue
                 
+                # Clearing extra whitespaces from dates
+                subject["dayDate"] = subject["dayDate"].replace(" ", "").replace(",", ", ")
+                
                 # Do not show subjects with certain dates (21.09) on other dates (28 сентября) if asked
                 if settings.are_classes_on_dates:
                     day_month = "{day}.{month}".format(day=int(date.strftime("%d")), month=date.strftime("%m"))
