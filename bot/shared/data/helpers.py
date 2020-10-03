@@ -50,6 +50,6 @@ def get_users_json() -> object:
     } for (chat_id, student) in users.items() }
     
     with open(USERS_JSON, "w") as json_file:
-        json_dump(users, json_file, indent=4)
+        json_dump(users, json_file, indent=4, ensure_ascii=False)
     
     return open(USERS_JSON, "r")
