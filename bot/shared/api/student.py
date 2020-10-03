@@ -133,7 +133,7 @@ class Student:
         is_own_group_asked: bool = self._another_group_schedule_id is None
         
         try:
-            response: [{int: {str: str}}] = get(url=SCHEDULE_URL, params={
+            response: [{str: [{str: str}]}] = get(url=SCHEDULE_URL, params={
                 "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
                 "p_p_lifecycle": "2",
                 "p_p_resource_id": TYPE.value,

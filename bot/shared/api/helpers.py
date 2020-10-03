@@ -17,7 +17,7 @@ def refine_raw_schedule(raw_schedule) -> [{str: str}]:
     return list(map(lambda subject: { key: " ".join(str(value).split()) for (key, value) in subject.items() }, raw_schedule))
 
 
-def beautify_classes(raw_schedule: [{str: {str: str}}], weektype: str, edited_subjects: [StudentSubject], settings: object) -> [str]:
+def beautify_classes(raw_schedule: [{str: [{str: str}]}], weektype: str, edited_subjects: [StudentSubject], settings: object) -> [str]:
     weekly_schedule: [str] = []
     
     week_shift: int = 0
@@ -103,7 +103,7 @@ def beautify_classes(raw_schedule: [{str: {str: str}}], weektype: str, edited_su
     
     return weekly_schedule
 
-def beautify_exams(raw_schedule: [{str: {str: str}}], settings: object) -> str:
+def beautify_exams(raw_schedule: [{str: [{str: str}]}], settings: object) -> str:
     raw_schedule = refine_raw_schedule(raw_schedule)
     
     schedule: str = ""
@@ -128,7 +128,7 @@ def beautify_exams(raw_schedule: [{str: {str: str}}], settings: object) -> str:
     return schedule
 
 
-def beautify_lecturers_classes(raw_schedule: [{str: {str: str}}], weektype: str, settings: object) -> [str]:
+def beautify_lecturers_classes(raw_schedule: [{str: [{str: str}]}], weektype: str, settings: object) -> [str]:
     weekly_schedule: [str] = []
     
     week_shift: int = 0
@@ -155,10 +155,14 @@ def beautify_lecturers_classes(raw_schedule: [{str: {str: str}}], weektype: str,
         
         # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
         for subject in list(raw_schedule[str(weekday)]):
-            if subject["dayDate"] == "неч" if is_asked_week_even else subject["dayDate"] == "чет":
+            if (subject["dayDate"] == "неч" if is_asked_week_even else subject["dayDate"] == "чет"):
                 raw_schedule[str(weekday)].remove(subject)
         
-        # Finally, setting subjects themselves
+        # Clearing extra whitespaces from dates
+        for (subject_index, subject) in enumerate(raw_schedule[str(weekday)]):
+            raw_schedule[str(weekday)][subject_index]["dayDate"] = subject["dayDate"].replace(" ", "").replace(",", ", ")
+        
+        # Setting subjects themselves
         for subject in raw_schedule[str(weekday)]:
             if previous_time == subject["dayTime"]: continue
             
@@ -192,7 +196,7 @@ def beautify_lecturers_classes(raw_schedule: [{str: {str: str}}], weektype: str,
     
     return weekly_schedule
 
-def beautify_lecturers_exams(raw_schedule: [{str: {str: str}}], settings: object) -> str:
+def beautify_lecturers_exams(raw_schedule: [{str: [{str: str}]}], settings: object) -> str:
     raw_schedule = refine_raw_schedule(raw_schedule)
     
     schedule: [(str, str)] = []
