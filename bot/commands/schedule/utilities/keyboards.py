@@ -6,6 +6,7 @@ from bot.commands.schedule.utilities.constants import MOVEMENT_SHIFT
 
 from bot.shared.keyboards import cancel_button
 from bot.shared.api.types import ClassesOptionType
+from bot.shared.calendar.helpers import is_week_even
 from bot.shared.calendar.constants import WEEKDAYS
 from bot.shared.calendar.constants import MONTHS
 
@@ -72,9 +73,12 @@ def dates_appender(shift: int, dates: [str], lecturer_id: str = "None") -> Inlin
         raw_month: str = day_date.strftime("%m")
         raw_date: str = ".".join([ raw_day, raw_month ])
         
-        text: str = "Сегодня" if (date_index + shift) == 0 else "{weekday}, {day} {month}".format(
-            weekday=WEEKDAYS[weekday], day=int(raw_day), month=MONTHS[raw_month]
-        )
+        text: str = "Сегодня" if (date_index + shift) == 0 else WEEKDAYS[weekday]
+        
+        if weekday == 1:
+            text = ", ".join([ text, "чётная" if is_week_even(day_date=day_date) else "нечётная" ])
+        else:
+            text = "{text}, {day} {month}".format(text=text, day=int(raw_day), month=MONTHS[raw_month])
         
         dates_appender_keyboard.row(InlineKeyboardButton(
             text="".join([ text, " •" if raw_date in dates else "" ]),

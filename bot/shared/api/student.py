@@ -113,13 +113,13 @@ class Student:
     
     def _get_group_schedule_id(self, another_group: str = None) -> str:
         try:
-            groups = get(url=SCHEDULE_URL, params={
+            groups = get(url=SCHEDULE_URL, timeout=(4, 4), params={
                 "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
                 "p_p_lifecycle": "2",
                 "p_p_resource_id": "getGroupsURL",
                 "query": self._group if another_group is None else another_group
             }).json()
-        except (ConnectionError, JSONDecodeError):
+        except (ConnectionError, JSONDecodeError, Timeout):
             return None
         
         if len(groups) != 1: return None  # User has to send exactly his group
@@ -132,8 +132,10 @@ class Student:
     def get_schedule(self, TYPE: ScheduleType) -> ([str], str):
         is_own_group_asked: bool = self._another_group_schedule_id is None
         
+        classes_error_message: str = None
+        
         try:
-            response: [{str: [{str: str}]}] = get(url=SCHEDULE_URL, params={
+            response: [{str: [{str: str}]}] = get(url=SCHEDULE_URL, timeout=(4, 4), params={
                 "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
                 "p_p_lifecycle": "2",
                 "p_p_resource_id": TYPE.value,
@@ -141,12 +143,23 @@ class Student:
             }).json()
             
             if not response: raise Exception
-        except (ConnectionError, JSONDecodeError):
-            return (None, ResponseError.NO_RESPONSE.value)
+        except (ConnectionError, JSONDecodeError, Timeout):
+            if not is_own_group_asked or self.classes_offline == []:
+                return (None, ResponseError.NO_RESPONSE.value)
+            
+            response = self.classes_offline
+            classes_error_message = ResponseError.NO_RESPONSE.value
         except Exception:
-            return (None, ResponseError.NO_DATA.value)
+            if not is_own_group_asked or self.classes_offline == []:
+                return (None, ResponseError.NO_DATA.value)
+            
+            response = self.classes_offline
+            classes_error_message = ResponseError.NO_DATA.value
         
         self._another_group_schedule_id = None
+        
+        if is_own_group_asked:
+            self.classes_offline = response
         
         if TYPE is ScheduleType.CLASSES:
             return (beautify_classes(
@@ -154,7 +167,7 @@ class Student:
                 dates=self.chosen_schedule_dates,
                 edited_subjects=self.edited_subjects if is_own_group_asked else [],
                 settings=self.settings
-            ), None)
+            ), classes_error_message)
         
         if TYPE is ScheduleType.EXAMS:
             return (beautify_exams(
@@ -165,7 +178,7 @@ class Student:
     
     def get_dictionary_of(self, TYPE: ScoreDataType) -> {str: str}:
         try:
-            page: str = get(url=SCORE_URL, params={
+            page: str = get(url=SCORE_URL, timeout=(4, 4), params={
                 "p_fac": self.institute_id,
                 "p_kurs": self.year,
                 "p_group": self.group_score_id
@@ -180,14 +193,14 @@ class Student:
             # Fixing bad quality response
             for i in range(1, len(keys)): keys[i - 1] = keys[i - 1].replace(keys[i], "")
             keys = list(map(lambda key: key[:-1] if key.endswith(" ") else key, keys))
-        except (ConnectionError, AttributeError, KeyError):
+        except (ConnectionError, AttributeError, KeyError, Timeout):
             return dict()
         else:
             return dict(zip(keys, values))
     
     def get_last_available_semester(self) -> int:
         try:
-            page: str = post(SCORE_URL, data={
+            page: str = post(SCORE_URL, timeout=(4, 4), data={
                 "p_sub": P_SUB,
                 "p_fac": self.institute_id,
                 "p_kurs": self.year,
@@ -202,12 +215,12 @@ class Student:
             if not selector: return 0
             
             return max(map(lambda option: int(option["value"]), selector.find_all("option")))
-        except (ConnectionError, ValueError, KeyError):
+        except (ConnectionError, ValueError, KeyError, Timeout):
             return None
     
     def get_scoretable(self, semester: str) -> [(str, str)]:
         try:
-            page: str = post(SCORE_URL, data={
+            page: str = post(SCORE_URL, timeout=(4, 4), data={
                 "p_sub": P_SUB,
                 "p_fac": self.institute_id,
                 "p_kurs": self.year,
@@ -225,5 +238,5 @@ class Student:
             raw_scoretable: [[str]] = [ [ (data.text if data.text else "-") for data in row.find_all("td") ] for row in table.find_all("tr") ][2:]
             
             return beautify_scoretable(raw_scoretable=raw_scoretable)
-        except (ConnectionError, AttributeError):
+        except (ConnectionError, AttributeError, Timeout):
             return None

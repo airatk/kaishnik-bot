@@ -68,9 +68,11 @@ async def common_show_chosen_dates(command: Commands, callback: CallbackQuery):
     
     await callback.message.delete()
     
-    if schedule is None:
+    if error_message is not None:
         await callback.message.answer(text=error_message, parse_mode="markdown", disable_web_page_preview=True)
-    else:
+        await callback.message.answer(text="Отображено ранее сохранённое расписание.")
+    
+    if schedule is not None:
         for day in schedule:
             await callback.message.answer(text=day, parse_mode="markdown")
     

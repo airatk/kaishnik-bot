@@ -7,7 +7,6 @@ from bot.shared.calendar.helpers import is_week_even
 from bot.shared.data.helpers import load_data
 from bot.shared.data.constants import DAYOFFS
 
-from datetime import datetime
 from datetime import date
 
 
@@ -22,6 +21,8 @@ def beautify_classes(raw_schedule: [{str: [{str: str}]}], edited_subjects: [Stud
     
     if should_show_entire_semester:
         dates = WEEKDAYS
+    else:
+        dates.sort(key=lambda raw_date: date(date.today().year, int(raw_date[3:]), int(raw_date[:2])))
     
     if not should_show_entire_semester:
         dayoffs: {(int, int): str} = load_data(file=DAYOFFS)
@@ -29,7 +30,7 @@ def beautify_classes(raw_schedule: [{str: [{str: str}]}], edited_subjects: [Stud
     for raw_date in dates:
         if not should_show_entire_semester:
             (raw_day, raw_month) = raw_date.split(".")
-            day_date: datetime = date(datetime.today().year, int(raw_month), int(raw_day))
+            day_date: date = date(date.today().year, int(raw_month), int(raw_day))
             weekday: str = str(day_date.isoweekday())
             
             # Setting up date to search among dayoffs
@@ -62,7 +63,7 @@ def beautify_classes(raw_schedule: [{str: [{str: str}]}], edited_subjects: [Stud
                     if (subject["dayDate"] == "неч") if is_week_even(day_date) else (subject["dayDate"] == "чет"): continue
                     
                     # Do not show subjects with certain dates (21.09) on other dates (28 сентября) if that's not asked
-                    if ("." in subject["dayDate"] and raw_date not in subject["dayDate"]): continue
+                    if ("." in subject["dayDate"] and "{day}.{month}".format(day=int(raw_day), month=raw_month) not in subject["dayDate"]): continue
                 
                 student_subject: StudentSubject = StudentSubject()
                 
@@ -91,7 +92,7 @@ def beautify_classes(raw_schedule: [{str: [{str: str}]}], edited_subjects: [Stud
         
         schedule.append("".join([
             "*{weekday}*".format(weekday=WEEKDAYS[int(weekday)]) if should_show_entire_semester else "*{weekday}, {day} {month}*".format(
-                weekday=WEEKDAYS[int(weekday)],
+                weekday=WEEKDAYS.get(int(weekday), "Воскресенье"),
                 day=int(raw_day), month=MONTHS[raw_month]
             ),
             daily_schedule
@@ -131,11 +132,13 @@ def beautify_lecturers_classes(raw_schedule: [{str: [{str: str}]}], settings: ob
     
     if should_show_entire_semester:
         dates = WEEKDAYS
+    else:
+        dates.sort(key=lambda raw_date: date(date.today().year, int(raw_date[3:]), int(raw_date[:2])))
     
     for raw_date in dates:
         if not should_show_entire_semester:
             (raw_day, raw_month) = raw_date.split(".")
-            day_date: datetime = date(datetime.today().year, int(raw_month), int(raw_day))
+            day_date: date = date(date.today().year, int(raw_month), int(raw_day))
             weekday: str = str(day_date.isoweekday())
         else:
             weekday: str = str(raw_date)
@@ -149,7 +152,7 @@ def beautify_lecturers_classes(raw_schedule: [{str: [{str: str}]}], settings: ob
             schedule.append("*{weekday}*\n\nНет занятий".format(
                 weekday=WEEKDAYS[int(weekday)]
             ) if should_show_entire_semester else "*{weekday}, {day} {month}*\n\nНет занятий".format(
-                weekday=WEEKDAYS[int(weekday)],
+                weekday=WEEKDAYS.get(int(weekday), "Воскресенье"),
                 day=int(raw_day), month=MONTHS[raw_month])
             )
             continue
@@ -202,7 +205,7 @@ def beautify_lecturers_classes(raw_schedule: [{str: [{str: str}]}], settings: ob
             "*{weekday}*".format(
                 weekday=WEEKDAYS[int(weekday)]
             ) if should_show_entire_semester else "*{weekday}, {day} {month}*".format(
-                weekday=WEEKDAYS[int(weekday)],
+                weekday=WEEKDAYS.get(int(weekday), "Воскресенье"),
                 day=int(raw_day), month=MONTHS[raw_month]
             ),
             daily_schedule
