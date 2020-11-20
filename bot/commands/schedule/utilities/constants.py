@@ -1,0 +1,2 @@
+INITIAL_SHIFT: int = -2
+MOVEMENT_SHIFT: int = 5

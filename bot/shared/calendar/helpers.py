@@ -5,13 +5,13 @@ from datetime import datetime
 from datetime import date
 
 
-def is_even() -> bool:
-    return get_week_number() % 2 == 0
+def is_week_even(day_date: datetime = datetime.today()) -> bool:
+    return get_week_number(day_date=day_date) % 2 == 0
 
-def get_week_number() -> int:
-    (current_year, current_week, _) = datetime.today().isocalendar()
+def get_week_number(day_date: datetime = datetime.today()) -> int:
+    (current_year, current_week, _) = day_date.isocalendar()
     
-    semester_1st_day = date(current_year, 2 if datetime.today().month < 8 else 9, 1)
+    semester_1st_day = date(current_year, 2 if day_date.month < 8 else 9, 1)
     first_week = semester_1st_day.isocalendar()[1]
     
     return current_week - first_week + (0 if semester_1st_day.isoweekday() == 7 else 1)

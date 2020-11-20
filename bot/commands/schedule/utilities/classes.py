@@ -1,143 +1,77 @@
 from aiogram.types import CallbackQuery
-from aiogram.types import InlineKeyboardMarkup
 
 from bot import students
 
-from bot.commands.schedule.utilities.keyboards import weektype_chooser
-from bot.commands.schedule.utilities.keyboards import weekday_chooser
+from bot.commands.schedule.utilities.keyboards import dates_appender
 
 from bot.shared.api.constants import LOADING_REPLIES
 from bot.shared.api.types import ScheduleType
-from bot.shared.api.types import ResponseError
 from bot.shared.api.lecturers import get_lecturers_schedule
-from bot.shared.calendar.constants import WEEKDAYS
 from bot.shared.commands import Commands
 
 from random import choice
 
 
-async def common_day_schedule(command: Commands, callback: CallbackQuery):
-    await callback.message.edit_text(
-        text=choice(LOADING_REPLIES),
-        disable_web_page_preview=True
-    )
+async def common_add_chosen_date(callback: CallbackQuery):
+    callback_data: [str] = callback.data.split(" ")
     
-    (weektype, weekday, lecturer_id) = callback.data.split()[1:]
-    schedule: [str] = None
-    is_own_group_asked: bool = students[callback.message.chat.id].another_group_schedule_id is None
+    raw_date: str = callback_data[2]
     
-    if command is Commands.CLASSES:
-        schedule = students[callback.message.chat.id].get_schedule(
-            TYPE=ScheduleType.CLASSES,
-            weektype=weektype
-        )
-    elif command is Commands.LECTURERS:
-        schedule = get_lecturers_schedule(
-            lecturer_id=lecturer_id,
-            TYPE=ScheduleType.CLASSES,
-            weektype=weektype,
-            settings=students[callback.message.chat.id].settings
-        )
+    if raw_date != "":
+        if raw_date in students[callback.message.chat.id].chosen_schedule_dates:
+            students[callback.message.chat.id].chosen_schedule_dates.remove(raw_date)
+        else:
+            students[callback.message.chat.id].chosen_schedule_dates.append(raw_date)
     
-    if schedule is None: message_text: str = ResponseError.NO_RESPONSE.value
-    elif len(schedule) == 0: message_text: str = ResponseError.NO_DATA.value
-    else: message_text: str = schedule[int(weekday)]
+    chosen_dates_number: int = len(students[callback.message.chat.id].chosen_schedule_dates)
+    
+    chosen_word_ending: str = "о"
+    day_word: str = "день"
+    
+    if chosen_dates_number == 1: chosen_word_ending = ""
+    elif chosen_dates_number < 5: day_word = "дня"
+    else: day_word = "дней"
     
     await callback.message.edit_text(
-        text=message_text,
+        text="\n".join([
+            "" if chosen_dates_number == 0 else "Выбран{chosen_word_ending} *{chosen_dates_number}* {day_word}.".format(
+                chosen_word_ending=chosen_word_ending,
+                chosen_dates_number=chosen_dates_number,
+                day_word=day_word
+            ),
+            "Выбери нужные дни:"
+        ]),
         parse_mode="markdown",
-        disable_web_page_preview=True
-    )
-    
-    if command is Commands.CLASSES and is_own_group_asked and schedule is None and students[callback.message.chat.id].classes_offline != []:
-        await callback.message.answer(
-            text=students[callback.message.chat.id].classes_offline[int(weekday)],
-            parse_mode="markdown"
-        )
-        
-        await callback.message.answer(text="Отображено расписание, сохранённое ранее.")
-    
-    students[callback.message.chat.id].guard.drop()
-
-async def common_weektype_selection(command: Commands, callback: CallbackQuery):
-    lecturer_id = callback.data.split()[1]
-    reply_markup: InlineKeyboardMarkup = None
-    
-    if command is Commands.CLASSES:
-        reply_markup = weektype_chooser()
-    elif command is Commands.LECTURERS:
-        reply_markup = weektype_chooser(lecturer_id=lecturer_id)
-    
-    await callback.message.edit_text(
-        text="Выбери нужную неделю:",
-        reply_markup=reply_markup
+        reply_markup=dates_appender(shift=int(callback_data[1]), dates=students[callback.message.chat.id].chosen_schedule_dates, lecturer_id=callback_data[3])
     )
 
-async def common_day_selection(command: Commands, callback: CallbackQuery):
-    (weektype, lecturer_id) = callback.data.split()[1:]
-    reply_markup: InlineKeyboardMarkup = None
-    
-    if command is Commands.CLASSES:
-        reply_markup = weekday_chooser(weektype=weektype)
-    elif command is Commands.LECTURERS:
-        reply_markup = weekday_chooser(
-            weektype=weektype,
-            lecturer_id=lecturer_id
-        )
-    
-    await callback.message.edit_text(
-        text="Выбери нужный день:",
-        reply_markup=reply_markup
-    )
-
-async def common_week_schedule(command: Commands, callback: CallbackQuery):
+async def common_show_chosen_dates(command: Commands, callback: CallbackQuery):
     await callback.message.edit_text(
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
     )
     
-    (weektype, lecturer_id) = callback.data.split()[1:]
-    schedule: [str] = None
+    callback_data: [str] = callback.data.split(" ")
+    
+    if callback_data[1] != "":
+        students[callback.message.chat.id].chosen_schedule_dates.append(callback_data[1])
     
     if command is Commands.CLASSES:
-        schedule = students[callback.message.chat.id].get_schedule(
-            TYPE=ScheduleType.CLASSES,
-            weektype=weektype
-        )
+        (schedule, error_message) = students[callback.message.chat.id].get_schedule(TYPE=ScheduleType.CLASSES)
     elif command is Commands.LECTURERS:
-        schedule = get_lecturers_schedule(
-            lecturer_id=lecturer_id,
+        (schedule, error_message) = get_lecturers_schedule(
+            lecturer_id=callback_data[2],
             TYPE=ScheduleType.CLASSES,
-            weektype=weektype,
+            dates=students[callback.message.chat.id].chosen_schedule_dates,
             settings=students[callback.message.chat.id].settings
         )
+    
+    await callback.message.delete()
     
     if schedule is None:
-        await callback.message.edit_text(
-            text=ResponseError.NO_RESPONSE.value,
-            disable_web_page_preview=True
-        )
-        
-        if command is Commands.CLASSES and students[callback.message.chat.id].classes_offline != []:
-            for weekday in WEEKDAYS:
-                await callback.message.answer(
-                    text=students[callback.message.chat.id].classes_offline[weekday - 1],
-                    parse_mode="markdown"
-                )
-            
-            await callback.message.answer(text="Отображено расписание, сохранённое ранее.")
-    elif len(schedule) == 0:
-        await callback.message.edit_text(
-            text=ResponseError.NO_DATA.value,
-            disable_web_page_preview=True
-        )
+        await callback.message.answer(text=error_message, parse_mode="markdown", disable_web_page_preview=True)
     else:
-        await callback.message.delete()
-        
-        for weekday in WEEKDAYS:
-            await callback.message.answer(
-                text=schedule[weekday - 1],
-                parse_mode="markdown"
-            )
+        for day in schedule:
+            await callback.message.answer(text=day, parse_mode="markdown")
     
     students[callback.message.chat.id].guard.drop()

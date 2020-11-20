@@ -22,14 +22,12 @@ from bot.shared.commands import Commands
 async def appearance(callback: CallbackQuery):
     if Settings.Option.IS_SCHEDULE_SIZE_FULL.value in callback.data:
         students[callback.message.chat.id].settings.is_schedule_size_full = not students[callback.message.chat.id].settings.is_schedule_size_full
-    elif Settings.Option.ARE_CLASSES_ON_DATES.value in callback.data:
-        students[callback.message.chat.id].settings.are_classes_on_dates = not students[callback.message.chat.id].settings.are_classes_on_dates
     
     reply_markup: InlineKeyboardMarkup = appearance_chooser(settings=students[callback.message.chat.id].settings)
     
     if callback.data == Commands.SETTINGS_APPEARANCE.value:
         await callback.message.edit_text(
-            text="Нажми на одну из опций, чтобы изменить значение на противоположное:",
+            text="Нажми, чтобы изменить значение на противоположное:",
             reply_markup=reply_markup
         )
     else:

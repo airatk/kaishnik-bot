@@ -8,6 +8,7 @@ from bot.shared.api.constants import SCORE_URL
 from bot.shared.api.constants import P_SUB
 from bot.shared.api.types import ScheduleType
 from bot.shared.api.types import ScoreDataType
+from bot.shared.api.types import ResponseError
 from bot.shared.api.subject import StudentSubject
 
 from requests import get
@@ -25,12 +26,10 @@ from enum import Enum
 class Settings:
     class Option(Enum):
         IS_SCHEDULE_SIZE_FULL: str = "is-schedule-size-full"
-        ARE_CLASSES_ON_DATES: str = "are-classes-on-dates"
     
     
     def __init__(self):
         self.is_schedule_size_full: bool = True
-        self.are_classes_on_dates: bool = True
     
     
     def drop(self):
@@ -83,10 +82,11 @@ class Student:
         self._another_group_schedule_id: str = None
         
         self.group_names: {str, str} = {}
-        self.classes_offline: [str] = []
+        self.classes_offline: [{str: [{str: str}]}] = []
         self.scoretable: [(str, str)] = None
         self.edited_subject: StudentSubject = None
         
+        self.chosen_schedule_dates: [str] = []
         self.lecturers_names: [{str: str}] = None
         
         self.guard: Guard = Guard()
@@ -129,7 +129,7 @@ class Student:
         return groups[0]["id"]
     
     
-    def get_schedule(self, TYPE: ScheduleType, weektype: str = None) -> [str]:
+    def get_schedule(self, TYPE: ScheduleType) -> ([str], str):
         is_own_group_asked: bool = self._another_group_schedule_id is None
         
         try:
@@ -139,31 +139,28 @@ class Student:
                 "p_p_resource_id": TYPE.value,
                 "groupId": self.group_schedule_id if is_own_group_asked else self._another_group_schedule_id
             }).json()
+            
+            if not response: raise Exception
         except (ConnectionError, JSONDecodeError):
-            return None
+            return (None, ResponseError.NO_RESPONSE.value)
+        except Exception:
+            return (None, ResponseError.NO_DATA.value)
         
         self._another_group_schedule_id = None
         
-        if not response: return []
-        
         if TYPE is ScheduleType.CLASSES:
-            classes: [str] = beautify_classes(
+            return (beautify_classes(
                 raw_schedule=response,
-                weektype=weektype,
+                dates=self.chosen_schedule_dates,
                 edited_subjects=self.edited_subjects if is_own_group_asked else [],
                 settings=self.settings
-            )
-            
-            if is_own_group_asked:
-                self.classes_offline = classes
-            
-            return classes
+            ), None)
         
         if TYPE is ScheduleType.EXAMS:
-            return beautify_exams(
+            return (beautify_exams(
                 raw_schedule=response,
                 settings=self.settings
-            )
+            ), None)
     
     
     def get_dictionary_of(self, TYPE: ScoreDataType) -> {str: str}:

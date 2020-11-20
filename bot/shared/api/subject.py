@@ -91,8 +91,14 @@ class Subject(ABC):
         self._auditorium = self._auditorium.format(auditorium=(", " + auditorium) if auditorium and self.building != "СК Олимп" else "")
     
     @dates.setter
-    def dates(self, dates: str):
-        if "." in dates or "/" in dates or "(" in dates:
+    def dates(self, dates_and_type: (str, bool)):
+        dates: str = dates_and_type[0]
+        should_show_entire_semester: bool = dates_and_type[1]
+        
+        if len(dates) != 0 and ("." in dates or "/" in dates or "(" in dates or should_show_entire_semester):
+            dates = dates.replace("чет", "чётная")
+            dates = dates.replace("неч", "нечётная")
+            
             self._dates = self._dates.format(dates=dates)
             self._compact_dates = self._compact_dates.format(dates=dates)
         else:

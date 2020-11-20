@@ -31,9 +31,4 @@ def appearance_chooser(settings: Settings) -> InlineKeyboardMarkup:
         callback_data=" ".join([ Commands.SETTINGS_APPEARANCE.value, Settings.Option.IS_SCHEDULE_SIZE_FULL.value ])
     ))
     
-    appearance_chooser_keyboard.row(InlineKeyboardButton(
-        text="• пары по датам" if settings.are_classes_on_dates else "все пары •",
-        callback_data=" ".join([ Commands.SETTINGS_APPEARANCE.value, Settings.Option.ARE_CLASSES_ON_DATES.value ])
-    ))
-    
     return appearance_chooser_keyboard

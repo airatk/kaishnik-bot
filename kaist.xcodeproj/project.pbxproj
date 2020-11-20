@@ -114,6 +114,7 @@
 		604B52C523D2116700974049 /* update4.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = update4.txt; sourceTree = "<group>"; };
 		604B52C623D2116700974049 /* update5.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = update5.txt; sourceTree = "<group>"; };
 		607F41F624C1A3F300927702 /* classes.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = classes.py; sourceTree = "<group>"; };
+		608620352568492F0090791A /* constants.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = constants.py; sourceTree = "<group>"; };
 		6087028824BF24D0002A6B0D /* __init__.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
 		6087028924BF25A7002A6B0D /* keyboards.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = keyboards.py; sourceTree = "<group>"; };
 		60A745E6240BA9AD00F83EC1 /* cas-external-login.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = "cas-external-login.py"; sourceTree = "<group>"; };
@@ -521,6 +522,7 @@
 			isa = PBXGroup;
 			children = (
 				6087028924BF25A7002A6B0D /* keyboards.py */,
+				608620352568492F0090791A /* constants.py */,
 				607F41F624C1A3F300927702 /* classes.py */,
 			);
 			path = utilities;

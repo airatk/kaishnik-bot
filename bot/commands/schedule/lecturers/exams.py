@@ -6,7 +6,6 @@ from bot import students
 from bot.shared.helpers import top_notification
 from bot.shared.api.constants import LOADING_REPLIES
 from bot.shared.api.types import ScheduleType
-from bot.shared.api.types import ResponseError
 from bot.shared.api.lecturers import get_lecturers_schedule
 from bot.shared.commands import Commands
 
@@ -25,19 +24,14 @@ async def lecturers_exams(callback: CallbackQuery):
         disable_web_page_preview=True
     )
     
-    lecturer_id: str = callback.data.split()[1]
-    schedule: [str] = get_lecturers_schedule(
-        lecturer_id=lecturer_id,
+    (schedule, error_message) = get_lecturers_schedule(
+        lecturer_id=callback.data.split()[1],
         TYPE=ScheduleType.EXAMS,
         settings=students[callback.message.chat.id].settings
     )
     
-    if schedule is None: message_text: str = ResponseError.NO_RESPONSE.value
-    elif len(schedule) == 0: message_text: str = ResponseError.NO_DATA.value
-    else: message_text: str = schedule
-    
     await callback.message.edit_text(
-        text=message_text,
+        text=error_message if schedule is None else schedule,
         parse_mode="markdown",
         disable_web_page_preview=True
     )

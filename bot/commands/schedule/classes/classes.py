@@ -7,10 +7,8 @@ from bot import students
 from bot import metrics
 
 from bot.commands.schedule.utilities.keyboards import time_period_chooser
-from bot.commands.schedule.utilities.classes import common_day_schedule
-from bot.commands.schedule.utilities.classes import common_weektype_selection
-from bot.commands.schedule.utilities.classes import common_day_selection
-from bot.commands.schedule.utilities.classes import common_week_schedule
+from bot.commands.schedule.utilities.classes import common_add_chosen_date
+from bot.commands.schedule.utilities.classes import common_show_chosen_dates
 
 from bot.shared.helpers import top_notification
 from bot.shared.api.constants import LOADING_REPLIES
@@ -55,6 +53,8 @@ async def menu(message: Message):
         
         await loading_message.delete()
     
+    students[message.chat.id].chosen_schedule_dates = []
+    
     await message.answer(
         text="Тебе нужно расписание группы *{group}* на:".format(group=request_entities[1]) if len(request_entities) > 1 else "Тебе нужно расписание на:",
         parse_mode="markdown",
@@ -64,35 +64,17 @@ async def menu(message: Message):
 @dispatcher.callback_query_handler(
     lambda callback:
         students[callback.message.chat.id].guard.text == Commands.CLASSES.value and
-        ClassesOptionType.DAY.value in callback.data
+        ClassesOptionType.CHOOSE.value in callback.data
 )
 @top_notification
-async def day_schedule(callback: CallbackQuery):
-    await common_day_schedule(command=Commands.CLASSES, callback=callback)
+async def add_chosen_date(callback: CallbackQuery):
+    await common_add_chosen_date(callback=callback)
 
 @dispatcher.callback_query_handler(
     lambda callback:
         students[callback.message.chat.id].guard.text == Commands.CLASSES.value and
-        ClassesOptionType.WEEKTYPES.value in callback.data
+        ClassesOptionType.SHOW.value in callback.data
 )
 @top_notification
-async def weektype_selection(callback: CallbackQuery):
-    await common_weektype_selection(command=Commands.CLASSES, callback=callback)
-
-@dispatcher.callback_query_handler(
-    lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.CLASSES.value and
-        ClassesOptionType.WEEKDAYS.value in callback.data
-)
-@top_notification
-async def day_selection(callback: CallbackQuery):
-    await common_day_selection(command=Commands.CLASSES, callback=callback)
-
-@dispatcher.callback_query_handler(
-    lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.CLASSES.value and
-        ClassesOptionType.WEEK.value in callback.data
-)
-@top_notification
-async def week_schedule(callback: CallbackQuery):
-    await common_week_schedule(command=Commands.CLASSES, callback=callback)
+async def show_chosen_dates(callback: CallbackQuery):
+    await common_show_chosen_dates(command=Commands.CLASSES, callback=callback)

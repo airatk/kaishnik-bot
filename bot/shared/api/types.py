@@ -12,10 +12,8 @@ class ScoreDataType(Enum):
 
 
 class ClassesOptionType(Enum):
-    DAY: str = "classes-option-day"
-    WEEKTYPES: str = "classes-option-weektypes"
-    WEEKDAYS: str = "classes-option-weekdays"
-    WEEK: str = "classes-option-week"
+    SHOW: str = "classes-option-show"
+    CHOOSE: str = "classes-option-choose"
 
 class ScoreType(Enum):
     EXAM: str = "экзамен"
