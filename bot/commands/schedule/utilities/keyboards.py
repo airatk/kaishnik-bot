@@ -55,6 +55,9 @@ def dates_appender(shift: int, dates: [str], lecturer_id: str = "None") -> Inlin
         first_date: str = date(date.today().year, 9, 1)
         last_date: str = date(date.today().year, 12, 31)
     
+    if (date.today() - first_date).days < 0: shift = (first_date - date.today()).days
+    elif (date.today() - last_date).days > 0: shift = (last_date - date.today()).days - abs(INITIAL_SHIFT) - MOVEMENT_SHIFT - 1
+    
     while date_index < dates_number:
         date_index += 1
         
@@ -64,8 +67,9 @@ def dates_appender(shift: int, dates: [str], lecturer_id: str = "None") -> Inlin
         if day_date > last_date: break
         
         weekday: int = day_date.isoweekday()
+        is_day_today: bool = ((date_index + shift) == 0)
         
-        if weekday == 7:
+        if weekday == 7 and not is_day_today:
             dates_number += 1
             continue
         
@@ -73,11 +77,11 @@ def dates_appender(shift: int, dates: [str], lecturer_id: str = "None") -> Inlin
         raw_month: str = day_date.strftime("%m")
         raw_date: str = ".".join([ raw_day, raw_month ])
         
-        text: str = "Сегодня" if (date_index + shift) == 0 else WEEKDAYS[weekday]
+        text: str = "Сегодня" if is_day_today else WEEKDAYS[weekday]
         
         if weekday == 1:
             text = ", ".join([ text, "чётная" if is_week_even(day_date=day_date) else "нечётная" ])
-        else:
+        elif not is_day_today:
             text = "{text}, {day} {month}".format(text=text, day=int(raw_day), month=MONTHS[raw_month])
         
         dates_appender_keyboard.row(InlineKeyboardButton(
@@ -94,8 +98,8 @@ def dates_appender(shift: int, dates: [str], lecturer_id: str = "None") -> Inlin
         )
     ]
     
-    if (first_date - date.today()).days >= (shift + INITIAL_SHIFT): del movement_buttons[0]
-    if (last_date - date.today()).days <= (shift - INITIAL_SHIFT + MOVEMENT_SHIFT + 1): del movement_buttons[1]
+    if (first_date - date.today()).days > shift: del movement_buttons[0]
+    elif (last_date - date.today()).days < (shift + abs(INITIAL_SHIFT) + MOVEMENT_SHIFT): del movement_buttons[1]
     
     dates_appender_keyboard.add(*movement_buttons)
     
