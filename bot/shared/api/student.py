@@ -14,6 +14,7 @@ from bot.shared.api.subject import StudentSubject
 from requests import get
 from requests import post
 from requests.exceptions import ConnectionError
+from requests.exceptions import Timeout
 
 from json.decoder import JSONDecodeError
 
@@ -144,13 +145,13 @@ class Student:
             
             if not response: raise Exception
         except (ConnectionError, JSONDecodeError, Timeout):
-            if not is_own_group_asked or self.classes_offline == []:
+            if TYPE is ScheduleType.EXAMS or not is_own_group_asked or self.classes_offline == []:
                 return (None, ResponseError.NO_RESPONSE.value)
             
             response = self.classes_offline
             classes_error_message = ResponseError.NO_RESPONSE.value
         except Exception:
-            if not is_own_group_asked or self.classes_offline == []:
+            if TYPE is ScheduleType.EXAMS or not is_own_group_asked or self.classes_offline == []:
                 return (None, ResponseError.NO_DATA.value)
             
             response = self.classes_offline

@@ -3,6 +3,7 @@ from aiogram.types import InlineKeyboardButton
 
 from bot.commands.schedule.utilities.constants import INITIAL_SHIFT
 from bot.commands.schedule.utilities.constants import MOVEMENT_SHIFT
+from bot.commands.schedule.utilities.constants import DATES_NUMBER
 
 from bot.shared.keyboards import cancel_button
 from bot.shared.api.types import ClassesOptionType
@@ -45,8 +46,8 @@ def time_period_chooser(lecturer_id: str = "None") -> InlineKeyboardMarkup:
 def dates_appender(shift: int, dates: [str], lecturer_id: str = "None") -> InlineKeyboardMarkup:
     dates_appender_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
     
-    dates_number: int = 7
-    date_index: int = 0
+    day_date: date = date.today() + timedelta(days=shift)
+    weekday: int = 0
     
     if date.today().month < 8:
         first_date: str = date(date.today().year, 2, 1)
@@ -56,32 +57,28 @@ def dates_appender(shift: int, dates: [str], lecturer_id: str = "None") -> Inlin
         last_date: str = date(date.today().year, 12, 31)
     
     if (date.today() - first_date).days < 0: shift = (first_date - date.today()).days
-    elif (date.today() - last_date).days > 0: shift = (last_date - date.today()).days - abs(INITIAL_SHIFT) - MOVEMENT_SHIFT - 1
+    elif (date.today() - last_date).days > 0: shift = (last_date - date.today()).days - abs(INITIAL_SHIFT) - MOVEMENT_SHIFT
     
-    while date_index < dates_number:
-        date_index += 1
+    for date_index in range(DATES_NUMBER):
+        day_date += timedelta(days=1)
+        weekday = day_date.isoweekday()
         
-        day_date: date = date.today() + timedelta(days=date_index + shift)
+        if weekday == 7 and day_date != date.today():
+            day_date += timedelta(days=1)
+            weekday = 1
         
         if day_date < first_date: continue
-        if day_date > last_date: break
-        
-        weekday: int = day_date.isoweekday()
-        is_day_today: bool = ((date_index + shift) == 0)
-        
-        if weekday == 7 and not is_day_today:
-            dates_number += 1
-            continue
+        elif day_date > last_date: break
         
         raw_day: str = day_date.strftime("%d")
         raw_month: str = day_date.strftime("%m")
         raw_date: str = ".".join([ raw_day, raw_month ])
         
-        text: str = "Сегодня" if is_day_today else WEEKDAYS[weekday]
+        text: str = "Сегодня" if day_date == date.today() else WEEKDAYS[weekday]
         
         if weekday == 1:
             text = ", ".join([ text, "чётная" if is_week_even(day_date=day_date) else "нечётная" ])
-        elif not is_day_today:
+        elif day_date != date.today():
             text = "{text}, {day} {month}".format(text=text, day=int(raw_day), month=MONTHS[raw_month])
         
         dates_appender_keyboard.row(InlineKeyboardButton(

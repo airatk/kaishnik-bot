@@ -1,2 +1,3 @@
-INITIAL_SHIFT: int = -2
+DATES_NUMBER: int = 7
+INITIAL_SHIFT: int = -3
 MOVEMENT_SHIFT: int = 5

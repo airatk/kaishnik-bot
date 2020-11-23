@@ -1,4 +1,5 @@
 from aiogram.types import CallbackQuery
+from aiogram.utils.exceptions import MessageNotModified
 
 from bot import students
 
@@ -32,18 +33,25 @@ async def common_add_chosen_date(callback: CallbackQuery):
     elif chosen_dates_number < 5: day_word = "дня"
     else: day_word = "дней"
     
-    await callback.message.edit_text(
-        text="\n".join([
-            "" if chosen_dates_number == 0 else "Выбран{chosen_word_ending} *{chosen_dates_number}* {day_word}.".format(
-                chosen_word_ending=chosen_word_ending,
-                chosen_dates_number=chosen_dates_number,
-                day_word=day_word
-            ),
-            "Выбери нужные дни:"
-        ]),
-        parse_mode="markdown",
-        reply_markup=dates_appender(shift=int(callback_data[1]), dates=students[callback.message.chat.id].chosen_schedule_dates, lecturer_id=callback_data[3])
-    )
+    try:
+        await callback.message.edit_text(
+            text="\n".join([
+                "" if chosen_dates_number == 0 else "Выбран{chosen_word_ending} *{chosen_dates_number}* {day_word}.".format(
+                    chosen_word_ending=chosen_word_ending,
+                    chosen_dates_number=chosen_dates_number,
+                    day_word=day_word
+                ),
+                "Выбери нужные дни:"
+            ]),
+            parse_mode="markdown",
+            reply_markup=dates_appender(
+                shift=int(callback_data[1]),
+                dates=students[callback.message.chat.id].chosen_schedule_dates,
+                lecturer_id=callback_data[3]
+            )
+        )
+    except MessageNotModified:
+        pass
 
 async def common_show_chosen_dates(command: Commands, callback: CallbackQuery):
     await callback.message.edit_text(
