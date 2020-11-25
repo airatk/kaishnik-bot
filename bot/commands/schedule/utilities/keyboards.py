@@ -46,9 +46,6 @@ def time_period_chooser(lecturer_id: str = "None") -> InlineKeyboardMarkup:
 def dates_appender(shift: int, dates: [str], lecturer_id: str = "None") -> InlineKeyboardMarkup:
     dates_appender_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
     
-    day_date: date = date.today() + timedelta(days=shift)
-    weekday: int = 0
-    
     if date.today().month < 8:
         first_date: str = date(date.today().year, 2, 1)
         last_date: str = date(date.today().year, 6, 30)
@@ -59,10 +56,10 @@ def dates_appender(shift: int, dates: [str], lecturer_id: str = "None") -> Inlin
     if (date.today() - first_date).days < 0: shift = (first_date - date.today()).days
     elif (date.today() - last_date).days > 0: shift = (last_date - date.today()).days - abs(INITIAL_SHIFT) - MOVEMENT_SHIFT
     
+    day_date: date = date.today() + timedelta(days=shift - (1 if date.today().isoweekday() == 1 else 0))
+    weekday: int = day_date.isoweekday()
+    
     for date_index in range(DATES_NUMBER):
-        day_date += timedelta(days=1)
-        weekday = day_date.isoweekday()
-        
         if weekday == 7 and day_date != date.today():
             day_date += timedelta(days=1)
             weekday = 1
@@ -85,6 +82,9 @@ def dates_appender(shift: int, dates: [str], lecturer_id: str = "None") -> Inlin
             text="".join([ text, " •" if raw_date in dates else "" ]),
             callback_data=" ".join([ ClassesOptionType.CHOOSE.value, str(shift), raw_date, lecturer_id ])
         ))
+        
+        day_date += timedelta(days=1)
+        weekday = day_date.isoweekday()
     
     movement_buttons: [InlineKeyboardButton] = [
         InlineKeyboardButton(
