@@ -63,7 +63,10 @@ def beautify_classes(raw_schedule: [{str: [{str: str}]}], edited_subjects: [Stud
                     if (subject["dayDate"] == "неч") if is_week_even(day_date) else (subject["dayDate"] == "чет"): continue
                     
                     # Do not show subjects with certain dates (21.09) on other dates (28 сентября) if that's not asked
-                    if ("." in subject["dayDate"] and "{day}.{month}".format(day=int(raw_day), month=raw_month) not in subject["dayDate"]): continue
+                    if "." in subject["dayDate"] and (
+                        "{day}.{month}".format(day=int(raw_day), month=raw_month) not in subject["dayDate"] and
+                        raw_date not in subject["dayDate"]
+                    ): continue
                 
                 student_subject: StudentSubject = StudentSubject()
                 
@@ -126,7 +129,7 @@ def beautify_exams(raw_schedule: [{str: [{str: str}]}], settings: object) -> str
     return schedule
 
 
-def beautify_lecturers_classes(raw_schedule: [{str: [{str: str}]}], settings: object, dates: [str] = []) -> [str]:
+def beautify_lecturers_classes(raw_schedule: {str: [{str: str}]}, settings: object, dates: [str] = []) -> [str]:
     schedule: [str] = []
     should_show_entire_semester: bool = (len(dates) == 0)
     
@@ -135,7 +138,11 @@ def beautify_lecturers_classes(raw_schedule: [{str: [{str: str}]}], settings: ob
     else:
         dates.sort(key=lambda raw_date: date(date.today().year, int(raw_date[3:]), int(raw_date[:2])))
     
+    initial_raw_schedule: {str: [{str: str}]} = raw_schedule
+    
     for raw_date in dates:
+        raw_schedule = dict(initial_raw_schedule)
+        
         if not should_show_entire_semester:
             (raw_day, raw_month) = raw_date.split(".")
             day_date: date = date(date.today().year, int(raw_month), int(raw_day))
@@ -166,11 +173,13 @@ def beautify_lecturers_classes(raw_schedule: [{str: [{str: str}]}], settings: ob
         if not should_show_entire_semester:
             for subject in list(raw_schedule[weekday]):
                 # Do not show subjects on even weeks when they are supposed to be on odd weeks if that's not asked
-                if (subject["dayDate"] == "неч" if is_week_even(day_date) else subject["dayDate"] == "чет"):
+                if (subject["dayDate"] == "неч") if is_week_even(day_date) else (subject["dayDate"] == "чет"):
                     raw_schedule[weekday].remove(subject)
                 
-                # Do not show subjects with certain dates (21.09) on other dates (28 сентября) if that's not asked
-                elif ("." in subject["dayDate"] and raw_date not in subject["dayDate"]):
+                if "." in subject["dayDate"] and (
+                    "{day}.{month}".format(day=int(raw_day), month=raw_month) not in subject["dayDate"] and
+                    raw_date not in subject["dayDate"]
+                ):
                     raw_schedule[weekday].remove(subject)
         
         # Setting subjects themselves
