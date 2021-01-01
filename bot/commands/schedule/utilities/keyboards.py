@@ -53,7 +53,7 @@ def dates_appender(shift: int, dates: [str], lecturer_id: str = "None") -> Inlin
         first_date: str = date(date.today().year, 9, 1)
         last_date: str = date(date.today().year, 12, 31)
     
-    if (date.today() - first_date).days < 0: shift = (first_date - date.today()).days
+    if (date.today() - first_date).days < 0 and shift < (first_date - date.today()).days: shift = (first_date - date.today()).days
     elif (date.today() - last_date).days > 0: shift = (last_date - date.today()).days - abs(INITIAL_SHIFT) - MOVEMENT_SHIFT
     
     day_date: date = date.today() + timedelta(days=shift - (1 if date.today().isoweekday() == 1 else 0))
@@ -95,7 +95,7 @@ def dates_appender(shift: int, dates: [str], lecturer_id: str = "None") -> Inlin
         )
     ]
     
-    if (first_date - date.today()).days > shift: del movement_buttons[0]
+    if (first_date - date.today()).days >= shift: del movement_buttons[0]
     elif (last_date - date.today()).days < (shift + abs(INITIAL_SHIFT) + MOVEMENT_SHIFT): del movement_buttons[1]
     
     dates_appender_keyboard.add(*movement_buttons)

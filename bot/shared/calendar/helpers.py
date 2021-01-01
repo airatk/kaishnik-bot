@@ -13,7 +13,7 @@ def get_week_number(day_date: date = date.today()) -> int:
     semester_1st_day = date(current_year, 2 if day_date.month < 8 else 9, 1)
     first_week = semester_1st_day.isocalendar()[1]
     
-    return current_week - first_week + (0 if semester_1st_day.isoweekday() == 7 else 1)
+    return (0 if current_week == 53 else current_week) - first_week + (0 if semester_1st_day.isoweekday() == 7 else 1)
 
 
 def weekday_date() -> (str, str):
