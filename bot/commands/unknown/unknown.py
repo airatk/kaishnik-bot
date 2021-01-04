@@ -1,4 +1,5 @@
 from aiogram.types import Message
+from aiogram.types import ContentType
 from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
 from aiogram.utils.exceptions import MessageError
@@ -19,9 +20,7 @@ from random import choice
 
 @dispatcher.message_handler(
     lambda message: message.chat.type == ChatType.PRIVATE,
-    content_types=[
-        "sticker", "photo", "video", "audio", "document", "voice", "video_note", "location", "contact"
-    ]
+    content_types=[ ContentType.STICKER, ContentType.PHOTO, ContentType.VIDEO, ContentType.AUDIO, ContentType.DOCUMENT, ContentType.VOICE, ContentType.VIDEO_NOTE, ContentType.LOCATION, ContentType.CONTACT ]
 )
 @metrics.increment(Commands.UNKNOWN_NONTEXT_MESSAGE)
 async def unknown_nontext_message(message: Message): await message.delete()
@@ -32,11 +31,11 @@ async def unknown_nontext_message(message: Message): await message.delete()
             message.text is not None and message.text.startswith(BOT_ADDRESSING) or
             message.reply_to_message is not None and message.reply_to_message.from_user.is_bot
         ),
-    content_types=[ "text" ]
+    content_types=[ ContentType.TEXT ]
 )
 @dispatcher.message_handler(
     lambda message: message.chat.type == ChatType.PRIVATE,
-    content_types=[ "text" ]
+    content_types=[ ContentType.TEXT ]
 )
 @metrics.increment(Commands.UNKNOWN_TEXT_MESSAGE)
 async def unknown_text_message(message: Message):

@@ -135,14 +135,12 @@ async def drop(message: Message):
                         await message.bot.send_message(
                             chat_id=chat_id,
                             text=note,
-                            parse_mode="markdown",
-                            disable_notification=True
+                            parse_mode="markdown"
                         )
                     
                     await message.bot.send_message(
                         chat_id=chat_id,
-                        text="Твои заметки, чтобы ничего не потерялось.",
-                        disable_notification=True
+                        text="Твои заметки, чтобы ничего не потерялось."
                     )
                 
                 students[chat_id]: Student = Student()
@@ -159,13 +157,11 @@ async def drop(message: Message):
                 await message.bot.send_message(
                     chat_id=chat_id,
                     text=drop_message_part_1,
-                    parse_mode="markdown",
-                    disable_notification=True
+                    parse_mode="markdown"
                 )
                 await message.bot.send_message(
                     chat_id=chat_id,
-                    text=drop_message_part_2,
-                    disable_notification=True
+                    text=drop_message_part_2
                 )
             except (CantInitiateConversation, UserDeactivated, BotBlocked, BotKicked, ChatNotFound):
                 del students[chat_id]

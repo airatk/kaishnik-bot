@@ -1,12 +1,16 @@
 from aiogram.types import Message
+from aiogram.types import ContentType
 
 from bot import dispatcher
 
 from bot.commands.creator.utilities.helpers import update_progress_bar
+from bot.commands.creator.utilities.helpers import get_command_arguments
 from bot.commands.creator.utilities.helpers import parse_creator_query
 from bot.commands.creator.utilities.helpers import collect_ids
 from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import BROADCAST_MESSAGE_TEMPLATE
+from bot.commands.creator.utilities.constants import MAX_TEXT_LENGTH
+from bot.commands.creator.utilities.constants import MAX_CAPTION_LENGTH
 from bot.commands.creator.utilities.types import Option
 from bot.commands.creator.utilities.types import Suboption
 
@@ -20,14 +24,30 @@ from bot.shared.commands import Commands
 
 
 @dispatcher.message_handler(
-    lambda message: message.from_user.id == CREATOR,
-    commands=[ Commands.BROADCAST.value ]
+    lambda message:
+        message.from_user.id == CREATOR and
+        Commands.BROADCAST.value in (message.text or message.caption or ""),
+    content_types=[ ContentType.TEXT, ContentType.PHOTO, ContentType.VIDEO, ContentType.AUDIO, ContentType.DOCUMENT ]
 )
 async def broadcast(message: Message):
-    options: {str: str} = parse_creator_query(message.get_args())
+    options: {str: str} = parse_creator_query(get_command_arguments(message))
     
     if Option.MESSAGE.value not in options:
         await message.answer(text="No broadcast message was found!")
+        return
+    
+    broadcast_text: str = options[Option.MESSAGE.value] if options.get(Option.SIGNED.value) == "false" else BROADCAST_MESSAGE_TEMPLATE.format(broadcast_message=options[Option.MESSAGE.value])
+    
+    if (
+        message.content_type == ContentType.TEXT and len(broadcast_text) > MAX_TEXT_LENGTH
+    ) or ((
+            message.content_type == ContentType.PHOTO or
+            message.content_type == ContentType.VIDEO or
+            message.content_type == ContentType.AUDIO or
+            message.content_type == ContentType.DOCUMENT
+        ) and len(broadcast_text) > MAX_CAPTION_LENGTH
+    ):
+        await message.answer(text="The text is too long!")
         return
     
     broadcast_list: [int] = await collect_ids(query_message=message)
@@ -42,13 +62,41 @@ async def broadcast(message: Message):
         )
         
         try:
-            await message.bot.send_message(
-                chat_id=chat_id,
-                text=options[Option.MESSAGE.value] if options.get(Option.SIGNED.value) == "false" else BROADCAST_MESSAGE_TEMPLATE.format(broadcast_message=options[Option.MESSAGE.value]),
-                parse_mode="markdown",
-                disable_web_page_preview=True,
-                disable_notification=options.get(Option.NOTIFY.value) == "false"
-            )
+            if message.content_type == ContentType.TEXT:
+                await message.bot.send_message(
+                    chat_id=chat_id,
+                    text=broadcast_text,
+                    parse_mode="markdown",
+                    disable_web_page_preview=True
+                )
+            elif message.content_type == ContentType.PHOTO:
+                await message.bot.send_photo(
+                    chat_id=chat_id,
+                    photo=message.photo[0].file_id,
+                    caption=broadcast_text,
+                    parse_mode="markdown"
+                )
+            elif message.content_type == ContentType.VIDEO:
+                await message.bot.send_video(
+                    chat_id=chat_id,
+                    video=message.video.file_id,
+                    caption=broadcast_text,
+                    parse_mode="markdown"
+                )
+            elif message.content_type == ContentType.AUDIO:
+                await message.bot.send_audio(
+                    chat_id=chat_id,
+                    audio=message.audio.file_id,
+                    caption=broadcast_text,
+                    parse_mode="markdown"
+                )
+            elif message.content_type == ContentType.DOCUMENT:
+                await message.bot.send_document(
+                    chat_id=chat_id,
+                    document=message.document.file_id,
+                    caption=broadcast_text,
+                    parse_mode="markdown"
+                )
         except Exception:
             await message.answer(text="{} is inactive! /clear?".format(chat_id))
     

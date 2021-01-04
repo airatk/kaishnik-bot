@@ -17,7 +17,6 @@ class Option(Enum):
     # /broadcast
     MESSAGE: str = "message"
     SIGNED: str = "signed"
-    NOTIFY: str = "notify"
     
     # /dayoff
     ADD: str = "add"

@@ -7,7 +7,7 @@ CONTROL_PANEL: str = (
     "*Control panel*\n"
     "_creator access only_\n"
     "\n"
-    "_{} - required, [] - optional_\n"
+    "_{} — required, [] — optional_\n"
     "\n"
     "*stats*\n"
     "/users\n"
@@ -62,8 +62,14 @@ CONTROL_PANEL: str = (
             "\t\t\t\t\t\t\[ group-chat ]\n"
         "\t\t\t} }\n"
         "\t\t\t\[ signed: false ]\n"
-        "\t\t\t\[ notify: false ]\n"
         "\t\t\t{ message: {} }\n"
+        "\n"
+        "\t\t\tEntities to broadcast:\n"
+        "\t\t\t• message — up to 3900 characters in length.\n"
+        "\t\t\t• photo — with caption up to 900 characters in length.\n"
+        "\t\t\t• audio — in the .MP3 or .M4A format, with caption up to 900 characters in length.\n"
+        "\t\t\t• video — in the .MP4 format, up to 50 MB in size, with caption up to 900 characters in length.\n"
+        "\t\t\t• document — up to 50 MB in size, with caption up to 900 characters in length.\n"
     "}\n"
     "/dayoff {\n"
         "\t\t\t\[ list ]\n"
@@ -181,3 +187,6 @@ BROADCAST_MESSAGE_TEMPLATE: str = (
     "Поддержать бота финансово: /donate\n"
     "Написать разработчику: @airatk"
 )
+
+MAX_TEXT_LENGTH: int = 3900
+MAX_CAPTION_LENGTH: int = 900

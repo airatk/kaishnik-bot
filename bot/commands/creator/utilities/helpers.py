@@ -36,6 +36,10 @@ async def update_progress_bar(loading_message, current_progress_bar: str, values
     return next_progress_bar
 
 
+def get_command_arguments(message: Message) -> str:
+    return (message.text or message.caption).split(maxsplit=1)[-1]
+
+
 def parse_creator_query(query: str) -> {str: str}:
     query_array: [str] = query.split(" ")
     query_dictionary: {str: str} = {}
@@ -62,7 +66,7 @@ def parse_creator_query(query: str) -> {str: str}:
 
 
 async def collect_ids(query_message: Message) -> [int]:
-    options: { str: str } = parse_creator_query(query_message.get_args())
+    options: { str: str } = parse_creator_query(get_command_arguments(query_message))
     
     if Option.IDS.value not in options:
         await query_message.answer(
