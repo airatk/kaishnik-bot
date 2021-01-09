@@ -1,7 +1,6 @@
 from aiogram import Bot
 from aiogram import Dispatcher
 
-from bot.shared.constants import PROXY
 from bot.shared.api.student import Student
 from bot.shared.data.helpers import load_data
 from bot.shared.data.constants import USERS_FILE
@@ -21,7 +20,7 @@ basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=NOTSET)
 with open(KEYS_FILE) as keys_file:
     keys: Config = Config(keys_file)
 
-bot: Bot = Bot(token=keys.TOKEN, proxy=PROXY)
+bot: Bot = Bot(token=keys.TOKEN)
 dispatcher: Dispatcher = Dispatcher(bot)
 
 students: {int: Student} = load_data(file=USERS_FILE)
