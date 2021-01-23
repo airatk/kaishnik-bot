@@ -1,4 +1,7 @@
-WEEKDAYS: {int: str} = {
+from typing import Dict
+
+
+WEEKDAYS: Dict[int, str] = {
     1: "Понедельник",
     2: "Вторник",
     3: "Среда",
@@ -7,7 +10,7 @@ WEEKDAYS: {int: str} = {
     6: "Суббота"
 }
 
-MONTHS: {str: str} = {
+MONTHS: Dict[str, str] = {
     "01": "января",
     "02": "февраля",
     "03": "марта",

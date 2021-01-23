@@ -1,9 +1,12 @@
+from random import choice
+
 from aiogram.types import Message
 from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
 
 from bot import dispatcher
-from bot import students
+from bot import guards
+from bot import states
 
 from bot.commands.login.menu import finish_login
 from bot.commands.login.utilities.keyboards import institute_setter
@@ -11,40 +14,53 @@ from bot.commands.login.utilities.keyboards import year_setter
 from bot.commands.login.utilities.keyboards import group_setter
 from bot.commands.login.utilities.keyboards import name_setter
 
-from bot.shared.keyboards import canceler
-from bot.shared.helpers import top_notification
-from bot.shared.constants import BOT_ADDRESSING
-from bot.shared.api.constants import LOADING_REPLIES
-from bot.shared.api.constants import INSTITUTES
-from bot.shared.api.types import ScoreDataType
-from bot.shared.api.types import ResponseError
-from bot.shared.api.student import Student
-from bot.shared.commands import Commands
+from bot.models.users import Users
+from bot.models.groups_of_students import GroupsOfStudents
+from bot.models.compact_students import CompactStudents
+from bot.models.extended_students import ExtendedStudents
+from bot.models.bb_students import BBStudents
 
-from random import choice
+from bot.utilities.keyboards import canceler
+from bot.utilities.helpers import top_notification
+from bot.utilities.constants import BOT_ADDRESSING
+from bot.utilities.types import Commands
+from bot.utilities.api.constants import LOADING_REPLIES
+from bot.utilities.api.constants import INSTITUTES
+from bot.utilities.api.types import ExtendedLoginDataType
+from bot.utilities.api.types import ResponseError
+from bot.utilities.api.student import get_group_schedule_id
+from bot.utilities.api.student import get_extended_login_data
+from bot.utilities.api.student import get_last_available_semester
 
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.LOGIN.value and
+        guards[callback.message.chat.id].text == Commands.LOGIN.value and
         callback.data == Commands.LOGIN_EXTENDED.value
 )
 @top_notification
 async def login_extended(callback: CallbackQuery):
-    students[callback.message.chat.id] = Student()  # Resetting the user
+    user: Users = Users.get(telegram_id=callback.message.chat.id)
     
-    students[callback.message.chat.id].type = Student.Type.EXTENDED
+    CompactStudents.delete().where(CompactStudents.user_id == user.user_id).execute()
+    ExtendedStudents.delete().where(ExtendedStudents.user_id == user.user_id).execute()
+    BBStudents.delete().where(BBStudents.user_id == user.user_id).execute()
+    
+    user.is_setup = False
+    user.save()
+        
+    ExtendedStudents.create(user_id=user.user_id).save()
     
     await callback.message.edit_text(
         text="Выбери институт (привет, ФМФ🌚):",
         reply_markup=institute_setter()
     )
     
-    students[callback.message.chat.id].guard.text = Commands.LOGIN_EXTENDED.value
+    guards[callback.message.chat.id].text = Commands.LOGIN_EXTENDED.value
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.LOGIN_EXTENDED.value and
+        guards[callback.message.chat.id].text == Commands.LOGIN_EXTENDED.value and
         Commands.LOGIN_SET_INSTITUTE.value in callback.data
 )
 @top_notification
@@ -58,19 +74,23 @@ async def set_institute(callback: CallbackQuery):
     # Setting institute
     institute_id: int = callback.data.split()[1]
     
-    students[callback.message.chat.id].institute = INSTITUTES[institute_id]
-    students[callback.message.chat.id].institute_id = institute_id
+    user_id: int = Users.get(Users.telegram_id == callback.message.chat.id).user_id
+    
+    ExtendedStudents.update(
+        institute=INSTITUTES[institute_id],
+        institute_id=institute_id
+    ).where(
+        ExtendedStudents.user_id == user_id
+    ).execute()
     
     # Asking for year
-    years: {str: str} = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.YEARS)
+    (years, response_error) = get_extended_login_data(extended_login_data_type=ExtendedLoginDataType.YEARS, user_id=user_id)
     
-    if len(years) == 0:
+    if years is None:
         await callback.message.edit_text(
-            text=ResponseError.NO_RESPONSE.value,
+            text=response_error.value,
             disable_web_page_preview=True
         )
-        
-        students[callback.message.chat.id] = Student()  # Drop all the entered data
         return
     
     await callback.message.edit_text(
@@ -80,7 +100,7 @@ async def set_institute(callback: CallbackQuery):
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.LOGIN_EXTENDED.value and
+        guards[callback.message.chat.id].text == Commands.LOGIN_EXTENDED.value and
         Commands.LOGIN_SET_YEAR.value in callback.data
 )
 @top_notification
@@ -91,18 +111,22 @@ async def set_year(callback: CallbackQuery):
     )
     
     # Setting year
-    students[callback.message.chat.id].year = callback.data.split()[1]
+    user_id: int = Users.get(Users.telegram_id == callback.message.chat.id).user_id
+    
+    ExtendedStudents.update(
+        year=callback.data.split()[1]
+    ).where(
+        ExtendedStudents.user_id == user_id
+    ).execute()
     
     # Asking for group
-    groups: {str: str} = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.GROUPS)
+    (groups, response_error) = get_extended_login_data(extended_login_data_type=ExtendedLoginDataType.GROUPS, user_id=user_id)
     
-    if len(groups) == 0:
+    if groups is None:
         await callback.message.edit_text(
-            text=ResponseError.NO_RESPONSE.value,
+            text=response_error.value,
             disable_web_page_preview=True
         )
-        
-        students[callback.message.chat.id] = Student()  # Drop all the entered data
         return
     
     await callback.message.edit_text(
@@ -112,7 +136,7 @@ async def set_year(callback: CallbackQuery):
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.LOGIN_EXTENDED.value and
+        guards[callback.message.chat.id].text == Commands.LOGIN_EXTENDED.value and
         Commands.LOGIN_SET_GROUP.value in callback.data
 )
 @top_notification
@@ -125,37 +149,33 @@ async def set_group(callback: CallbackQuery):
     # Setting group
     callback_data = callback.data.split()
     
-    students[callback.message.chat.id].group = callback_data[1]
-    students[callback.message.chat.id].group_score_id = callback_data[2]
+    (group_schedule_id, response_error) = get_group_schedule_id(group=callback_data[1])
     
-    if students[callback.message.chat.id].group_schedule_id is None and students[callback.message.chat.id].group_score_id is not None:
-        await callback.message.edit_text(text=ResponseError.NO_GROUP.value)
-        
-        students[callback.message.chat.id] = Student()  # Drop all the entered data
+    if group_schedule_id is None:
+        await callback.message.edit_text(text=response_error.value)
         return
     
-    if students[callback.message.chat.id].group_score_id is None:
-        await callback.message.edit_text(
-            text=ResponseError.NO_RESPONSE.value,
-            disable_web_page_preview=True
-        )
-        
-        students[callback.message.chat.id] = Student()  # Drop all the entered data
-        return
+    user_id: int = Users.get(Users.telegram_id == callback.message.chat.id).user_id
+    
+    ExtendedStudents.update(
+        group=callback_data[1],
+        group_schedule_id=group_schedule_id,
+        group_score_id=callback_data[2]
+    ).where(
+        ExtendedStudents.user_id == user_id
+    ).execute()
     
     # Asking for name
-    group_names: {str: str} = students[callback.message.chat.id].get_dictionary_of(ScoreDataType.NAMES)
+    (group_names, response_error) = get_extended_login_data(extended_login_data_type=ExtendedLoginDataType.NAMES, user_id=user_id)
     
-    if len(group_names) == 0:
+    if group_names is None:
         await callback.message.edit_text(
-            text=ResponseError.NO_RESPONSE.value,
+            text=response_error.value,
             disable_web_page_preview=True
         )
-        
-        students[callback.message.chat.id] = Student()  # Drop all the entered data
         return
     
-    students[callback.message.chat.id].group_names = { name_id: name for (name, name_id) in group_names.items() }
+    states[callback.message.chat.id].group_names = { name_id: name for (name, name_id) in group_names.items() }
     
     await callback.message.edit_text(
         text="Выбери себя:",
@@ -164,7 +184,7 @@ async def set_group(callback: CallbackQuery):
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.LOGIN_EXTENDED.value and
+        guards[callback.message.chat.id].text == Commands.LOGIN_EXTENDED.value and
         Commands.LOGIN_SET_NAME.value in callback.data
 )
 @top_notification
@@ -177,17 +197,14 @@ async def set_name(callback: CallbackQuery):
     # Setting name
     name_id: str = callback.data.split()[1]
     
-    students[callback.message.chat.id].name = students[callback.message.chat.id].group_names[name_id]
-    students[callback.message.chat.id].name_id = name_id
-    
-    if students[callback.message.chat.id].name_id is None:
-        await callback.message.edit_text(
-            text=ResponseError.NO_RESPONSE.value,
-            disable_web_page_preview=True
-        )
-        
-        students[callback.message.chat.id] = Student()  # Drop all the entered data
-        return
+    ExtendedStudents.update(
+        name=states[callback.message.chat.id].group_names[name_id],
+        name_id=name_id
+    ).where(
+        ExtendedStudents.user_id == Users.get(
+            Users.telegram_id == callback.message.chat.id
+        ).user_id
+    ).execute()
     
     # Asking for student card number
     guard_message = await callback.message.edit_text(
@@ -195,52 +212,47 @@ async def set_name(callback: CallbackQuery):
         reply_markup=canceler()
     )
     
-    students[callback.message.chat.id].guard.text = Commands.LOGIN_SET_CARD.value
-    students[callback.message.chat.id].guard.message = guard_message
+    guards[callback.message.chat.id].text = Commands.LOGIN_SET_CARD.value
+    guards[callback.message.chat.id].message = guard_message
 
 @dispatcher.message_handler(
     lambda message:
         message.chat.type != ChatType.PRIVATE and
         message.text is not None and message.text.startswith(BOT_ADDRESSING) and
-        students[message.chat.id].guard.text == Commands.LOGIN_SET_CARD.value
+        guards[message.chat.id].text == Commands.LOGIN_SET_CARD.value
 )
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
-        students[message.chat.id].guard.text == Commands.LOGIN_SET_CARD.value
+        guards[message.chat.id].text == Commands.LOGIN_SET_CARD.value
 )
 async def set_card(message: Message):
     # Getting rid of the bot addressing
-    if message.chat.type != ChatType.PRIVATE: message.text = message.text[len(BOT_ADDRESSING):]
+    if message.chat.type != ChatType.PRIVATE:
+        message.text = message.text[len(BOT_ADDRESSING):]
     
     await message.delete()
-    await students[message.chat.id].guard.message.edit_text(
+    await guards[message.chat.id].message.edit_text(
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
     )
     
-    students[message.chat.id].card = message.text
-    last_available_semester: int = students[message.chat.id].get_last_available_semester()
+    user_id: int = Users.get(Users.telegram_id == message.chat.id).user_id
+    
+    ExtendedStudents.update(
+        card=message.text
+    ).where(
+        ExtendedStudents.user_id == user_id
+    ).execute()
+    
+    (last_available_semester, response_error) = get_last_available_semester(user_id=user_id)
     
     if last_available_semester is None:
-        await students[message.chat.id].guard.message.edit_text(
-            text=ResponseError.NO_RESPONSE.value,
+        await guards[message.chat.id].message.edit_text(
+            text=response_error.value,
+            reply_markup=canceler() if response_error is ResponseError.INCORRECT_CARD else None,
             disable_web_page_preview=True
         )
-        
-        students[message.chat.id] = Student()  # Drop all the entered data
-        return
-    
-    if last_available_semester == 0:
-        await students[message.chat.id].guard.message.edit_text(
-            text=" ".join([
-                ResponseError.INCORRECT_CARD.value,
-                "Исправляйся."
-            ]),
-            reply_markup=canceler()
-        )
-        
-        students[message.chat.id].card = None
         return
     
     await finish_login(message=message)

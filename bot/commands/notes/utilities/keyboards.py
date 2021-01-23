@@ -1,10 +1,14 @@
+from typing import List
+
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
 from bot.commands.notes.utilities.constants import MAX_SYMBOLS_NUMBER
 
-from bot.shared.keyboards import cancel_button
-from bot.shared.commands import Commands
+from bot.models.notes import Notes
+
+from bot.utilities.keyboards import cancel_button
+from bot.utilities.types import Commands
 
 
 def action_chooser(has_notes: bool) -> InlineKeyboardMarkup:
@@ -20,13 +24,13 @@ def action_chooser(has_notes: bool) -> InlineKeyboardMarkup:
     
     return action_chooser_keyboard
 
-def note_chooser(notes: [str], ACTION: Commands) -> InlineKeyboardMarkup:
+def note_chooser(notes: List[Notes], action: Commands) -> InlineKeyboardMarkup:
     note_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
-    if len(notes) > 1:
-        if ACTION is Commands.NOTES_SHOW:
+    if notes.count() > 1:
+        if action is Commands.NOTES_SHOW:
             (text, callback_action) = ("показать все", Commands.NOTES_SHOW_ALL.value)
-        elif ACTION is Commands.NOTES_DELETE:
+        elif action is Commands.NOTES_DELETE:
             (text, callback_action) = ("удалить все", Commands.NOTES_DELETE_ALL.value)
         
         note_chooser_keyboard.row(
@@ -39,11 +43,11 @@ def note_chooser(notes: [str], ACTION: Commands) -> InlineKeyboardMarkup:
     note_chooser_keyboard.add(*[
         InlineKeyboardButton(
             text="{note}{ellipsis}".format(
-                note=note[:MAX_SYMBOLS_NUMBER].replace("*", "").replace("_", "").replace("\\", ""),
-                ellipsis="…" if len(note) > MAX_SYMBOLS_NUMBER else ""
+                note=note.note[:MAX_SYMBOLS_NUMBER].replace("*", "").replace("_", "").replace("\\", ""),
+                ellipsis="…" if len(note.note) > MAX_SYMBOLS_NUMBER else ""
             ),
-            callback_data=" ".join([ ACTION.value, str(number) ])
-        ) for (number, note) in enumerate(notes)
+            callback_data=" ".join([ action.value, str(note.note_id) ])
+        ) for note in notes
     ])
     
     return note_chooser_keyboard

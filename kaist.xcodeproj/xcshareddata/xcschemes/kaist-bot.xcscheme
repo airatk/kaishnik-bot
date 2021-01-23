@@ -43,12 +43,16 @@
       allowLocationSimulation = "YES">
       <PathRunnable
          runnableDebuggingMode = "0"
-         FilePath = "/Library/Frameworks/Python.framework/Versions/3.8/bin/python-exec">
+         FilePath = "/usr/local/Cellar/python@3.9/3.9.1_6/Frameworks/Python.framework/Versions/3.9/bin/python-exec">
       </PathRunnable>
       <CommandLineArguments>
          <CommandLineArgument
             argument = "__main__.py"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-m pip install -r requirements.txt"
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
       <LocationScenarioReference

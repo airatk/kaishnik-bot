@@ -1,110 +1,122 @@
+from typing import List
+
 from aiogram.types import CallbackQuery
 
 from bot import dispatcher
-from bot import students
+from bot import guards
 
 from bot.commands.notes.utilities.keyboards import note_chooser
 from bot.commands.notes.utilities.constants import MAX_NOTES_NUMBER
 
-from bot.shared.helpers import top_notification
-from bot.shared.data.helpers import save_data
-from bot.shared.data.constants import USERS_FILE
-from bot.shared.commands import Commands
+from bot.models.users import Users
+from bot.models.notes import Notes
+
+from bot.utilities.helpers import top_notification
+from bot.utilities.types import Commands
 
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.NOTES.value and
+        guards[callback.message.chat.id].text == Commands.NOTES.value and
         callback.data in [ Commands.NOTES_SHOW.value, Commands.NOTES_DELETE.value ]
 )
 @top_notification
 async def choose_note(callback: CallbackQuery):
-    if callback.data == Commands.NOTES_SHOW.value: ACTION: Commands = Commands.NOTES_SHOW
-    elif callback.data == Commands.NOTES_DELETE.value: ACTION: Commands = Commands.NOTES_DELETE
+    if callback.data == Commands.NOTES_SHOW.value:
+        action: Commands = Commands.NOTES_SHOW
+    elif callback.data == Commands.NOTES_DELETE.value:
+        action: Commands = Commands.NOTES_DELETE
+    
+    user_id: int = Users.get(Users.telegram_id == callback.message.chat.id).user_id
+    notes: List[Notes] = Notes.select().where(Notes.user_id == user_id)
     
     await callback.message.edit_text(
         text="Выбери заметку:",
         reply_markup=note_chooser(
-            notes=students[callback.message.chat.id].notes,
-            ACTION=ACTION
+            notes=notes,
+            action=action
         )
     )
 
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.NOTES.value and
+        guards[callback.message.chat.id].text == Commands.NOTES.value and
         callback.data == Commands.NOTES_SHOW_ALL.value
 )
 @top_notification
 async def show_all(callback: CallbackQuery):
     await callback.message.delete()
     
-    for note in students[callback.message.chat.id].notes:
+    user_id: int = Users.get(Users.telegram_id == callback.message.chat.id).user_id
+    notes: List[Notes] = Notes.select().where(Notes.user_id == user_id)
+    
+    for note in notes:
         await callback.message.answer(
-            text=note,
+            text=note.note,
             parse_mode="markdown"
         )
     
     await callback.message.answer(
         text="Заметок всего: *{current}/{max}*".format(
-            current=len(students[callback.message.chat.id].notes),
+            current=notes.count(),
             max=MAX_NOTES_NUMBER
         ),
         parse_mode="markdown"
     )
     
-    students[callback.message.chat.id].guard.drop()
+    guards[callback.message.chat.id].drop()
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.NOTES.value and
+        guards[callback.message.chat.id].text == Commands.NOTES.value and
         Commands.NOTES_SHOW.value in callback.data
 )
 @top_notification
 async def show_note(callback: CallbackQuery):
-    number: int = int(callback.data.split()[1])
+    note_id: int = int(callback.data.split()[1])
     
     await callback.message.edit_text(
-        text=students[callback.message.chat.id].notes[number],
+        text=Notes.get(Notes.note_id == note_id).note,
         parse_mode="markdown"
     )
     
-    students[callback.message.chat.id].guard.drop()
+    guards[callback.message.chat.id].drop()
 
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.NOTES.value and
+        guards[callback.message.chat.id].text == Commands.NOTES.value and
         callback.data == Commands.NOTES_DELETE_ALL.value
 )
 @top_notification
 async def delete_all(callback: CallbackQuery):
     await callback.message.edit_text(text="Удалено!")
     
-    students[callback.message.chat.id].guard.drop()
-    students[callback.message.chat.id].notes = []
+    user_id: int = Users.get(Users.telegram_id == callback.message.chat.id).user_id
+    Notes.delete().where(Notes.user_id == user_id).execute()
     
-    save_data(file=USERS_FILE, data=students)
+    guards[callback.message.chat.id].drop()
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.NOTES.value and
+        guards[callback.message.chat.id].text == Commands.NOTES.value and
         Commands.NOTES_DELETE.value in callback.data
 )
 @top_notification
 async def delete_note(callback: CallbackQuery):
-    number: int = int(callback.data.split()[1])
+    note_id: int = int(callback.data.split()[1])
+    
+    note: Notes = Notes.get(Notes.note_id == note_id)
     
     await callback.message.edit_text(
         text=(
             "Заметка удалена! В ней было:\n\n"
-            "{note}".format(note=students[callback.message.chat.id].notes[number])
+            "{note}".format(note=note.note)
         ),
         parse_mode="markdown"
     )
     
-    students[callback.message.chat.id].guard.drop()
-    del students[callback.message.chat.id].notes[number]
+    note.delete_instance()
     
-    save_data(file=USERS_FILE, data=students)
+    guards[callback.message.chat.id].drop()

@@ -3,32 +3,34 @@ from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
 
 from bot import dispatcher
-from bot import students
+from bot import guards
 
 from bot.commands.notes.utilities.helpers import clarify_markdown
 from bot.commands.notes.utilities.constants import MAX_NOTES_NUMBER
 
-from bot.shared.keyboards import canceler
-from bot.shared.helpers import top_notification
-from bot.shared.constants import BOT_ADDRESSING
-from bot.shared.data.helpers import save_data
-from bot.shared.data.constants import USERS_FILE
-from bot.shared.commands import Commands
+from bot.models.users import Users
+from bot.models.notes import Notes
+
+from bot.utilities.keyboards import canceler
+from bot.utilities.helpers import top_notification
+from bot.utilities.constants import BOT_ADDRESSING
+from bot.utilities.types import Commands
 
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.NOTES.value and
+        guards[callback.message.chat.id].text == Commands.NOTES.value and
         callback.data == Commands.NOTES_ADD.value
 )
 @top_notification
 async def add_note_hint(callback: CallbackQuery):
-    note_number: int = len(students[callback.message.chat.id].notes) + 1
+    user_id: int = Users.get(Users.telegram_id == callback.message.chat.id).user_id
+    note_number: int = Notes.select().where(Notes.user_id == user_id).count() + 1
     
     if note_number > MAX_NOTES_NUMBER:
         await callback.message.edit_text(text="{max}-заметковый лимит уже достигнут.".format(max=MAX_NOTES_NUMBER))
         
-        students[callback.message.chat.id].guard.drop()
+        guards[callback.message.chat.id].drop()
         return
     
     guard_message: Message = await callback.message.edit_text(
@@ -42,29 +44,33 @@ async def add_note_hint(callback: CallbackQuery):
         reply_markup=canceler()
     )
     
-    students[callback.message.chat.id].guard.text = Commands.NOTES_ADD.value
-    students[callback.message.chat.id].guard.message = guard_message
+    guards[callback.message.chat.id].text = Commands.NOTES_ADD.value
+    guards[callback.message.chat.id].message = guard_message
 
 @dispatcher.message_handler(
     lambda message:
         message.chat.type != ChatType.PRIVATE and (
             message.text is not None and message.text.startswith(BOT_ADDRESSING) or
             message.reply_to_message is not None and message.reply_to_message.from_user.is_bot
-        ) and students[message.chat.id].guard.text == Commands.NOTES_ADD.value
+        ) and guards[message.chat.id].text == Commands.NOTES_ADD.value
 )
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
-        students[message.chat.id].guard.text == Commands.NOTES_ADD.value
+        guards[message.chat.id].text == Commands.NOTES_ADD.value
 )
 async def add_note(message: Message):
     # Getting rid of the bot addressing
-    if message.chat.type != ChatType.PRIVATE: message.text = message.text.replace(BOT_ADDRESSING, "")
+    if message.chat.type != ChatType.PRIVATE:
+        message.text = message.text.replace(BOT_ADDRESSING, "")
     
     await message.delete()
-    await students[message.chat.id].guard.message.edit_text(text="Запомнено!")
     
-    students[message.chat.id].guard.drop()
-    students[message.chat.id].notes.append(clarify_markdown(message.text))
+    Notes.create(
+        user_id=Users.get(Users.telegram_id == message.chat.id).user_id,
+        note=clarify_markdown(message.text)
+    )
     
-    save_data(file=USERS_FILE, data=students)
+    await guards[message.chat.id].message.edit_text(text="Запомнено!")
+    
+    guards[message.chat.id].drop()

@@ -1,26 +1,33 @@
+from re import compile
+
+from typing import Dict
+from typing import List
+
 from aiogram.types import Message
 from aiogram.types import ContentType
 
+from aiogram.utils.exceptions import TelegramAPIError
+
 from bot import dispatcher
 
-from bot.commands.creator.utilities.helpers import update_progress_bar
-from bot.commands.creator.utilities.helpers import get_command_arguments
 from bot.commands.creator.utilities.helpers import parse_creator_query
-from bot.commands.creator.utilities.helpers import collect_ids
+from bot.commands.creator.utilities.helpers import update_progress_bar
 from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import BROADCAST_MESSAGE_TEMPLATE
 from bot.commands.creator.utilities.constants import MAX_TEXT_LENGTH
 from bot.commands.creator.utilities.constants import MAX_CAPTION_LENGTH
 from bot.commands.creator.utilities.types import Option
-from bot.commands.creator.utilities.types import Suboption
+from bot.commands.creator.utilities.types import Value
 
-from bot.shared.calendar.constants import MONTHS
-from bot.shared.data.helpers import save_data
-from bot.shared.data.helpers import load_data
-from bot.shared.data.helpers import get_users_data
-from bot.shared.data.helpers import get_users_json
-from bot.shared.data.constants import DAYOFFS
-from bot.shared.commands import Commands
+from bot.models.users import Users
+from bot.models.groups_of_students import GroupsOfStudents
+from bot.models.compact_students import CompactStudents
+from bot.models.extended_students import ExtendedStudents
+from bot.models.bb_students import BBStudents
+from bot.models.days_off import DaysOff
+
+from bot.utilities.types import Commands
+from bot.utilities.calendar.constants import MONTHS
 
 
 @dispatcher.message_handler(
@@ -30,7 +37,7 @@ from bot.shared.commands import Commands
     content_types=[ ContentType.TEXT, ContentType.PHOTO, ContentType.VIDEO, ContentType.AUDIO, ContentType.DOCUMENT ]
 )
 async def broadcast(message: Message):
-    options: {str: str} = parse_creator_query(get_command_arguments(message))
+    options: Dict[str, str] = parse_creator_query(query=message.text or message.caption)
     
     if Option.MESSAGE.value not in options:
         await message.answer(text="No broadcast message was found!")
@@ -40,137 +47,189 @@ async def broadcast(message: Message):
     
     if (
         message.content_type == ContentType.TEXT and len(broadcast_text) > MAX_TEXT_LENGTH
-    ) or ((
-            message.content_type == ContentType.PHOTO or
-            message.content_type == ContentType.VIDEO or
-            message.content_type == ContentType.AUDIO or
+    ) or (any([
+            message.content_type == ContentType.PHOTO,
+            message.content_type == ContentType.VIDEO,
+            message.content_type == ContentType.AUDIO,
             message.content_type == ContentType.DOCUMENT
-        ) and len(broadcast_text) > MAX_CAPTION_LENGTH
+        ]) and len(broadcast_text) > MAX_CAPTION_LENGTH
     ):
-        await message.answer(text="The text is too long!")
+        await message.answer(text="The broadcast message is too long!")
         return
     
-    broadcast_list: [int] = await collect_ids(query_message=message)
+    users_ids_list: List[int] = []
     
-    progress_bar: str = ""
+    if "&" in options[Option.USERS.value]:
+        for possible_id in options[Option.USERS.value].split("&"):
+            try:
+                asked_id: int = int(possible_id)
+            except ValueError:
+                await message.answer(
+                    text="*{non_id}* cannot be user ID!".format(non_id=possible_id),
+                    parse_mode="markdown"
+                )
+                continue
+            else:
+                if not Users.select().where(Users.user_id == asked_id).exists():
+                    await message.answer(
+                        text="*{id}* was not found!".format(id=asked_id),
+                        parse_mode="markdown"
+                    )
+                    continue
+                
+                users_ids_list.append(asked_id)
+    elif options[Option.USERS.value] == Value.ME.value:
+        users_ids_list.append(Users.get(Users.telegram_id == message.chat.id))
+    elif options[Option.USERS.value] == Value.ALL.value:
+        users_ids_list = [ user.user_id for user in Users.select() ]
+    elif options[Option.USERS.value] == Value.GROUPS.value:
+        users_ids_list = [ group.user_id for group in GroupsOfStudents.select() ]
+    elif options[Option.USERS.value] == Value.COMPACTS.value:
+        users_ids_list = [ compact.user_id for compact in CompactStudents.select() ]
+    elif options[Option.USERS.value] == Value.EXTENDEDS.value:
+        users_ids_list = [ extended.user_id for extended in ExtendedStudents.select() ]
+    elif options[Option.USERS.value] == Value.BBS.value:
+        users_ids_list = [ bb.user_id for bb in BBStudents.select() ]
+    else:
+        await message.answer(text="The option has no matches!")
+        return
+    
     loading_message: Message = await message.answer(text="Started broadcasting...")
+    progress_bar: str = ""
     
-    for (index, chat_id) in enumerate(broadcast_list):
+    for (index, user_id) in enumerate(users_ids_list):
         progress_bar = await update_progress_bar(
             loading_message=loading_message, current_progress_bar=progress_bar,
-            values=broadcast_list, index=index
+            values_number=len(users_ids_list), index=index
         )
+        
+        user: Users = Users.get(Users.user_id == user_id)
         
         try:
             if message.content_type == ContentType.TEXT:
                 await message.bot.send_message(
-                    chat_id=chat_id,
+                    chat_id=user.telegram_id,
                     text=broadcast_text,
                     parse_mode="markdown",
                     disable_web_page_preview=True
                 )
             elif message.content_type == ContentType.PHOTO:
                 await message.bot.send_photo(
-                    chat_id=chat_id,
+                    chat_id=user.telegram_id,
                     photo=message.photo[0].file_id,
                     caption=broadcast_text,
                     parse_mode="markdown"
                 )
             elif message.content_type == ContentType.VIDEO:
                 await message.bot.send_video(
-                    chat_id=chat_id,
+                    chat_id=user.telegram_id,
                     video=message.video.file_id,
                     caption=broadcast_text,
                     parse_mode="markdown"
                 )
             elif message.content_type == ContentType.AUDIO:
                 await message.bot.send_audio(
-                    chat_id=chat_id,
+                    chat_id=user.telegram_id,
                     audio=message.audio.file_id,
                     caption=broadcast_text,
                     parse_mode="markdown"
                 )
             elif message.content_type == ContentType.DOCUMENT:
                 await message.bot.send_document(
-                    chat_id=chat_id,
+                    chat_id=user.telegram_id,
                     document=message.document.file_id,
                     caption=broadcast_text,
                     parse_mode="markdown"
                 )
-        except Exception:
-            await message.answer(text="{} is inactive! /clear?".format(chat_id))
+        except TelegramAPIError:
+            user.delete_instance()
+    
+    await loading_message.delete()
     
     await message.answer(
-        text="Broadcasted to *{}* users!".format(len(broadcast_list)),
+        text="Broadcasted to *{users_number}* users!".format(users_number=len(users_ids_list)),
         parse_mode="markdown"
     )
 
 @dispatcher.message_handler(
     lambda message: message.from_user.id == CREATOR,
-    commands=[ Commands.DAYOFF.value ]
+    commands=[ Commands.DAYSOFF.value ]
 )
-async def dayoff(message: Message):
-    options: {str: str} = parse_creator_query(message.get_args())
+async def daysoff(message: Message):
+    options: Dict[str, str] = parse_creator_query(query=message.text)
     
-    dayoff_dates: {(int, int): str} = load_data(file=DAYOFFS)
-    
-    if options.get(Option.TO_SUBOPTION.value) == Suboption.LIST.value:
-        dayoffs_list: str = "There are no dayoffs!" if len(dayoff_dates) == 0 else "*Dayoffs*\n"
-        month: str = ""
+    if options.get(Option.EMPTY.value) == Value.LIST.value:
+        days_off_list: List[DaysOff] = list(DaysOff.select())
         
-        for (dayoff_date, dayoff_message) in dayoff_dates.items():
-            month = MONTHS["{month_index:02}".format(month_index=dayoff_date[1])]
-            dayoffs_list = "\n".join([ dayoffs_list, "• {day} {month}: {dayoff_message}".format(day=dayoff_date[0], month=month, dayoff_message=dayoff_message) ])
+        days_off_text: str = "There are no dayoffs!" if len(days_off_list) == 0 else "*Days Off*\n_all kinds of_"
+        
+        days_off_list.sort(key=lambda day_off: day_off.date.split("-")[::-1])
+        
+        current_month: str = ""
+        previous_month: str = ""
+        
+        for day_off in days_off_list:
+            current_month = MONTHS[day_off.date[3:5]]
+            
+            days_off_text = "".join([
+                days_off_text,
+                "" if previous_month == current_month else "".join([ "\n\n*выходные ", current_month, "*" ]),
+                "\n• {day}: {day_off_message}".format(
+                    day=int(day_off.date[0:2]),
+                    day_off_message=day_off.message
+                )
+            ])
+            
+            previous_month = MONTHS[day_off.date[3:5]]
         
         await message.answer(
-            text=dayoffs_list,
+            text=days_off_text,
             parse_mode="markdown"
         )
-    elif Option.ADD.value in options or Option.DROP.value in options:
-        if Option.ADD.value in options:
-            raw_date: str = options[Option.ADD.value]
-        elif Option.DROP.value in options:
-            raw_date: str = options[Option.DROP.value]
+        return
+    
+    if Option.ADD.value in options:
+        asked_date: str = options[Option.ADD.value]
+    elif Option.DROP.value in options:
+        asked_date: str = options[Option.DROP.value]
+        
+        if asked_date == Value.ALL.value:
+            dropped_days_off_number: int = DaysOff.delete().execute()
             
-            if raw_date == Suboption.ALL.value:
-                save_data(file=DAYOFFS, data={})
-                await message.answer(text="Dropped!")
-                return
-        
-        parsed_date: [str] = raw_date.split("-")
-        
-        try:
-            dayoff_date: (int, int) = (int(parsed_date[0]), int(parsed_date[1]))
-        except ValueError:
             await message.answer(
-                text="Write date in the following format: *26-07*",
+                text="*{dropped_days_off_number}* were dropped!".format(dropped_days_off_number=dropped_days_off_number),
                 parse_mode="markdown"
             )
             return
-        
-        if Option.ADD.value in options:
-            if dayoff_date not in dayoff_dates:
-                dayoff_dates[dayoff_date] = options[Option.MESSAGE.value] if Option.MESSAGE.value in options else "Выходной"
-            else:
-                await message.answer(text="The dayoff have been added already!")
-                return
-        elif Option.DROP.value in options:
-            if dayoff_date in dayoff_dates:
-                del dayoff_dates[dayoff_date]
-            else:
-                await message.answer(text="Not a dayoff!")
-                return
-        
-        save_data(file=DAYOFFS, data=dayoff_dates)
-        
-        await message.answer(text="Done!")
     else:
         await message.answer(text="No options were found!")
-
-@dispatcher.message_handler(
-    lambda message: message.from_user.id == CREATOR,
-    commands=[ Commands.BACKUP.value ]
-)
-async def backup(message: Message):
-    await message.answer_document(document=get_users_data())
-    await message.answer_document(document=get_users_json())
+        return
+    
+    if not compile("^[0-9][0-9]-[0-9][0-9]$").match(asked_date):
+        await message.answer(
+            text=(
+                "Incorrect date format!\n"
+                "It should be the following: `dd-mm`"
+            ),
+            parse_mode="markdown"
+        )
+        return
+    
+    asked_day_off: DaysOff = DaysOff.get_or_none(DaysOff.date == asked_date)
+    text: str = "Done!"
+    
+    if Option.ADD.value in options:
+        if asked_day_off is None:
+            DaysOff.create(date=asked_date, message=options[Option.MESSAGE.value] if Option.MESSAGE.value in options else "Выходной")
+        else:
+            text = "{day_off_date} day off have been added already!".format(day_off_date=asked_date)
+    elif Option.DROP.value in options:
+        if asked_day_off is not None:
+            asked_day_off.delete_instance()
+        else:
+            text = "{day_off_date} is not a day off!".format(day_off_date=asked_date)
+    
+    await message.answer(
+        text=text,
+        parse_mode="markdown"
+    )

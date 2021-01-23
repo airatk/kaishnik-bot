@@ -1,19 +1,23 @@
+from typing import Dict
+from typing import List
+
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
-from bot.shared.keyboards import cancel_button
-from bot.shared.api.types import ScheduleType
-from bot.shared.commands import Commands
+from bot.utilities.keyboards import cancel_button
+from bot.utilities.types import Commands
+from bot.utilities.api.types import ScheduleType
 
 
-def lecturer_chooser(names: [{str: str}]) -> InlineKeyboardMarkup:
+def lecturer_chooser(names: List[Dict[str, str]]) -> InlineKeyboardMarkup:
     lecturer_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
     lecturer_chooser_keyboard.row(cancel_button())
     
     lecturer_chooser_keyboard.add(*[
         InlineKeyboardButton(
-            text=name["lecturer"], callback_data=" ".join([ Commands.LECTURERS.value, name["id"] ])
+            text=name["lecturer"],
+            callback_data=" ".join([ Commands.LECTURERS.value, name["id"] ])
         ) for name in names
     ])
     

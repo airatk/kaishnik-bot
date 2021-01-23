@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
-from bot.shared.commands import Commands
+from bot.utilities.types import Commands
 
 
 def cancel_button() -> InlineKeyboardButton:

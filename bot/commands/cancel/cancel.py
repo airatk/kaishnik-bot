@@ -2,34 +2,36 @@ from aiogram.types import Message
 from aiogram.types import CallbackQuery
 
 from bot import dispatcher
-from bot import students
-from bot import metrics
+from bot import guards
 
-from bot.shared.helpers import top_notification
-from bot.shared.commands import Commands
+from bot.models.users import Users
+
+from bot.utilities.helpers import top_notification
+from bot.utilities.helpers import increment_command_metrics
+from bot.utilities.types import Commands
 
 
 @dispatcher.message_handler(
-    lambda message: message.chat.id in students,
+    lambda message: Users.select().where(Users.telegram_id == message.chat.id).exists(),
     commands=[ Commands.CANCEL.value ]
 )
+@increment_command_metrics(command=Commands.CANCEL)
 async def cancel_on_message(message: Message):
-    if students[message.chat.id].guard.text is None:
+    if guards[message.chat.id].text is None:
         await message.answer(text="Запущенных команд нет. Отправь какую-нибудь☺️")
         return
     
-    students[message.chat.id].guard.drop()
+    guards[message.chat.id].drop()
     
     await message.answer(text="Отменено!")
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        callback.message.chat.id in students and
+        Users.select().where(Users.telegram_id == callback.message.chat.id).exists() and
         callback.data == Commands.CANCEL.value
 )
-@metrics.increment(Commands.CANCEL)
 @top_notification
 async def cancel_on_callback(callback: CallbackQuery):
     await callback.message.delete()
     
-    await cancel_on_message(message=callback.message)
+    await cancel_on_message(callback.message)

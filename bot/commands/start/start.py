@@ -2,42 +2,51 @@ from aiogram.types import Message
 from aiogram.types import CallbackQuery
 
 from bot import dispatcher
-from bot import students
-from bot import metrics
+from bot import guards
+from bot import states
 
 from bot.commands.start.utilities.keyboards import make_login
 
-from bot.shared.helpers import top_notification
-from bot.shared.api.student import Student
-from bot.shared.data.helpers import save_data
-from bot.shared.data.constants import USERS_FILE
-from bot.shared.commands import Commands
+from bot.models.users import Users
+from bot.models.settings import Settings
+
+from bot.utilities.helpers import top_notification
+from bot.utilities.helpers import increment_command_metrics
+from bot.utilities.types import Guard
+from bot.utilities.types import State
+from bot.utilities.types import Commands
 
 
 # Accepting old users on `/start` command whole new users on any message...
 @dispatcher.message_handler(
     lambda message:
-        message.text == "/" + Commands.START.value or
-        message.chat.id not in students
+        not Users.select().where(Users.telegram_id == message.chat.id).exists()
 )
-@metrics.increment(Commands.START)
+@increment_command_metrics(command=Commands.START)
 async def start_on_command(message: Message):
-    students[message.chat.id] = Student()
+    user: Users = Users.create(telegram_id=message.chat.id)
     
-    save_data(file=USERS_FILE, data=students)
+    user.save()
+    
+    Settings.create(user_id=user.user_id)
+    
+    guards[message.chat.id] = Guard()
+    states[message.chat.id] = State()
     
     guard_message: Message = await message.answer(text="Йоу!")
-    
     await message.answer(
         text="Для начала настрой меня на общение с тобой😏",
         reply_markup=make_login()
     )
     
-    students[message.chat.id].guard.text = Commands.START.value
-    students[message.chat.id].guard.message = guard_message
+    guards[message.chat.id].text = Commands.START.value
+    guards[message.chat.id].message = guard_message
 
 # ...& on any callback
-@dispatcher.callback_query_handler(lambda callback: callback.message.chat.id not in students)
+@dispatcher.callback_query_handler(
+    lambda callback:
+        not Users.select().where(Users.telegram_id == callback.message.chat.id).exists()
+)
 @top_notification
 async def start_on_callback(callback: CallbackQuery):
     await callback.message.delete()

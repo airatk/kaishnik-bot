@@ -2,28 +2,33 @@ from aiogram.types import CallbackQuery
 from aiogram.types import InlineKeyboardMarkup
 
 from bot import dispatcher
-from bot import students
+from bot import guards
 
 from bot.commands.settings.utilities.keyboards import appearance_chooser
+from bot.commands.settings.utilities.types import SettingsOption
 
-from bot.shared.helpers import top_notification
-from bot.shared.api.student import Settings
-from bot.shared.data.helpers import save_data
-from bot.shared.data.constants import USERS_FILE
-from bot.shared.commands import Commands
+from bot.models.users import Users
+from bot.models.settings import Settings
+
+from bot.utilities.helpers import top_notification
+from bot.utilities.types import Commands
 
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.SETTINGS.value and
+        guards[callback.message.chat.id].text == Commands.SETTINGS.value and
         callback.data.split()[0] == Commands.SETTINGS_APPEARANCE.value
 )
 @top_notification
 async def appearance(callback: CallbackQuery):
-    if Settings.Option.IS_SCHEDULE_SIZE_FULL.value in callback.data:
-        students[callback.message.chat.id].settings.is_schedule_size_full = not students[callback.message.chat.id].settings.is_schedule_size_full
+    settings: Settings = Settings.get(Settings.user_id == Users.get(Users.telegram_id == callback.message.chat.id).user_id)
     
-    reply_markup: InlineKeyboardMarkup = appearance_chooser(settings=students[callback.message.chat.id].settings)
+    if SettingsOption.IS_SCHEDULE_SIZE_FULL.value in callback.data:
+        settings.is_schedule_size_full = not settings.is_schedule_size_full
+    
+    settings.save()
+    
+    reply_markup: InlineKeyboardMarkup = appearance_chooser(settings=settings)
     
     if callback.data == Commands.SETTINGS_APPEARANCE.value:
         await callback.message.edit_text(
@@ -35,24 +40,25 @@ async def appearance(callback: CallbackQuery):
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.SETTINGS.value and
+        guards[callback.message.chat.id].text == Commands.SETTINGS.value and
         callback.data == Commands.SETTINGS_APPEARANCE_DROP.value
 )
 @top_notification
 async def appearance_drop(callback: CallbackQuery):
-    students[callback.message.chat.id].settings.drop()
+    user_id: int = Users.get(Users.telegram_id == callback.message.chat.id).user_id
+    
+    Settings.get(Settings.user_id == user_id).delete_instance()
+    Settings.create(user_id=user_id)
     
     await appearance_done(callback=callback)
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.SETTINGS.value and
+        guards[callback.message.chat.id].text == Commands.SETTINGS.value and
         callback.data == Commands.SETTINGS_APPEARANCE_DONE.value
 )
 @top_notification
 async def appearance_done(callback: CallbackQuery):
     await callback.message.edit_text(text="Сохранено!")
     
-    students[callback.message.chat.id].guard.drop()
-    
-    save_data(file=USERS_FILE, data=students)
+    guards[callback.message.chat.id].drop()

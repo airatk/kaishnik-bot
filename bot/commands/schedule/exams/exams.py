@@ -1,15 +1,22 @@
+from random import choice
+
+from typing import Optional
+from typing import List
+
 from aiogram.types import Message
 from aiogram.types import ChatType
 
 from bot import dispatcher
-from bot import students
-from bot import metrics
+from bot import guards
 
-from bot.shared.api.constants import LOADING_REPLIES
-from bot.shared.api.types import ScheduleType
-from bot.shared.commands import Commands
+from bot.models.users import Users
 
-from random import choice
+from bot.utilities.helpers import increment_command_metrics
+from bot.utilities.types import Commands
+from bot.utilities.api.constants import LOADING_REPLIES
+from bot.utilities.api.types import ScheduleType
+from bot.utilities.api.student import get_group_schedule_id
+from bot.utilities.api.student import get_schedule_by_group_schedule_id
 
 
 @dispatcher.message_handler(
@@ -19,34 +26,40 @@ from random import choice
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
-        students[message.chat.id].guard.text is None,
+        guards[message.chat.id].text is None,
     commands=[ Commands.EXAMS.value ]
 )
-@metrics.increment(Commands.EXAMS)
+@increment_command_metrics(command=Commands.EXAMS)
 async def exams(message: Message):
     loading_message: Message = await message.answer(
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
     )
     
-    request_entities: [str] = message.text.split()
+    exams_arguments: List[str] = message.text.split()[1:]
+    another_group_schedule_id: Optional[str] = None
     
-    if len(request_entities) > 1:
-        students[message.chat.id].another_group = request_entities[1]
+    if len(exams_arguments) != 0:
+        (another_group_schedule_id, response_error) = get_group_schedule_id(group=exams_arguments[0])
         
-        if students[message.chat.id].another_group_schedule_id is None:
+        if another_group_schedule_id is None:
             await loading_message.edit_text(
-                text="Расписание экзаменов группы *{group}* получить не удалось :(".format(group=request_entities[1]),
+                text="\n".join([
+                    "Расписание экзаменов группы *{group}* получить не удалось.".format(group=exams_arguments[0]),
+                    response_error.value
+                ]),
                 parse_mode="markdown"
             )
-            
-            students[message.chat.id].guard.drop()
             return
     
-    (schedule, error_message) = students[message.chat.id].get_schedule(TYPE=ScheduleType.EXAMS)
+    (schedule, response_error) = get_schedule_by_group_schedule_id(
+        schedule_type=ScheduleType.EXAMS,
+        user_id=Users.get(Users.telegram_id == message.chat.id).user_id,
+        another_group_schedule_id=another_group_schedule_id
+    )
     
     await loading_message.edit_text(
-        text=error_message if schedule is None else schedule,
+        text=response_error.value if schedule is None else schedule,
         parse_mode="markdown",
         disable_web_page_preview=True
     )

@@ -1,37 +1,46 @@
+from random import choice
+
+from typing import List
+
 from aiogram.types import CallbackQuery
 from aiogram.utils.exceptions import MessageNotModified
 
-from bot import students
+from bot import guards
+from bot import states
 
 from bot.commands.schedule.utilities.keyboards import dates_appender
 
-from bot.shared.api.constants import LOADING_REPLIES
-from bot.shared.api.types import ScheduleType
-from bot.shared.api.lecturers import get_lecturers_schedule
-from bot.shared.commands import Commands
+from bot.models.users import Users
 
-from random import choice
+from bot.utilities.types import Commands
+from bot.utilities.api.constants import LOADING_REPLIES
+from bot.utilities.api.types import ScheduleType
+from bot.utilities.api.student import get_schedule_by_group_schedule_id
+from bot.utilities.api.lecturers import get_lecturers_schedule
 
 
 async def common_add_chosen_date(callback: CallbackQuery):
-    callback_data: [str] = callback.data.split(" ")
-    
+    # Whitespace is explicitly set as a delimiter to preserve number of received arguments
+    callback_data: List[str] = callback.data.split(" ")
     raw_date: str = callback_data[2]
     
     if raw_date != "":
-        if raw_date in students[callback.message.chat.id].chosen_schedule_dates:
-            students[callback.message.chat.id].chosen_schedule_dates.remove(raw_date)
+        if raw_date in states[callback.message.chat.id].chosen_schedule_dates:
+            states[callback.message.chat.id].chosen_schedule_dates.remove(raw_date)
         else:
-            students[callback.message.chat.id].chosen_schedule_dates.append(raw_date)
+            states[callback.message.chat.id].chosen_schedule_dates.append(raw_date)
     
-    chosen_dates_number: int = len(students[callback.message.chat.id].chosen_schedule_dates)
+    chosen_dates_number: int = len(states[callback.message.chat.id].chosen_schedule_dates)
     
     chosen_word_ending: str = "о"
     day_word: str = "день"
     
-    if chosen_dates_number == 1: chosen_word_ending = ""
-    elif chosen_dates_number < 5: day_word = "дня"
-    else: day_word = "дней"
+    if chosen_dates_number == 1:
+        chosen_word_ending = ""
+    elif chosen_dates_number < 5:
+        day_word = "дня"
+    else:
+        day_word = "дней"
     
     try:
         await callback.message.edit_text(
@@ -46,7 +55,7 @@ async def common_add_chosen_date(callback: CallbackQuery):
             parse_mode="markdown",
             reply_markup=dates_appender(
                 shift=int(callback_data[1]),
-                dates=students[callback.message.chat.id].chosen_schedule_dates,
+                dates=states[callback.message.chat.id].chosen_schedule_dates,
                 lecturer_id=callback_data[3]
             )
         )
@@ -59,29 +68,42 @@ async def common_show_chosen_dates(command: Commands, callback: CallbackQuery):
         disable_web_page_preview=True
     )
     
-    callback_data: [str] = callback.data.split(" ")
+    callback_data: List[str] = callback.data.split(" ")
     
     if callback_data[1] != "":
-        students[callback.message.chat.id].chosen_schedule_dates.append(callback_data[1])
+        states[callback.message.chat.id].chosen_schedule_dates.append(callback_data[1])
+    
+    user_id: int = Users.get(Users.telegram_id == callback.message.chat.id).user_id
     
     if command is Commands.CLASSES:
-        (schedule, error_message) = students[callback.message.chat.id].get_schedule(TYPE=ScheduleType.CLASSES)
+        (schedule, response_error) = get_schedule_by_group_schedule_id(
+            schedule_type=ScheduleType.CLASSES,
+            user_id=user_id,
+            another_group_schedule_id=states[callback.message.chat.id].another_group_schedule_id,
+            dates=states[callback.message.chat.id].chosen_schedule_dates
+        )
     elif command is Commands.LECTURERS:
-        (schedule, error_message) = get_lecturers_schedule(
+        (schedule, response_error) = get_lecturers_schedule(
             lecturer_id=callback_data[2],
-            TYPE=ScheduleType.CLASSES,
-            dates=students[callback.message.chat.id].chosen_schedule_dates,
-            settings=students[callback.message.chat.id].settings
+            schedule_type=ScheduleType.CLASSES,
+            user_id=user_id,
+            dates=states[callback.message.chat.id].chosen_schedule_dates,
         )
     
     await callback.message.delete()
     
-    if error_message is not None:
-        await callback.message.answer(text=error_message, parse_mode="markdown", disable_web_page_preview=True)
-        await callback.message.answer(text="Отображено ранее сохранённое расписание.")
+    if response_error is not None:
+        await callback.message.answer(
+            text=response_error.value,
+            parse_mode="markdown",
+            disable_web_page_preview=True
+        )
     
     if schedule is not None:
         for day in schedule:
-            await callback.message.answer(text=day, parse_mode="markdown")
+            await callback.message.answer(
+                text=day,
+                parse_mode="markdown"
+            )
     
-    students[callback.message.chat.id].guard.drop()
+    guards[callback.message.chat.id].drop()

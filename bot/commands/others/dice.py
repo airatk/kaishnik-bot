@@ -2,12 +2,12 @@ from aiogram.types import Message
 from aiogram.types import ChatType
 
 from bot import dispatcher
-from bot import students
-from bot import metrics
+from bot import guards
 
 from bot.commands.others.utilities.constants import DICE
 
-from bot.shared.commands import Commands
+from bot.utilities.helpers import increment_command_metrics
+from bot.utilities.types import Commands
 
 
 @dispatcher.message_handler(
@@ -17,9 +17,9 @@ from bot.shared.commands import Commands
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
-        students[message.chat.id].guard.text is None,
+        guards[message.chat.id].text is None,
     commands=[ Commands.DICE.value ]
 )
-@metrics.increment(Commands.DICE)
+@increment_command_metrics(command=Commands.DICE)
 async def dice(message: Message):
     await message.answer_dice(emoji=DICE)

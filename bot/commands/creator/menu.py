@@ -5,7 +5,7 @@ from bot import dispatcher
 from bot.commands.creator.utilities.constants import CREATOR
 from bot.commands.creator.utilities.constants import CONTROL_PANEL
 
-from bot.shared.commands import Commands
+from bot.utilities.types import Commands
 
 
 @dispatcher.message_handler(

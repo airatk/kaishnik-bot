@@ -2,9 +2,9 @@ from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 from aiogram.types import ChatType
 
-from bot.shared.keyboards import cancel_button
-from bot.shared.api.constants import INSTITUTES
-from bot.shared.commands import Commands
+from bot.utilities.keyboards import cancel_button
+from bot.utilities.types import Commands
+from bot.utilities.api.constants import INSTITUTES
 
 
 def login_way_chooser(is_old: bool, chat_type: ChatType) -> InlineKeyboardMarkup:
@@ -13,8 +13,8 @@ def login_way_chooser(is_old: bool, chat_type: ChatType) -> InlineKeyboardMarkup
     if is_old: setup_way_chooser_keyboard.row(cancel_button())
     
     if chat_type == ChatType.PRIVATE:
-        setup_way_chooser_keyboard.row(InlineKeyboardButton(text="с зачёткой", callback_data=Commands.LOGIN_EXTENDED.value))
         setup_way_chooser_keyboard.row(InlineKeyboardButton(text="без зачётки", callback_data=Commands.LOGIN_COMPACT.value))
+        setup_way_chooser_keyboard.row(InlineKeyboardButton(text="с зачёткой", callback_data=Commands.LOGIN_EXTENDED.value))
     else:
         setup_way_chooser_keyboard.row(InlineKeyboardButton(text="продолжить", callback_data=Commands.LOGIN_COMPACT.value))
     

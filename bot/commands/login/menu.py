@@ -3,30 +3,31 @@ from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
 
 from bot import dispatcher
-from bot import students
-from bot import metrics
+from bot import guards
 
 from bot.commands.login.utilities.keyboards import login_way_chooser
 from bot.commands.login.utilities.constants import GUIDE_MESSAGE
 
-from bot.shared.helpers import top_notification
-from bot.shared.constants import BOT_ADDRESSING
-from bot.shared.commands import Commands
-from bot.shared.data.helpers import save_data
-from bot.shared.data.constants import USERS_FILE
+from bot.models.users import Users
+
+from bot.utilities.helpers import top_notification
+from bot.utilities.helpers import increment_command_metrics
+from bot.utilities.constants import BOT_ADDRESSING
+from bot.utilities.types import Commands
 
 
 @dispatcher.callback_query_handler(
     lambda callback: (
-        students[callback.message.chat.id].guard.text == Commands.START.value or
-        students[callback.message.chat.id].guard.text == Commands.SETTINGS.value
+        guards[callback.message.chat.id].text == Commands.START.value or
+        guards[callback.message.chat.id].text == Commands.SETTINGS.value
     ) and callback.data == Commands.LOGIN.value
 )
 @top_notification
 async def login_on_callback(callback: CallbackQuery):
     # Cleaning the chat
     await callback.message.delete()
-    if students[callback.message.chat.id].guard.text == Commands.START.value: await students[callback.message.chat.id].guard.message.delete()
+    if guards[callback.message.chat.id].text == Commands.START.value:
+        await guards[callback.message.chat.id].message.delete()
     
     await login_on_command(callback.message)
 
@@ -37,10 +38,10 @@ async def login_on_callback(callback: CallbackQuery):
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
-        students[message.chat.id].guard.text is None,
+        guards[message.chat.id].text is None,
     commands=[ Commands.LOGIN.value ]
 )
-@metrics.increment(Commands.LOGIN)
+@increment_command_metrics(command=Commands.LOGIN)
 async def login_on_command(message: Message):
     if message.chat.type == ChatType.PRIVATE:
         text: str = (
@@ -57,28 +58,29 @@ async def login_on_command(message: Message):
             "• текст (в случае, если реплай)"
         ).format(bot_addressing=BOT_ADDRESSING[:-1])
     
+    is_user_setup: bool = Users.get(Users.telegram_id == message.chat.id).is_setup
+    
     # Showing the warning to the old users
-    if students[message.chat.id].is_setup:
-        text = "\n\n".join([ "Все текущие данные, включая *заметки* и *изменённое расписание*, будут стёрты.", text ])
+    if is_user_setup:
+        text = "\n\n".join([ "Данные изменятся, но настройки и заметки будут сохранены.", text ])
     
     await message.answer(
         text=text,
         parse_mode="markdown",
-        reply_markup=login_way_chooser(is_old=students[message.chat.id].is_setup, chat_type=message.chat.type)
+        reply_markup=login_way_chooser(is_old=is_user_setup, chat_type=message.chat.type)
     )
     
-    students[message.chat.id].guard.text = Commands.LOGIN.value
+    guards[message.chat.id].text = Commands.LOGIN.value
 
 
 async def finish_login(message: Message):
-    await students[message.chat.id].guard.message.edit_text(text="Запомнено!")
+    await guards[message.chat.id].message.edit_text(text="Запомнено!")
     
     await message.answer(
         text=GUIDE_MESSAGE,
         parse_mode="markdown"
     )
     
-    students[message.chat.id].guard.drop()
-    students[message.chat.id].is_setup = True
+    guards[message.chat.id].drop()
     
-    save_data(file=USERS_FILE, data=students)
+    Users.update(is_setup=True).where(Users.telegram_id == message.chat.id).execute()

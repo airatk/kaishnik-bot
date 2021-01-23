@@ -1,9 +1,12 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
-from bot.shared.keyboards import cancel_button
-from bot.shared.api.student import Settings
-from bot.shared.commands import Commands
+from bot.commands.settings.utilities.types import SettingsOption
+
+from bot.models.settings import Settings
+
+from bot.utilities.keyboards import cancel_button
+from bot.utilities.types import Commands
 
 
 def action_chooser() -> InlineKeyboardMarkup:
@@ -28,7 +31,7 @@ def appearance_chooser(settings: Settings) -> InlineKeyboardMarkup:
     
     appearance_chooser_keyboard.row(InlineKeyboardButton(
         text="• полное расписание" if settings.is_schedule_size_full else "компактное расписание •",
-        callback_data=" ".join([ Commands.SETTINGS_APPEARANCE.value, Settings.Option.IS_SCHEDULE_SIZE_FULL.value ])
+        callback_data=" ".join([ Commands.SETTINGS_APPEARANCE.value, SettingsOption.IS_SCHEDULE_SIZE_FULL.value ])
     ))
     
     return appearance_chooser_keyboard

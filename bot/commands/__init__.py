@@ -10,7 +10,6 @@ from bot.commands import login
 from bot.commands import schedule
 from bot.commands import score
 from bot.commands import notes
-from bot.commands import edit
 from bot.commands import locations
 from bot.commands import others
 

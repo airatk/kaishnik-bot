@@ -2,38 +2,48 @@ from enum import Enum
 
 
 class Option(Enum):
-    TO_SUBOPTION: str = ""
+    EMPTY: str = ""
+    
+    # /metrics
+    DATE: str = "date"
+    MONTH: str = "month"
     
     # /data
-    IDS: str = "ids"
+    NUMBER: str = "number"
+    STATE: str = "state"
+    USER_ID: str = "user-id"
+    
     USERNAME: str = "username"
     FIRSTNAME: str = "firstname"
-    NUMBER: str = "number"
-    INDEX: str = "index"
+    
     NAME: str = "name"
     GROUP: str = "group"
-    YEAR: str = "year"
+    
+    BB_LOGIN: str = "bb-login"
     
     # /broadcast
+    USERS: str = "users"
     MESSAGE: str = "message"
     SIGNED: str = "signed"
     
-    # /dayoff
+    # /daysoff
     ADD: str = "add"
     DROP: str = "drop"
 
-class Suboption(Enum):
-    ALL: str = "all"
-    UNLOGIN: str = "unlogin"
+class Value(Enum):
     ME: str = "me"
     
-    EXTENDED: str = "extended"
-    COMPACT: str = "compact"
-    GROUP_CHAT: str = "group-chat"
+    ALL: str = "all"
+    
+    SETUP: str = "setup"
+    UNSETUP: str = "unsetup"
+    
+    GROUPS: str = "groups"
+    COMPACTS: str = "compacts"
+    EXTENDEDS: str = "extendeds"
+    BBS: str = "bbs"
+    UNDEFINED: str = "undefined"
+    
+    GUARDS: str = "guards"
     
     LIST: str = "list"
-    
-    WEEK: str = "week"
-    
-    DROP: str = "drop"
-    SILENTLY: str = "silently"

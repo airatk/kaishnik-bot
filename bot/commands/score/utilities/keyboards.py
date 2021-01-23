@@ -1,8 +1,10 @@
+from typing import List
+
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
-from bot.shared.keyboards import cancel_button
-from bot.shared.commands import Commands
+from bot.utilities.types import Commands
+from bot.utilities.keyboards import cancel_button
 
 
 def semester_chooser(semesters_number: int) -> InlineKeyboardMarkup:
@@ -12,9 +14,9 @@ def semester_chooser(semesters_number: int) -> InlineKeyboardMarkup:
     
     semester_chooser_keyboard.add(*[
         InlineKeyboardButton(
-            text=str(semester + 1),
-            callback_data=" ".join([ Commands.SCORE_SEMESTER.value, str(semester + 1) ])
-        ) for semester in range(semesters_number)
+            text=str(semester),
+            callback_data=" ".join([ Commands.SCORE_SEMESTER.value, str(semester) ])
+        ) for semester in range(1, semesters_number + 1)
     ])
     
     return semester_chooser_keyboard
@@ -22,7 +24,7 @@ def semester_chooser(semesters_number: int) -> InlineKeyboardMarkup:
 def subjects_type_chooser(has_exams: bool, has_tests: bool, has_courseworks: bool) -> InlineKeyboardMarkup:
     subjects_type_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
-    if has_exams or has_courseworks or has_tests:
+    if any([ has_exams, has_courseworks, has_tests ]):
         subjects_type_chooser_keyboard.row(
             cancel_button(),
             InlineKeyboardButton(
@@ -45,20 +47,20 @@ def subjects_type_chooser(has_exams: bool, has_tests: bool, has_courseworks: boo
     
     return subjects_type_chooser_keyboard
 
-def subject_chooser(subjects: [str], type: str) -> InlineKeyboardMarkup:
+def subject_chooser(subjects: List[str], subject_type: str) -> InlineKeyboardMarkup:
     subject_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
     subject_chooser_keyboard.row(
         cancel_button(),
         InlineKeyboardButton(
             text="показать все",
-            callback_data=" ".join([ type, "None" ])
+            callback_data=" ".join([ subject_type, "None" ])
         )
     )
     
     subject_chooser_keyboard.add(*[
         InlineKeyboardButton(
-            text=title, callback_data=" ".join([ type, str(index) ])
+            text=title, callback_data=" ".join([ subject_type, str(index) ])
         ) for (index, title) in enumerate(subjects)
     ])
     

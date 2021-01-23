@@ -1,31 +1,37 @@
+from random import choice
+from re import Match
+from re import search
+
 from aiogram.types import Message
 from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
 
 from bot import dispatcher
-from bot import students
+from bot import guards
 
 from bot.commands.login.menu import finish_login
 from bot.commands.login.utilities.keyboards import againer
 from bot.commands.login.utilities.keyboards import guess_approver
 
-from bot.shared.keyboards import canceler
-from bot.shared.helpers import top_notification
-from bot.shared.constants import BOT_ADDRESSING
-from bot.shared.api.constants import LOADING_REPLIES
-from bot.shared.api.types import ResponseError
-from bot.shared.api.student import Student
-from bot.shared.commands import Commands
+from bot.models.users import Users
+from bot.models.groups_of_students import GroupsOfStudents
+from bot.models.compact_students import CompactStudents
+from bot.models.extended_students import ExtendedStudents
+from bot.models.bb_students import BBStudents
 
-from random import choice
-from re import Match
-from re import search
+from bot.utilities.keyboards import canceler
+from bot.utilities.helpers import top_notification
+from bot.utilities.constants import BOT_ADDRESSING
+from bot.utilities.types import Commands
+from bot.utilities.api.constants import LOADING_REPLIES
+from bot.utilities.api.types import ResponseError
+from bot.utilities.api.student import get_group_schedule_id
 
 
 @dispatcher.callback_query_handler(
     lambda callback:
         callback.message.chat.type != ChatType.PRIVATE and
-        students[callback.message.chat.id].guard.text == Commands.LOGIN.value and
+        guards[callback.message.chat.id].text == Commands.LOGIN.value and
         callback.data == Commands.LOGIN_COMPACT.value
 )
 @top_notification
@@ -35,18 +41,35 @@ async def login_compact_guess_group(callback: CallbackQuery):
         disable_web_page_preview=True
     )
     
-    students[callback.message.chat.id] = Student()  # Resetting user
-    students[callback.message.chat.id].type = Student.Type.GROUP_CHAT
+    user: Users = Users.get(telegram_id=callback.message.chat.id)
+    
+    GroupsOfStudents.delete().where(GroupsOfStudents.user_id == user.user_id).execute()
+    
+    user.is_setup = False
+    user.save()
+    
+    group_of_students: GroupsOfStudents = GroupsOfStudents.create(user_id=user.user_id)
+    
+    group_of_students.save()
     
     guess: Match = search("[0-9][0-9][0-9][0-9][0-9]?[0-9]?", callback.message.chat.title)
     
-    if guess is not None:
-        students[callback.message.chat.id].group = guess.group()
-    
-    # If the guess was unsuccessful, go the usual login way (including user reset)
-    if students[callback.message.chat.id].group_schedule_id is None:
+    # If input is unusual, go the usual login way
+    if guess is None:
         await login_compact(callback=callback)
         return
+    
+    (group_schedule_id, _) = get_group_schedule_id(group=guess.group())
+    
+    # If the guess was unsuccessful, go the usual login way
+    if group_schedule_id is None:
+        await login_compact(callback=callback)
+        return
+    
+    group_of_students.group = guess.group()
+    group_of_students.group_schedule_id = group_schedule_id
+    
+    group_of_students.save()
     
     await callback.message.edit_text(
         text="*{possible_group}* — это твоя группа, верно?".format(possible_group=guess.group()),
@@ -54,12 +77,12 @@ async def login_compact_guess_group(callback: CallbackQuery):
         parse_mode="markdown"
     )
     
-    students[callback.message.chat.id].guard.text = Commands.LOGIN_COMPACT.value
-    students[callback.message.chat.id].guard.message = callback.message
+    guards[callback.message.chat.id].text = Commands.LOGIN_COMPACT.value
+    guards[callback.message.chat.id].message = callback.message
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        students[callback.message.chat.id].guard.text == Commands.LOGIN_COMPACT.value and
+        guards[callback.message.chat.id].text == Commands.LOGIN_COMPACT.value and
         callback.data == Commands.LOGIN_CORRECT_GROUP_GUESS.value
 )
 @top_notification
@@ -69,62 +92,89 @@ async def finish_login_compact_with_correct_group_guess(callback: CallbackQuery)
 
 @dispatcher.callback_query_handler(
     lambda callback: (
-        students[callback.message.chat.id].guard.text == Commands.LOGIN.value and
+        guards[callback.message.chat.id].text == Commands.LOGIN.value and
         callback.data == Commands.LOGIN_COMPACT.value
     ) or (
-        students[callback.message.chat.id].guard.text == Commands.LOGIN_COMPACT.value and
+        guards[callback.message.chat.id].text == Commands.LOGIN_COMPACT.value and
         callback.data == Commands.LOGIN_WRONG_GROUP_GUESS.value
     )
 )
 @top_notification
 async def login_compact(callback: CallbackQuery):
-    students[callback.message.chat.id] = Student()  # Resetting user
-    students[callback.message.chat.id].type = Student.Type.COMPACT if callback.message.chat.type == ChatType.PRIVATE else Student.Type.GROUP_CHAT
+    if callback.message.chat.type == ChatType.PRIVATE:
+        user: Users = Users.get(telegram_id=callback.message.chat.id)
+        
+        CompactStudents.delete().where(CompactStudents.user_id == user.user_id).execute()
+        ExtendedStudents.delete().where(ExtendedStudents.user_id == user.user_id).execute()
+        BBStudents.delete().where(BBStudents.user_id == user.user_id).execute()
+        
+        user.is_setup = False
+        user.save()
+        
+        CompactStudents.create(user_id=user.user_id).save()
     
     guard_message: Message = await callback.message.edit_text(
         text="Отправь номер своей группы.",
         reply_markup=canceler()
     )
     
-    students[callback.message.chat.id].guard.text = Commands.LOGIN_COMPACT.value
-    students[callback.message.chat.id].guard.message = guard_message
+    guards[callback.message.chat.id].text = Commands.LOGIN_COMPACT.value
+    guards[callback.message.chat.id].message = guard_message
 
 @dispatcher.message_handler(
     lambda message:
         message.chat.type != ChatType.PRIVATE and (
             message.text is not None and message.text.startswith(BOT_ADDRESSING) or
             message.reply_to_message is not None and message.reply_to_message.from_user.is_bot
-        ) and students[message.chat.id].guard.text == Commands.LOGIN_COMPACT.value
+        ) and guards[message.chat.id].text == Commands.LOGIN_COMPACT.value
 )
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
-        students[message.chat.id].guard.text == Commands.LOGIN_COMPACT.value
+        guards[message.chat.id].text == Commands.LOGIN_COMPACT.value
 )
 async def set_group(message: Message):
     # Getting rid of the bot addressing
-    if message.chat.type != ChatType.PRIVATE: message.text = message.text.replace(BOT_ADDRESSING, "")
+    if message.chat.type != ChatType.PRIVATE:
+        message.text = message.text.replace(BOT_ADDRESSING, "")
     
     await message.delete()
-    await students[message.chat.id].guard.message.edit_text(
+    await guards[message.chat.id].message.edit_text(
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
     )
     
-    students[message.chat.id].group = message.text
+    (group_schedule_id, response_error) = get_group_schedule_id(group=message.text)
     
-    if students[message.chat.id].group_schedule_id is None:
-        await students[message.chat.id].guard.message.edit_text(
-            text="\n\n".join([
-                ResponseError.NO_GROUP.value,
-                "Попробуешь ввести другую?"
-            ]),
-            reply_markup=againer(),
+    if group_schedule_id is None:
+        if response_error is ResponseError.NO_RESPONSE:
+            (text, reply_markup) = (response_error.value, None)
+        else:
+            (text, reply_markup) = ("\n\n".join([ response_error.value, "Попробуешь снова?" ]), againer())
+        
+        await guards[message.chat.id].message.edit_text(
+            text=text, reply_markup=reply_markup,
             disable_web_page_preview=True
         )
         
-        students[message.chat.id] = Student()  # Drop all the entered data
-        students[message.chat.id].guard.text = Commands.LOGIN.value  # Return to /login after the data drop
+        guards[message.chat.id].text = Commands.LOGIN.value
         return
+    
+    user_id: int = Users.get(Users.telegram_id == message.chat.id).user_id
+    
+    if message.chat.type != ChatType.PRIVATE:
+        GroupsOfStudents.update(
+            group=message.text,
+            group_schedule_id=group_schedule_id
+        ).where(
+            GroupsOfStudents.user_id == user_id
+        ).execute()
+    else:
+        CompactStudents.update(
+            group=message.text,
+            group_schedule_id=group_schedule_id
+        ).where(
+            CompactStudents.user_id == user_id
+        ).execute()
     
     await finish_login(message=message)

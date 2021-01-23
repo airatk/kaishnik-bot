@@ -2,15 +2,16 @@ from aiogram.types import Message
 from aiogram.types import ChatType
 
 from bot import dispatcher
-from bot import students
+from bot import guards
 
-from bot.shared.commands import Commands
+from bot.utilities.types import Commands
 
 
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
-        students[message.chat.id].guard.text is not None and
-        Commands.LOGIN.value in students[message.chat.id].guard.text
+        guards[message.chat.id].text is not None and
+        Commands.LOGIN.value in guards[message.chat.id].text
 )
-async def guard(message: Message): await message.delete()
+async def guard(message: Message):
+    await message.delete()

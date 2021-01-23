@@ -1,31 +1,20 @@
+from typing import Dict
+
 from aiogram import Bot
 from aiogram import Dispatcher
 
-from bot.shared.api.student import Student
-from bot.shared.data.helpers import load_data
-from bot.shared.data.constants import USERS_FILE
-from bot.shared.data.constants import KEYS_FILE
-from bot.shared.metrics import Metrics
+from bot.models.users import Users
 
-from config import Config
-from logging import basicConfig
-from logging import NOTSET
+from bot.utilities.constants import KEYS
+from bot.utilities.types import Guard
+from bot.utilities.types import State
 
 
-# Logger setup
-basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=NOTSET)
-
-
-# Initialising the bot components
-with open(KEYS_FILE) as keys_file:
-    keys: Config = Config(keys_file)
-
-bot: Bot = Bot(token=keys.TOKEN)
+bot: Bot = Bot(token=KEYS.TOKEN)
 dispatcher: Dispatcher = Dispatcher(bot)
 
-students: {int: Student} = load_data(file=USERS_FILE)
-metrics: Metrics = Metrics()
+guards: Dict[int, Guard] = { user.telegram_id: Guard() for user in Users.select(Users.telegram_id) }
+states: Dict[int, State] = { user.telegram_id: State() for user in Users.select(Users.telegram_id) }
 
 
-# Importing all the commands
 from bot import commands
