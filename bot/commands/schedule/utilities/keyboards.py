@@ -53,12 +53,12 @@ def time_period_chooser(lecturer_id: str = "None") -> InlineKeyboardMarkup:
 def dates_appender(shift: int, dates: List[str], lecturer_id: str = "None") -> InlineKeyboardMarkup:
     dates_appender_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
     
-    if date.today().month < 8:
-        first_date: str = date(date.today().year, 2, 1)
-        last_date: str = date(date.today().year, 6, 30)
-    else:
+    if date.today().month > 7:
         first_date: str = date(date.today().year, 9, 1)
         last_date: str = date(date.today().year, 12, 31)
+    else:
+        first_date: str = date(date.today().year, 2, 9)
+        last_date: str = date(date.today().year, 6, 30)
     
     if (date.today() - first_date).days < 0 and shift < (first_date - date.today()).days:
         shift = (first_date - date.today()).days

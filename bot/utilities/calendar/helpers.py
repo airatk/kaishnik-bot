@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 
 from typing import Tuple
 
@@ -12,10 +13,14 @@ def is_week_even(day_date: datetime = datetime.today()) -> bool:
 def get_week_number(day_date: datetime = datetime.today()) -> int:
     (current_year, current_week, _) = day_date.isocalendar()
     
-    semester_1st_day: datetime = datetime(current_year, 2 if day_date.month < 8 else 9, 1)
-    first_week: int = semester_1st_day.isocalendar()[1]
+    if day_date.month > 7:
+        semester_first_day: datetime = datetime(current_year, 9, 1)
+    else:
+        semester_first_day: datetime = datetime(current_year, 2, 9)
     
-    return (0 if current_week == 53 else current_week) - first_week + (0 if semester_1st_day.isoweekday() == 7 else 1)
+    semester_first_week: int = semester_first_day.isocalendar()[1]
+    
+    return current_week - semester_first_week + (0 if semester_first_day.isoweekday() == 7 else 1)
 
 
 def weekday_date() -> Tuple[str, str]:
