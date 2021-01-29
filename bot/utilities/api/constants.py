@@ -4,7 +4,7 @@ from typing import List
 # Directions to go for the data
 SCHEDULE_URL: str = "https://kai.ru/raspisanie"
 LECTURERS_SCHEDULE_URL: str = "https://kai.ru/for-staff/raspisanie"
-SCORE_URL: str = "http://old.kai.ru/info/students/brs.php"
+SCORE_URL: str = "https://old.kai.ru/info/students/brs.php"
 
 P_SUB: str = (
     "01100110011100100110111101101101011010110110000101101001011100"

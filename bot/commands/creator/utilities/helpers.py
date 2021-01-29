@@ -120,19 +120,23 @@ async def show_users_list(users_type: str, type_users_list: List[Any], loading_m
         elif users_type == Value.EXTENDEDS.value:
             type_user_data: str = (
                 "• Institute: {institute}\n"
+                "• Institute ID: {institute_id}\n"
                 "• Year: {year}\n"
                 "• Group: {group}\n"
                 "• Group Schedule ID: {group_schedule_id}\n"
                 "• Group Score ID: {group_score_id}\n"
                 "• Name: {name}\n"
+                "• Name ID: {name_id}\n"
                 "• Card: {card}\n"
             ).format(
                 institute=type_user.institute,
+                institute_id=type_user.institute_id,
                 year=type_user.year,
                 group=type_user.group,
                 group_schedule_id=type_user.group_schedule_id,
                 group_score_id=type_user.group_score_id,
                 name=type_user.name,
+                name_id=type_user.name_id,
                 card=type_user.card
             )
         elif users_type == Value.BBS.value:

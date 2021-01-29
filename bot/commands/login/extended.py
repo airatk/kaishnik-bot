@@ -91,6 +91,8 @@ async def set_institute(callback: CallbackQuery):
             text=response_error.value,
             disable_web_page_preview=True
         )
+        
+        guards[callback.message.chat.id].drop()
         return
     
     await callback.message.edit_text(
@@ -127,6 +129,8 @@ async def set_year(callback: CallbackQuery):
             text=response_error.value,
             disable_web_page_preview=True
         )
+        
+        guards[callback.message.chat.id].drop()
         return
     
     await callback.message.edit_text(
@@ -152,7 +156,12 @@ async def set_group(callback: CallbackQuery):
     (group_schedule_id, response_error) = get_group_schedule_id(group=callback_data[1])
     
     if group_schedule_id is None:
-        await callback.message.edit_text(text=response_error.value)
+        await callback.message.edit_text(
+            text=response_error.value,
+            disable_web_page_preview=True
+        )
+        
+        guards[callback.message.chat.id].drop()
         return
     
     user_id: int = Users.get(Users.telegram_id == callback.message.chat.id).user_id
@@ -173,6 +182,8 @@ async def set_group(callback: CallbackQuery):
             text=response_error.value,
             disable_web_page_preview=True
         )
+        
+        guards[callback.message.chat.id].drop()
         return
     
     states[callback.message.chat.id].group_names = { name_id: name for (name, name_id) in group_names.items() }
@@ -253,6 +264,10 @@ async def set_card(message: Message):
             reply_markup=canceler() if response_error is ResponseError.INCORRECT_CARD else None,
             disable_web_page_preview=True
         )
+        
+        if response_error is not ResponseError.INCORRECT_CARD:
+            guards[callback.message.chat.id].drop()
+        
         return
     
     await finish_login(message=message)

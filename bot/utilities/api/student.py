@@ -126,7 +126,7 @@ def get_last_available_semester(user_id: int) -> Tuple[Optional[int], Optional[R
         }).content.decode("CP1251")
         
         parsed_page: BeautifulSoup = BeautifulSoup(page, "html.parser")
-        selector: Tag = parsed_page.find(name="select", attrs={ "name": "semestr" })
+        selector: Optional[Tag] = parsed_page.find(name="select", attrs={ "name": "semestr" })
         
         semesters: List[int] = map(lambda option: int(option["value"]), selector.find_all("option"))
     except (ConnectionError, Timeout):
