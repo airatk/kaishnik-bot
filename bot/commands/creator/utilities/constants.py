@@ -140,7 +140,7 @@ COMMAND_REQUESTS_STATS: str = (
 )
 
 MONTH_GRAPH: str = (
-    "*Month Graph*\n"
+    "*{month} Graph*\n"
     "_#{hashtag}_\n"
     "\n"
     "`{graph}`\n"

@@ -29,6 +29,7 @@ from bot.models.bb_students import BBStudents
 from bot.models.metrics import Metrics
 
 from bot.utilities.types import Commands
+from bot.utilities.calendar.constants import MONTHS_EN
 
 
 @dispatcher.message_handler(
@@ -76,13 +77,13 @@ async def users(message: Message):
         for day_metrics in month_metrics:
             graph_values[day_metrics.date[5:]] = day_metrics.start
         
-        PERIOD: int = 19
+        PERIOD: int = 20
         max_requests_number: int = max(graph_values.values()) if len(graph_values.values()) != 0 else 0
         get_bar_length: Callable = lambda requests_number: int(requests_number/max_requests_number * PERIOD)
         
         graph: str = "\n".join(sorted([
-            "• {date}: {requests_number:<2} {pluses}".format(
-                date=date,
+            "• {day}: {requests_number:<2} {pluses}".format(
+                day=date.split("-")[1],
                 requests_number=requests_number,
                 pluses="".join([ "+" for _ in range(get_bar_length(requests_number) if get_bar_length(requests_number) > 1 else 1) ])
             ) for (date, requests_number) in graph_values.items()
@@ -90,6 +91,7 @@ async def users(message: Message):
         
         await message.answer(
             text=MONTH_GRAPH.format(
+                month=MONTHS_EN.get(options[Option.MONTH.value].split("-")[1], "Unknown Month"),
                 hashtag="users",
                 graph=graph if graph != "" else "empty",
                 total=sum(graph_values.values()),
@@ -300,13 +302,13 @@ async def metrics(message: Message):
                 day_metrics.unlogin
             ])
         
-        PERIOD: int = 17
+        PERIOD: int = 20
         max_requests_number: int = max(graph_values.values()) if len(graph_values.values()) != 0 else 0
         get_bar_length: Callable = lambda requests_number: int(requests_number/max_requests_number * PERIOD)
         
         graph: str = "\n".join(sorted([
-            "• {date}: {requests_number:<4} {pluses}".format(
-                date=date,
+            "• {day}: {requests_number:<4} {pluses}".format(
+                day=date.split("-")[1],
                 requests_number=requests_number,
                 pluses="".join([ "+" for _ in range(get_bar_length(requests_number) if get_bar_length(requests_number) > 1 else 1) ])
             ) for (date, requests_number) in graph_values.items()
@@ -314,6 +316,7 @@ async def metrics(message: Message):
         
         await message.answer(
             text=MONTH_GRAPH.format(
+                month=MONTHS_EN.get(options[Option.MONTH.value].split("-")[1], "Unknown Month"),
                 hashtag="metrics",
                 graph=graph if graph != "" else "empty",
                 total=sum(graph_values.values()),
