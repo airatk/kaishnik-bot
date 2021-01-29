@@ -55,7 +55,13 @@ async def clear(message: Message):
     
     await loading_message.delete()
     
-    await message.answer(text="{cleared_users_number} users were #cleared!".format(cleared_users_number=cleared_users_number))
+    await message.answer(
+        text=" ".join([
+            str(cleared_users_number),
+            "user was" if cleared_users_number == 1 else "users were",
+            "#cleared!"
+        ])
+    )
 
 @dispatcher.message_handler(
     lambda message:

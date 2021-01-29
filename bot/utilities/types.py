@@ -45,11 +45,9 @@ class Commands(Enum):
     CREATOR: str = "creator"
     USERS: str = "users"
     METRICS: str = "metrics"
-    DATA: str = "data"
     CLEAR: str = "clear"
     ERASE: str = "erase_"
     DROP: str = "drop"
-    GUARDDROP: str = "guarddrop"
     BROADCAST: str = "broadcast"
     DAYSOFF: str = "daysoff"
     
