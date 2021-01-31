@@ -12,6 +12,7 @@ from bot.commands.schedule.utilities.constants import DATES_NUMBER
 
 from bot.utilities.keyboards import cancel_button
 from bot.utilities.types import Commands
+from bot.utilities.calendar.helpers import get_semester_boundaries
 from bot.utilities.calendar.helpers import is_week_even
 from bot.utilities.calendar.constants import WEEKDAYS
 from bot.utilities.calendar.constants import MONTHS
@@ -53,12 +54,7 @@ def time_period_chooser(lecturer_id: str = "None") -> InlineKeyboardMarkup:
 def dates_appender(shift: int, dates: List[str], lecturer_id: str = "None") -> InlineKeyboardMarkup:
     dates_appender_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
     
-    if date.today().month > 7:
-        first_date: str = date(date.today().year, 9, 1)
-        last_date: str = date(date.today().year, 12, 31)
-    else:
-        first_date: str = date(date.today().year, 2, 9)
-        last_date: str = date(date.today().year, 6, 30)
+    (first_date, last_date) = get_semester_boundaries(day_date=date.today())
     
     if (date.today() - first_date).days < 0 and shift < (first_date - date.today()).days:
         shift = (first_date - date.today()).days
@@ -72,6 +68,9 @@ def dates_appender(shift: int, dates: List[str], lecturer_id: str = "None") -> I
         if weekday == 7 and day_date != date.today():
             day_date += timedelta(days=1)
             weekday = 1
+        elif day_date < first_date:
+            day_date += timedelta(days=1)
+            weekday = day_date.isoweekday()
         
         if day_date < first_date: continue
         if day_date > last_date: break
