@@ -55,6 +55,9 @@ def dates_appender(shift: int, dates: List[str], lecturer_id: str = "None") -> I
     dates_appender_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
     
     (first_date, last_date) = get_semester_boundaries(day_date=date.today())
+
+    # Shifting backwards for 7 days, because of the weirdness of university schedule
+    first_date -= timedelta(days=7)
     
     if (date.today() - first_date).days < 0 and shift < (first_date - date.today()).days:
         shift = (first_date - date.today()).days
