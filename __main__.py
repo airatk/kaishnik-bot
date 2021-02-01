@@ -3,7 +3,7 @@ from logging import NOTSET
 
 from aiogram import executor
 
-from bot import dispatcher
+from bot.platforms.telegram import dispatcher
 
 from bot.utilities.database.helpers import setup_database_tables
 
@@ -16,4 +16,4 @@ if __name__ == "__main__":
     setup_database_tables()
     
     # Launching
-    executor.start_polling(dispatcher)
+    executor.start_polling(dispatcher=dispatcher)

@@ -16,11 +16,14 @@ multidict==4.7.2
 peewee==3.14.0
 pycares==3.1.0
 pycparser==2.19
+pydantic==1.7.3
 psycopg2-binary==2.8.6
 pytz==2019.3
 requests==2.22.0
 soupsieve==1.9.5
+typing-extensions==3.7.4.3
 ujson==1.35
 urllib3==1.25.7
 uvloop==0.14.0
+vkwave==0.2.10
 yarl==1.4.2

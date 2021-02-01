@@ -61,13 +61,17 @@ def get_schedule_by_group_schedule_id(schedule_type: ScheduleType, user_id: int,
             user = CompactStudents.get_or_none(CompactStudents.user_id == user_id)
         if user is None:
             user = ExtendedStudents.get_or_none(ExtendedStudents.user_id == user_id)
+        
+        group_schedule_id: int = user.group_schedule_id
+    else:
+        group_schedule_id: int = another_group_schedule_id
     
     try:
         response: Dict[str, List[Dict[str, str]]] = get(url=SCHEDULE_URL, timeout=(6, 6), params={
             "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
             "p_p_lifecycle": "2",
             "p_p_resource_id": schedule_type.value,
-            "groupId": user.group_schedule_id if is_own_group_asked else another_group_schedule_id
+            "groupId": group_schedule_id
         }).json()
     except (ConnectionError, Timeout, JSONDecodeError):
         return (None, ResponseError.NO_RESPONSE)
