@@ -43,6 +43,8 @@ async def users(message: Message):
         setup_users: Users = Users.select().where(Users.is_setup == True)
         
         users_stats_filing: Dict[str, str] = {
+            "telegram": Users.select().where(Users.telegram_id.is_null(False)).count(),
+            "vk": Users.select().where(Users.vk_id.is_null(False)).count(),
             "groups": GroupsOfStudents.select().where(GroupsOfStudents.user_id.in_(setup_users)).count(),
             "compact": CompactStudents.select().where(CompactStudents.user_id.in_(setup_users)).count(),
             "extended": ExtendedStudents.select().where(ExtendedStudents.user_id.in_(setup_users)).count(),
