@@ -51,6 +51,9 @@ def style_raw_class(raw_class: Dict[str, str], is_schedule_size_full: bool, shou
     
     styled_class_template: str = "\n".join(styled_class_entities)
     
+    if "Военная подготовка" in raw_class["disciplName"]:
+        raw_class["disciplType"] = ClassType.MILITARY_TRAINING.value
+
     styled_class_filling: str = {
         "time": refine_class_time(raw_time=raw_class["dayTime"], raw_type=raw_class["disciplType"]),
         "place": refine_class_place(raw_building=raw_class["buildNum"], raw_auditorium=raw_class["audNum"]),
@@ -69,13 +72,17 @@ def style_raw_class(raw_class: Dict[str, str], is_schedule_size_full: bool, shou
 def refine_class_time(raw_time: str, raw_type: str) -> str:
     (hours, minutes) = map(int, raw_time.split(":"))
     start_time: datetime = datetime(1, 1, 1, hours, minutes)  # Year, month, day are filled with nonsence
+    duration: timedelta = timedelta(hours=1, minutes=30)  # Class duration is 1.5h
     
-    if raw_type == ClassType.LAB.value:
-        duration: timedelta = timedelta(hours=3, minutes=40 if start_time.hour == 11 else 10)
+    if raw_type == ClassType.MILITARY_TRAINING.value:
+        start_time = datetime(1, 1, 1, 7, 50)
+        # Military training classes start 10 minutes earlier than the usual ones
+
+        duration = timedelta(hours=9, minutes=10)
+        # Military training classes last all day
+    elif raw_type == ClassType.LAB.value:
+        duration = timedelta(hours=3, minutes=40 if start_time.hour == 11 else 10)
         # Lab duration is 3h with a 40/10m long break
-    else:
-        duration: timedelta = timedelta(hours=1, minutes=30)
-        # Class duration is 1.5h
     
     end_time: datetime = start_time + duration
     
@@ -104,6 +111,9 @@ def refine_class_type(raw_type: str, is_multigroup: bool, is_schedule_size_full:
         class_type = "лабораторная работа" if is_schedule_size_full else "ЛР"
     elif raw_type == ClassType.CONSULTATION.value:
         class_type = "консультация" if is_schedule_size_full else "К"
+    elif raw_type == ClassType.MILITARY_TRAINING.value:
+        class_type = "согласно расписанию ВУЦ" if is_schedule_size_full else "С"
+        is_multigroup = False
     else:
         class_type = raw_type
     

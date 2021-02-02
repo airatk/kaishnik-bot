@@ -31,6 +31,7 @@ class ClassType(Enum):
     PRACTICE: str = "пр"
     LAB: str = "л.р."
     CONSULTATION: str = "конс"
+    MILITARY_TRAINING: str = "в.п."
 
 
 class ScoreSubjectType(Enum):
