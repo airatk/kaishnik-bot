@@ -109,4 +109,5 @@ async def common_show_chosen_dates(command: Commands, callback: CallbackQuery):
                 parse_mode="markdown"
             )
     
+    states[callback.message.chat.id].drop()
     guards[callback.message.chat.id].drop()
