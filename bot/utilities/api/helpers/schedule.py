@@ -190,6 +190,7 @@ def beautify_lecturers_classes(raw_schedule: Dict[str, List[Dict[str, str]]], se
             styled_class: str = style_raw_lecturer_class(
                 raw_class=raw_class,
                 is_schedule_size_full=settings.is_schedule_size_full,
+                should_show_entire_semester=should_show_entire_semester,
                 groups=class_groups
             )
             

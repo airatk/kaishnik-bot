@@ -27,10 +27,11 @@ def style_raw_student_class(raw_class: Dict[str, str], is_schedule_size_full: bo
     
     return "\n".join(styled_student_class_entities)
 
-def style_raw_lecturer_class(raw_class: Dict[str, str], is_schedule_size_full: bool, groups: List[str]) -> str:
+def style_raw_lecturer_class(raw_class: Dict[str, str], is_schedule_size_full: bool, should_show_entire_semester: bool, groups: List[str]) -> str:
     styled_lecturer_class_entities: List[str] = [ style_raw_class(
         raw_class=raw_class,
-        is_schedule_size_full=is_schedule_size_full
+        is_schedule_size_full=is_schedule_size_full,
+        should_show_entire_semester=should_show_entire_semester
     ) ]
     
     styled_lecturer_class_entities.append("\n".join([ GROUPS_ENTITY.format(group=group) for group in groups ]))
@@ -38,7 +39,7 @@ def style_raw_lecturer_class(raw_class: Dict[str, str], is_schedule_size_full: b
     return "\n".join(styled_lecturer_class_entities)
 
 
-def style_raw_class(raw_class: Dict[str, str], is_schedule_size_full: bool, should_show_entire_semester: bool = False) -> str:
+def style_raw_class(raw_class: Dict[str, str], is_schedule_size_full: bool, should_show_entire_semester: bool) -> str:
     styled_class_entities: List[str] = list(FULL_CLASS_ENTITIES if is_schedule_size_full else COMPACT_CLASS_ENTITIES)
     
     # Removing 'dates' from template if there is no dates
