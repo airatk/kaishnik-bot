@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from aiogram.types import Message
 from aiogram.types import ChatType
 
@@ -25,13 +27,13 @@ from bot.utilities.calendar.helpers import get_week_number
 async def week(message: Message):
     (weekday, date) = weekday_date()
     
-    week_number: int = get_week_number()
+    week_number: int = get_week_number(day_date=datetime.today())
     
     if week_number > 0:
         week_message: str = (
             "Текущая неделя *{type}*,\n"
             "*#{number}* с начала семестра.".format(
-                type="чётная" if is_week_even() else "нечётная",
+                type="чётная" if is_week_even(day_date=datetime.today()) else "нечётная",
                 number=week_number
             )
         )
