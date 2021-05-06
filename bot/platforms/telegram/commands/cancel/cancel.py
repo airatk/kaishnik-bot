@@ -3,6 +3,7 @@ from aiogram.types import CallbackQuery
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
+from bot.platforms.telegram import states
 
 from bot.platforms.telegram.utilities.helpers import top_notification
 
@@ -22,6 +23,7 @@ async def cancel_on_message(message: Message):
         await message.answer(text="Запущенных команд нет. Отправь какую-нибудь☺️")
         return
     
+    states[message.chat.id].drop()
     guards[message.chat.id].drop()
     
     await message.answer(text="Отменено!")
