@@ -19,10 +19,12 @@ def style_raw_student_exam(raw_exam: Dict[str, str], is_schedule_size_full: bool
     return "\n".join(styled_student_exam_entities)
 
 def style_raw_lecturer_exam(raw_exam: Dict[str, str], is_schedule_size_full: bool) -> str:
-    styled_lecturer_exam_entities: List[str] = [ style_raw_exam(
-        raw_exam=raw_exam,
-        is_schedule_size_full=is_schedule_size_full
-    ) ]
+    styled_lecturer_exam_entities: List[str] = [ 
+        style_raw_exam(
+            raw_exam=raw_exam,
+            is_schedule_size_full=is_schedule_size_full
+        )
+    ]
     
     styled_lecturer_exam_entities.append(GROUPS_ENTITY.format(group=raw_exam["group"]))
     
