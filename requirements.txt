@@ -17,7 +17,7 @@ peewee==3.14.1
 psycopg2-binary==2.8.6
 pycares==3.1.1
 pycparser==2.20
-pydantic==1.8
+pydantic==1.8.2
 pytz==2021.1
 requests==2.25.1
 soupsieve==2.2
