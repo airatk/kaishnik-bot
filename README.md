@@ -1,6 +1,6 @@
 # Каист
 
-[<img src="https://github.com/airatk/kaishnik-bot/blob/master/design/logo/logo.png" alt="kaishnik-bot logo" align="right" width="175" />][3]
+[<img src="https://github.com/airatk/kaishnik-bot/blob/main/design/logo/logo.png" alt="kaishnik-bot logo" align="right" width="175" />][3]
 
 _telegram bot for students of KNRTU-KAI to make their daily routine more pleasant_
 
@@ -72,5 +72,5 @@ All the stuff was drawn using [Pixelmator Pro][5].
 [1]: https://github.com/aiogram/aiogram "Repository of aiogram"
 [2]: https://github.com/coleifer/peewee "Repository of peewee"
 [3]: https://telegram.me/kaishnik_bot "Open the bot in Telegram"
-[4]: https://github.com/airatk/kaishnik-bot/blob/master/design/poster/poster.png "kaishnik-bot poster"
+[4]: https://github.com/airatk/kaishnik-bot/blob/main/design/poster/poster.png "kaishnik-bot poster"
 [5]: https://www.pixelmator.com/pro "Pixelmator Pro"
