@@ -1,6 +1,6 @@
 # Каист
 
-[<img src="https://github.com/airatk/kaishnik-bot/blob/master/design/logo/logo.png" alt="kaishnik-bot logo" align="right" width="175" />][3]
+[<img src="https://github.com/airatk/kaishnik-bot/blob/main/design/logo/logo.png" alt="kaishnik-bot logo" align="right" width="175" />][3]
 
 _telegram bot for students of KNRTU-KAI to make their daily routine more pleasant_
 
@@ -40,9 +40,9 @@ Use `python3 ./` to launch.
 
 ## Architecture
 The bot is stored in project root directory folder called `bot/`. The `bot/` contains 3 subdirectories: 
-* `platforms/` - implementation of bot on a variety of social networks
-* `models/` - classes of `peewee` models of data stored in `PostgreSQL` database
-* `utilities/` - additional code that takes student data from the university servers, connects the bot to the database, and so on 
+* `platforms/` - implementation of bot on a variety of social networks.
+* `models/` - classes of `peewee` models of data stored in `PostgreSQL` database.
+* `utilities/` - additional code that takes student data from the university servers, connects the bot to the database, and so on.
 
 Each command has its own directory:
 
@@ -57,7 +57,7 @@ Each command has its own directory:
         ├── constants.py
         └── types.py
 
-The structure is essential meanwhile all the noted files are optional. One-file commands are exceptions, and are located at `bot/commands/others/` directory. `bot/commands/schedule/` directory is also an exception, and may be considered as a super-command which consists of 3 similar, but separate commands. 
+The structure is essential meanwhile all the noted files are optional. One-file commands are exceptions, and are located at `bot/platforms/<platform>/commands/others/` directory. `bot/platforms/<platform>/commands/schedule/` directory is also an exception, and may be considered as a super-command which consists of 3 similar, but separate commands. 
 
 ## Other stuff
 * `update-logs/` folder contains notes which were sent to users as update announcements.
@@ -72,5 +72,5 @@ All the stuff was drawn using [Pixelmator Pro][5].
 [1]: https://github.com/aiogram/aiogram "Repository of aiogram"
 [2]: https://github.com/coleifer/peewee "Repository of peewee"
 [3]: https://telegram.me/kaishnik_bot "Open the bot in Telegram"
-[4]: https://github.com/airatk/kaishnik-bot/blob/master/design/poster/poster.png "kaishnik-bot poster"
+[4]: https://github.com/airatk/kaishnik-bot/blob/main/design/poster/poster.png "kaishnik-bot poster"
 [5]: https://www.pixelmator.com/pro "Pixelmator Pro"
