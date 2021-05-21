@@ -106,7 +106,7 @@ def beautify_classes(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Se
 def beautify_exams(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Settings) -> str:
     raw_schedule: List[Dict[str, str]] = refine_raw_schedule(raw_schedule=raw_schedule)
     
-    raw_schedule.sort(key=lambda raw_exam: ".".join(raw_exam["examDate"].split()[:2][::-1]))
+    raw_schedule.sort(key=lambda raw_exam: ".".join(raw_exam["examDate"].split(".")[:2][::-1]))
     
     exams_list: List[str] = [ style_raw_student_exam(
         raw_exam=raw_exam,
@@ -218,7 +218,7 @@ def beautify_lecturers_classes(raw_schedule: Dict[str, List[Dict[str, str]]], se
 def beautify_lecturers_exams(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Settings) -> str:
     raw_schedule: List[Dict[str, str]] = refine_raw_schedule(raw_schedule=raw_schedule)
     
-    raw_schedule.sort(key=lambda raw_exam: ".".join(raw_exam["examDate"].split()[:2][::-1]))
+    raw_schedule.sort(key=lambda raw_exam: ".".join(raw_exam["examDate"].split(".")[:2][::-1]))
     
     exams_list: List[str] = [ style_raw_lecturer_exam(
         raw_exam=raw_exam,
