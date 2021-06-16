@@ -33,7 +33,7 @@ async def appearance(callback: CallbackQuery):
     
     if callback.data == Commands.SETTINGS_APPEARANCE.value:
         await callback.message.edit_text(
-            text="Нажми, чтобы изменить значение на противоположное:",
+            text="Нажми на нужную опцию, чтобы изменить её:",
             reply_markup=reply_markup
         )
     else:
