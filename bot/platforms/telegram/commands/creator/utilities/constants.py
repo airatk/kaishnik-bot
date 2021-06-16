@@ -3,6 +3,9 @@ from bot.utilities.constants import KEYS
 
 CREATOR: int = int(KEYS.CREATOR)
 
+MAX_TEXT_LENGTH: int = 3900
+MAX_CAPTION_LENGTH: int = 900
+
 CONTROL_PANEL: str = (
     "*Control panel*\n"
     "_creator access only_\n"
@@ -15,8 +18,8 @@ CONTROL_PANEL: str = (
         "\t\t\t\[ me ]\n"
         "\t\t\t\[ number: {} ]\n"
         "\t\t\t\[ state: {\n"
-            "\t\t\t\t\t\t\[setup]\n"
-            "\t\t\t\t\t\t\[unsetup]\n"
+            "\t\t\t\t\t\t\[ setup ]\n"
+            "\t\t\t\t\t\t\[ unsetup ]\n"
         "\t\t\t} ]\n"
         "\t\t\t\[ user-id: {} ]\n"
         "\t\t\t\[ username: {} ]\n"
@@ -33,8 +36,8 @@ CONTROL_PANEL: str = (
     "*cleaning*\n"
     "/clear\n"
     "/drop {\n"
-        "\t\t\t\[ guards ]\n"
         "\t\t\t{\n"
+            "\t\t\t\t\t\t\[ guards ]\n"
             "\t\t\t\t\t\t\[ me ]\n"
             "\t\t\t\t\t\t\[ all ]\n"
             "\t\t\t\t\t\t\[ groups ]\n"
@@ -60,11 +63,12 @@ CONTROL_PANEL: str = (
         "\t\t\t{ message: {} }\n"
         "\n"
         "\t\t\tEntities to broadcast:\n"
-        "\t\t\t• message — up to 3900 characters in length.\n"
-        "\t\t\t• photo — with caption up to 900 characters in length.\n"
-        "\t\t\t• audio — in the .MP3 or .M4A format, with caption up to 900 characters in length.\n"
-        "\t\t\t• video — in the .MP4 format, up to 50 MB in size, with caption up to 900 characters in length.\n"
-        "\t\t\t• document — up to 50 MB in size, with caption up to 900 characters in length.\n"
+        f"\t\t\t• message — up to {MAX_TEXT_LENGTH} characters in length.\n"
+        f"\t\t\t• photo — with caption up to {MAX_CAPTION_LENGTH} characters in length.\n"
+        f"\t\t\t• audio — in the .MP3 or .M4A format, with caption up to {MAX_CAPTION_LENGTH} characters in length.\n"
+        f"\t\t\t• video — in the .MP4 format, up to 50 MB in size, with caption up to {MAX_CAPTION_LENGTH} characters in length.\n"
+        f"\t\t\t• document — up to 50 MB in size, with caption up to {MAX_CAPTION_LENGTH} characters in length.\n"
+        "\n"
     "}\n"
     "/dayoff {\n"
         "\t\t\t\[ list ]\n"
@@ -162,6 +166,3 @@ BROADCAST_MESSAGE_TEMPLATE: str = (
     "Поддержать бота финансово: /donate\n"
     "Написать разработчику: @airatk"
 )
-
-MAX_TEXT_LENGTH: int = 3900
-MAX_CAPTION_LENGTH: int = 900
