@@ -87,7 +87,7 @@ def get_schedule_by_group_schedule_id(schedule_type: ScheduleType, user_id: int,
     return(None, ResponseError.INCORRECT_SCHEDULE_TYPE)
 
 
-def get_extended_login_data(extended_login_data_type: ExtendedLoginDataType, user_id: int) -> Tuple[Optional[Dict[str, str]], Optional[ResponseError]]:
+def get_extended_login_data(extended_login_data_type: ExtendedLoginDataType, user_id: int) -> Tuple[Optional[List[Tuple[str, str]]], Optional[ResponseError]]:
     student: ExtendedStudents = ExtendedStudents.get(ExtendedStudents.user_id == user_id)
     
     try:
@@ -111,7 +111,7 @@ def get_extended_login_data(extended_login_data_type: ExtendedLoginDataType, use
     except (AttributeError, ValueError, KeyError):
         return (None, ResponseError.NO_DATA)
     else:
-        return (dict(zip(keys, values)), None)
+        return (list(zip(keys, values)), None)
 
 def get_last_available_semester(user_id: int) -> Tuple[Optional[int], Optional[ResponseError]]:
     student: ExtendedStudents = ExtendedStudents.get(ExtendedStudents.user_id == user_id)
@@ -123,7 +123,7 @@ def get_last_available_semester(user_id: int) -> Tuple[Optional[int], Optional[R
             "p_kurs": student.year,
             "p_group": student.group_score_id,
             "p_stud": student.name_id,
-            "p_zach": student.card
+            "p_zach": student.card.encode("CP1251")
         }).content.decode("CP1251")
         
         parsed_page: BeautifulSoup = BeautifulSoup(page, "html.parser")
@@ -149,7 +149,7 @@ def get_scoretable(semester: str, user_id: int) -> Tuple[Optional[List[Tuple[str
             "p_kurs": student.year,
             "p_group": student.group_score_id,
             "p_stud": student.name_id,
-            "p_zach": student.card,
+            "p_zach": student.card.encode("CP1251"),
             "semestr": semester
         }).content.decode("CP1251")
         

@@ -1,9 +1,11 @@
-from typing import Dict
+from typing import List
+from typing import Tuple
 
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 from aiogram.types import ChatType
 
+from bot.platforms.telegram.commands.login.utilities.constants import MAX_ITEMS_NUMBER_ON_ONE_PAGE
 from bot.platforms.telegram.utilities.keyboards import cancel_button
 
 from bot.utilities.types import Commands
@@ -28,7 +30,7 @@ def institute_setter() -> InlineKeyboardMarkup:
     institute_setter_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
     institute_setter_keyboard.row(cancel_button())
-    
+
     institute_setter_keyboard.add(*[
         InlineKeyboardButton(
             text=institute, callback_data=" ".join([ Commands.LOGIN_SET_INSTITUTE.value, institute_id ])
@@ -37,42 +39,88 @@ def institute_setter() -> InlineKeyboardMarkup:
     
     return institute_setter_keyboard
 
-def year_setter(years: Dict[str, str]) -> InlineKeyboardMarkup:
+def year_setter(years: List[Tuple[str, str]]) -> InlineKeyboardMarkup:
     year_setter_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
     
     year_setter_keyboard.row(cancel_button())
-    
+
     year_setter_keyboard.add(*[
         InlineKeyboardButton(
             text=year, callback_data=" ".join([ Commands.LOGIN_SET_YEAR.value, year ])
-        ) for year in years
+        ) for (year, _) in years
     ])
     
     return year_setter_keyboard
 
-def group_setter(groups: Dict[str, str]) -> InlineKeyboardMarkup:
-    group_setter_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=3)
+def group_setter(groups: List[Tuple[str, str]], offset: int = 0) -> InlineKeyboardMarkup:
+    group_setter_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
     
     group_setter_keyboard.row(cancel_button())
     
-    group_setter_keyboard.add(*[
-        InlineKeyboardButton(
-            text=group, callback_data=" ".join([ Commands.LOGIN_SET_GROUP.value, group, group_id ])
-        ) for (group, group_id) in groups.items()
-    ])
+    if offset > 0 and offset < (len(groups) - MAX_ITEMS_NUMBER_ON_ONE_PAGE):
+        group_setter_keyboard.add(
+            InlineKeyboardButton(
+                text="назад", callback_data=" ".join([ Commands.LOGIN_GROUPS_PREVIOUS_PAGE.value, str(offset - MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+            ),
+            InlineKeyboardButton(
+                text="вперёд", callback_data=" ".join([ Commands.LOGIN_GROUPS_NEXT_PAGE.value, str(offset + MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+            )
+        )
+    elif offset > (len(groups) - MAX_ITEMS_NUMBER_ON_ONE_PAGE):
+        group_setter_keyboard.add(
+            InlineKeyboardButton(
+                text="назад", callback_data=" ".join([ Commands.LOGIN_GROUPS_PREVIOUS_PAGE.value, str(offset - MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+            )
+        )
+    else:
+        group_setter_keyboard.add(
+            InlineKeyboardButton(
+                text="вперёд", callback_data=" ".join([ Commands.LOGIN_GROUPS_NEXT_PAGE.value, str(offset + MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+            )
+        )
     
+    for (group, group_id) in groups[offset:(offset + MAX_ITEMS_NUMBER_ON_ONE_PAGE)]:
+        group_setter_keyboard.row(
+            InlineKeyboardButton(
+                text=group, callback_data=" ".join([ Commands.LOGIN_SET_GROUP.value, group, group_id ])
+            )
+        )
+
     return group_setter_keyboard
 
-def name_setter(names: Dict[str, str]) -> InlineKeyboardMarkup:
-    name_setter_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
-    
+def name_setter(names: List[Tuple[str, str]], offset: int = 0) -> InlineKeyboardMarkup:
+    name_setter_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
+
     name_setter_keyboard.row(cancel_button())
     
-    name_setter_keyboard.add(*[
-        InlineKeyboardButton(
-            text=name, callback_data=" ".join([ Commands.LOGIN_SET_NAME.value, name_id ])
-        ) for (name, name_id) in names.items()
-    ])
+    if offset > 0 and offset < (len(names) - MAX_ITEMS_NUMBER_ON_ONE_PAGE):
+        name_setter_keyboard.add(
+            InlineKeyboardButton(
+                text="назад", callback_data=" ".join([ Commands.LOGIN_NAMES_PREVIOUS_PAGE.value, str(offset - MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+            ),
+            InlineKeyboardButton(
+                text="вперёд", callback_data=" ".join([ Commands.LOGIN_NAMES_NEXT_PAGE.value, str(offset + MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+            )
+        )
+    elif offset > (len(names) - MAX_ITEMS_NUMBER_ON_ONE_PAGE):
+        name_setter_keyboard.add(
+            InlineKeyboardButton(
+                text="назад", callback_data=" ".join([ Commands.LOGIN_NAMES_PREVIOUS_PAGE.value, str(offset - MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+            )
+        )
+    else:
+        name_setter_keyboard.add(
+            InlineKeyboardButton(
+                text="вперёд", callback_data=" ".join([ Commands.LOGIN_NAMES_NEXT_PAGE.value, str(offset + MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+            )
+        )
+    
+    for (name_id, name) in names[offset:(offset + MAX_ITEMS_NUMBER_ON_ONE_PAGE)]:
+        name_setter_keyboard.row(
+            InlineKeyboardButton(
+                text=name, callback_data=" ".join([ Commands.LOGIN_SET_NAME.value, name_id ])
+            )
+        )
     
     return name_setter_keyboard
 

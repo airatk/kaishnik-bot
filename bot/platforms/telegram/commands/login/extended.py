@@ -134,9 +134,35 @@ async def set_year(callback: CallbackQuery):
         guards[callback.message.chat.id].drop()
         return
     
+    states[callback.message.chat.id].groups = groups
+
     await callback.message.edit_text(
         text="Выбери номер группы:",
-        reply_markup=group_setter(groups)
+        reply_markup=group_setter(groups=groups)
+    )
+
+@dispatcher.callback_query_handler(
+    lambda callback:
+        guards[callback.message.chat.id].text == Commands.LOGIN_EXTENDED.value and (
+            callback.data.startswith(Commands.LOGIN_GROUPS_NEXT_PAGE.value) or
+            callback.data.startswith(Commands.LOGIN_GROUPS_PREVIOUS_PAGE.value)
+        )
+)
+@top_notification
+async def groups_another_page(callback: CallbackQuery):
+    offset: int = 0
+    
+    if callback.data.startswith(Commands.LOGIN_GROUPS_NEXT_PAGE.value):
+        offset = int(callback.data.replace(Commands.LOGIN_GROUPS_NEXT_PAGE.value, ""))
+    elif callback.data.startswith(Commands.LOGIN_GROUPS_PREVIOUS_PAGE.value):
+        offset = int(callback.data.replace(Commands.LOGIN_GROUPS_PREVIOUS_PAGE.value, ""))
+
+    await callback.message.edit_text(
+        text="Выбери номер группы:",
+        reply_markup=group_setter(
+            groups=states[callback.message.chat.id].groups,
+            offset=offset
+        )
     )
 
 @dispatcher.callback_query_handler(
@@ -187,11 +213,35 @@ async def set_group(callback: CallbackQuery):
         guards[callback.message.chat.id].drop()
         return
     
-    states[callback.message.chat.id].group_names = { name_id: name for (name, name_id) in group_names.items() }
+    states[callback.message.chat.id].group_names = { name_id: name for (name, name_id) in group_names }
     
     await callback.message.edit_text(
         text="Выбери себя:",
-        reply_markup=name_setter(names=group_names)
+        reply_markup=name_setter(names=list(states[callback.message.chat.id].group_names.items()))
+    )
+
+@dispatcher.callback_query_handler(
+    lambda callback:
+        guards[callback.message.chat.id].text == Commands.LOGIN_EXTENDED.value and (
+            callback.data.startswith(Commands.LOGIN_NAMES_NEXT_PAGE.value) or
+            callback.data.startswith(Commands.LOGIN_NAMES_PREVIOUS_PAGE.value)
+        )
+)
+@top_notification
+async def names_another_page(callback: CallbackQuery):
+    offset: int = 0
+    
+    if callback.data.startswith(Commands.LOGIN_NAMES_NEXT_PAGE.value):
+        offset = int(callback.data.replace(Commands.LOGIN_NAMES_NEXT_PAGE.value, ""))
+    elif callback.data.startswith(Commands.LOGIN_NAMES_PREVIOUS_PAGE.value):
+        offset = int(callback.data.replace(Commands.LOGIN_NAMES_PREVIOUS_PAGE.value, ""))
+
+    await callback.message.edit_text(
+        text="Выбери себя:",
+        reply_markup=name_setter(
+            names=list(states[callback.message.chat.id].group_names.items()),
+            offset=offset
+        )
     )
 
 @dispatcher.callback_query_handler(
