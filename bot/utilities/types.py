@@ -18,6 +18,7 @@ class Guard:
 class State:
     def __init__(self):
         # /login
+        self.groups: List[Tuple[str, str]] = []
         self.group_names: Dict[str, str] = {}
         
         # /classes & /exams
@@ -65,7 +66,11 @@ class Commands(Enum):
     LOGIN_CORRECT_GROUP_GUESS: str = "login-correct-group-guess"
     LOGIN_SET_INSTITUTE: str = "login-set-institute-"
     LOGIN_SET_YEAR: str = "login-set-year-"
+    LOGIN_GROUPS_NEXT_PAGE: str = "login-groups-next-page-"
+    LOGIN_GROUPS_PREVIOUS_PAGE: str = "login-groups-previous-page-"
     LOGIN_SET_GROUP: str = "login-set-group-"
+    LOGIN_NAMES_NEXT_PAGE: str = "login-names-next-page-"
+    LOGIN_NAMES_PREVIOUS_PAGE: str = "login-names-previous-page-"
     LOGIN_SET_NAME: str = "login-set-name-"
     LOGIN_SET_CARD: str = "login-set-card"
     UNLOGIN: str = "un-login"
