@@ -1,7 +1,11 @@
-from random import choice
-
 from typing import Dict
 from typing import List
+
+from random import choice
+
+from re import match
+
+from itertools import permutations
 
 from aiogram.types import Message
 from aiogram.types import CallbackQuery
@@ -77,8 +81,15 @@ async def find_lecturer(message: Message):
     
     await message.delete()
     
-    name_part: str = message.text.lower()
-    names: List[Dict[str, str]] = [ name for name in states[message.chat.id].lecturers_names if name_part in name["lecturer"].lower() ]
+    partial_name_parts: List[str] = message.text.lower().split(" ")
+    names: List[Dict[str, str]] = [ 
+        name for name in states[message.chat.id].lecturers_names if any([ 
+            match(
+                pattern=f"^.*{'.*'.join(partial_name_permutation)}.*$", 
+                string=name["lecturer"].lower()
+            ) is not None for partial_name_permutation in permutations(partial_name_parts) 
+        ])
+    ]
     
     if len(names) == 0:
         await guards[message.chat.id].message.edit_text(text="Ничего не найдено :(")
