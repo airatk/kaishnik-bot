@@ -163,6 +163,7 @@ BROADCAST_MESSAGE_TEMPLATE: str = (
     "\n"
     "{broadcast_message}\n"
     "\n"
-    "Поддержать бота финансово: /donate\n"
-    "Написать разработчику: @airatk"
+    "• Поддержать бота: /donate\n"
+    "• Написать разработчику: @airatk\n"
+    "• Подписаться на разработчика: instagram.com/airatk.inst\n"
 )
