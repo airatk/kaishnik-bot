@@ -18,7 +18,7 @@ from bot.utilities.types import State
 from bot.utilities.types import Commands
 
 
-# Accepting old users on `/start` command whole new users on any message...
+# Accepting the old users on the `/start` command & the new users on any message...
 @dispatcher.message_handler(
     lambda message:
         not Users.select().where(Users.telegram_id == message.chat.id).exists()
