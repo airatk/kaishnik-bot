@@ -1,10 +1,14 @@
-from datetime import datetime
-from re import compile
-
 from typing import Any
 from typing import Dict
 from typing import List
 from typing import Callable
+from typing import Optional
+
+from datetime import datetime
+
+from re import compile
+
+from peewee import ModelSelect
 
 from aiogram.types import Message
 
@@ -73,12 +77,21 @@ async def users(message: Message):
         
         month: str = "-".join([ options[Option.MONTH.value], "*" ])
         
-        month_metrics: List[Metrics] = Metrics.select().where(Metrics.date.regexp(month))
+        month_metrics: ModelSelect = Metrics.select().where(Metrics.date.regexp(month))
         graph_values: Dict[str, int] = {}
         
         for day_metrics in month_metrics:
+            if day_metrics.start == 0: continue
+            
             graph_values[day_metrics.date[5:]] = day_metrics.start
         
+        if len(graph_values.values()) == 0:
+            await message.answer(
+                text="No new user for the asked month was found.",
+                parse_mode="markdown"
+            )
+            return
+
         PERIOD: int = 20
         max_requests_number: int = max(graph_values.values()) if len(graph_values.values()) != 0 else 0
         get_bar_length: Callable = lambda requests_number: int(requests_number/max_requests_number * PERIOD)
@@ -95,7 +108,7 @@ async def users(message: Message):
             text=MONTH_GRAPH.format(
                 month=MONTHS_EN.get(options[Option.MONTH.value].split("-")[1], "Unknown Month"),
                 hashtag="users",
-                graph=graph if graph != "" else "empty",
+                graph=graph,
                 total=sum(graph_values.values()),
                 average=round(sum(graph_values.values())/len(graph_values.values()))
             ),
@@ -277,7 +290,15 @@ async def metrics(message: Message):
         
         month: str = "-".join([ options[Option.MONTH.value], "*" ])
         
-        month_metrics: List[Metrics] = Metrics.select().where(Metrics.date.regexp(month))
+        month_metrics: ModelSelect = Metrics.select().where(Metrics.date.regexp(month))
+
+        if not month_metrics.exists():
+            await message.answer(
+                text="No metrics for the asked month was found.",
+                parse_mode="markdown"
+            )
+            return
+
         graph_values: Dict[str, int] = {}
         
         for day_metrics in month_metrics:
@@ -320,7 +341,7 @@ async def metrics(message: Message):
             text=MONTH_GRAPH.format(
                 month=MONTHS_EN.get(options[Option.MONTH.value].split("-")[1], "Unknown Month"),
                 hashtag="metrics",
-                graph=graph if graph != "" else "empty",
+                graph=graph,
                 total=sum(graph_values.values()),
                 average=round(sum(graph_values.values())/len(graph_values.values()))
             ),
@@ -331,11 +352,11 @@ async def metrics(message: Message):
         month_date: str = datetime.today().strftime("%Y-%m-*")
         day_date: str = datetime.today().strftime("%Y-%m-%d")
     
-    monthly_metrics: List[Metrics] = Metrics.select().where(Metrics.date.regexp(month_date))
+    monthly_metrics: ModelSelect = Metrics.select().where(Metrics.date.regexp(month_date))
     
     if not monthly_metrics.exists():
         await message.answer(
-            text="No metrics for the asked date was found.",
+            text="No metrics for the asked date's month was found.",
             parse_mode="markdown"
         )
         return
@@ -367,9 +388,15 @@ async def metrics(message: Message):
         requests_number for (_, requests_number) in monthly_command_requests_stats_filling.items()
     ])
     
-    (existing_metrics, created_metrics) = Metrics.get_or_create(date=day_date)
-    daily_metrics: Metrics = created_metrics if existing_metrics is None else existing_metrics
+    daily_metrics: Optional[Metrics] = Metrics.get_or_none(date=day_date)
     
+    if daily_metrics is None:
+        await message.answer(
+            text="No metrics for the asked date was found.",
+            parse_mode="markdown"
+        )
+        return
+
     daily_command_requests_stats_filling: Dict[str, int] = {
         "classes_daily": daily_metrics.classes,
         "score_daily": daily_metrics.score,

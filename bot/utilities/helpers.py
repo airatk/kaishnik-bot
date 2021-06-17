@@ -8,8 +8,7 @@ from bot.utilities.types import Commands
 def increment_command_metrics(command: Commands):
     def outter(func):
         async def inner(arg):
-            (existing_metrics, created_metrics) = Metrics.get_or_create(date=date.today().strftime("%Y-%m-%d"))
-            last_metrics: Metrics = created_metrics if existing_metrics is None else existing_metrics
+            (last_metrics, _) = Metrics.get_or_create(date=date.today().strftime("%Y-%m-%d"))
             
             if command is Commands.NO_PERMISSIONS: last_metrics.no_permissions += 1
             elif command is Commands.CANCEL: last_metrics.cancel += 1
