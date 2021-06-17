@@ -34,7 +34,7 @@ from bot.utilities.api.types import ResponseError
 
 def get_group_schedule_id(group: str) -> Tuple[Optional[str], Optional[ResponseError]]:
     try:
-        groups: List[Dict[str, str]] = get(url=SCHEDULE_URL, timeout=10, params={
+        groups: List[Dict[str, str]] = get(url=SCHEDULE_URL, timeout=12, params={
             "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
             "p_p_lifecycle": "2",
             "p_p_resource_id": "getGroupsURL",
@@ -64,7 +64,7 @@ def get_schedule_by_group_schedule_id(schedule_type: ScheduleType, user_id: int,
         group_schedule_id: int = another_group_schedule_id
     
     try:
-        response: Dict[str, List[Dict[str, str]]] = get(url=SCHEDULE_URL, timeout=10, params={
+        response: Dict[str, List[Dict[str, str]]] = get(url=SCHEDULE_URL, timeout=12, params={
             "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
             "p_p_lifecycle": "2",
             "p_p_resource_id": schedule_type.value,
@@ -91,7 +91,7 @@ def get_extended_login_data(extended_login_data_type: ExtendedLoginDataType, use
     student: ExtendedStudents = ExtendedStudents.get(ExtendedStudents.user_id == user_id)
     
     try:
-        page: str = get(url=SCORE_URL, timeout=10, params={
+        page: str = get(url=SCORE_URL, timeout=12, params={
             "p_fac": student.institute_id,
             "p_kurs": student.year,
             "p_group": student.group_score_id
@@ -117,7 +117,7 @@ def get_last_available_semester(user_id: int) -> Tuple[Optional[int], Optional[R
     student: ExtendedStudents = ExtendedStudents.get(ExtendedStudents.user_id == user_id)
     
     try:
-        page: str = post(SCORE_URL, timeout=10, data={
+        page: str = post(SCORE_URL, timeout=12, data={
             "p_sub": P_SUB,
             "p_fac": student.institute_id,
             "p_kurs": student.year,
@@ -143,7 +143,7 @@ def get_scoretable(semester: str, user_id: int) -> Tuple[Optional[List[Tuple[str
     student: ExtendedStudents = ExtendedStudents.get(ExtendedStudents.user_id == user_id)
 
     try:
-        page: str = post(SCORE_URL, timeout=10, data={
+        page: str = post(SCORE_URL, timeout=12, data={
             "p_sub": P_SUB,
             "p_fac": student.institute_id,
             "p_kurs": student.year,
