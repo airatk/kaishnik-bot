@@ -3,6 +3,7 @@ from random import choice
 from aiogram.types import Message
 from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
@@ -270,7 +271,11 @@ async def set_name(callback: CallbackQuery):
     
     # Asking for student card number
     guard_message = await callback.message.edit_text(
-        text="Отправь номер студенческого или зачётки.",
+        text=(
+            "Отправь номер студенческого или зачётки.\n\n"
+            "Если ты платник, нужно добавить большую букву *П* перед ним."
+        ),
+        parse_mode=ParseMode.MARKDOWN,
         reply_markup=canceler()
     )
     
