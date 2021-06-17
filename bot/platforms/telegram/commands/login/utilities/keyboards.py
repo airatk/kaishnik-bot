@@ -57,22 +57,23 @@ def group_setter(groups: List[Tuple[str, str]], offset: int = 0) -> InlineKeyboa
     
     group_setter_keyboard.row(cancel_button())
     
-    if offset > 0 and offset < (len(groups) - MAX_ITEMS_NUMBER_ON_ONE_PAGE):
-        group_setter_keyboard.add(
-            InlineKeyboardButton(
-                text="назад", callback_data=" ".join([ Commands.LOGIN_GROUPS_PREVIOUS_PAGE.value, str(offset - MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
-            ),
-            InlineKeyboardButton(
-                text="вперёд", callback_data=" ".join([ Commands.LOGIN_GROUPS_NEXT_PAGE.value, str(offset + MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+    if offset > 0:
+        if offset < (len(groups) - MAX_ITEMS_NUMBER_ON_ONE_PAGE):
+            group_setter_keyboard.add(
+                InlineKeyboardButton(
+                    text="назад", callback_data=" ".join([ Commands.LOGIN_GROUPS_PREVIOUS_PAGE.value, str(offset - MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+                ),
+                InlineKeyboardButton(
+                    text="вперёд", callback_data=" ".join([ Commands.LOGIN_GROUPS_NEXT_PAGE.value, str(offset + MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+                )
             )
-        )
-    elif offset > (len(groups) - MAX_ITEMS_NUMBER_ON_ONE_PAGE):
-        group_setter_keyboard.add(
-            InlineKeyboardButton(
-                text="назад", callback_data=" ".join([ Commands.LOGIN_GROUPS_PREVIOUS_PAGE.value, str(offset - MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+        else:
+            group_setter_keyboard.add(
+                InlineKeyboardButton(
+                    text="назад", callback_data=" ".join([ Commands.LOGIN_GROUPS_PREVIOUS_PAGE.value, str(offset - MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+                )
             )
-        )
-    else:
+    elif len(groups) != MAX_ITEMS_NUMBER_ON_ONE_PAGE:
         group_setter_keyboard.add(
             InlineKeyboardButton(
                 text="вперёд", callback_data=" ".join([ Commands.LOGIN_GROUPS_NEXT_PAGE.value, str(offset + MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
@@ -93,22 +94,23 @@ def name_setter(names: List[Tuple[str, str]], offset: int = 0) -> InlineKeyboard
 
     name_setter_keyboard.row(cancel_button())
     
-    if offset > 0 and offset < (len(names) - MAX_ITEMS_NUMBER_ON_ONE_PAGE):
-        name_setter_keyboard.add(
-            InlineKeyboardButton(
-                text="назад", callback_data=" ".join([ Commands.LOGIN_NAMES_PREVIOUS_PAGE.value, str(offset - MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
-            ),
-            InlineKeyboardButton(
-                text="вперёд", callback_data=" ".join([ Commands.LOGIN_NAMES_NEXT_PAGE.value, str(offset + MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+    if offset > 0:
+        if offset < (len(names) - MAX_ITEMS_NUMBER_ON_ONE_PAGE):
+            name_setter_keyboard.add(
+                InlineKeyboardButton(
+                    text="назад", callback_data=" ".join([ Commands.LOGIN_NAMES_PREVIOUS_PAGE.value, str(offset - MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+                ),
+                InlineKeyboardButton(
+                    text="вперёд", callback_data=" ".join([ Commands.LOGIN_NAMES_NEXT_PAGE.value, str(offset + MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+                )
             )
-        )
-    elif offset > (len(names) - MAX_ITEMS_NUMBER_ON_ONE_PAGE):
-        name_setter_keyboard.add(
-            InlineKeyboardButton(
-                text="назад", callback_data=" ".join([ Commands.LOGIN_NAMES_PREVIOUS_PAGE.value, str(offset - MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+        else:
+            name_setter_keyboard.add(
+                InlineKeyboardButton(
+                    text="назад", callback_data=" ".join([ Commands.LOGIN_NAMES_PREVIOUS_PAGE.value, str(offset - MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])
+                )
             )
-        )
-    else:
+    elif len(names) != MAX_ITEMS_NUMBER_ON_ONE_PAGE:
         name_setter_keyboard.add(
             InlineKeyboardButton(
                 text="вперёд", callback_data=" ".join([ Commands.LOGIN_NAMES_NEXT_PAGE.value, str(offset + MAX_ITEMS_NUMBER_ON_ONE_PAGE) ])

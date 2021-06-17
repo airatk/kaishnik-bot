@@ -21,7 +21,7 @@ from bot.utilities.api.types import ResponseError
 
 def get_lecturers_names() -> Tuple[Optional[List[Dict[str, str]]], Optional[ResponseError]]:
     try:
-        lecturers_names: List[Dict[str, str]] = get(LECTURERS_SCHEDULE_URL, timeout=10, params={
+        lecturers_names: List[Dict[str, str]] = get(LECTURERS_SCHEDULE_URL, timeout=12, params={
             "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
             "p_p_lifecycle": "2",
             "p_p_resource_id": "getLecturersURL",
@@ -34,7 +34,7 @@ def get_lecturers_names() -> Tuple[Optional[List[Dict[str, str]]], Optional[Resp
 
 def get_lecturers_schedule(lecturer_id: str, schedule_type: ScheduleType, user_id: int, dates: Optional[List[str]] = None) -> Tuple[Optional[Union[List[str], str]], Optional[str]]:
     try:
-        response: List[Dict[str, str]] = get(url=LECTURERS_SCHEDULE_URL, timeout=10, params={
+        response: List[Dict[str, str]] = get(url=LECTURERS_SCHEDULE_URL, timeout=12, params={
             "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
             "p_p_lifecycle": "2",
             "p_p_resource_id": schedule_type.value,
