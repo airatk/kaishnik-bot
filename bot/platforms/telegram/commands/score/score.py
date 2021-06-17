@@ -24,6 +24,7 @@ from bot.models.bb_students import BBStudents
 from bot.utilities.helpers import increment_command_metrics
 from bot.utilities.types import Commands
 from bot.utilities.api.constants import LOADING_REPLIES
+from bot.utilities.api.types import ResponseError
 from bot.utilities.api.types import ScoreSubjectType
 from bot.utilities.api.student import get_last_available_semester
 from bot.utilities.api.student import get_scoretable

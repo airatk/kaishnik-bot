@@ -312,7 +312,7 @@ async def set_card(message: Message):
         ExtendedStudents.user_id == user_id
     ).execute()
     
-    (last_available_semester, response_error) = get_last_available_semester(user_id=user_id)
+    (last_available_semester, response_error) = get_last_available_semester(user_id=user_id, is_card_check=True)
     
     if last_available_semester is None:
         await guards[message.chat.id].message.edit_text(

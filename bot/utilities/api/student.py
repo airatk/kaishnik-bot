@@ -113,7 +113,7 @@ def get_extended_login_data(extended_login_data_type: ExtendedLoginDataType, use
     else:
         return (list(zip(keys, values)), None)
 
-def get_last_available_semester(user_id: int) -> Tuple[Optional[int], Optional[ResponseError]]:
+def get_last_available_semester(user_id: int, is_card_check: bool = False) -> Tuple[Optional[int], Optional[ResponseError]]:
     student: ExtendedStudents = ExtendedStudents.get(ExtendedStudents.user_id == user_id)
     
     try:
@@ -135,7 +135,7 @@ def get_last_available_semester(user_id: int) -> Tuple[Optional[int], Optional[R
     except (ValueError, KeyError):
         return (None, ResponseError.NO_DATA)
     except AttributeError:
-        return (None, ResponseError.INCORRECT_CARD)
+        return (None, ResponseError.INCORRECT_CARD if is_card_check else ResponseError.NO_DATA)
     else:
         return (max(semesters), None)
 
