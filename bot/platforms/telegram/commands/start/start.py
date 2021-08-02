@@ -18,18 +18,15 @@ from bot.utilities.types import State
 from bot.utilities.types import Commands
 
 
-# Accepting the old users on the `/start` command & the new users on any message...
+# Accepting new users on any message...
 @dispatcher.message_handler(
     lambda message:
         not Users.select().where(Users.telegram_id == message.chat.id).exists()
 )
 @increment_command_metrics(command=Commands.START)
-async def start_on_command(message: Message):
+async def start_on_message(message: Message):
     user: Users = Users.create(telegram_id=message.chat.id)
-    
-    user.save()
-    
-    Settings.create(user_id=user.user_id)
+    _: Settings = Settings.create(user_id=user.user_id)
     
     guards[message.chat.id] = Guard()
     states[message.chat.id] = State()
@@ -53,3 +50,16 @@ async def start_on_callback(callback: CallbackQuery):
     await callback.message.delete()
     
     await start_on_command(callback.message)
+
+
+# Accepting the old users on the `/start` command
+@dispatcher.message_handler(
+    lambda message:
+        message.text == f"/{Commands.RESTART.value}" and Users.get(Users.telegram_id == message.chat.id).is_setup
+)
+@increment_command_metrics(command=Commands.RESTART)
+async def start_on_command(message: Message):
+    guards[message.chat.id].drop()
+
+    await message.answer(text="Бот перезапущен, перенастраиваться не нужно.")
+    await message.answer(text="Но если очень хочется, то можно через настройки — /settings😉")

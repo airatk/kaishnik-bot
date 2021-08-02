@@ -32,3 +32,4 @@ class Metrics(Base):
     
     no_permissions: IntegerField = IntegerField(default=0)
     unlogin: IntegerField = IntegerField(default=0)
+    restart: IntegerField = IntegerField(default=0)

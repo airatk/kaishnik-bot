@@ -322,7 +322,8 @@ async def metrics(message: Message):
                 day_metrics.unknown_text_message,
                 day_metrics.unknown_callback,
                 day_metrics.no_permissions,
-                day_metrics.unlogin
+                day_metrics.unlogin,
+                day_metrics.restart
             ])
         
         PERIOD: int = 20
@@ -381,7 +382,8 @@ async def metrics(message: Message):
         "unknown_text_message_monthly": sum([ day_metrics.unknown_text_message for day_metrics in monthly_metrics ]),
         "unknown_callback_monthly": sum([ day_metrics.unknown_callback for day_metrics in monthly_metrics ]),
         "no_permissions_monthly": sum([ day_metrics.no_permissions for day_metrics in monthly_metrics ]),
-        "unlogin_monthly": sum([ day_metrics.unlogin for day_metrics in monthly_metrics ])
+        "unlogin_monthly": sum([ day_metrics.unlogin for day_metrics in monthly_metrics ]),
+        "restart_monthly": sum([ day_metrics.restart for day_metrics in monthly_metrics ])
     }
     
     monthly_command_requests_stats_filling["total_monthly"] = sum([
@@ -417,7 +419,8 @@ async def metrics(message: Message):
         "unknown_text_message_daily": daily_metrics.unknown_text_message,
         "unknown_callback_daily": daily_metrics.unknown_callback,
         "no_permissions_daily": daily_metrics.no_permissions,
-        "unlogin_daily": daily_metrics.unlogin
+        "unlogin_daily": daily_metrics.unlogin,
+        "restart_daily": daily_metrics.restart
     }
     
     daily_command_requests_stats_filling["total_daily"] = sum([

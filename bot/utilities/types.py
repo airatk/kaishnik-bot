@@ -58,6 +58,7 @@ class Commands(Enum):
     CANCEL: str = "cancel"
     
     START: str = "start"
+    RESTART: str = "start"
     
     LOGIN: str = "login"
     LOGIN_COMPACT: str = "login-сompact"

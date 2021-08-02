@@ -13,6 +13,7 @@ def increment_command_metrics(command: Commands):
             if command is Commands.NO_PERMISSIONS: last_metrics.no_permissions += 1
             elif command is Commands.CANCEL: last_metrics.cancel += 1
             elif command is Commands.START: last_metrics.start += 1
+            elif command is Commands.RESTART: last_metrics.restart += 1
             elif command is Commands.LOGIN: last_metrics.login += 1
             elif command is Commands.UNLOGIN: last_metrics.unlogin += 1
             elif command is Commands.CLASSES: last_metrics.classes += 1

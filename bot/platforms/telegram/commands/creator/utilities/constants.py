@@ -142,6 +142,7 @@ COMMAND_REQUESTS_STATS: str = (
     "*others*\n"
     "• no permissions: {no_permissions_monthly}, {no_permissions_daily}\n"
     "• unlogin: {unlogin_monthly}, {unlogin_daily}\n"
+    "• restart: {restart_monthly}, {restart_daily}\n"
     "\n"
     "*{total_monthly}* requests for the month.\n"
     "*{total_daily}* requests for the day.\n"
