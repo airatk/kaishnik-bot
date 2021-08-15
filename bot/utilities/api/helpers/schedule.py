@@ -26,7 +26,7 @@ def beautify_classes(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Se
     should_show_entire_semester: bool = (len(dates) == 0)
     
     dates = list(WEEKDAYS.keys()) if should_show_entire_semester else sorted(
-        dates, key=lambda raw_date: datetime(datetime.today().year, int(raw_date[3:5]), int(raw_date[0:2]))
+        dates, key=lambda raw_date: datetime(year=datetime.today().year, month=int(raw_date[3:5]), day=int(raw_date[0:2]))
     )
     
     beautified_classes: List[str] = []

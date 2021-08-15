@@ -154,7 +154,7 @@ async def show_subjects(callback: CallbackQuery):
         attribute_index=1
     )
     
-    if string_index != "None":
+    if string_index != "-":
         await callback.message.edit_text(
             text=subjects[int(string_index)],
             parse_mode="markdown"

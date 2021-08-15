@@ -14,7 +14,7 @@ from aiogram.utils.exceptions import BotKicked
 from aiogram.utils.exceptions import ChatNotFound
 from aiogram.utils.exceptions import TelegramAPIError
 
-from bot.platforms.telegram import bot
+from bot.platforms.telegram import telegram_bot
 from bot.platforms.telegram import guards
 
 from bot.platforms.telegram.commands.creator.utilities.types import Value
@@ -66,8 +66,8 @@ async def try_get_chat(chat_id: int) -> Tuple[Chat, str]:
     error_text: Optional[str] = None
     
     try:
-        chat = await bot.get_chat(chat_id=chat_id)
-        is_chat_action_successfully_sent = bot.send_chat_action(chat_id=chat_id, action="typing")
+        chat = await telegram_bot.get_chat(chat_id=chat_id)
+        is_chat_action_successfully_sent = telegram_bot.send_chat_action(chat_id=chat_id, action="typing")
     except CantInitiateConversation:
         error_text = "User {chat_id} have never initiated a conversation with the bot."
     except UserDeactivated:

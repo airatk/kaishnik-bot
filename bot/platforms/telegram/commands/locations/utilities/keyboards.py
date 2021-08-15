@@ -1,13 +1,13 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
-from bot.platforms.telegram.commands.locations.utilities.constants import BUILDINGS
-from bot.platforms.telegram.commands.locations.utilities.constants import LIBRARIES
-from bot.platforms.telegram.commands.locations.utilities.constants import SPORTSCOMPLEX
-from bot.platforms.telegram.commands.locations.utilities.constants import DORMS
-from bot.platforms.telegram.commands.locations.utilities.types import LocationType
-
 from bot.platforms.telegram.utilities.keyboards import cancel_button
+
+from bot.utilities.api.constants import BUILDINGS
+from bot.utilities.api.constants import LIBRARIES
+from bot.utilities.api.constants import SPORTSCOMPLEX
+from bot.utilities.api.constants import DORMS
+from bot.utilities.api.types import LocationType
 
 
 def location_type_chooser() -> InlineKeyboardMarkup:

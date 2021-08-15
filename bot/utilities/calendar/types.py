@@ -2,6 +2,6 @@ from enum import Enum
 
 
 class WeekParity(Enum):
-    BOTH: str = "both"
-    EVEN: str = "even"
-    ODD: str = "odd"
+    BOTH = "both"
+    EVEN = "even"
+    ODD = "odd"

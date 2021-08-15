@@ -2,7 +2,6 @@ from random import choice
 
 from aiogram.types import Message
 from aiogram.types import CallbackQuery
-from aiogram.types import ChatType
 from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
@@ -19,12 +18,10 @@ from bot.platforms.telegram.utilities.keyboards import canceler
 from bot.platforms.telegram.utilities.helpers import top_notification
 
 from bot.models.users import Users
-from bot.models.groups_of_students import GroupsOfStudents
 from bot.models.compact_students import CompactStudents
 from bot.models.extended_students import ExtendedStudents
 from bot.models.bb_students import BBStudents
 
-from bot.utilities.constants import BOT_ADDRESSING
 from bot.utilities.types import Commands
 from bot.utilities.api.constants import LOADING_REPLIES
 from bot.utilities.api.constants import INSTITUTES
@@ -74,7 +71,7 @@ async def set_institute(callback: CallbackQuery):
     )
     
     # Setting institute
-    institute_id: int = callback.data.split()[1]
+    institute_id: str = callback.data.split()[1]
     
     user_id: int = Users.get(Users.telegram_id == callback.message.chat.id).user_id
     
@@ -264,9 +261,7 @@ async def set_name(callback: CallbackQuery):
         name=states[callback.message.chat.id].group_names[name_id],
         name_id=name_id
     ).where(
-        ExtendedStudents.user_id == Users.get(
-            Users.telegram_id == callback.message.chat.id
-        ).user_id
+        ExtendedStudents.user_id == Users.get(Users.telegram_id == callback.message.chat.id).user_id
     ).execute()
     
     # Asking for student card number
@@ -284,20 +279,9 @@ async def set_name(callback: CallbackQuery):
 
 @dispatcher.message_handler(
     lambda message:
-        message.chat.type != ChatType.PRIVATE and
-        message.text is not None and message.text.startswith(BOT_ADDRESSING) and
-        guards[message.chat.id].text == Commands.LOGIN_SET_CARD.value
-)
-@dispatcher.message_handler(
-    lambda message:
-        message.chat.type == ChatType.PRIVATE and
         guards[message.chat.id].text == Commands.LOGIN_SET_CARD.value
 )
 async def set_card(message: Message):
-    # Getting rid of the bot addressing
-    if message.chat.type != ChatType.PRIVATE:
-        message.text = message.text[len(BOT_ADDRESSING):]
-    
     await message.delete()
     await guards[message.chat.id].message.edit_text(
         text=choice(LOADING_REPLIES),

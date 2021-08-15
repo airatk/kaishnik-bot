@@ -9,10 +9,6 @@ from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
 
 from bot.platforms.telegram.commands.settings.utilities.keyboards import action_chooser
-from bot.platforms.telegram.commands.settings.utilities.constants import GROUP_OF_STUDENTS_INFO
-from bot.platforms.telegram.commands.settings.utilities.constants import COMPACT_STUDENT_INFO
-from bot.platforms.telegram.commands.settings.utilities.constants import EXTENDED_STUDENT_INFO
-from bot.platforms.telegram.commands.settings.utilities.constants import BB_STUDENT_INFO
 
 from bot.models.users import Users
 from bot.models.groups_of_students import GroupsOfStudents
@@ -21,6 +17,10 @@ from bot.models.extended_students import ExtendedStudents
 from bot.models.bb_students import BBStudents
 from bot.models.notes import Notes
 
+from bot.utilities.constants import GROUP_OF_STUDENTS_INFO
+from bot.utilities.constants import COMPACT_STUDENT_INFO
+from bot.utilities.constants import EXTENDED_STUDENT_INFO
+from bot.utilities.constants import BB_STUDENT_INFO
 from bot.utilities.helpers import increment_command_metrics
 from bot.utilities.types import Commands
 
@@ -52,14 +52,10 @@ async def settings(message: Message):
     
     if user is None:
         user = CompactStudents.get_or_none(CompactStudents.user_id == user_id)
-        
     if user is None:
         user = ExtendedStudents.get_or_none(ExtendedStudents.user_id == user_id)
-        
     if user is None:
         user = BBStudents.get(BBStudents.user_id == user_id)
-    
-    print(type(user))
     
     if isinstance(user, GroupsOfStudents):
         account_info["group"] = user.group

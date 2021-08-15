@@ -15,7 +15,7 @@ from bot.platforms.telegram import guards
 from bot.platforms.telegram.commands.creator.utilities.helpers import parse_creator_query
 from bot.platforms.telegram.commands.creator.utilities.helpers import update_progress_bar
 from bot.platforms.telegram.commands.creator.utilities.helpers import try_get_chat
-from bot.platforms.telegram.commands.creator.utilities.constants import CREATOR
+from bot.platforms.telegram.commands.creator.utilities.constants import CREATOR_TELEGRAM_ID
 from bot.platforms.telegram.commands.creator.utilities.types import Option
 from bot.platforms.telegram.commands.creator.utilities.types import Value
 
@@ -29,7 +29,7 @@ from bot.utilities.types import Commands
 
 
 @dispatcher.message_handler(
-    lambda message: message.from_user.id == CREATOR,
+    lambda message: message.from_user.id == CREATOR_TELEGRAM_ID,
     commands=[ Commands.CLEAR.value ]
 )
 async def clear(message: Message):
@@ -65,7 +65,7 @@ async def clear(message: Message):
 
 @dispatcher.message_handler(
     lambda message:
-        message.from_user.id == CREATOR and
+        message.from_user.id == CREATOR_TELEGRAM_ID and
         Commands.ERASE.value in message.text,
 )
 async def erase(message: Message):
@@ -83,7 +83,7 @@ async def erase(message: Message):
         await message.answer(text="Erased!")
 
 @dispatcher.message_handler(
-    lambda message: message.from_user.id == CREATOR,
+    lambda message: message.from_user.id == CREATOR_TELEGRAM_ID,
     commands=[ Commands.DROP.value ]
 )
 async def drop(message: Message):

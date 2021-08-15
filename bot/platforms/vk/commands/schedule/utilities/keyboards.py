@@ -1,0 +1,93 @@
+from typing import List
+from typing import Dict
+from typing import Union
+
+from datetime import date
+from datetime import timedelta
+
+from vkwave.bots.utils.keyboards import Keyboard
+
+from bot.platforms.vk.utilities.keyboards import menu_button
+
+from bot.utilities.types import Commands
+from bot.utilities.calendar.helpers import get_semester_boundaries
+
+
+def time_period_chooser(lecturer_id: str = "-") -> str:
+    time_period_chooser_keyboard: Keyboard = Keyboard(one_time=True, inline=True)
+    
+    today_date: date = date.today()
+    yesterday_date: date = today_date - timedelta(days=1)
+    tomorrow_date: date = today_date + timedelta(days=1)
+    
+    time_period_chooser_keyboard.add_text_button(**menu_button())
+    time_period_chooser_keyboard.add_text_button(text="Сегодня", payload={
+        Commands.CLASSES_SHOW.value: "", 
+        "date_string": today_date.strftime("%d.%m"), 
+        "lecturer_id": lecturer_id 
+    })
+    
+    time_period_chooser_keyboard.add_row()
+    time_period_chooser_keyboard.add_text_button(text="Вчера", payload={
+        Commands.CLASSES_SHOW.value: "", 
+        "date_string": yesterday_date.strftime("%d.%m"), 
+        "lecturer_id": lecturer_id 
+    })
+    time_period_chooser_keyboard.add_text_button(text="Завтра", payload={ 
+        Commands.CLASSES_SHOW.value: "", 
+        "date_string": tomorrow_date.strftime("%d.%m"), 
+        "lecturer_id": lecturer_id
+    })
+    
+    time_period_chooser_keyboard.add_row()
+    time_period_chooser_keyboard.add_text_button(text="Весь семестр", payload={ 
+        Commands.CLASSES_SHOW.value: "", 
+        "lecturer_id": lecturer_id 
+    })
+    
+    return time_period_chooser_keyboard.get_keyboard()
+
+def dates_scroller(shown_date_string: str, lecturer_id: str = "-") -> str:
+    days_scroller_keyboard: Keyboard = Keyboard(one_time=True, inline=True)
+    
+    (first_date, last_date) = get_semester_boundaries(day_date=date.today())
+
+    shown_date: date = date(date.today().year, *map(int, shown_date_string.split(".")[::-1]))
+    earlier_date: date = shown_date - timedelta(days=1 if shown_date.isoweekday != 1 else 2)
+    later_date: date = shown_date + timedelta(days=1 if shown_date.isoweekday != 6 else 2)
+
+    # Shifting backwards for 7 days, because of the weirdness of university schedule for 
+    if not first_date.month > 7:
+        first_date -= timedelta(days=7)
+    
+    movement_buttons: List[Dict[str, Union[str, Dict]]] = [ { 
+            "text": "Раньше", 
+            "payload": { 
+                Commands.CLASSES_SHOW.value: "",
+                "date_string": earlier_date.strftime("%d.%m"),
+                "lecturer_id": lecturer_id
+            }
+        }, {
+            "text": "Позже", 
+            "payload": { 
+                Commands.CLASSES_SHOW.value: "",
+                "date_string": later_date.strftime("%d.%m"),
+                "lecturer_id": lecturer_id
+            }
+        }
+    ]
+    
+    if earlier_date < first_date:
+        del movement_buttons[0]
+    elif later_date > last_date:
+        del movement_buttons[1]
+    
+    days_scroller_keyboard.add_text_button(**menu_button())
+
+    if len(movement_buttons) > 1:
+        days_scroller_keyboard.add_row()
+
+    for movement_button in movement_buttons:
+        days_scroller_keyboard.add_text_button(**movement_button)
+    
+    return days_scroller_keyboard.get_keyboard()

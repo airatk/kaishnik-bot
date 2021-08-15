@@ -3,7 +3,6 @@ from peewee import AutoField
 from peewee import TextField
 
 from bot.models.base.base import Base
-
 from bot.models.users import Users
 
 

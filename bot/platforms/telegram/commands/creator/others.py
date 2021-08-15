@@ -12,7 +12,7 @@ from bot.platforms.telegram import dispatcher
 
 from bot.platforms.telegram.commands.creator.utilities.helpers import parse_creator_query
 from bot.platforms.telegram.commands.creator.utilities.helpers import update_progress_bar
-from bot.platforms.telegram.commands.creator.utilities.constants import CREATOR
+from bot.platforms.telegram.commands.creator.utilities.constants import CREATOR_TELEGRAM_ID
 from bot.platforms.telegram.commands.creator.utilities.constants import BROADCAST_MESSAGE_TEMPLATE
 from bot.platforms.telegram.commands.creator.utilities.constants import MAX_TEXT_LENGTH
 from bot.platforms.telegram.commands.creator.utilities.constants import MAX_CAPTION_LENGTH
@@ -32,7 +32,7 @@ from bot.utilities.calendar.constants import MONTHS
 
 @dispatcher.message_handler(
     lambda message:
-        message.from_user.id == CREATOR and
+        message.from_user.id == CREATOR_TELEGRAM_ID and
         Commands.BROADCAST.value in (message.text or message.caption or ""),
     content_types=[ ContentType.TEXT, ContentType.PHOTO, ContentType.VIDEO, ContentType.AUDIO, ContentType.DOCUMENT ]
 )
@@ -152,7 +152,7 @@ async def broadcast(message: Message):
     )
 
 @dispatcher.message_handler(
-    lambda message: message.from_user.id == CREATOR,
+    lambda message: message.from_user.id == CREATOR_TELEGRAM_ID,
     commands=[ Commands.DAYSOFF.value ]
 )
 async def daysoff(message: Message):

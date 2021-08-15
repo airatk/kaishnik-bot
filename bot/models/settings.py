@@ -2,7 +2,6 @@ from peewee import ForeignKeyField
 from peewee import BooleanField
 
 from bot.models.base.base import Base
-
 from bot.models.users import Users
 
 

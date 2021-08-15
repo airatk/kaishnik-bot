@@ -3,12 +3,11 @@ from typing import List
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
-from bot.platforms.telegram.commands.notes.utilities.constants import MAX_SYMBOLS_NUMBER
-
 from bot.platforms.telegram.utilities.keyboards import cancel_button
 
 from bot.models.notes import Notes
 
+from bot.utilities.constants import MAX_SYMBOLS_NUMBER
 from bot.utilities.types import Commands
 
 
@@ -44,7 +43,7 @@ def note_chooser(notes: List[Notes], action: Commands) -> InlineKeyboardMarkup:
     note_chooser_keyboard.add(*[
         InlineKeyboardButton(
             text="{note}{ellipsis}".format(
-                note=note.note[:MAX_SYMBOLS_NUMBER].replace("*", "").replace("_", "").replace("\\", ""),
+                note=note.note[:MAX_SYMBOLS_NUMBER].strip().replace("*", "").replace("_", "").replace("\\", ""),
                 ellipsis="…" if len(note.note) > MAX_SYMBOLS_NUMBER else ""
             ),
             callback_data=" ".join([ action.value, str(note.note_id) ])

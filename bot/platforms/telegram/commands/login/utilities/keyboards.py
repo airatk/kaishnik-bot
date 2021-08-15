@@ -15,7 +15,8 @@ from bot.utilities.api.constants import INSTITUTES
 def login_way_chooser(is_old: bool, chat_type: ChatType) -> InlineKeyboardMarkup:
     setup_way_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
-    if is_old: setup_way_chooser_keyboard.row(cancel_button())
+    if is_old:
+        setup_way_chooser_keyboard.row(cancel_button())
     
     if chat_type == ChatType.PRIVATE:
         setup_way_chooser_keyboard.row(InlineKeyboardButton(text="без зачётки", callback_data=Commands.LOGIN_COMPACT.value))

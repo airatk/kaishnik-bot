@@ -18,9 +18,13 @@ class Metrics(Base):
     locations: IntegerField = IntegerField(default=0)
     brs: IntegerField = IntegerField(default=0)
     settings: IntegerField = IntegerField(default=0)
+    edit: IntegerField = IntegerField(default=0)
     help: IntegerField = IntegerField(default=0)
     donate: IntegerField = IntegerField(default=0)
     
+    menu: IntegerField = IntegerField(default=0)
+    more: IntegerField = IntegerField(default=0)
+
     cancel: IntegerField = IntegerField(default=0)
     
     start: IntegerField = IntegerField(default=0)

@@ -5,7 +5,6 @@ from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
 
 from bot.platforms.telegram.commands.settings.utilities.keyboards import appearance_chooser
-from bot.platforms.telegram.commands.settings.utilities.types import SettingsOption
 
 from bot.platforms.telegram.utilities.helpers import top_notification
 
@@ -13,6 +12,7 @@ from bot.models.users import Users
 from bot.models.settings import Settings
 
 from bot.utilities.types import Commands
+from bot.utilities.types import SettingsOption
 
 
 @dispatcher.callback_query_handler(

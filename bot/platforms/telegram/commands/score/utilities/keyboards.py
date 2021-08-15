@@ -55,7 +55,7 @@ def subject_chooser(subjects: List[str], subject_type: str) -> InlineKeyboardMar
         cancel_button(),
         InlineKeyboardButton(
             text="показать все",
-            callback_data=" ".join([ subject_type, "None" ])
+            callback_data=" ".join([ subject_type, "-" ])
         )
     )
     

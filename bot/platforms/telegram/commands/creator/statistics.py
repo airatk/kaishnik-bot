@@ -18,7 +18,7 @@ from bot.platforms.telegram.commands.creator.utilities.helpers import parse_crea
 from bot.platforms.telegram.commands.creator.utilities.helpers import update_progress_bar
 from bot.platforms.telegram.commands.creator.utilities.helpers import try_get_chat
 from bot.platforms.telegram.commands.creator.utilities.helpers import show_users_list
-from bot.platforms.telegram.commands.creator.utilities.constants import CREATOR
+from bot.platforms.telegram.commands.creator.utilities.constants import CREATOR_TELEGRAM_ID
 from bot.platforms.telegram.commands.creator.utilities.constants import USERS_STATS
 from bot.platforms.telegram.commands.creator.utilities.constants import MONTH_GRAPH
 from bot.platforms.telegram.commands.creator.utilities.constants import COMMAND_REQUESTS_STATS
@@ -37,7 +37,7 @@ from bot.utilities.calendar.constants import MONTHS_EN
 
 
 @dispatcher.message_handler(
-    lambda message: message.from_user.id == CREATOR,
+    lambda message: message.from_user.id == CREATOR_TELEGRAM_ID,
     commands=[ Commands.USERS.value ]
 )
 async def users(message: Message):
@@ -102,7 +102,7 @@ async def users(message: Message):
                 requests_number=requests_number,
                 pluses="".join([ "+" for _ in range(get_bar_length(requests_number) if get_bar_length(requests_number) > 1 else 1) ])
             ) for (date, requests_number) in graph_values.items()
-        ], key=lambda string_date: string_date[2:7], reverse=True))
+        ], key=lambda date_string: date_string[2:7], reverse=True))
         
         await message.answer(
             text=MONTH_GRAPH.format(
@@ -258,7 +258,7 @@ async def users(message: Message):
 
 
 @dispatcher.message_handler(
-    lambda message: message.from_user.id == CREATOR,
+    lambda message: message.from_user.id == CREATOR_TELEGRAM_ID,
     commands=[ Commands.METRICS.value ]
 )
 async def metrics(message: Message):
@@ -336,7 +336,7 @@ async def metrics(message: Message):
                 requests_number=requests_number,
                 pluses="".join([ "+" for _ in range(get_bar_length(requests_number) if get_bar_length(requests_number) > 1 else 1) ])
             ) for (date, requests_number) in graph_values.items()
-        ], key=lambda string_date: string_date[2:7], reverse=True))
+        ], key=lambda date_string: date_string[2:7], reverse=True))
         
         await message.answer(
             text=MONTH_GRAPH.format(
@@ -373,8 +373,11 @@ async def metrics(message: Message):
         "locations_monthly": sum([ day_metrics.locations for day_metrics in monthly_metrics ]),
         "brs_monthly": sum([ day_metrics.brs for day_metrics in monthly_metrics ]),
         "settings_monthly": sum([ day_metrics.settings for day_metrics in monthly_metrics ]),
+        "edit_monthly": sum([ day_metrics.edit for day_metrics in monthly_metrics ]),
         "help_monthly": sum([ day_metrics.help for day_metrics in monthly_metrics ]),
         "donate_monthly": sum([ day_metrics.donate for day_metrics in monthly_metrics ]),
+        "menu_monthly": sum([ day_metrics.menu for day_metrics in monthly_metrics ]),
+        "more_monthly": sum([ day_metrics.more for day_metrics in monthly_metrics ]),
         "cancel_monthly": sum([ day_metrics.cancel for day_metrics in monthly_metrics ]),
         "start_monthly": sum([ day_metrics.start for day_metrics in monthly_metrics ]),
         "login_monthly": sum([ day_metrics.login for day_metrics in monthly_metrics ]),
@@ -410,8 +413,11 @@ async def metrics(message: Message):
         "locations_daily": daily_metrics.locations,
         "brs_daily": daily_metrics.brs,
         "settings_daily": daily_metrics.settings,
+        "edit_daily": daily_metrics.edit,
         "help_daily": daily_metrics.help,
         "donate_daily": daily_metrics.donate,
+        "menu_daily": daily_metrics.menu,
+        "more_daily": daily_metrics.more,
         "cancel_daily": daily_metrics.cancel,
         "start_daily": daily_metrics.start,
         "login_daily": daily_metrics.login,

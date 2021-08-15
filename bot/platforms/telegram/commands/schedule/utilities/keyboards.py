@@ -19,22 +19,18 @@ from bot.utilities.calendar.constants import WEEKDAYS
 from bot.utilities.calendar.constants import MONTHS
 
 
-def time_period_chooser(lecturer_id: str = "None") -> InlineKeyboardMarkup:
+def time_period_chooser(lecturer_id: str = "-") -> InlineKeyboardMarkup:
     time_period_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
     
     today_date: date = date.today()
     yesterday_date: date = today_date - timedelta(days=1)
     tomorrow_date: date = today_date + timedelta(days=1)
     
-    today_string_date: str = ".".join([ today_date.strftime("%d"), today_date.strftime("%m") ])
-    yesterday_string_date: str = ".".join([ yesterday_date.strftime("%d"), yesterday_date.strftime("%m") ])
-    tomorrow_string_date: str = ".".join([ tomorrow_date.strftime("%d"), tomorrow_date.strftime("%m") ])
-    
     time_period_chooser_keyboard.add(*[
         cancel_button(),
-        InlineKeyboardButton(text="сегодня", callback_data=" ".join([ Commands.CLASSES_SHOW.value, today_string_date, lecturer_id ])),
-        InlineKeyboardButton(text="вчера", callback_data=" ".join([ Commands.CLASSES_SHOW.value, yesterday_string_date, lecturer_id ])),
-        InlineKeyboardButton(text="завтра", callback_data=" ".join([ Commands.CLASSES_SHOW.value, tomorrow_string_date, lecturer_id ]))
+        InlineKeyboardButton(text="сегодня", callback_data=" ".join([ Commands.CLASSES_SHOW.value, today_date.strftime("%d.%m"), lecturer_id ])),
+        InlineKeyboardButton(text="вчера", callback_data=" ".join([ Commands.CLASSES_SHOW.value, yesterday_date.strftime("%d.%m"), lecturer_id ])),
+        InlineKeyboardButton(text="завтра", callback_data=" ".join([ Commands.CLASSES_SHOW.value, tomorrow_date.strftime("%d.%m"), lecturer_id ]))
     ])
     
     time_period_chooser_keyboard.row(
@@ -52,13 +48,14 @@ def time_period_chooser(lecturer_id: str = "None") -> InlineKeyboardMarkup:
     
     return time_period_chooser_keyboard
 
-def dates_appender(shift: int, dates: List[str], lecturer_id: str = "None") -> InlineKeyboardMarkup:
+def dates_appender(shift: int, dates: List[str], lecturer_id: str = "-") -> InlineKeyboardMarkup:
     dates_appender_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=2)
     
     (first_date, last_date) = get_semester_boundaries(day_date=date.today())
 
     # Shifting backwards for 7 days, because of the weirdness of university schedule
-    first_date -= timedelta(days=7)
+    if not first_date.month > 7:
+        first_date -= timedelta(days=7)
     
     if (date.today() - first_date).days < 0 and shift < (first_date - date.today()).days:
         shift = (first_date - date.today()).days

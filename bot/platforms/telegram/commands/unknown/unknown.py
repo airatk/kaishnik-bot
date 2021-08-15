@@ -7,15 +7,13 @@ from aiogram.types import ChatType
 from aiogram.utils.exceptions import MessageError
 
 from bot.platforms.telegram import dispatcher
-from bot.platforms.telegram import guards
-
-from bot.platforms.telegram.commands.unknown.utilities.constants import REPLIES_TO_UNKNOWN_COMMAND
-from bot.platforms.telegram.commands.unknown.utilities.constants import REPLIES_TO_UNKNOWN_MESSAGE
 
 from bot.platforms.telegram.utilities.helpers import top_notification
 
-from bot.utilities.helpers import increment_command_metrics
 from bot.utilities.constants import BOT_ADDRESSING
+from bot.utilities.constants import REPLIES_TO_UNKNOWN_COMMAND
+from bot.utilities.constants import REPLIES_TO_UNKNOWN_TEXT_MESSAGE
+from bot.utilities.helpers import increment_command_metrics
 from bot.utilities.types import Commands
 
 
@@ -52,7 +50,7 @@ async def unknown_text_message(message: Message):
     elif message.is_command():
         text: str = choice(REPLIES_TO_UNKNOWN_COMMAND)
     else:
-        text: str = choice(REPLIES_TO_UNKNOWN_MESSAGE)
+        text: str = choice(REPLIES_TO_UNKNOWN_TEXT_MESSAGE)
     
     await message.answer(
         text=text,

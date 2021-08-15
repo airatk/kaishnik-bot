@@ -1,10 +1,6 @@
 from logging import basicConfig
 from logging import NOTSET
 
-from aiogram import executor
-
-from bot.platforms.telegram import dispatcher
-
 from bot.utilities.database.helpers import setup_database_tables
 
 
@@ -15,5 +11,7 @@ if __name__ == "__main__":
     # Database setup
     setup_database_tables()
     
-    # Launching
-    executor.start_polling(dispatcher=dispatcher)
+    # Launching bot on all platforms
+    # TODO: Implementing simultaneous launch on all platforms. 
+    # from bot.platforms.telegram import launch
+    # from bot.platforms.vk import launch

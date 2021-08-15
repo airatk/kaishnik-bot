@@ -2,48 +2,48 @@ from enum import Enum
 
 
 class Option(Enum):
-    EMPTY: str = ""
+    EMPTY = ""
     
     # /metrics
-    DATE: str = "date"
-    MONTH: str = "month"
+    DATE = "date"
+    MONTH = "month"
     
     # /data
-    NUMBER: str = "number"
-    STATE: str = "state"
-    USER_ID: str = "user-id"
+    NUMBER = "number"
+    STATE = "state"
+    USER_ID = "user-id"
     
-    USERNAME: str = "username"
-    FIRSTNAME: str = "firstname"
+    USERNAME = "username"
+    FIRSTNAME = "firstname"
     
-    NAME: str = "name"
-    GROUP: str = "group"
+    NAME = "name"
+    GROUP = "group"
     
-    BB_LOGIN: str = "bb-login"
+    BB_LOGIN = "bb-login"
     
     # /broadcast
-    USERS: str = "users"
-    MESSAGE: str = "message"
-    SIGNED: str = "signed"
+    USERS = "users"
+    MESSAGE = "message"
+    SIGNED = "signed"
     
     # /daysoff
-    ADD: str = "add"
-    DROP: str = "drop"
+    ADD = "add"
+    DROP = "drop"
 
 class Value(Enum):
-    ME: str = "me"
+    ME = "me"
     
-    ALL: str = "all"
+    ALL = "all"
     
-    SETUP: str = "setup"
-    UNSETUP: str = "unsetup"
+    SETUP = "setup"
+    UNSETUP = "unsetup"
     
-    GROUPS: str = "groups"
-    COMPACTS: str = "compacts"
-    EXTENDEDS: str = "extendeds"
-    BBS: str = "bbs"
-    UNDEFINED: str = "undefined"
+    GROUPS = "groups"
+    COMPACTS = "compacts"
+    EXTENDEDS = "extendeds"
+    BBS = "bbs"
+    UNDEFINED = "undefined"
     
-    GUARDS: str = "guards"
+    GUARDS = "guards"
     
-    LIST: str = "list"
+    LIST = "list"

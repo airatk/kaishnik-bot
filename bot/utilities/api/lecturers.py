@@ -1,10 +1,10 @@
-from json.decoder import JSONDecodeError
-
 from typing import Optional
 from typing import Union
 from typing import Dict
 from typing import List
 from typing import Tuple
+
+from json.decoder import JSONDecodeError
 
 from requests import get
 from requests.exceptions import ConnectionError

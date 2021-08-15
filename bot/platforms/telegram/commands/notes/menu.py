@@ -7,11 +7,11 @@ from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
 
 from bot.platforms.telegram.commands.notes.utilities.keyboards import action_chooser
-from bot.platforms.telegram.commands.notes.utilities.constants import MAX_NOTES_NUMBER
 
 from bot.models.users import Users
 from bot.models.notes import Notes
 
+from bot.utilities.constants import MAX_NOTES_NUMBER
 from bot.utilities.helpers import increment_command_metrics
 from bot.utilities.types import Commands
 

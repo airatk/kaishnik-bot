@@ -1,7 +1,7 @@
 from bot.utilities.constants import KEYS
 
 
-CREATOR: int = int(KEYS.CREATOR)
+CREATOR_TELEGRAM_ID: int = int(KEYS.CREATOR_TELEGRAM_ID)
 
 MAX_TEXT_LENGTH: int = 3900
 MAX_CAPTION_LENGTH: int = 900
@@ -126,8 +126,12 @@ COMMAND_REQUESTS_STATS: str = (
     "• /locations: {locations_monthly}, {locations_daily}\n"
     "• /brs: {brs_monthly}, {brs_daily}\n"
     "• /settings: {settings_monthly}, {settings_daily}\n"
+    "• /edit: {edit_monthly}, {edit_daily}\n"
     "• /help: {help_monthly}, {help_daily}\n"
     "• /donate: {donate_monthly}, {donate_daily}\n"
+    "\n"
+    "• menu: {menu_monthly}, {menu_daily}\n"
+    "• more: {more_monthly}, {more_daily}\n"
     "\n"
     "• /cancel: {cancel_monthly}, {cancel_daily}\n"
     "\n"

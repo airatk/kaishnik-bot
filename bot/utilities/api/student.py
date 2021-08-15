@@ -1,11 +1,11 @@
-from json.decoder import JSONDecodeError
-
 from typing import Optional
 from typing import Union
 from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
+
+from json.decoder import JSONDecodeError
 
 from requests import get
 from requests import post
@@ -43,7 +43,7 @@ def get_group_schedule_id(group: str) -> Tuple[Optional[str], Optional[ResponseE
     except (ConnectionError, Timeout, JSONDecodeError):
         return (None, ResponseError.NO_RESPONSE)
     
-    if len(groups) == 0 or "id" not in groups[0]:
+    if len(groups) != 1 or "id" not in groups[0]:
         return (None, ResponseError.NO_DATA)
     
     return (groups[0]["id"], None)

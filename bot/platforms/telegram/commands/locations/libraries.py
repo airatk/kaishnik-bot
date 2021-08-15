@@ -6,13 +6,12 @@ from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
 
 from bot.platforms.telegram.commands.locations.utilities.keyboards import libraries_dialer
-from bot.platforms.telegram.commands.locations.utilities.constants import BUILDINGS
-from bot.platforms.telegram.commands.locations.utilities.constants import LIBRARIES
-from bot.platforms.telegram.commands.locations.utilities.types import LocationType
-
 from bot.platforms.telegram.utilities.helpers import top_notification
 
 from bot.utilities.types import Commands
+from bot.utilities.api.constants import BUILDINGS
+from bot.utilities.api.constants import LIBRARIES
+from bot.utilities.api.types import LocationType
 
 
 @dispatcher.callback_query_handler(

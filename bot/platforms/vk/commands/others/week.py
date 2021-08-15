@@ -1,0 +1,50 @@
+from datetime import datetime
+
+from vkwave.bots import SimpleBotEvent
+from vkwave.bots import PayloadFilter
+
+from bot.platforms.vk import vk_bot
+
+from bot.platforms.vk.utilities.keyboards import to_menu
+from bot.platforms.vk.utilities.types import CommandsOfVK
+
+from bot.utilities.helpers import increment_command_metrics
+from bot.utilities.types import Commands
+from bot.utilities.calendar.helpers import is_week_even
+from bot.utilities.calendar.helpers import weekday_date
+from bot.utilities.calendar.helpers import get_week_number
+
+
+@vk_bot.message_handler(
+    lambda event:
+        event.object.object.message.text.capitalize() == CommandsOfVK.WEEK.value
+)
+@increment_command_metrics(command=Commands.WEEK)
+async def week(event: SimpleBotEvent):
+    (weekday, date) = weekday_date()
+    
+    week_number: int = get_week_number(day_date=datetime.today())
+    
+    if week_number > 0:
+        week_message: str = (
+            "Текущая неделя {type},\n"
+            "#{number} с начала семестра.".format(
+                type="чётная" if is_week_even(day_date=datetime.today()) else "нечётная",
+                number=week_number
+            )
+        )
+    else:
+        week_number = 1 - week_number
+        
+        week_message: str = "До начала семестра меньше {week_number} недел{ending}.".format(
+            week_number=week_number,
+            ending="и" if week_number == 1 else "ь"
+        )
+    
+    await event.answer(
+        message="\n\n".join([
+            "{weekday}, {date}".format(weekday=weekday, date=date),
+            week_message
+        ]),
+        keyboard=to_menu()
+    )

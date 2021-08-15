@@ -5,9 +5,6 @@ from aiogram.types import ChatType
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
 
-from bot.platforms.telegram.commands.notes.utilities.helpers import clarify_markdown
-from bot.platforms.telegram.commands.notes.utilities.constants import MAX_NOTES_NUMBER
-
 from bot.platforms.telegram.utilities.keyboards import canceler
 from bot.platforms.telegram.utilities.helpers import top_notification
 
@@ -15,6 +12,8 @@ from bot.models.users import Users
 from bot.models.notes import Notes
 
 from bot.utilities.constants import BOT_ADDRESSING
+from bot.utilities.constants import MAX_NOTES_NUMBER
+from bot.utilities.helpers import clarify_markdown
 from bot.utilities.types import Commands
 
 

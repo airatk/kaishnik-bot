@@ -4,8 +4,7 @@ from aiogram.types import ChatType
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
 
-from bot.platforms.telegram.commands.others.utilities.constants import DONATE
-
+from bot.utilities.constants import DONATE
 from bot.utilities.helpers import increment_command_metrics
 from bot.utilities.types import Commands
 
