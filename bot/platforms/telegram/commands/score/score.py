@@ -5,6 +5,7 @@ from random import choice
 from aiogram.types import Message
 from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
@@ -157,7 +158,7 @@ async def show_subjects(callback: CallbackQuery):
     if string_index != "-":
         await callback.message.edit_text(
             text=subjects[int(string_index)],
-            parse_mode="markdown"
+            parse_mode=ParseMode.MARKDOWN
         )
     else:
         await callback.message.delete()
@@ -165,7 +166,7 @@ async def show_subjects(callback: CallbackQuery):
         for score in subjects:
             await callback.message.answer(
                 text=score,
-                parse_mode="markdown"
+                parse_mode=ParseMode.MARKDOWN
             )
         
         subjects_number: int = len(subjects)
@@ -174,7 +175,7 @@ async def show_subjects(callback: CallbackQuery):
         
         await callback.message.answer(
             text="*{subjects_number}* предмет{ending} всего!".format(subjects_number=subjects_number, ending=ending),
-            parse_mode="markdown"
+            parse_mode=ParseMode.MARKDOWN
         )
     
     guards[callback.message.chat.id].drop()

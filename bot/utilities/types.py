@@ -52,6 +52,7 @@ class Commands(Enum):
     DROP = "drop"
     BROADCAST = "broadcast"
     DAYSOFF = "daysoff"
+    DONATED = "donated"
     
     NO_PERMISSIONS = "no-permissions"
     

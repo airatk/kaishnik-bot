@@ -14,4 +14,4 @@ if __name__ == "__main__":
     # Launching bot on all platforms
     # TODO: Implementing simultaneous launch on all platforms. 
     # from bot.platforms.telegram import launch
-    # from bot.platforms.vk import launch
+    from bot.platforms.vk import launch

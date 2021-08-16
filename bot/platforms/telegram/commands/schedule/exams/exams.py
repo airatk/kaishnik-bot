@@ -1,10 +1,11 @@
-from random import choice
-
 from typing import Optional
 from typing import List
 
+from random import choice
+
 from aiogram.types import Message
 from aiogram.types import ChatType
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
@@ -48,7 +49,7 @@ async def exams(message: Message):
                     "Расписание экзаменов группы *{group}* получить не удалось.".format(group=exams_arguments[0]),
                     response_error.value
                 ]),
-                parse_mode="markdown"
+                parse_mode=ParseMode.MARKDOWN
             )
             return
     
@@ -60,6 +61,6 @@ async def exams(message: Message):
     
     await loading_message.edit_text(
         text=response_error.value if schedule is None else schedule,
-        parse_mode="markdown",
+        parse_mode=ParseMode.MARKDOWN,
         disable_web_page_preview=True
     )

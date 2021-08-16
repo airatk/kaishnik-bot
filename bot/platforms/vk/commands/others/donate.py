@@ -8,6 +8,7 @@ from bot.platforms.vk.utilities.types import CommandsOfVK
 from bot.utilities.constants import DONATE
 from bot.utilities.helpers import increment_command_metrics
 from bot.utilities.helpers import remove_markdown
+from bot.utilities.helpers import get_top_donators
 from bot.utilities.types import Commands
 
 
@@ -18,7 +19,7 @@ from bot.utilities.types import Commands
 @increment_command_metrics(command=Commands.DONATE)
 async def donate(event: SimpleBotEvent):
     await event.answer(
-        message=remove_markdown(DONATE),
+        message=remove_markdown(DONATE.format(top_donators=get_top_donators())),
         dont_parse_links=True,
         keyboard=via_vk_pay()
     )

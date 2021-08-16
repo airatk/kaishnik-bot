@@ -1,6 +1,7 @@
 from random import choice
 
 from aiogram.types import CallbackQuery
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
@@ -38,7 +39,7 @@ async def lecturers_exams(callback: CallbackQuery):
     
     await callback.message.edit_text(
         text=response_error.value if schedule is None else schedule,
-        parse_mode="markdown",
+        parse_mode=ParseMode.MARKDOWN,
         disable_web_page_preview=True
     )
     

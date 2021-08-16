@@ -6,6 +6,7 @@ from typing import Tuple
 
 from aiogram.types import Message
 from aiogram.types import Chat
+from aiogram.types import ParseMode
 
 from aiogram.utils.exceptions import CantInitiateConversation
 from aiogram.utils.exceptions import UserDeactivated
@@ -55,7 +56,7 @@ async def update_progress_bar(loading_message: Message, current_progress_bar: st
     
     await loading_message.edit_text(
         text=next_progress_bar,
-        parse_mode="markdown"
+        parse_mode=ParseMode.MARKDOWN
     )
     
     return next_progress_bar

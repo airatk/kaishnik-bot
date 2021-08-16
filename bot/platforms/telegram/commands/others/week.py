@@ -2,6 +2,7 @@ from datetime import datetime
 
 from aiogram.types import Message
 from aiogram.types import ChatType
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
@@ -50,5 +51,5 @@ async def week(message: Message):
             "*{weekday}, {date}*".format(weekday=weekday, date=date),
             week_message
         ]),
-        parse_mode="markdown"
+        parse_mode=ParseMode.MARKDOWN
     )

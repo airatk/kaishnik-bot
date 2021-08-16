@@ -33,8 +33,11 @@ DONATE: str = (
     "• *Сбер*: 2202 2012 3023 9101\n"
     "• *PayPal*: paypal.me/kamairat\n"
     "\n"
+    "{top_donators}"
     "Спасибо, что пользуешься ботом!☺️\n"
 )
+
+TOP_DONATORS_NUMBER: int = 6
 
 
 PLATFORM_USER_INFO: str = (

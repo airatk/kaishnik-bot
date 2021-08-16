@@ -4,6 +4,7 @@ from aiogram.types import Message
 from aiogram.types import ContentType
 from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
+from aiogram.types import ParseMode
 from aiogram.utils.exceptions import MessageError
 
 from bot.platforms.telegram import dispatcher
@@ -54,7 +55,7 @@ async def unknown_text_message(message: Message):
     
     await message.answer(
         text=text,
-        parse_mode="markdown",
+        parse_mode=ParseMode.MARKDOWN,
         disable_web_page_preview=True
     )
 

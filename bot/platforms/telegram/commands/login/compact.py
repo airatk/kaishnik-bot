@@ -5,6 +5,7 @@ from re import search
 from aiogram.types import Message
 from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
@@ -75,7 +76,7 @@ async def login_compact_guess_group(callback: CallbackQuery):
     await callback.message.edit_text(
         text="*{possible_group}* — это твоя группа, верно?".format(possible_group=guess.group()),
         reply_markup=guess_approver(),
-        parse_mode="markdown"
+        parse_mode=ParseMode.MARKDOWN
     )
     
     guards[callback.message.chat.id].text = Commands.LOGIN_COMPACT.value

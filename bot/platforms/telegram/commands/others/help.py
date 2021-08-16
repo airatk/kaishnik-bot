@@ -1,5 +1,6 @@
 from aiogram.types import Message
 from aiogram.types import ChatType
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
@@ -24,6 +25,6 @@ from bot.utilities.types import Commands
 async def help(message: Message):
     await message.answer(
         text=HELP,
-        parse_mode="markdown",
+        parse_mode=ParseMode.MARKDOWN,
         disable_web_page_preview=True
     )

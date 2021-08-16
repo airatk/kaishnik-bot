@@ -2,6 +2,7 @@ from typing import Dict
 from typing import List
 
 from aiogram.types import Message
+from aiogram.types import ParseMode
 
 from aiogram.utils.exceptions import CantInitiateConversation
 from aiogram.utils.exceptions import UserDeactivated
@@ -134,7 +135,7 @@ async def drop(message: Message):
                 await message.bot.send_message(
                     chat_id=user.telegram_id,
                     text=options[Option.MESSAGE.value],
-                    parse_mode="markdown"
+                    parse_mode=ParseMode.MARKDOWN
                 )
             
             await message.bot.send_message(

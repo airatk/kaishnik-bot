@@ -1,11 +1,15 @@
+from peewee import ModelSelect
+
 from aiogram.types import Message
 from aiogram.types import ChatType
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
 
 from bot.utilities.constants import DONATE
 from bot.utilities.helpers import increment_command_metrics
+from bot.utilities.helpers import get_top_donators
 from bot.utilities.types import Commands
 
 
@@ -22,7 +26,7 @@ from bot.utilities.types import Commands
 @increment_command_metrics(command=Commands.DONATE)
 async def donate(message: Message):
     await message.answer(
-        text=DONATE,
-        parse_mode="markdown",
+        text=DONATE.format(top_donators=get_top_donators()),
+        parse_mode=ParseMode.MARKDOWN,
         disable_web_page_preview=True
     )

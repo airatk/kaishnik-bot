@@ -7,6 +7,7 @@ from bot.models.settings import Settings
 from bot.models.notes import Notes
 from bot.models.metrics import Metrics
 from bot.models.days_off import DaysOff
+from bot.models.donations import Donations
 
 
 def setup_database_tables():
@@ -23,3 +24,4 @@ def setup_database_tables():
     
     Metrics.create_table()
     DaysOff.create_table()
+    Donations.create_table()

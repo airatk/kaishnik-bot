@@ -2,6 +2,7 @@ from typing import List
 
 from aiogram.types import Message
 from aiogram.types import ChatType
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
@@ -37,6 +38,6 @@ async def notes(message: Message):
             current=notes.count(),
             max=MAX_NOTES_NUMBER
         ),
-        parse_mode="markdown",
+        parse_mode=ParseMode.MARKDOWN,
         reply_markup=action_chooser(has_notes=notes.exists())
     )

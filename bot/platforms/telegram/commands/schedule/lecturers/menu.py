@@ -6,6 +6,7 @@ from random import choice
 from aiogram.types import Message
 from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
@@ -130,7 +131,7 @@ async def lecturers_schedule_type(callback: CallbackQuery):
     
     await callback.message.edit_text(
         text=chosen_name,
-        parse_mode="markdown"
+        parse_mode=ParseMode.MARKDOWN
     )
     
     await callback.message.answer(

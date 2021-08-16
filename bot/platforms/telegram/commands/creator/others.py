@@ -1,11 +1,14 @@
-from re import compile
-
 from typing import Dict
 from typing import List
 
+from datetime import date
+from datetime import datetime
+
+from re import match
+
 from aiogram.types import Message
 from aiogram.types import ContentType
-
+from aiogram.types import ParseMode
 from aiogram.utils.exceptions import TelegramAPIError
 
 from bot.platforms.telegram import dispatcher
@@ -25,6 +28,7 @@ from bot.models.compact_students import CompactStudents
 from bot.models.extended_students import ExtendedStudents
 from bot.models.bb_students import BBStudents
 from bot.models.days_off import DaysOff
+from bot.models.donations import Donations
 
 from bot.utilities.types import Commands
 from bot.utilities.calendar.constants import MONTHS
@@ -66,14 +70,14 @@ async def broadcast(message: Message):
             except ValueError:
                 await message.answer(
                     text="*{non_id}* cannot be user ID!".format(non_id=possible_id),
-                    parse_mode="markdown"
+                    parse_mode=ParseMode.MARKDOWN
                 )
                 continue
             else:
                 if not Users.select().where(Users.user_id == asked_id).exists():
                     await message.answer(
                         text="*{id}* was not found!".format(id=asked_id),
-                        parse_mode="markdown"
+                        parse_mode=ParseMode.MARKDOWN
                     )
                     continue
                 
@@ -110,7 +114,7 @@ async def broadcast(message: Message):
                 await message.bot.send_message(
                     chat_id=user.telegram_id,
                     text=broadcast_text,
-                    parse_mode="markdown",
+                    parse_mode=ParseMode.MARKDOWN,
                     disable_web_page_preview=True
                 )
             elif message.content_type == ContentType.PHOTO:
@@ -118,28 +122,28 @@ async def broadcast(message: Message):
                     chat_id=user.telegram_id,
                     photo=message.photo[0].file_id,
                     caption=broadcast_text,
-                    parse_mode="markdown"
+                    parse_mode=ParseMode.MARKDOWN
                 )
             elif message.content_type == ContentType.VIDEO:
                 await message.bot.send_video(
                     chat_id=user.telegram_id,
                     video=message.video.file_id,
                     caption=broadcast_text,
-                    parse_mode="markdown"
+                    parse_mode=ParseMode.MARKDOWN
                 )
             elif message.content_type == ContentType.AUDIO:
                 await message.bot.send_audio(
                     chat_id=user.telegram_id,
                     audio=message.audio.file_id,
                     caption=broadcast_text,
-                    parse_mode="markdown"
+                    parse_mode=ParseMode.MARKDOWN
                 )
             elif message.content_type == ContentType.DOCUMENT:
                 await message.bot.send_document(
                     chat_id=user.telegram_id,
                     document=message.document.file_id,
                     caption=broadcast_text,
-                    parse_mode="markdown"
+                    parse_mode=ParseMode.MARKDOWN
                 )
         except TelegramAPIError:
             user.delete_instance()
@@ -148,7 +152,7 @@ async def broadcast(message: Message):
     
     await message.answer(
         text="Broadcasted to *{users_number}* users!".format(users_number=len(users_ids_list)),
-        parse_mode="markdown"
+        parse_mode=ParseMode.MARKDOWN
     )
 
 @dispatcher.message_handler(
@@ -184,7 +188,7 @@ async def daysoff(message: Message):
         
         await message.answer(
             text=days_off_text,
-            parse_mode="markdown"
+            parse_mode=ParseMode.MARKDOWN
         )
         return
     
@@ -198,20 +202,20 @@ async def daysoff(message: Message):
             
             await message.answer(
                 text="*{dropped_days_off_number}* were dropped!".format(dropped_days_off_number=dropped_days_off_number),
-                parse_mode="markdown"
+                parse_mode=ParseMode.MARKDOWN
             )
             return
     else:
         await message.answer(text="No options were found!")
         return
     
-    if not compile("^[0-9][0-9]-[0-9][0-9]$").match(asked_date):
+    if match("^[0-9][0-9]-[0-9][0-9]$", asked_date) is None:
         await message.answer(
             text=(
                 "Incorrect date format!\n"
                 "It should be the following: `dd-mm`"
             ),
-            parse_mode="markdown"
+            parse_mode=ParseMode.MARKDOWN
         )
         return
     
@@ -220,7 +224,7 @@ async def daysoff(message: Message):
     
     if Option.ADD.value in options:
         if asked_day_off is None:
-            DaysOff.create(date=asked_date, message=options[Option.MESSAGE.value] if Option.MESSAGE.value in options else "Выходной")
+            _: DaysOff = DaysOff.create(date=asked_date, message=options[Option.MESSAGE.value] if Option.MESSAGE.value in options else "Выходной")
         else:
             text = "{day_off_date} day off have been added already!".format(day_off_date=asked_date)
     elif Option.DROP.value in options:
@@ -231,5 +235,52 @@ async def daysoff(message: Message):
     
     await message.answer(
         text=text,
-        parse_mode="markdown"
+        parse_mode=ParseMode.MARKDOWN
+    )
+
+
+@dispatcher.message_handler(
+    lambda message: message.from_user.id == CREATOR_TELEGRAM_ID,
+    commands=[ Commands.DONATED.value ]
+)
+async def donated(message: Message):
+    options: Dict[str, str] = parse_creator_query(query=message.text)
+    
+    if Option.AMOUNT.value not in options:
+        await message.answer(text="Amount of donate was not provided!")
+        return
+    if Option.NAME.value not in options:
+        await message.answer(text="Donator's name was not provided!")
+        return
+    if Option.DATE.value not in options:
+        await message.answer(text="Date of donation was not provided!")
+        return
+    
+    amount_string: str = options[Option.AMOUNT.value]
+
+    if not amount_string.replace(".", "", 1).isdigit():
+        await message.answer(text="Incorrect amount of donate was provided!")
+        return
+    
+    date_string: str = options[Option.DATE.value]
+
+    if match(pattern="^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$", string=date_string) is None:
+        await message.answer(
+            text=(
+                "Incorrect date format!\n"
+                "It should be the following: `yyyy-mm-dd`"
+            ),
+            parse_mode=ParseMode.MARKDOWN
+        )
+        return
+    
+    amount: float = float(amount_string)
+    donation_date: date = datetime.strptime(date_string, "%Y-%m-%d").date()
+    name: str = options[Option.NAME.value]
+    
+    _: Donations = Donations.create(amount=amount, date=donation_date, name=name)
+    
+    await message.answer(
+        text="Added!",
+        parse_mode=ParseMode.MARKDOWN
     )

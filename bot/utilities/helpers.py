@@ -3,11 +3,15 @@ from typing import Optional
 
 from datetime import date
 
+from peewee import ModelSelect
+
 from bot.models.metrics import Metrics
+from bot.models.donations import Donations
 
 from bot.utilities.constants import POSSIBLE_PLATFORM_CODE_CHARACTERS, USER_ID_MODIFIER
 from bot.utilities.constants import DIGIT_MODIFIER
 from bot.utilities.constants import PLATFORM_CODE_SUFFIX
+from bot.utilities.constants import TOP_DONATORS_NUMBER
 from bot.utilities.types import Commands
 
 
@@ -82,3 +86,15 @@ def decode_platform_code(platform_code: str) -> Optional[int]:
     modified_user_id: int = int("".join(map(lambda digit: str(digit), modified_user_id_digits)))
 
     return (modified_user_id - USER_ID_MODIFIER)
+
+
+def get_top_donators() -> str:
+    top_donations_list: ModelSelect = Donations.select().order_by(Donations.amount.desc()).limit(value=TOP_DONATORS_NUMBER)
+    top_donators: str = "\n".join([
+        "Большое спасибо всем тем, кто внёс свой донат♥️\n",
+        "Особенное спасибо за большую поддержку топу донатеров:",
+        "\n".join([ f"*{index + 1}.* {donation.name} — {donation.amount:.2f} ₽" for (index, donation) in enumerate(top_donations_list) ]),
+        "\n"
+    ]) if len(top_donations_list) > 0 else ""
+
+    return top_donators

@@ -6,11 +6,12 @@ from typing import Optional
 
 from datetime import datetime
 
-from re import compile
+from re import match
 
 from peewee import ModelSelect
 
 from aiogram.types import Message
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 
@@ -60,18 +61,18 @@ async def users(message: Message):
         
         await message.answer(
             text=USERS_STATS.format(**users_stats_filing),
-            parse_mode="markdown"
+            parse_mode=ParseMode.MARKDOWN
         )
         return
     
     if Option.MONTH.value in options:
-        if not compile("^[0-9][0-9][0-9][0-9]-[0-9][0-9]$").match(options[Option.MONTH.value]):
+        if match(pattern="^[0-9][0-9][0-9][0-9]-[0-9][0-9]$", string=options[Option.MONTH.value]) is None:
             await message.answer(
                 text=(
                     "Incorrect month format!\n"
                     "It should be the following: `yyyy-mm`"
                 ),
-                parse_mode="markdown"
+                parse_mode=ParseMode.MARKDOWN
             )
             return
         
@@ -88,7 +89,7 @@ async def users(message: Message):
         if len(graph_values.values()) == 0:
             await message.answer(
                 text="No new user for the asked month was found.",
-                parse_mode="markdown"
+                parse_mode=ParseMode.MARKDOWN
             )
             return
 
@@ -112,7 +113,7 @@ async def users(message: Message):
                 total=sum(graph_values.values()),
                 average=round(sum(graph_values.values())/len(graph_values.values()))
             ),
-            parse_mode="markdown"
+            parse_mode=ParseMode.MARKDOWN
         )
         return
     
@@ -253,7 +254,7 @@ async def users(message: Message):
                 total=len(Users),
                 auxiliary="was" if shown_users_number == 1 else "were"
             ),
-            parse_mode="markdown"
+            parse_mode=ParseMode.MARKDOWN
         )
 
 
@@ -265,26 +266,26 @@ async def metrics(message: Message):
     options: Dict[str, str] = parse_creator_query(query=message.text)
     
     if Option.DATE.value in options:
-        if not compile("^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$").match(options[Option.DATE.value]):
+        if match(pattern="^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$", string=options[Option.DATE.value]) is None:
             await message.answer(
                 text=(
                     "Incorrect date format!\n"
                     "It should be the following: `yyyy-mm-dd`"
                 ),
-                parse_mode="markdown"
+                parse_mode=ParseMode.MARKDOWN
             )
             return
         
         month_date: str = "".join([ options[Option.DATE.value][:-2], "*" ])
         day_date: str = options[Option.DATE.value]
     elif Option.MONTH.value in options:
-        if not compile("^[0-9][0-9][0-9][0-9]-[0-9][0-9]$").match(options[Option.MONTH.value]):
+        if match(pattern="^[0-9][0-9][0-9][0-9]-[0-9][0-9]$", string=options[Option.MONTH.value]) is None:
             await message.answer(
                 text=(
                     "Incorrect month format!\n"
                     "It should be the following: `yyyy-mm`"
                 ),
-                parse_mode="markdown"
+                parse_mode=ParseMode.MARKDOWN
             )
             return
         
@@ -295,7 +296,7 @@ async def metrics(message: Message):
         if not month_metrics.exists():
             await message.answer(
                 text="No metrics for the asked month was found.",
-                parse_mode="markdown"
+                parse_mode=ParseMode.MARKDOWN
             )
             return
 
@@ -346,7 +347,7 @@ async def metrics(message: Message):
                 total=sum(graph_values.values()),
                 average=round(sum(graph_values.values())/len(graph_values.values()))
             ),
-            parse_mode="markdown"
+            parse_mode=ParseMode.MARKDOWN
         )
         return
     else:
@@ -358,7 +359,7 @@ async def metrics(message: Message):
     if not monthly_metrics.exists():
         await message.answer(
             text="No metrics for the asked date's month was found.",
-            parse_mode="markdown"
+            parse_mode=ParseMode.MARKDOWN
         )
         return
     
@@ -398,7 +399,7 @@ async def metrics(message: Message):
     if daily_metrics is None:
         await message.answer(
             text="No metrics for the asked date was found.",
-            parse_mode="markdown"
+            parse_mode=ParseMode.MARKDOWN
         )
         return
 
@@ -438,5 +439,5 @@ async def metrics(message: Message):
             **daily_command_requests_stats_filling,
             **monthly_command_requests_stats_filling
         ),
-        parse_mode="markdown"
+        parse_mode=ParseMode.MARKDOWN
     )

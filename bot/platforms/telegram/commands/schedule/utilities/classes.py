@@ -3,6 +3,7 @@ from random import choice
 from typing import List
 
 from aiogram.types import CallbackQuery
+from aiogram.types import ParseMode
 from aiogram.utils.exceptions import MessageNotModified
 
 from bot.platforms.telegram import guards
@@ -53,7 +54,7 @@ async def common_add_chosen_date(callback: CallbackQuery):
                 ),
                 "Выбери нужные дни:"
             ]),
-            parse_mode="markdown",
+            parse_mode=ParseMode.MARKDOWN,
             reply_markup=dates_appender(
                 shift=int(callback_data[1]),
                 dates=states[callback.message.chat.id].chosen_schedule_dates,
@@ -98,7 +99,7 @@ async def common_show_chosen_dates(command: Commands, callback: CallbackQuery):
     if response_error is not None:
         await callback.message.answer(
             text=response_error.value,
-            parse_mode="markdown",
+            parse_mode=ParseMode.MARKDOWN,
             disable_web_page_preview=True
         )
     
@@ -106,7 +107,7 @@ async def common_show_chosen_dates(command: Commands, callback: CallbackQuery):
         for day in schedule:
             await callback.message.answer(
                 text=day,
-                parse_mode="markdown"
+                parse_mode=ParseMode.MARKDOWN
             )
     
     states[callback.message.chat.id].drop()

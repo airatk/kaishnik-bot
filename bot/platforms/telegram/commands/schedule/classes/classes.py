@@ -5,6 +5,7 @@ from typing import List
 from aiogram.types import Message
 from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
@@ -50,7 +51,7 @@ async def menu(message: Message):
                     "Расписание занятий группы *{group}* получить не удалось.".format(group=classes_arguments[0]),
                     response_error.value
                 ]),
-                parse_mode="markdown"
+                parse_mode=ParseMode.MARKDOWN
             )
             return
         
@@ -60,7 +61,7 @@ async def menu(message: Message):
         text="Тебе нужно расписание{for_another_group} на:".format(
             for_another_group=" группы *{group}*".format(group=classes_arguments[0]) if len(classes_arguments) != 0 else ""
         ),
-        parse_mode="markdown",
+        parse_mode=ParseMode.MARKDOWN,
         reply_markup=time_period_chooser()
     )
     

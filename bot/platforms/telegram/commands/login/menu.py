@@ -1,6 +1,7 @@
 from aiogram.types import Message
 from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
@@ -68,7 +69,7 @@ async def login_on_command(message: Message):
     
     await message.answer(
         text=text,
-        parse_mode="markdown",
+        parse_mode=ParseMode.MARKDOWN,
         reply_markup=login_way_chooser(is_old=is_user_setup, chat_type=message.chat.type)
     )
     
@@ -80,7 +81,7 @@ async def finish_login(message: Message):
     
     await message.answer(
         text=GUIDE_MESSAGE,
-        parse_mode="markdown"
+        parse_mode=ParseMode.MARKDOWN
     )
     
     guards[message.chat.id].drop()

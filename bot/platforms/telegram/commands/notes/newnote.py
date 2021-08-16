@@ -1,6 +1,7 @@
 from aiogram.types import Message
 from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
@@ -40,7 +41,7 @@ async def add_note_hint(callback: CallbackQuery):
             "• Используй нижнее подчёркивание, чтобы выделить \__курсивом_\_\n\n"
             "Напиши заметку и отправь решительно.".format(note_number=note_number)
         ),
-        parse_mode="markdown",
+        parse_mode=ParseMode.MARKDOWN,
         reply_markup=canceler()
     )
     

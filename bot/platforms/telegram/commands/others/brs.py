@@ -1,5 +1,6 @@
 from aiogram.types import Message
 from aiogram.types import ChatType
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
@@ -23,5 +24,5 @@ from bot.utilities.types import Commands
 async def brs(message: Message):
     await message.answer(
         text=BRS,
-        parse_mode="markdown"
+        parse_mode=ParseMode.MARKDOWN
     )

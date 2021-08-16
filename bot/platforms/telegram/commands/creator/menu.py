@@ -1,4 +1,5 @@
 from aiogram.types import Message
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 
@@ -15,5 +16,5 @@ from bot.utilities.types import Commands
 async def creator(message: Message):
     await message.answer(
         text=CONTROL_PANEL,
-        parse_mode="markdown"
+        parse_mode=ParseMode.MARKDOWN
     )

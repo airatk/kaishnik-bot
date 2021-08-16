@@ -1,6 +1,7 @@
 from typing import List
 
 from aiogram.types import CallbackQuery
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
@@ -50,7 +51,7 @@ async def send_library(callback: CallbackQuery):
         )
         await callback.message.answer(
             text=LIBRARIES[number]["description"],
-            parse_mode="markdown"
+            parse_mode=ParseMode.MARKDOWN
         )
     
     guards[callback.message.chat.id].drop()

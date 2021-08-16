@@ -66,7 +66,7 @@ async def login_extended(callback: CallbackQuery):
 async def set_institute(callback: CallbackQuery):
     await callback.message.edit_text(
         text=choice(LOADING_REPLIES),
-        parse_mode="markdown",
+        parse_mode=ParseMode.MARKDOWN,
         disable_web_page_preview=True
     )
     

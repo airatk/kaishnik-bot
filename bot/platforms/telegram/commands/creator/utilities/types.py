@@ -30,6 +30,9 @@ class Option(Enum):
     ADD = "add"
     DROP = "drop"
 
+    # /donated
+    AMOUNT = "amount"
+
 class Value(Enum):
     ME = "me"
     
