@@ -1,4 +1,3 @@
-from bot.utilities.api.types import ScheduleType
 from typing import Dict
 from typing import List
 
@@ -22,6 +21,7 @@ from bot.platforms.vk.utilities.types import CommandsOfVK
 from bot.utilities.helpers import increment_command_metrics
 from bot.utilities.types import Commands
 from bot.utilities.api.constants import LOADING_REPLIES
+from bot.utilities.api.types import ScheduleType
 from bot.utilities.api.lecturers import get_lecturers_names
 
 
@@ -62,7 +62,7 @@ async def lecturers(event: SimpleBotEvent):
 async def find_lecturer(event: SimpleBotEvent):
     partial_name_parts: List[str] = event.text.lower().split(" ")
     names: List[Dict[str, str]] = list(filter( 
-        lambda name: all([ partial_name_part in name["lecturer"].lower() for partial_name_part in partial_name_parts ]),
+        lambda name: all(partial_name_part in name["lecturer"].lower() for partial_name_part in partial_name_parts),
         states[event.peer_id].lecturers_names
     ))
 

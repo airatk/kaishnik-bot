@@ -5,7 +5,6 @@ from random import choice
 from vkwave.bots import SimpleBotEvent
 
 from bot.platforms.vk import states
-from bot.platforms.vk import guards
 
 from bot.platforms.vk.commands.schedule.utilities.keyboards import dates_scroller
 from bot.platforms.vk.utilities.keyboards import to_menu

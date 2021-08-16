@@ -53,8 +53,8 @@ def dates_scroller(shown_date_string: str, lecturer_id: str = "-") -> str:
     (first_date, last_date) = get_semester_boundaries(day_date=date.today())
 
     shown_date: date = date(date.today().year, *map(int, shown_date_string.split(".")[::-1]))
-    earlier_date: date = shown_date - timedelta(days=1 if shown_date.isoweekday != 1 else 2)
-    later_date: date = shown_date + timedelta(days=1 if shown_date.isoweekday != 6 else 2)
+    earlier_date: date = shown_date - timedelta(days=(1 if shown_date.isoweekday != 1 else 2))
+    later_date: date = shown_date + timedelta(days=(1 if shown_date.isoweekday != 6 else 2))
 
     # Shifting backwards for 7 days, because of the weirdness of university schedule for 
     if not first_date.month > 7:

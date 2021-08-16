@@ -77,15 +77,15 @@ def decode_platform_code(platform_code: str) -> Optional[int]:
 
     platform_code = platform_code.replace(PLATFORM_CODE_SUFFIX, "")
 
-    if any([ 
+    if any(
         platform_code_character not in POSSIBLE_PLATFORM_CODE_CHARACTERS 
         for platform_code_character in platform_code 
-    ]): return None
+    ): return None
 
     modified_user_id_digits: List[int] = list(map(lambda character: ord(character) - DIGIT_MODIFIER, platform_code))
-    modified_user_id: int = int("".join(map(lambda digit: str(digit), modified_user_id_digits)))
+    modified_user_id: int = int("".join(map(str, modified_user_id_digits)))
 
-    return (modified_user_id - USER_ID_MODIFIER)
+    return modified_user_id - USER_ID_MODIFIER
 
 
 def get_top_donators() -> str:

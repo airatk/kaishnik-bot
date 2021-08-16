@@ -6,7 +6,6 @@ from bot.platforms.vk import vk_bot
 from bot.platforms.vk.commands.login.utilities.constants import GUIDE_MESSAGE
 from bot.platforms.vk.commands.login.utilities.keyboards import login_way_chooser
 from bot.platforms.vk.utilities.keyboards import to_menu
-from bot.platforms.vk.utilities.types import CommandsOfVK
 
 from bot.models.users import Users
 

@@ -1,5 +1,3 @@
-from peewee import ModelSelect
-
 from aiogram.types import Message
 from aiogram.types import ChatType
 from aiogram.types import ParseMode

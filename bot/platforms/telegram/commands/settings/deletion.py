@@ -28,7 +28,7 @@ async def deletion(callback: CallbackQuery):
         guards[callback.message.chat.id].text == Commands.SETTINGS.value and
         callback.data == Commands.DELETE_ACCOUNT_CONFIRM.value
 )
-async def deletion(callback: CallbackQuery):
+async def deletion_confirm(callback: CallbackQuery):
     Users.delete().where(Users.telegram_id == callback.message.chat.id).execute()
     guards[callback.message.chat.id].drop()
     

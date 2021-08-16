@@ -5,7 +5,6 @@ from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
-from bot.platforms.telegram import states
 
 from bot.platforms.telegram.utilities.helpers import top_notification
 

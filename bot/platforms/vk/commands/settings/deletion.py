@@ -19,7 +19,7 @@ async def deletion(event: SimpleBotEvent):
     )
 
 @vk_bot.message_handler(PayloadFilter(payload={ "callback": Commands.DELETE_ACCOUNT_CONFIRM.value }))
-async def deletion(event: SimpleBotEvent):
+async def deletion_confirm(event: SimpleBotEvent):
     Users.delete().where(Users.vk_id == event.peer_id).execute()
     
     await event.answer(

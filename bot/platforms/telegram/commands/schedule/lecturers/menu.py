@@ -83,7 +83,7 @@ async def find_lecturer(message: Message):
     
     partial_name_parts: List[str] = message.text.lower().split(" ")
     names: List[Dict[str, str]] = list(filter(
-        lambda name: all([ partial_name_part in name["lecturer"].lower() for partial_name_part in partial_name_parts ]),
+        lambda name: all(partial_name_part in name["lecturer"].lower() for partial_name_part in partial_name_parts),
         states[message.chat.id].lecturers_names
     ))
     

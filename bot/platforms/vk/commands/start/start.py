@@ -1,5 +1,3 @@
-from typing import Optional
-
 from vkwave.bots import SimpleBotEvent
 
 from bot.platforms.vk import vk_bot

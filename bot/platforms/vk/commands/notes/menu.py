@@ -1,4 +1,4 @@
-from typing import List
+from peewee import ModelSelect
 
 from vkwave.bots import SimpleBotEvent
 
@@ -21,12 +21,13 @@ from bot.utilities.types import Commands
 )
 @increment_command_metrics(command=Commands.NOTES)
 async def notes(event: SimpleBotEvent):
-    notes: List[Notes] = Notes.select().where(Notes.user_id == Users.get(Users.vk_id == event.peer_id).user_id)
+    user_id: int = Users.get(Users.vk_id == event.peer_id).user_id
+    user_notes: ModelSelect = Notes.select().where(Notes.user_id == user_id)
     
     await event.answer(
         message="Заметок всего: {current}/{max}".format(
-            current=notes.count(),
+            current=user_notes.count(),
             max=MAX_NOTES_NUMBER
         ),
-        keyboard=action_chooser(has_notes=notes.exists())
+        keyboard=action_chooser(has_notes=user_notes.exists())
     )

@@ -1,4 +1,4 @@
-from typing import List
+from peewee import ModelSelect
 
 from aiogram.types import Message
 from aiogram.types import ChatType
@@ -31,13 +31,14 @@ from bot.utilities.types import Commands
 async def notes(message: Message):
     guards[message.chat.id].text = Commands.NOTES.value
     
-    notes: List[Notes] = Notes.select().where(Notes.user_id == Users.get(Users.telegram_id == message.chat.id).user_id)
+    user_id: int = Users.get(Users.telegram_id == message.chat.id).user_id
+    user_notes: ModelSelect = Notes.select().where(Notes.user_id == user_id)
     
     await message.answer(
         text="Заметок всего: *{current}/{max}*".format(
-            current=notes.count(),
+            current=user_notes.count(),
             max=MAX_NOTES_NUMBER
         ),
         parse_mode=ParseMode.MARKDOWN,
-        reply_markup=action_chooser(has_notes=notes.exists())
+        reply_markup=action_chooser(has_notes=user_notes.exists())
     )
