@@ -1,6 +1,7 @@
 from vkwave.bots import SimpleBotEvent
 
 from bot.platforms.vk import vk_bot
+from bot.platforms.vk import guards
 
 from bot.platforms.vk.commands.others.utilities.keyboards import via_vk_pay
 from bot.platforms.vk.utilities.types import CommandsOfVK
@@ -14,6 +15,7 @@ from bot.utilities.types import Commands
 
 @vk_bot.message_handler(
     lambda event:
+        guards[event.object.object.message.peer_id].text is None and
         event.object.object.message.text.capitalize() == CommandsOfVK.DONATE.value
 )
 @increment_command_metrics(command=Commands.DONATE)

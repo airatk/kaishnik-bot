@@ -27,6 +27,7 @@ from bot.utilities.api.lecturers import get_lecturers_names
 
 @vk_bot.message_handler(
     lambda event:
+        guards[event.object.object.message.peer_id].text is None and
         event.object.object.message.text.capitalize() == CommandsOfVK.LECTURERS.value
 )
 @increment_command_metrics(command=Commands.LECTURERS)

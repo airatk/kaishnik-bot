@@ -6,6 +6,7 @@ from random import choice
 from vkwave.bots import SimpleBotEvent
 
 from bot.platforms.vk import vk_bot
+from bot.platforms.vk import guards
 
 from bot.platforms.vk.utilities.keyboards import to_menu
 from bot.platforms.vk.utilities.types import CommandsOfVK
@@ -23,6 +24,7 @@ from bot.utilities.api.student import get_schedule_by_group_schedule_id
 
 @vk_bot.message_handler(
     lambda event:
+        guards[event.object.object.message.peer_id].text is None and
         event.object.object.message.payload is None and
         event.object.object.message.text.capitalize().startswith(CommandsOfVK.EXAMS.value)
 )

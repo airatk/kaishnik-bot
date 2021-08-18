@@ -22,6 +22,7 @@ from bot.utilities.api.student import get_group_schedule_id
 
 @vk_bot.message_handler(
     lambda event:
+        guards[event.object.object.message.peer_id].text is None and
         event.object.object.message.payload is None and
         event.object.object.message.text.capitalize().startswith(CommandsOfVK.CLASSES.value)
 )
@@ -56,10 +57,6 @@ async def menu(event: SimpleBotEvent):
         keyboard=time_period_chooser()
     )
 
-@vk_bot.message_handler(
-    lambda event:
-        guards[event.object.object.message.peer_id].text is None,
-    PayloadContainsFilter(key=Commands.CLASSES_SHOW.value)
-)
+@vk_bot.message_handler(PayloadContainsFilter(key=Commands.CLASSES_SHOW.value))
 async def show_chosen_date(event: SimpleBotEvent):
     await common_show_chosen_date(command=Commands.CLASSES, event=event)

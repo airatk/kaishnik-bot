@@ -5,6 +5,7 @@ from random import choice
 from vkwave.bots import SimpleBotEvent
 
 from bot.platforms.vk import states
+from bot.platforms.vk import guards
 
 from bot.platforms.vk.commands.schedule.utilities.keyboards import dates_scroller
 from bot.platforms.vk.utilities.keyboards import to_menu
@@ -61,3 +62,6 @@ async def common_show_chosen_date(command: Commands, event: SimpleBotEvent):
                 message=remove_markdown(day),
                 keyboard=dates_scroller(shown_date_string=date_string, lecturer_id=lecturer_id) if date_string is not None else to_menu()
             )
+
+    states[event.peer_id].drop()
+    guards[event.peer_id].drop()

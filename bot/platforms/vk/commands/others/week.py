@@ -3,6 +3,7 @@ from datetime import datetime
 from vkwave.bots import SimpleBotEvent
 
 from bot.platforms.vk import vk_bot
+from bot.platforms.vk import guards
 
 from bot.platforms.vk.utilities.keyboards import to_menu
 from bot.platforms.vk.utilities.types import CommandsOfVK
@@ -16,6 +17,7 @@ from bot.utilities.calendar.helpers import get_week_number
 
 @vk_bot.message_handler(
     lambda event:
+        guards[event.object.object.message.peer_id].text is None and
         event.object.object.message.text.capitalize() == CommandsOfVK.WEEK.value
 )
 @increment_command_metrics(command=Commands.WEEK)

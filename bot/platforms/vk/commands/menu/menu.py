@@ -15,6 +15,7 @@ from bot.utilities.types import Commands
 
 @vk_bot.message_handler(
     lambda event:
+        guards[event.object.object.message.peer_id].text is None and
         event.object.object.message.text.capitalize() == CommandsOfVK.MENU.value
 )
 @increment_command_metrics(command=Commands.MENU)
@@ -29,6 +30,7 @@ async def menu_on_command(event: SimpleBotEvent):
 
 @vk_bot.message_handler(
     lambda event:
+        guards[event.object.object.message.peer_id].text is None and
         event.object.object.message.text.capitalize() == CommandsOfVK.MORE.value
 )
 @increment_command_metrics(command=Commands.MORE)
