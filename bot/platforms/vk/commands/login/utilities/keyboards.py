@@ -13,10 +13,10 @@ from bot.utilities.api.constants import INSTITUTES
 def login_way_chooser(is_old: bool) -> str:
     setup_way_chooser_keyboard: Keyboard = Keyboard(one_time=True, inline=True)
     
-    setup_way_chooser_keyboard.add_text_button(text=CommandsOfVK.LOGIN_COMPACT.value, payload={ "callback": Commands.LOGIN_COMPACT.value })
+    setup_way_chooser_keyboard.add_text_button(text=CommandsOfVK.LOGIN_BB.value, payload={ "callback": Commands.LOGIN_BB.value })
     
     setup_way_chooser_keyboard.add_row()
-    setup_way_chooser_keyboard.add_text_button(text=CommandsOfVK.LOGIN_EXTENDED.value, payload={ "callback": Commands.LOGIN_EXTENDED.value })
+    setup_way_chooser_keyboard.add_text_button(text=CommandsOfVK.LOGIN_COMPACT.value, payload={ "callback": Commands.LOGIN_COMPACT.value })    
     
     if is_old:
         setup_way_chooser_keyboard.add_row()

@@ -29,7 +29,6 @@ from bot.platforms.telegram.commands.creator.utilities.types import Value
 from bot.models.users import Users
 from bot.models.groups_of_students import GroupsOfStudents
 from bot.models.compact_students import CompactStudents
-from bot.models.extended_students import ExtendedStudents
 from bot.models.bb_students import BBStudents
 from bot.models.metrics import Metrics
 
@@ -52,7 +51,6 @@ async def users(message: Message):
             "vk": Users.select().where(Users.vk_id.is_null(False)).count(),
             "groups": GroupsOfStudents.select().where(GroupsOfStudents.user_id.in_(setup_users)).count(),
             "compact": CompactStudents.select().where(CompactStudents.user_id.in_(setup_users)).count(),
-            "extended": ExtendedStudents.select().where(ExtendedStudents.user_id.in_(setup_users)).count(),
             "bb": BBStudents.select().where(BBStudents.user_id.in_(setup_users)).count(),
             "setup": setup_users.count(),
             "unsetup": Users.select().where(Users.is_setup == False).count(),
@@ -121,8 +119,7 @@ async def users(message: Message):
     
     groups_list: List[GroupsOfStudents] = []
     compacts_list: List[CompactStudents] = []
-    extendeds_list: List[ExtendedStudents] = []
-    bbs_list: List[ExtendedStudents] = []
+    bbs_list: List[BBStudents] = []
     undefined_users_list: List[Users] = []
     
     loading_message: Message = await message.answer(text="Started searching...")
@@ -181,12 +178,9 @@ async def users(message: Message):
             
             if does_username_match or does_firstname_match:
                 users_ids_list.append(user.user_id)
-    elif Option.NAME.value in options:
-        extendeds_list = list(ExtendedStudents.select().where(ExtendedStudents.name.contains(options[Option.NAME.value])))
     elif Option.GROUP.value in options:
         groups_list = list(GroupsOfStudents.select().where(GroupsOfStudents.group == options[Option.GROUP.value]))
         compacts_list = list(CompactStudents.select().where(CompactStudents.group == options[Option.GROUP.value]))
-        extendeds_list = list(ExtendedStudents.select().where(ExtendedStudents.group == options[Option.GROUP.value]))
     elif Option.BB_LOGIN.value in options:
         bbs_list = list(BBStudents.select().where(BBStudents.login.contains(options[Option.BB_LOGIN.value])))
     
@@ -201,12 +195,6 @@ async def users(message: Message):
         
         if user is not None:
             compacts_list.append(user)
-            continue
-        
-        user = ExtendedStudents.get_or_none(ExtendedStudents.user_id == user_id)
-        
-        if user is not None:
-            extendeds_list.append(user)
             continue
         
         user = BBStudents.get_or_none(BBStudents.user_id == user_id)
@@ -229,10 +217,6 @@ async def users(message: Message):
         loading_message=loading_message, message=message
     )
     await show_users_list(
-        users_type=Value.EXTENDEDS.value, type_users_list=extendeds_list,
-        loading_message=loading_message, message=message
-    )
-    await show_users_list(
         users_type=Value.BBS.value, type_users_list=bbs_list,
         loading_message=loading_message, message=message
     )
@@ -241,7 +225,7 @@ async def users(message: Message):
         loading_message=loading_message, message=message
     )
     
-    shown_users_number: int = sum([ len(groups_list), len(compacts_list), len(extendeds_list), len(bbs_list) ])
+    shown_users_number: int = sum([ len(groups_list), len(compacts_list), len(bbs_list) ])
     
     await loading_message.delete()
     

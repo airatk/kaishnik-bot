@@ -19,8 +19,8 @@ def login_way_chooser(is_old: bool, chat_type: ChatType) -> InlineKeyboardMarkup
         setup_way_chooser_keyboard.row(cancel_button())
     
     if chat_type == ChatType.PRIVATE:
-        setup_way_chooser_keyboard.row(InlineKeyboardButton(text="без зачётки", callback_data=Commands.LOGIN_COMPACT.value))
-        setup_way_chooser_keyboard.row(InlineKeyboardButton(text="с зачёткой", callback_data=Commands.LOGIN_EXTENDED.value))
+        setup_way_chooser_keyboard.row(InlineKeyboardButton(text="по логину-паролю от ББ", callback_data=Commands.LOGIN_BB.value))
+        setup_way_chooser_keyboard.row(InlineKeyboardButton(text="по номеру группы", callback_data=Commands.LOGIN_COMPACT.value))
     else:
         setup_way_chooser_keyboard.row(InlineKeyboardButton(text="продолжить", callback_data=Commands.LOGIN_COMPACT.value))
     

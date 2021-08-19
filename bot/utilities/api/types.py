@@ -15,12 +15,6 @@ class ResponseError(Enum):
     )
 
 
-class ExtendedLoginDataType(Enum):
-    YEARS = "p_kurs"
-    GROUPS = "p_group"
-    NAMES = "p_stud"
-
-
 class ScheduleType(Enum):
     CLASSES = "schedule"
     EXAMS = "examSchedule"

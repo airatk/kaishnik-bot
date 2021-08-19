@@ -19,7 +19,6 @@ from bot.platforms.telegram.commands.score.utilities.helpers import collect_subj
 from bot.platforms.telegram.utilities.helpers import top_notification
 
 from bot.models.users import Users
-from bot.models.extended_students import ExtendedStudents
 from bot.models.bb_students import BBStudents
 
 from bot.utilities.helpers import increment_command_metrics
@@ -44,14 +43,11 @@ from bot.utilities.api.student import get_scoretable
 async def choose_semester(message: Message):
     user_id: int = Users.get(Users.telegram_id == message.chat.id).user_id
     
-    if not any([
-        ExtendedStudents.select().where(ExtendedStudents.user_id == user_id).exists(),
-        BBStudents.select().where(BBStudents.user_id == user_id).exists()
-    ]):
+    if not BBStudents.select().where(BBStudents.user_id == user_id).exists():
         await message.answer(text="Не доступно :(")
         
         if message.chat.type == ChatType.PRIVATE:
-            await message.answer(text="Чтобы видеть баллы, нужно отправить /login и перенастроиться с зачёткой или войти через ББ.")
+            await message.answer(text="Чтобы видеть баллы, нужно отправить /login и войти через ББ.")
         
         return
     

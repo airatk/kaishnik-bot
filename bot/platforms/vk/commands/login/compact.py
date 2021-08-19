@@ -15,7 +15,6 @@ from bot.platforms.vk.utilities.keyboards import canceler
 
 from bot.models.users import Users
 from bot.models.compact_students import CompactStudents
-from bot.models.extended_students import ExtendedStudents
 from bot.models.bb_students import BBStudents
 
 from bot.utilities.types import Commands
@@ -29,7 +28,6 @@ async def login_compact(event: SimpleBotEvent):
     user: Users = Users.get(vk_id=event.peer_id)
     
     CompactStudents.delete().where(CompactStudents.user_id == user.user_id).execute()
-    ExtendedStudents.delete().where(ExtendedStudents.user_id == user.user_id).execute()
     BBStudents.delete().where(BBStudents.user_id == user.user_id).execute()
     
     user.is_setup = False

@@ -43,7 +43,6 @@ class Value(Enum):
     
     GROUPS = "groups"
     COMPACTS = "compacts"
-    EXTENDEDS = "extendeds"
     BBS = "bbs"
     UNDEFINED = "undefined"
     

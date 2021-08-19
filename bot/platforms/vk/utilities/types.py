@@ -8,8 +8,8 @@ class CommandsOfVK(Enum):
     LOGIN_NEW_USER = "Войти как новый пользователь"
     LOGIN_VIA_TELEGRAM = "Войти через Телеграм"
 
-    LOGIN_COMPACT = "Без зачётки"
-    LOGIN_EXTENDED = "С зачёткой"
+    LOGIN_BB = "По логину-паролю от ББ"
+    LOGIN_COMPACT = "По номеру группы"
 
     MENU = "Меню"
     MORE = "Ещё"

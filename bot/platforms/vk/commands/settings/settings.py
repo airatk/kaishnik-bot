@@ -14,13 +14,11 @@ from bot.platforms.vk.utilities.types import CommandsOfVK
 from bot.models.users import Users
 from bot.models.groups_of_students import GroupsOfStudents
 from bot.models.compact_students import CompactStudents
-from bot.models.extended_students import ExtendedStudents
 from bot.models.bb_students import BBStudents
 from bot.models.notes import Notes
 
 from bot.utilities.constants import GROUP_OF_STUDENTS_INFO
 from bot.utilities.constants import COMPACT_STUDENT_INFO
-from bot.utilities.constants import EXTENDED_STUDENT_INFO
 from bot.utilities.constants import BB_STUDENT_INFO
 from bot.utilities.helpers import increment_command_metrics
 from bot.utilities.types import Commands
@@ -45,14 +43,11 @@ async def settings(event: SimpleBotEvent):
     }
     message: str = ""
     
-    user: Any = GroupsOfStudents.get_or_none(GroupsOfStudents.user_id == user_id)
-    
-    if user is None:
-        user = CompactStudents.get_or_none(CompactStudents.user_id == user_id)
-    if user is None:
-        user = ExtendedStudents.get_or_none(ExtendedStudents.user_id == user_id)
-    if user is None:
-        user = BBStudents.get(BBStudents.user_id == user_id)
+    user: Any = (
+        GroupsOfStudents.get_or_none(GroupsOfStudents.user_id == user_id) or
+        CompactStudents.get_or_none(CompactStudents.user_id == user_id) or
+        BBStudents.get(BBStudents.user_id == user_id)
+    )
     
     if isinstance(user, GroupsOfStudents):
         account_info["group"] = user.group
@@ -62,14 +57,6 @@ async def settings(event: SimpleBotEvent):
         account_info["group"] = user.group
         
         message = COMPACT_STUDENT_INFO.format(**account_info)
-    elif isinstance(user, ExtendedStudents):
-        account_info["institute"] = user.institute[2:-2]
-        account_info["year"] = user.year
-        account_info["group"] = user.group
-        account_info["name"] = user.name
-        account_info["card"] = user.card
-        
-        message = EXTENDED_STUDENT_INFO.format(**account_info)
     elif isinstance(user, BBStudents):
         account_info["login"] = user.login
         

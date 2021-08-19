@@ -8,6 +8,8 @@ from aiogram.types import ParseMode
 from aiogram.utils.exceptions import MessageError
 
 from bot.platforms.telegram import dispatcher
+from bot.platforms.telegram import states
+from bot.platforms.telegram import guards
 
 from bot.platforms.telegram.utilities.helpers import top_notification
 
@@ -67,3 +69,6 @@ async def unknown_callback(callback: CallbackQuery):
         await callback.message.edit_text(text="Ой-ой!🙆🏼‍♀️")
     except MessageError:
         await callback.message.edit_text(text="Ой!🙆🏼‍♀️")
+    
+    states[callback.message.chat.id].drop()
+    guards[callback.message.chat.id].drop()

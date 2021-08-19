@@ -63,8 +63,8 @@ class Commands(Enum):
     
     LOGIN = "login"
     LOGIN_PLATFORM = "login-platform"
+    LOGIN_BB = "login-bb"
     LOGIN_COMPACT = "login-сompact"
-    LOGIN_EXTENDED = "login-extended"
     LOGIN_WRONG_GROUP_GUESS = "login-wrong-group-guess"
     LOGIN_CORRECT_GROUP_GUESS = "login-correct-group-guess"
     LOGIN_SET_INSTITUTE = "login-set-institute-"

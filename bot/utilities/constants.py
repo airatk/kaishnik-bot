@@ -63,17 +63,6 @@ COMPACT_STUDENT_INFO: str = "\n".join([
     BASE_USER_INFO
 ])
 
-EXTENDED_STUDENT_INFO: str = "\n".join([
-    PLATFORM_USER_INFO, (
-        "{institute}, {year} курс\n"
-        "Группа {group}\n"
-        "{name}\n"
-        "\n"
-        "Номер студенческого билета и зачётной книжки: {card}\n"
-    ),
-    BASE_USER_INFO
-])
-
 BB_STUDENT_INFO: str = "\n".join([
     PLATFORM_USER_INFO, (
         "Логин: {login}\n"

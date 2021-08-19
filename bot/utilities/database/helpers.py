@@ -1,7 +1,6 @@
 from bot.models.users import Users
 from bot.models.groups_of_students import GroupsOfStudents
 from bot.models.compact_students import CompactStudents
-from bot.models.extended_students import ExtendedStudents
 from bot.models.bb_students import BBStudents
 from bot.models.settings import Settings
 from bot.models.notes import Notes
@@ -15,7 +14,6 @@ def setup_database_tables():
     
     GroupsOfStudents.create_table()
     CompactStudents.create_table()
-    ExtendedStudents.create_table()
     BBStudents.create_table()
     
     Settings.create_table()

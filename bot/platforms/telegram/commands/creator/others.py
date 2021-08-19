@@ -25,7 +25,6 @@ from bot.platforms.telegram.commands.creator.utilities.types import Value
 from bot.models.users import Users
 from bot.models.groups_of_students import GroupsOfStudents
 from bot.models.compact_students import CompactStudents
-from bot.models.extended_students import ExtendedStudents
 from bot.models.bb_students import BBStudents
 from bot.models.days_off import DaysOff
 from bot.models.donations import Donations
@@ -90,8 +89,6 @@ async def broadcast(message: Message):
         users_ids_list = [ group.user_id for group in GroupsOfStudents.select() ]
     elif options[Option.USERS.value] == Value.COMPACTS.value:
         users_ids_list = [ compact.user_id for compact in CompactStudents.select() ]
-    elif options[Option.USERS.value] == Value.EXTENDEDS.value:
-        users_ids_list = [ extended.user_id for extended in ExtendedStudents.select() ]
     elif options[Option.USERS.value] == Value.BBS.value:
         users_ids_list = [ bb.user_id for bb in BBStudents.select() ]
     else:

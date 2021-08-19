@@ -20,7 +20,6 @@ from bot.platforms.telegram.utilities.helpers import top_notification
 from bot.models.users import Users
 from bot.models.groups_of_students import GroupsOfStudents
 from bot.models.compact_students import CompactStudents
-from bot.models.extended_students import ExtendedStudents
 from bot.models.bb_students import BBStudents
 
 from bot.utilities.constants import BOT_ADDRESSING
@@ -107,7 +106,6 @@ async def login_compact(callback: CallbackQuery):
         user: Users = Users.get(telegram_id=callback.message.chat.id)
         
         CompactStudents.delete().where(CompactStudents.user_id == user.user_id).execute()
-        ExtendedStudents.delete().where(ExtendedStudents.user_id == user.user_id).execute()
         BBStudents.delete().where(BBStudents.user_id == user.user_id).execute()
         
         user.is_setup = False
