@@ -7,7 +7,7 @@ from bot.platforms.vk import guards
 
 from bot.platforms.vk.utilities.keyboards import menu
 from bot.platforms.vk.utilities.keyboards import additional_menu
-from bot.platforms.vk.utilities.types import CommandsOfVK
+from bot.platforms.vk.utilities.types import CommandOfVK
 
 from bot.utilities.helpers import note_metrics
 from bot.utilities.types import Platform
@@ -17,7 +17,7 @@ from bot.utilities.types import Command
 @vk_bot.message_handler(
     lambda event:
         guards[event.object.object.message.peer_id].text is None and
-        event.object.object.message.text.capitalize() == CommandsOfVK.MENU.value
+        event.object.object.message.text.capitalize() == CommandOfVK.MENU.value
 )
 @note_metrics(platform=Platform.VK, command=Command.MENU)
 async def menu_on_command(event: SimpleBotEvent):
@@ -32,7 +32,7 @@ async def menu_on_command(event: SimpleBotEvent):
 @vk_bot.message_handler(
     lambda event:
         guards[event.object.object.message.peer_id].text is None and
-        event.object.object.message.text.capitalize() == CommandsOfVK.MORE.value
+        event.object.object.message.text.capitalize() == CommandOfVK.MORE.value
 )
 @note_metrics(platform=Platform.VK, command=Command.MORE)
 async def more_on_command(event: SimpleBotEvent):

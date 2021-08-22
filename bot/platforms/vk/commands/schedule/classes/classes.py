@@ -12,7 +12,7 @@ from bot.platforms.vk import guards
 from bot.platforms.vk.commands.schedule.utilities.keyboards import time_period_chooser
 from bot.platforms.vk.commands.schedule.utilities.classes import common_show_chosen_date
 from bot.platforms.vk.utilities.keyboards import to_menu
-from bot.platforms.vk.utilities.types import CommandsOfVK
+from bot.platforms.vk.utilities.types import CommandOfVK
 
 from bot.utilities.helpers import note_metrics
 from bot.utilities.types import Platform
@@ -25,7 +25,7 @@ from bot.utilities.api.student import get_group_schedule_id
     lambda event:
         guards[event.object.object.message.peer_id].text is None and
         event.object.object.message.payload is None and
-        event.object.object.message.text.capitalize().startswith(CommandsOfVK.CLASSES.value)
+        event.object.object.message.text.capitalize().startswith(CommandOfVK.CLASSES.value)
 )
 @note_metrics(platform=Platform.VK, command=Command.CLASSES)
 async def menu(event: SimpleBotEvent):    

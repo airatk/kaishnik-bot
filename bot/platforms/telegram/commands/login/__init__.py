@@ -1,5 +1,6 @@
 from bot.platforms.telegram.commands.login import menu
 from bot.platforms.telegram.commands.login import login
+from bot.platforms.telegram.commands.login import platform
 
 from bot.platforms.telegram.commands.login import guard
 

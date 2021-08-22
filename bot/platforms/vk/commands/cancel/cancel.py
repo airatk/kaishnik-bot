@@ -6,7 +6,7 @@ from bot.platforms.vk import states
 from bot.platforms.vk import guards
 
 from bot.platforms.vk.utilities.keyboards import to_menu
-from bot.platforms.vk.utilities.types import CommandsOfVK
+from bot.platforms.vk.utilities.types import CommandOfVK
 
 from bot.models.user import User
 
@@ -18,7 +18,7 @@ from bot.utilities.types import Command
 @vk_bot.message_handler(
     lambda event:
         User.select().where(User.vk_id == event.object.object.message.peer_id).exists() and
-        event.object.object.message.text.capitalize() == CommandsOfVK.CANCEL.value
+        event.object.object.message.text.capitalize() == CommandOfVK.CANCEL.value
 )
 @vk_bot.message_handler(
     lambda event:

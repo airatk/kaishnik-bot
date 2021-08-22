@@ -39,6 +39,8 @@ async def settings(message: Message):
         "fullname": chat.full_name,
         "username": "" if chat.username is None else " @{username}".format(username=chat.username),
         "chat_id": message.chat.id if message.chat.type == ChatType.PRIVATE else -(message.chat.id + 1_000_000_000_000),
+        "login": user.bb_login,
+        "password": user.bb_password,
         "group": user.group,
         "notes_number": Note.select().where(Note.user == user).count()
     }

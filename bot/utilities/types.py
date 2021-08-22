@@ -35,17 +35,11 @@ class Command(Enum):
     LOGIN_COMPACT = "login-сompact"
     LOGIN_WRONG_GROUP_GUESS = "login-wrong-group-guess"
     LOGIN_CORRECT_GROUP_GUESS = "login-correct-group-guess"
-    LOGIN_SET_INSTITUTE = "login-set-institute-"
-    LOGIN_SET_YEAR = "login-set-year-"
-    LOGIN_GROUPS_NEXT_PAGE = "login-groups-next-page-"
-    LOGIN_GROUPS_PREVIOUS_PAGE = "login-groups-previous-page-"
+    LOGIN_SET_BB_LOGIN = "login-set-bb-login"
+    LOGIN_SET_BB_PASSWORD = "login-set-bb-password"
     LOGIN_SET_GROUP = "login-set-group-"
-    LOGIN_NAMES_NEXT_PAGE = "login-names-next-page-"
-    LOGIN_NAMES_PREVIOUS_PAGE = "login-names-previous-page-"
-    LOGIN_SET_NAME = "login-set-name-"
-    LOGIN_SET_CARD = "login-set-card"
     UNLOGIN = "un-login"
-
+    
     DELETE_ACCOUNT = "delete-account"
     DELETE_ACCOUNT_CONFIRM = "delete-account-confirm"
 

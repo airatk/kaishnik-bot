@@ -6,7 +6,7 @@ from bot.platforms.vk import vk_bot
 from bot.platforms.vk import guards
 
 from bot.platforms.vk.commands.notes.utilities.keyboards import action_chooser
-from bot.platforms.vk.utilities.types import CommandsOfVK
+from bot.platforms.vk.utilities.types import CommandOfVK
 
 from bot.models.user import User
 from bot.models.note import Note
@@ -20,7 +20,7 @@ from bot.utilities.types import Command
 @vk_bot.message_handler(
     lambda event:
         guards[event.object.object.message.peer_id].text is None and
-        event.object.object.message.text == CommandsOfVK.NOTES.value
+        event.object.object.message.text == CommandOfVK.NOTES.value
 )
 @note_metrics(platform=Platform.VK, command=Command.NOTES)
 async def notes(event: SimpleBotEvent):

@@ -16,7 +16,7 @@ from bot.platforms.vk.commands.schedule.lecturers.utilities.constants import MAX
 
 from bot.platforms.vk.utilities.keyboards import to_menu
 from bot.platforms.vk.utilities.keyboards import canceler
-from bot.platforms.vk.utilities.types import CommandsOfVK
+from bot.platforms.vk.utilities.types import CommandOfVK
 
 from bot.utilities.helpers import note_metrics
 from bot.utilities.types import Platform
@@ -29,7 +29,7 @@ from bot.utilities.api.lecturers import get_lecturers_names
 @vk_bot.message_handler(
     lambda event:
         guards[event.object.object.message.peer_id].text is None and
-        event.object.object.message.text.capitalize() == CommandsOfVK.LECTURERS.value
+        event.object.object.message.text.capitalize() == CommandOfVK.LECTURERS.value
 )
 @note_metrics(platform=Platform.VK, command=Command.LECTURERS)
 async def lecturers(event: SimpleBotEvent):

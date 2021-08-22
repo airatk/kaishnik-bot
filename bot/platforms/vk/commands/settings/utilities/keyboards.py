@@ -3,6 +3,7 @@ from vkwave.bots.utils.keyboards import ButtonColor
 
 from bot.platforms.vk.utilities.keyboards import menu_button
 from bot.platforms.vk.utilities.keyboards import cancel_button
+from bot.platforms.vk.utilities.types import CommandOfVK
 
 from bot.models.settings import Settings
 
@@ -52,3 +53,10 @@ def deletion_confirmer() -> str:
     deletion_confirmer_keyboard.add_text_button(text="Да, удалить аккаунт", color=ButtonColor.NEGATIVE, payload={ "callback": Command.DELETE_ACCOUNT_CONFIRM.value })
 
     return deletion_confirmer_keyboard.get_keyboard()
+
+def make_start() -> str:
+    make_start_keyboard: Keyboard = Keyboard(one_time=True)
+    
+    make_start_keyboard.add_text_button(text=CommandOfVK.START.value)
+
+    return make_start_keyboard.get_keyboard()

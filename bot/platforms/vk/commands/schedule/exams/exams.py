@@ -9,7 +9,7 @@ from bot.platforms.vk import vk_bot
 from bot.platforms.vk import guards
 
 from bot.platforms.vk.utilities.keyboards import to_menu
-from bot.platforms.vk.utilities.types import CommandsOfVK
+from bot.platforms.vk.utilities.types import CommandOfVK
 
 from bot.models.user import User
 
@@ -27,7 +27,7 @@ from bot.utilities.api.student import get_schedule_by_group_schedule_id
     lambda event:
         guards[event.object.object.message.peer_id].text is None and
         event.object.object.message.payload is None and
-        event.object.object.message.text.capitalize().startswith(CommandsOfVK.EXAMS.value)
+        event.object.object.message.text.capitalize().startswith(CommandOfVK.EXAMS.value)
 )
 @note_metrics(platform=Platform.VK, command=Command.EXAMS)
 async def exams(event: SimpleBotEvent):

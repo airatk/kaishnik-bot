@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class CommandsOfVK(Enum):
+class CommandOfVK(Enum):
     START = "Start"
     RESTART = "Start"
 

@@ -5,7 +5,7 @@ from bot.platforms.vk import guards
 
 from bot.models.user import User
 
-from bot.platforms.vk.utilities.keyboards import make_login
+from bot.platforms.vk.commands.login.utilities.keyboards import login_way_chooser
 
 from bot.utilities.helpers import note_metrics
 from bot.utilities.types import Platform
@@ -20,7 +20,7 @@ from bot.utilities.types import Command
 async def deny_access_on_message(event: SimpleBotEvent):
     await event.answer(
         message="Первоначальная настройка пройдена не полностью, исправляйся:",
-        keyboard=make_login()
+        keyboard=login_way_chooser(is_old=User.get(vk_id=event.peer_id).is_setup)
     )
     
     guards[event.peer_id].drop()

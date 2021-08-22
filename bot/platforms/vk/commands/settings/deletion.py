@@ -4,7 +4,7 @@ from vkwave.bots import PayloadFilter
 from bot.platforms.vk import vk_bot
 
 from bot.platforms.vk.commands.settings.utilities.keyboards import deletion_confirmer
-from bot.platforms.vk.utilities.keyboards import make_start
+from bot.platforms.vk.commands.settings.utilities.keyboards import make_start
 
 from bot.models.user import User
 
@@ -23,6 +23,6 @@ async def deletion_confirm(event: SimpleBotEvent):
     User.delete().where(User.vk_id == event.peer_id).execute()
     
     await event.answer(
-        message="Аккаунт удалён.",
+        message="Аккаунт удалён. Для создания нового нажми кнопку Start снизу👇🏼",
         keyboard=make_start()
     )

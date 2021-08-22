@@ -4,9 +4,9 @@ from bot.platforms.vk import vk_bot
 from bot.platforms.vk import guards
 from bot.platforms.vk import states
 
-from bot.platforms.vk.utilities.keyboards import make_login
+from bot.platforms.vk.commands.start.utilities.keyboards import make_login
 from bot.platforms.vk.utilities.keyboards import to_menu
-from bot.platforms.vk.utilities.types import CommandsOfVK
+from bot.platforms.vk.utilities.types import CommandOfVK
 
 from bot.models.user import User
 from bot.models.settings import Settings
@@ -40,7 +40,7 @@ async def start(event: SimpleBotEvent):
 # Accepting the old users on the `/start` command
 @vk_bot.message_handler(
     lambda event:
-        event.object.object.message.text.capitalize() == CommandsOfVK.RESTART.value and 
+        event.object.object.message.text.capitalize() == CommandOfVK.RESTART.value and 
         User.get(User.vk_id == event.object.object.message.peer_id).is_setup
 )
 @note_metrics(platform=Platform.VK, command=Command.RESTART)

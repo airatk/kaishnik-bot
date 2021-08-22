@@ -71,7 +71,7 @@ def get_schedule_by_group_schedule_id(schedule_type: ScheduleType, user_id: int,
     return(None, ResponseError.INCORRECT_SCHEDULE_TYPE)
 
 
-def authorise_via_cas(username: str, password: str) -> Tuple[Optional[str], Optional[ResponseError]]:
+def authorise_via_kai_cas(login: str, password: str) -> Tuple[Optional[str], Optional[ResponseError]]:
     try:
         login_page_response: Response = get(url=CAS_LOGIN_URL)
 
@@ -90,7 +90,7 @@ def authorise_via_cas(username: str, password: str) -> Tuple[Optional[str], Opti
         cas_authorisation_data_response: Response = post(
             url=CAS_LOGIN_URL,
             data={
-                "username": username,
+                "username": login,
                 "password": password,
                 "execution": "e1s1",
                 "_eventId": "submit",

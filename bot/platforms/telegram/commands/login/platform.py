@@ -20,11 +20,12 @@ from bot.utilities.types import Command
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        guards[callback.message.chat.id].text == Command.LOGIN.value and
+        guards[callback.message.chat.id].text == Command.START.value and
         callback.data == Command.LOGIN_PLATFORM.value
 )
 @top_notification
-async def login_compact(callback: CallbackQuery):
+async def login_platform(callback: CallbackQuery):
+    await guards[callback.message.chat.id].message.delete()
     guard_message: Message = await callback.message.edit_text(
         text="Отправь код авторизации. Его можно посмотреть в настройках Каиста в ВК.",
         reply_markup=canceler()
@@ -45,7 +46,7 @@ async def login_compact(callback: CallbackQuery):
         message.chat.type == ChatType.PRIVATE and
         guards[message.chat.id].text == Command.LOGIN_PLATFORM.value
 )
-async def set_group(message: Message):
+async def set_user_id(message: Message):
     # Getting rid of the bot addressing
     if message.chat.type != ChatType.PRIVATE:
         message.text = message.text.replace(BOT_ADDRESSING, "")
@@ -60,8 +61,6 @@ async def set_group(message: Message):
             reply_markup=canceler()
         )
         return
-    
-    guards[message.chat.id].drop()
     
     User.delete().where(User.telegram_id == message.chat.id).execute()
     User.update(telegram_id=message.chat.id).where(User.user_id == user_id).execute()
