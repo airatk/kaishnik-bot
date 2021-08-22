@@ -7,8 +7,9 @@ from bot.platforms.vk.commands.others.utilities.constants import HELP
 from bot.platforms.vk.utilities.keyboards import to_menu
 from bot.platforms.vk.utilities.types import CommandsOfVK
 
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 
 
 @vk_bot.message_handler(
@@ -16,7 +17,7 @@ from bot.utilities.types import Commands
         guards[event.object.object.message.peer_id].text is None and
         event.object.object.message.text.capitalize() == CommandsOfVK.HELP.value
 )
-@increment_command_metrics(command=Commands.HELP)
+@note_metrics(platform=Platform.VK, command=Command.HELP)
 async def help(event: SimpleBotEvent):
     await event.answer(
         message=HELP,

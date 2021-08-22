@@ -18,11 +18,11 @@ from bot.platforms.telegram.commands.score.utilities.helpers import collect_subj
 
 from bot.platforms.telegram.utilities.helpers import top_notification
 
-from bot.models.users import Users
-from bot.models.bb_students import BBStudents
+from bot.models.user import User
 
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES
 from bot.utilities.api.types import ScoreSubjectType
 from bot.utilities.api.student import get_last_available_semester
@@ -31,19 +31,19 @@ from bot.utilities.api.student import get_scoretable
 
 @dispatcher.message_handler(
     lambda message: message.chat.type != ChatType.PRIVATE,
-    commands=[ Commands.SCORE.value ]
+    commands=[ Command.SCORE.value ]
 )
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
         guards[message.chat.id].text is None,
-    commands=[ Commands.SCORE.value ]
+    commands=[ Command.SCORE.value ]
 )
-@increment_command_metrics(command=Commands.SCORE)
+@note_metrics(platform=Platform.TELEGRAM, command=Command.SCORE)
 async def choose_semester(message: Message):
-    user_id: int = Users.get(Users.telegram_id == message.chat.id).user_id
+    user: User = User.get(User.telegram_id == message.chat.id)
     
-    if not BBStudents.select().where(BBStudents.user_id == user_id).exists():
+    if user.bb_login is None or user.bb_password is None:
         await message.answer(text="Не доступно :(")
         
         if message.chat.type == ChatType.PRIVATE:
@@ -56,7 +56,7 @@ async def choose_semester(message: Message):
         disable_web_page_preview=True
     )
     
-    (last_available_semester, response_error) = get_last_available_semester(user_id=user_id)
+    (last_available_semester, response_error) = get_last_available_semester(user_id=user.user_id)
     
     if last_available_semester is None:
         await loading_message.edit_text(
@@ -70,12 +70,12 @@ async def choose_semester(message: Message):
         reply_markup=semester_chooser(last_available_semester)
     )
     
-    guards[message.chat.id].text = Commands.SCORE.value
+    guards[message.chat.id].text = Command.SCORE.value
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        guards[callback.message.chat.id].text == Commands.SCORE.value and
-        Commands.SCORE_SEMESTER.value in callback.data
+        guards[callback.message.chat.id].text == Command.SCORE.value and
+        Command.SCORE_SEMESTER.value in callback.data
 )
 @top_notification
 async def choose_subjects_type(callback: CallbackQuery):
@@ -84,10 +84,10 @@ async def choose_subjects_type(callback: CallbackQuery):
         disable_web_page_preview=True
     )
     
-    user_id: int = Users.get(Users.telegram_id == callback.message.chat.id).user_id
+    user: User = User.get(User.telegram_id == callback.message.chat.id)
     
     semester: str = callback.data.split()[1]
-    (scoretable, response_error) = get_scoretable(semester=semester, user_id=user_id)
+    (scoretable, response_error) = get_scoretable(semester=semester, user_id=user.user_id)
     
     if scoretable is None:
         await callback.message.edit_text(
@@ -111,11 +111,11 @@ async def choose_subjects_type(callback: CallbackQuery):
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        guards[callback.message.chat.id].text == Commands.SCORE.value and any([
-            callback.data == Commands.SCORE_ALL.value,
-            callback.data == Commands.SCORE_EXAMS.value,
-            callback.data == Commands.SCORE_COURSEWORKS.value,
-            callback.data == Commands.SCORE_TESTS.value
+        guards[callback.message.chat.id].text == Command.SCORE.value and any([
+            callback.data == Command.SCORE_ALL.value,
+            callback.data == Command.SCORE_EXAMS.value,
+            callback.data == Command.SCORE_COURSEWORKS.value,
+            callback.data == Command.SCORE_TESTS.value
         ])
 )
 @top_notification
@@ -133,11 +133,11 @@ async def choose_subject(callback: CallbackQuery):
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        guards[callback.message.chat.id].text == Commands.SCORE.value and any([
-            Commands.SCORE_ALL.value in callback.data,
-            Commands.SCORE_EXAMS.value in callback.data,
-            Commands.SCORE_COURSEWORKS.value in callback.data,
-            Commands.SCORE_TESTS.value in callback.data
+        guards[callback.message.chat.id].text == Command.SCORE.value and any([
+            Command.SCORE_ALL.value in callback.data,
+            Command.SCORE_EXAMS.value in callback.data,
+            Command.SCORE_COURSEWORKS.value in callback.data,
+            Command.SCORE_TESTS.value in callback.data
         ])
 )
 @top_notification

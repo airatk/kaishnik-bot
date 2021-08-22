@@ -17,23 +17,24 @@ from bot.platforms.telegram.commands.schedule.utilities.classes import common_sh
 
 from bot.platforms.telegram.utilities.helpers import top_notification
 
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES
 from bot.utilities.api.student import get_group_schedule_id
 
 
 @dispatcher.message_handler(
     lambda message: message.chat.type != ChatType.PRIVATE,
-    commands=[ Commands.CLASSES.value ]
+    commands=[ Command.CLASSES.value ]
 )
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
         guards[message.chat.id].text is None,
-    commands=[ Commands.CLASSES.value ]
+    commands=[ Command.CLASSES.value ]
 )
-@increment_command_metrics(command=Commands.CLASSES)
+@note_metrics(platform=Platform.TELEGRAM, command=Command.CLASSES)
 async def menu(message: Message):
     loading_message: Message = await message.answer(
         text=choice(LOADING_REPLIES),
@@ -66,12 +67,12 @@ async def menu(message: Message):
     )
     
     states[message.chat.id].chosen_schedule_dates = []
-    guards[message.chat.id].text = Commands.CLASSES.value
+    guards[message.chat.id].text = Command.CLASSES.value
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        guards[callback.message.chat.id].text == Commands.CLASSES.value and
-        Commands.CLASSES_CHOOSE.value in callback.data
+        guards[callback.message.chat.id].text == Command.CLASSES.value and
+        Command.CLASSES_CHOOSE.value in callback.data
 )
 @top_notification
 async def add_chosen_date(callback: CallbackQuery):
@@ -79,9 +80,9 @@ async def add_chosen_date(callback: CallbackQuery):
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        guards[callback.message.chat.id].text == Commands.CLASSES.value and
-        Commands.CLASSES_SHOW.value in callback.data
+        guards[callback.message.chat.id].text == Command.CLASSES.value and
+        Command.CLASSES_SHOW.value in callback.data
 )
 @top_notification
 async def show_chosen_dates(callback: CallbackQuery):
-    await common_show_chosen_dates(command=Commands.CLASSES, callback=callback)
+    await common_show_chosen_dates(command=Command.CLASSES, callback=callback)

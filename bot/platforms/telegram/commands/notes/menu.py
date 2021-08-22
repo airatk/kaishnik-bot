@@ -9,30 +9,31 @@ from bot.platforms.telegram import guards
 
 from bot.platforms.telegram.commands.notes.utilities.keyboards import action_chooser
 
-from bot.models.users import Users
-from bot.models.notes import Notes
+from bot.models.user import User
+from bot.models.note import Note
 
 from bot.utilities.constants import MAX_NOTES_NUMBER
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 
 
 @dispatcher.message_handler(
     lambda message: message.chat.type != ChatType.PRIVATE,
-    commands=[ Commands.NOTES.value ]
+    commands=[ Command.NOTES.value ]
 )
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
         guards[message.chat.id].text is None,
-    commands=[ Commands.NOTES.value ]
+    commands=[ Command.NOTES.value ]
 )
-@increment_command_metrics(command=Commands.NOTES)
+@note_metrics(platform=Platform.TELEGRAM, command=Command.NOTES)
 async def notes(message: Message):
-    guards[message.chat.id].text = Commands.NOTES.value
+    guards[message.chat.id].text = Command.NOTES.value
     
-    user_id: int = Users.get(Users.telegram_id == message.chat.id).user_id
-    user_notes: ModelSelect = Notes.select().where(Notes.user_id == user_id)
+    user: User = User.get(User.telegram_id == message.chat.id)
+    user_notes: ModelSelect = Note.select().where(Note.user == user)
     
     await message.answer(
         text="Заметок всего: *{current}/{max}*".format(

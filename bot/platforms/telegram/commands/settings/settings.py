@@ -10,64 +10,43 @@ from bot.platforms.telegram import guards
 
 from bot.platforms.telegram.commands.settings.utilities.keyboards import action_chooser
 
-from bot.models.users import Users
-from bot.models.groups_of_students import GroupsOfStudents
-from bot.models.compact_students import CompactStudents
-from bot.models.bb_students import BBStudents
-from bot.models.notes import Notes
+from bot.models.user import User
+from bot.models.note import Note
 
-from bot.utilities.constants import GROUP_OF_STUDENTS_INFO
-from bot.utilities.constants import COMPACT_STUDENT_INFO
-from bot.utilities.constants import BB_STUDENT_INFO
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.constants import COMPACT_USER_INFO
+from bot.utilities.constants import BB_USER_INFO
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 
 
 @dispatcher.message_handler(
     lambda message: message.chat.type != ChatType.PRIVATE,
-    commands=[ Commands.SETTINGS.value ]
+    commands=[ Command.SETTINGS.value ]
 )
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
         guards[message.chat.id].text is None,
-    commands=[ Commands.SETTINGS.value ]
+    commands=[ Command.SETTINGS.value ]
 )
-@increment_command_metrics(command=Commands.SETTINGS)
+@note_metrics(platform=Platform.TELEGRAM, command=Command.SETTINGS)
 async def settings(message: Message):
     chat: Chat = await message.bot.get_chat(chat_id=message.chat.id)
     
-    user_id: int = Users.get(Users.telegram_id == message.chat.id).user_id
+    user: User = User.get(User.telegram_id == message.chat.id)
     account_info: Dict[str, str] = {
         "fullname": chat.full_name,
         "username": "" if chat.username is None else " @{username}".format(username=chat.username),
         "chat_id": message.chat.id if message.chat.type == ChatType.PRIVATE else -(message.chat.id + 1_000_000_000_000),
-        "notes_number": Notes.select().where(Notes.user_id == user_id).count()
+        "group": user.group,
+        "notes_number": Note.select().where(Note.user == user).count()
     }
-    text: str = ""
-    
-    user: Any = (
-        GroupsOfStudents.get_or_none(GroupsOfStudents.user_id == user_id) or
-        CompactStudents.get_or_none(CompactStudents.user_id == user_id) or 
-        BBStudents.get(BBStudents.user_id == user_id)
-    )
-    
-    if isinstance(user, GroupsOfStudents):
-        account_info["group"] = user.group
-        
-        text = GROUP_OF_STUDENTS_INFO.format(**account_info)
-    elif isinstance(user, CompactStudents):
-        account_info["group"] = user.group
-        
-        text = COMPACT_STUDENT_INFO.format(**account_info)
-    elif isinstance(user, BBStudents):
-        account_info["login"] = user.login
-        
-        text = BB_STUDENT_INFO.format(**account_info)
+    user_info: str = COMPACT_USER_INFO if user.bb_login is None or user.bb_password is None else BB_USER_INFO
     
     await message.answer(
-        text=text,
+        text=user_info.format(**account_info),
         reply_markup=action_chooser()
     )
     
-    guards[message.chat.id].text = Commands.SETTINGS.value
+    guards[message.chat.id].text = Command.SETTINGS.value

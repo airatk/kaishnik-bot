@@ -7,8 +7,9 @@ from aiogram.types import ParseMode
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
 
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 from bot.utilities.calendar.helpers import is_week_even
 from bot.utilities.calendar.helpers import weekday_date
 from bot.utilities.calendar.helpers import get_week_number
@@ -16,15 +17,15 @@ from bot.utilities.calendar.helpers import get_week_number
 
 @dispatcher.message_handler(
     lambda message: message.chat.type != ChatType.PRIVATE,
-    commands=[ Commands.WEEK.value ]
+    commands=[ Command.WEEK.value ]
 )
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
         guards[message.chat.id].text is None,
-    commands=[ Commands.WEEK.value ]
+    commands=[ Command.WEEK.value ]
 )
-@increment_command_metrics(command=Commands.WEEK)
+@note_metrics(platform=Platform.TELEGRAM, command=Command.WEEK)
 async def week(message: Message):
     (weekday, date) = weekday_date()
     

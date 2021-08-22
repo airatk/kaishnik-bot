@@ -6,15 +6,15 @@ from bot.platforms.telegram import guards
 
 from bot.platforms.telegram.commands.settings.utilities.keyboards import deletion_confirmer
 
-from bot.models.users import Users
+from bot.models.user import User
 
-from bot.utilities.types import Commands
+from bot.utilities.types import Command
 
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        guards[callback.message.chat.id].text == Commands.SETTINGS.value and
-        callback.data == Commands.DELETE_ACCOUNT.value
+        guards[callback.message.chat.id].text == Command.SETTINGS.value and
+        callback.data == Command.DELETE_ACCOUNT.value
 )
 async def deletion(callback: CallbackQuery):
     await callback.message.edit_text(
@@ -25,11 +25,11 @@ async def deletion(callback: CallbackQuery):
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        guards[callback.message.chat.id].text == Commands.SETTINGS.value and
-        callback.data == Commands.DELETE_ACCOUNT_CONFIRM.value
+        guards[callback.message.chat.id].text == Command.SETTINGS.value and
+        callback.data == Command.DELETE_ACCOUNT_CONFIRM.value
 )
 async def deletion_confirm(callback: CallbackQuery):
-    Users.delete().where(Users.telegram_id == callback.message.chat.id).execute()
+    User.delete().where(User.telegram_id == callback.message.chat.id).execute()
     guards[callback.message.chat.id].drop()
     
     await callback.message.edit_text(text="Аккаунт удалён. Для создания нового отправь /start")

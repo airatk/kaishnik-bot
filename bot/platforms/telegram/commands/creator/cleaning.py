@@ -20,20 +20,17 @@ from bot.platforms.telegram.commands.creator.utilities.constants import CREATOR_
 from bot.platforms.telegram.commands.creator.utilities.types import Option
 from bot.platforms.telegram.commands.creator.utilities.types import Value
 
-from bot.models.users import Users
-from bot.models.groups_of_students import GroupsOfStudents
-from bot.models.compact_students import CompactStudents
-from bot.models.bb_students import BBStudents
+from bot.models.user import User
 
-from bot.utilities.types import Commands
+from bot.utilities.types import Command
 
 
 @dispatcher.message_handler(
     lambda message: message.from_user.id == CREATOR_TELEGRAM_ID,
-    commands=[ Commands.CLEAR.value ]
+    commands=[ Command.CLEAR.value ]
 )
 async def clear(message: Message):
-    users_list: List[Users] = list(Users.select())
+    users_list: List[User] = list(User.select())
     cleared_users_number: int = 0
     
     loading_message: Message = await message.answer(text="Started clearing...")
@@ -66,16 +63,16 @@ async def clear(message: Message):
 @dispatcher.message_handler(
     lambda message:
         message.from_user.id == CREATOR_TELEGRAM_ID and
-        Commands.ERASE.value in message.text,
+        Command.ERASE.value in message.text,
 )
 async def erase(message: Message):
     try:
-        user_id: int = int(message.text.replace(Commands.ERASE.value, "")[1:])
+        user_id: int = int(message.text.replace(Command.ERASE.value, "")[1:])
     except ValueError:
         await message.answer(text="User ID should be integer!")
         return
     
-    erased_users_number: int = Users.delete().where(Users.user_id == user_id).execute()
+    erased_users_number: int = User.delete().where(User.user_id == user_id).execute()
     
     if erased_users_number == 0:
         await message.answer(text="User ID was not found!")
@@ -84,7 +81,7 @@ async def erase(message: Message):
 
 @dispatcher.message_handler(
     lambda message: message.from_user.id == CREATOR_TELEGRAM_ID,
-    commands=[ Commands.DROP.value ]
+    commands=[ Command.DROP.value ]
 )
 async def drop(message: Message):
     options: Dict[str, str] = parse_creator_query(query=message.text)
@@ -103,15 +100,15 @@ async def drop(message: Message):
     users_ids_list: List[int] = []
     
     if options[Option.EMPTY.value] == Value.ME.value:
-        users_ids_list.append(Users.get(Users.telegram_id == message.chat.id))
+        users_ids_list.append(User.get(User.telegram_id == message.chat.id))
     elif options[Option.EMPTY.value] == Value.ALL.value:
-        users_ids_list = [ user.user_id for user in Users.select() ]
+        users_ids_list = [ user.user_id for user in User.select() ]
     elif options[Option.EMPTY.value] == Value.GROUPS.value:
-        users_ids_list = [ group.user_id for group in GroupsOfStudents.select() ]
+        users_ids_list = [ group.user_id for group in User.select().where(User.is_group_chat) ]
     elif options[Option.EMPTY.value] == Value.COMPACTS.value:
-        users_ids_list = [ compact.user_id for compact in CompactStudents.select() ]
+        users_ids_list = [ compact.user_id for compact in User.select().where(~User.is_group_chat & User.bb_login.is_null() & User.bb_password.is_null()) ]
     elif options[Option.EMPTY.value] == Value.BBS.value:
-        users_ids_list = [ bb.user_id for bb in BBStudents.select() ]
+        users_ids_list = [ bb.user_id for bb in User.select().where(User.bb_login.is_null(False) & User.bb_password.is_null(False)) ]
     else:
         await message.answer(text="The option has no matches!")
         return
@@ -125,7 +122,7 @@ async def drop(message: Message):
             values_number=len(users_ids_list), index=index
         )
         
-        user: Users = Users.get(Users.user_id == user_id)
+        user: User = User.get(User.user_id == user_id)
         
         try:
             if Option.MESSAGE.value in options:
@@ -145,7 +142,12 @@ async def drop(message: Message):
         except (CantInitiateConversation, UserDeactivated, BotBlocked, BotKicked, ChatNotFound):
             user.delete_instance()
         
+        user.group = None
+        user.group_schedule_id = None
+        user.bb_login = None
+        user.bb_password = None
         user.is_setup = False
+        
         user.save()
     
     await loading_message.delete()

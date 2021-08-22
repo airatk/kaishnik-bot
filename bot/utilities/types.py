@@ -7,43 +7,11 @@ from typing import Optional
 from typing import Any
 
 
-class Guard:
-    def __init__(self):
-        self.text: Optional[str] = None
-        self.message: Optional[Any] = None
-    
-    def drop(self):
-        self.__init__()
+class Platform(Enum):
+    TELEGRAM = "telegram"
+    VK = "vk"
 
-class State:
-    def __init__(self):
-        # /login
-        self.groups: List[Tuple[str, str]] = []
-        self.group_names: Dict[str, str] = {}
-        
-        # /classes & /exams
-        self.another_group_schedule_id: str = None
-        self.chosen_schedule_dates: List[str] = []
-        self.classes_offline: Dict[str, List[Dict[str, str]]] = []
-        
-        # /lecturers
-        self.lecturers_names: List[Dict[str, str]] = None
-        
-        # /score
-        self.scoretable: List[Tuple[str, str]] = None
-    
-    def drop(self):
-        self.group_names = {}
-        self.another_group_schedule_id = None
-        self.chosen_schedule_dates = []
-        self.lecturers_names = None
-        self.scoretable = None
-    
-    def drop_all(self):
-        self.__init__()
-
-
-class Commands(Enum):
+class Command(Enum):
     CREATOR = "creator"
     USERS = "users"
     METRICS = "metrics"
@@ -127,6 +95,41 @@ class Commands(Enum):
     UNKNOWN_TEXT_MESSAGE = "unknown-text-message"
     UNKNOWN_CALLBACK = "unknown-callback"
 
+
+class Guard:
+    def __init__(self):
+        self.text: Optional[str] = None
+        self.message: Optional[Any] = None
+    
+    def drop(self):
+        self.__init__()
+
+class State:
+    def __init__(self):
+        # /login
+        self.groups: List[Tuple[str, str]] = []
+        self.group_names: Dict[str, str] = {}
+        
+        # /classes & /exams
+        self.another_group_schedule_id: str = None
+        self.chosen_schedule_dates: List[str] = []
+        self.classes_offline: Dict[str, List[Dict[str, str]]] = []
+        
+        # /lecturers
+        self.lecturers_names: List[Dict[str, str]] = None
+        
+        # /score
+        self.scoretable: List[Tuple[str, str]] = None
+    
+    def drop(self):
+        self.group_names = {}
+        self.another_group_schedule_id = None
+        self.chosen_schedule_dates = []
+        self.lecturers_names = None
+        self.scoretable = None
+    
+    def drop_all(self):
+        self.__init__()
 
 class SettingsOption(Enum):
     IS_SCHEDULE_SIZE_FULL = "is_schedule_size_full"

@@ -8,8 +8,9 @@ from bot.platforms.vk import guards
 from bot.platforms.vk.utilities.keyboards import to_menu
 from bot.platforms.vk.utilities.types import CommandsOfVK
 
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 from bot.utilities.calendar.helpers import is_week_even
 from bot.utilities.calendar.helpers import weekday_date
 from bot.utilities.calendar.helpers import get_week_number
@@ -20,7 +21,7 @@ from bot.utilities.calendar.helpers import get_week_number
         guards[event.object.object.message.peer_id].text is None and
         event.object.object.message.text.capitalize() == CommandsOfVK.WEEK.value
 )
-@increment_command_metrics(command=Commands.WEEK)
+@note_metrics(platform=Platform.VK, command=Command.WEEK)
 async def week(event: SimpleBotEvent):
     (weekday, date) = weekday_date()
     

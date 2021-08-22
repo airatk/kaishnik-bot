@@ -12,7 +12,7 @@ from bot.platforms.telegram.commands.schedule.utilities.constants import DATES_N
 
 from bot.platforms.telegram.utilities.keyboards import cancel_button
 
-from bot.utilities.types import Commands
+from bot.utilities.types import Command
 from bot.utilities.calendar.helpers import get_semester_boundaries
 from bot.utilities.calendar.helpers import is_week_even
 from bot.utilities.calendar.constants import WEEKDAYS
@@ -28,21 +28,21 @@ def time_period_chooser(lecturer_id: str = "-") -> InlineKeyboardMarkup:
     
     time_period_chooser_keyboard.add(*[
         cancel_button(),
-        InlineKeyboardButton(text="сегодня", callback_data=" ".join([ Commands.CLASSES_SHOW.value, today_date.strftime("%d.%m"), lecturer_id ])),
-        InlineKeyboardButton(text="вчера", callback_data=" ".join([ Commands.CLASSES_SHOW.value, yesterday_date.strftime("%d.%m"), lecturer_id ])),
-        InlineKeyboardButton(text="завтра", callback_data=" ".join([ Commands.CLASSES_SHOW.value, tomorrow_date.strftime("%d.%m"), lecturer_id ]))
+        InlineKeyboardButton(text="сегодня", callback_data=" ".join([ Command.CLASSES_SHOW.value, today_date.strftime("%d.%m"), lecturer_id ])),
+        InlineKeyboardButton(text="вчера", callback_data=" ".join([ Command.CLASSES_SHOW.value, yesterday_date.strftime("%d.%m"), lecturer_id ])),
+        InlineKeyboardButton(text="завтра", callback_data=" ".join([ Command.CLASSES_SHOW.value, tomorrow_date.strftime("%d.%m"), lecturer_id ]))
     ])
     
     time_period_chooser_keyboard.row(
         InlineKeyboardButton(
             text="другие дни",
-            callback_data=" ".join([ Commands.CLASSES_CHOOSE.value, str(INITIAL_SHIFT), "", lecturer_id ])
+            callback_data=" ".join([ Command.CLASSES_CHOOSE.value, str(INITIAL_SHIFT), "", lecturer_id ])
         )
     )
     time_period_chooser_keyboard.row(
         InlineKeyboardButton(
             text="весь семестр",
-            callback_data=" ".join([ Commands.CLASSES_SHOW.value, "", lecturer_id ])
+            callback_data=" ".join([ Command.CLASSES_SHOW.value, "", lecturer_id ])
         )
     )
     
@@ -89,7 +89,7 @@ def dates_appender(shift: int, dates: List[str], lecturer_id: str = "-") -> Inli
         
         dates_appender_keyboard.row(InlineKeyboardButton(
             text="".join([ text, " •" if raw_date in dates else "" ]),
-            callback_data=" ".join([ Commands.CLASSES_CHOOSE.value, str(shift), raw_date, lecturer_id ])
+            callback_data=" ".join([ Command.CLASSES_CHOOSE.value, str(shift), raw_date, lecturer_id ])
         ))
         
         day_date += timedelta(days=1)
@@ -98,11 +98,11 @@ def dates_appender(shift: int, dates: List[str], lecturer_id: str = "-") -> Inli
     movement_buttons: List[InlineKeyboardButton] = [
         InlineKeyboardButton(
             text="раньше",
-            callback_data=" ".join([ Commands.CLASSES_CHOOSE.value, str(shift - MOVEMENT_SHIFT), "", lecturer_id ])
+            callback_data=" ".join([ Command.CLASSES_CHOOSE.value, str(shift - MOVEMENT_SHIFT), "", lecturer_id ])
         ),
         InlineKeyboardButton(
             text="позже",
-            callback_data=" ".join([ Commands.CLASSES_CHOOSE.value, str(shift + MOVEMENT_SHIFT), "", lecturer_id ])
+            callback_data=" ".join([ Command.CLASSES_CHOOSE.value, str(shift + MOVEMENT_SHIFT), "", lecturer_id ])
         )
     ]
     
@@ -120,7 +120,7 @@ def dates_appender(shift: int, dates: List[str], lecturer_id: str = "-") -> Inli
             cancel_button(),
             InlineKeyboardButton(
                 text="показать".format(chosen_dates_number=len(dates)),
-                callback_data=" ".join([ Commands.CLASSES_SHOW.value, "", lecturer_id ])
+                callback_data=" ".join([ Command.CLASSES_SHOW.value, "", lecturer_id ])
             )
         ])
     

@@ -16,8 +16,9 @@ from bot.platforms.telegram.utilities.helpers import top_notification
 from bot.utilities.constants import BOT_ADDRESSING
 from bot.utilities.constants import REPLIES_TO_UNKNOWN_COMMAND
 from bot.utilities.constants import REPLIES_TO_UNKNOWN_TEXT_MESSAGE
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 
 
 @dispatcher.message_handler(
@@ -26,7 +27,7 @@ from bot.utilities.types import Commands
         message.content_type != ContentType.TEXT,
     content_types=[ ContentType.ANY ]
 )
-@increment_command_metrics(command=Commands.UNKNOWN_NONTEXT_MESSAGE)
+@note_metrics(platform=Platform.TELEGRAM, command=Command.UNKNOWN_NONTEXT_MESSAGE)
 async def unknown_nontext_message(message: Message):
     await message.delete()
 
@@ -42,7 +43,7 @@ async def unknown_nontext_message(message: Message):
     lambda message: message.chat.type == ChatType.PRIVATE,
     content_types=[ ContentType.TEXT ]
 )
-@increment_command_metrics(command=Commands.UNKNOWN_TEXT_MESSAGE)
+@note_metrics(platform=Platform.TELEGRAM, command=Command.UNKNOWN_TEXT_MESSAGE)
 async def unknown_text_message(message: Message):
     # Getting rid of the bot addressing
     if message.chat.type != ChatType.PRIVATE:
@@ -62,7 +63,7 @@ async def unknown_text_message(message: Message):
     )
 
 @dispatcher.callback_query_handler(lambda callback: True)
-@increment_command_metrics(command=Commands.UNKNOWN_CALLBACK)
+@note_metrics(platform=Platform.TELEGRAM, command=Command.UNKNOWN_CALLBACK)
 @top_notification
 async def unknown_callback(callback: CallbackQuery):
     try:

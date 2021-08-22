@@ -6,7 +6,7 @@ from aiogram.types import InlineKeyboardButton
 
 from bot.platforms.telegram.utilities.keyboards import cancel_button
 
-from bot.utilities.types import Commands
+from bot.utilities.types import Command
 from bot.utilities.api.types import ScheduleType
 
 
@@ -18,7 +18,7 @@ def lecturer_chooser(names: List[Dict[str, str]]) -> InlineKeyboardMarkup:
     lecturer_chooser_keyboard.add(*[
         InlineKeyboardButton(
             text=name["lecturer"],
-            callback_data=" ".join([ Commands.LECTURERS.value, name["id"] ])
+            callback_data=" ".join([ Command.LECTURERS.value, name["id"] ])
         ) for name in names
     ])
     

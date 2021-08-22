@@ -11,11 +11,12 @@ from bot.platforms.vk import guards
 from bot.platforms.vk.utilities.keyboards import to_menu
 from bot.platforms.vk.utilities.types import CommandsOfVK
 
-from bot.models.users import Users
+from bot.models.user import User
 
-from bot.utilities.helpers import increment_command_metrics
+from bot.utilities.helpers import note_metrics
 from bot.utilities.helpers import remove_markdown
-from bot.utilities.types import Commands
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES
 from bot.utilities.api.types import ScheduleType
 from bot.utilities.api.student import get_group_schedule_id
@@ -28,7 +29,7 @@ from bot.utilities.api.student import get_schedule_by_group_schedule_id
         event.object.object.message.payload is None and
         event.object.object.message.text.capitalize().startswith(CommandsOfVK.EXAMS.value)
 )
-@increment_command_metrics(command=Commands.EXAMS)
+@note_metrics(platform=Platform.VK, command=Command.EXAMS)
 async def exams(event: SimpleBotEvent):
     await event.answer(
         message=choice(LOADING_REPLIES),
@@ -53,7 +54,7 @@ async def exams(event: SimpleBotEvent):
     
     (schedule, response_error) = get_schedule_by_group_schedule_id(
         schedule_type=ScheduleType.EXAMS,
-        user_id=Users.get(Users.vk_id == event.peer_id).user_id,
+        user_id=User.get(User.vk_id == event.peer_id).user_id,
         another_group_schedule_id=another_group_schedule_id
     )
     

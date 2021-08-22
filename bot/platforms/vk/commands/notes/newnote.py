@@ -7,45 +7,50 @@ from bot.platforms.vk import guards
 from bot.platforms.vk.utilities.keyboards import to_menu
 from bot.platforms.vk.utilities.keyboards import canceler
 
-from bot.models.users import Users
-from bot.models.notes import Notes
+from bot.models.user import User
+from bot.models.note import Note
 
 from bot.utilities.helpers import clarify_markdown
 from bot.utilities.constants import MAX_NOTES_NUMBER
-from bot.utilities.types import Commands
+from bot.utilities.types import Command
 
 
-@vk_bot.message_handler(PayloadFilter(payload={ "callback": Commands.NOTES_ADD.value }))
+@vk_bot.message_handler(PayloadFilter(payload={ "callback": Command.NOTES_ADD.value }))
 async def add_note_hint(event: SimpleBotEvent):
-    user_id: int = Users.get(Users.vk_id == event.peer_id).user_id
-    note_number: int = Notes.select().where(Notes.user_id == user_id).count() + 1
+    user: User = User.get(User.vk_id == event.peer_id)
+    note_number: int = Note.select().where(Note.user == user).count() + 1
     
     if note_number > MAX_NOTES_NUMBER:
-        await event.answer(text="{max}-заметковый лимит уже достигнут.".format(max=MAX_NOTES_NUMBER))
+        await event.answer(
+            message="{max}-заметковый лимит уже достигнут.".format(max=MAX_NOTES_NUMBER),
+            keyboard=to_menu()
+        )
         return
     
     await event.answer(
         message=(
-            "Добавляемая заметка будет {note_number} по счёту.\n\n"
+            f"Добавляемая заметка будет {note_number} по счёту.\n"
+            "\n"
             "• Используй звёздочки, чтобы выделить *жирным*\n"
             "• Используй нижнее подчёркивание, чтобы выделить _курсивом_\n"
-            "• Жирный и курсив будут отображаться только в Телеграме.\n\n"
-            "Напиши заметку и отправь решительно.".format(note_number=note_number)
+            "• Жирный и курсив будут отображаться только в Телеграме.\n"
+            "\n"
+            "Напиши заметку и отправь решительно."
         ),
         keyboard=canceler()
     )
     
-    guards[event.peer_id].text = Commands.NOTES_ADD.value
+    guards[event.peer_id].text = Command.NOTES_ADD.value
 
 @vk_bot.message_handler(
     lambda event:
-        guards[event.object.object.message.peer_id].text == Commands.NOTES_ADD.value
+        guards[event.object.object.message.peer_id].text == Command.NOTES_ADD.value
 )
 async def add_note(event: SimpleBotEvent):
-    Notes.create(
-        user_id=Users.get(Users.vk_id == event.peer_id).user_id,
-        note=clarify_markdown(event.text)
-    )
+    Note.insert(
+        user=User.get(User.vk_id == event.peer_id),
+        text=clarify_markdown(event.text)
+    ).execute()
     
     await event.answer(
         message="Запомнено!",

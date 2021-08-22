@@ -20,8 +20,8 @@ from bot.platforms.telegram import guards
 
 from bot.platforms.telegram.commands.creator.utilities.types import Value
 
-from bot.models.users import Users
-from bot.models.notes import Notes
+from bot.models.user import User
+from bot.models.note import Note
 
 
 def parse_creator_query(query: str) -> Dict[str, str]:
@@ -87,80 +87,3 @@ async def try_get_chat(chat_id: int) -> Tuple[Chat, str]:
             error_text = "Couldn't send a chat action to user {chat_id}"
     
     return (chat, None if error_text is None else error_text.format(chat_id=chat_id))
-
-async def show_users_list(users_type: str, type_users_list: List[Any], loading_message: Message, message: Message):
-    await loading_message.edit_text(text="Started showing {users_type} users…".format(users_type=users_type))
-    
-    progress_bar: str = ""
-    
-    for (index, type_user) in enumerate(type_users_list):
-        progress_bar = await update_progress_bar(
-            loading_message=loading_message, current_progress_bar=progress_bar,
-            values_number=len(type_users_list), index=index
-        )
-        
-        user: Users = Users.get(Users.user_id == type_user.user_id)
-        (chat, error_message) = await try_get_chat(chat_id=user.telegram_id)
-        
-        if users_type == Value.GROUPS.value:
-            type_user_data: str = (
-                "• Group: {group}\n"
-                "• Group Schedule ID: {group_schedule_id}\n"
-            ).format(
-                group=type_user.group,
-                group_schedule_id=type_user.group_schedule_id
-            )
-        elif users_type == Value.COMPACTS.value:
-            type_user_data: str = (
-                "• Group: {group}\n"
-                "• Group Schedule ID: {group_schedule_id}\n"
-            ).format(
-                group=type_user.group,
-                group_schedule_id=type_user.group_schedule_id
-            )
-        elif users_type == Value.BBS.value:
-            type_user_data: str = (
-                "• Login: {login}\n"
-                "• Password: {password}\n"
-            ).format(
-                login=type_user.login,
-                password=type_user.password
-            )
-        else:
-            type_user_data: str = "Undefined user type.\n"
-        
-        await message.answer(
-            text="".join([
-                "" if error_message is None else "".join([ error_message, "\n\n" ]), (
-                    "{fullname} @{username}\n"
-                    "{users_type}\n"
-                    "\n"
-                    "• User ID: {user_id}\n"
-                    "\n"
-                ).format(
-                    fullname="none" if chat is None else chat.full_name,
-                    username="none" if chat is None else chat.username,
-                    users_type=users_type,
-                    user_id=type_user.user_id
-                ),
-                type_user_data,
-                "\n", (
-                    "• Notes: {notes_number}\n"
-                    "\n"
-                    "• Guard text: {guard_text}\n"
-                    "• Guard message: {guard_message}\n"
-                    "\n"
-                    "• Is Setup: {is_setup}\n"
-                    "\n"
-                    "/erase_{user_id}\n"
-                    "\n"
-                    "#data"
-                ).format(
-                    notes_number=Notes.select().where(Notes.user_id == type_user.user_id).count(),
-                    guard_text="none" if guards[user.telegram_id].text is None else guards[user.telegram_id].text,
-                    guard_message="none" if guards[user.telegram_id].message is None else guards[user.telegram_id].message.text,
-                    is_setup=user.is_setup,
-                    user_id=type_user.user_id
-                )
-            ])
-        )

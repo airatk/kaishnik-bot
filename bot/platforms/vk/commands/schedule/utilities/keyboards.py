@@ -9,7 +9,7 @@ from vkwave.bots.utils.keyboards import Keyboard
 
 from bot.platforms.vk.utilities.keyboards import menu_button
 
-from bot.utilities.types import Commands
+from bot.utilities.types import Command
 from bot.utilities.calendar.helpers import get_semester_boundaries
 
 
@@ -22,26 +22,26 @@ def time_period_chooser(lecturer_id: str = "-") -> str:
     
     time_period_chooser_keyboard.add_text_button(**menu_button())
     time_period_chooser_keyboard.add_text_button(text="Сегодня", payload={
-        Commands.CLASSES_SHOW.value: "", 
+        Command.CLASSES_SHOW.value: "", 
         "date_string": today_date.strftime("%d.%m"), 
         "lecturer_id": lecturer_id 
     })
     
     time_period_chooser_keyboard.add_row()
     time_period_chooser_keyboard.add_text_button(text="Вчера", payload={
-        Commands.CLASSES_SHOW.value: "", 
+        Command.CLASSES_SHOW.value: "", 
         "date_string": yesterday_date.strftime("%d.%m"), 
         "lecturer_id": lecturer_id 
     })
     time_period_chooser_keyboard.add_text_button(text="Завтра", payload={ 
-        Commands.CLASSES_SHOW.value: "", 
+        Command.CLASSES_SHOW.value: "", 
         "date_string": tomorrow_date.strftime("%d.%m"), 
         "lecturer_id": lecturer_id
     })
     
     time_period_chooser_keyboard.add_row()
     time_period_chooser_keyboard.add_text_button(text="Весь семестр", payload={ 
-        Commands.CLASSES_SHOW.value: "", 
+        Command.CLASSES_SHOW.value: "", 
         "lecturer_id": lecturer_id 
     })
     
@@ -63,14 +63,14 @@ def dates_scroller(shown_date_string: str, lecturer_id: str = "-") -> str:
     movement_buttons: List[Dict[str, Union[str, Dict]]] = [ { 
             "text": "Раньше", 
             "payload": { 
-                Commands.CLASSES_SHOW.value: "",
+                Command.CLASSES_SHOW.value: "",
                 "date_string": earlier_date.strftime("%d.%m"),
                 "lecturer_id": lecturer_id
             }
         }, {
             "text": "Позже", 
             "payload": { 
-                Commands.CLASSES_SHOW.value: "",
+                Command.CLASSES_SHOW.value: "",
                 "date_string": later_date.strftime("%d.%m"),
                 "lecturer_id": lecturer_id
             }

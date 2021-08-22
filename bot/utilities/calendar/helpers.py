@@ -40,7 +40,7 @@ def weekday_date() -> Tuple[str, str]:
     return (
         WEEKDAYS[weekday] if weekday < 7 else "Воскресенье",
         "{day} {month}".format(
-            day=int(day_date.strftime("%d")),  # int()-cast is used to replace "01 апреля" with "1 апреля"
+            day=day_date.strftime("%-d"),
             month=MONTHS[day_date.strftime("%m")]
         )
     )

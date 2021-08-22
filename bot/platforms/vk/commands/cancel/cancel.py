@@ -8,23 +8,24 @@ from bot.platforms.vk import guards
 from bot.platforms.vk.utilities.keyboards import to_menu
 from bot.platforms.vk.utilities.types import CommandsOfVK
 
-from bot.models.users import Users
+from bot.models.user import User
 
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 
 
 @vk_bot.message_handler(
     lambda event:
-        Users.select().where(Users.vk_id == event.object.object.message.peer_id).exists() and
+        User.select().where(User.vk_id == event.object.object.message.peer_id).exists() and
         event.object.object.message.text.capitalize() == CommandsOfVK.CANCEL.value
 )
 @vk_bot.message_handler(
     lambda event:
-        Users.select().where(Users.vk_id == event.object.object.message.peer_id).exists(),
-    PayloadFilter(payload={ "callback": Commands.CANCEL.value })
+        User.select().where(User.vk_id == event.object.object.message.peer_id).exists(),
+    PayloadFilter(payload={ "callback": Command.CANCEL.value })
 )
-@increment_command_metrics(command=Commands.CANCEL)
+@note_metrics(platform=Platform.VK, command=Command.CANCEL)
 async def cancel(event: SimpleBotEvent):
     states[event.peer_id].drop()
     guards[event.peer_id].drop()

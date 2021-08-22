@@ -3,12 +3,12 @@ from peewee import FloatField
 from peewee import DateField
 from peewee import TextField
 
-from bot.models.base.base import Base
+from bot.models.base import Base
 
 
-class Donations(Base):
+class Donation(Base):
     donation_id: AutoField = AutoField()
 
     amount: FloatField = FloatField()
     date: DateField = DateField()
-    name: TextField = TextField()
+    donator: TextField = TextField()

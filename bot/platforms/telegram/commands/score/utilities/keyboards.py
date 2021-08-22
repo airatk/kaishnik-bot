@@ -5,7 +5,7 @@ from aiogram.types import InlineKeyboardButton
 
 from bot.platforms.telegram.utilities.keyboards import cancel_button
 
-from bot.utilities.types import Commands
+from bot.utilities.types import Command
 
 
 def semester_chooser(semesters_number: int) -> InlineKeyboardMarkup:
@@ -16,7 +16,7 @@ def semester_chooser(semesters_number: int) -> InlineKeyboardMarkup:
     semester_chooser_keyboard.add(*[
         InlineKeyboardButton(
             text=str(semester),
-            callback_data=" ".join([ Commands.SCORE_SEMESTER.value, str(semester) ])
+            callback_data=" ".join([ Command.SCORE_SEMESTER.value, str(semester) ])
         ) for semester in range(1, semesters_number + 1)
     ])
     
@@ -29,21 +29,21 @@ def subjects_type_chooser(has_exams: bool, has_tests: bool, has_courseworks: boo
         subjects_type_chooser_keyboard.row(
             cancel_button(),
             InlineKeyboardButton(
-                text="показать все", callback_data=Commands.SCORE_ALL.value
+                text="показать все", callback_data=Command.SCORE_ALL.value
             )
         )
     
     if has_exams:
         subjects_type_chooser_keyboard.row(InlineKeyboardButton(
-            text="экзамены", callback_data=Commands.SCORE_EXAMS.value
+            text="экзамены", callback_data=Command.SCORE_EXAMS.value
         ))
     if has_courseworks:
         subjects_type_chooser_keyboard.row(InlineKeyboardButton(
-            text="курсовые работы", callback_data=Commands.SCORE_COURSEWORKS.value
+            text="курсовые работы", callback_data=Command.SCORE_COURSEWORKS.value
         ))
     if has_tests:
         subjects_type_chooser_keyboard.row(InlineKeyboardButton(
-            text="зачёты", callback_data=Commands.SCORE_TESTS.value
+            text="зачёты", callback_data=Command.SCORE_TESTS.value
         ))
     
     return subjects_type_chooser_keyboard

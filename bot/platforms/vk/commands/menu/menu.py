@@ -9,8 +9,9 @@ from bot.platforms.vk.utilities.keyboards import menu
 from bot.platforms.vk.utilities.keyboards import additional_menu
 from bot.platforms.vk.utilities.types import CommandsOfVK
 
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 
 
 @vk_bot.message_handler(
@@ -18,7 +19,7 @@ from bot.utilities.types import Commands
         guards[event.object.object.message.peer_id].text is None and
         event.object.object.message.text.capitalize() == CommandsOfVK.MENU.value
 )
-@increment_command_metrics(command=Commands.MENU)
+@note_metrics(platform=Platform.VK, command=Command.MENU)
 async def menu_on_command(event: SimpleBotEvent):
     states[event.peer_id].drop()
     guards[event.peer_id].drop()
@@ -33,7 +34,7 @@ async def menu_on_command(event: SimpleBotEvent):
         guards[event.object.object.message.peer_id].text is None and
         event.object.object.message.text.capitalize() == CommandsOfVK.MORE.value
 )
-@increment_command_metrics(command=Commands.MORE)
+@note_metrics(platform=Platform.VK, command=Command.MORE)
 async def more_on_command(event: SimpleBotEvent):
     await event.answer(
         message="Список команд:",

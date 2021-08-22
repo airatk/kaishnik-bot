@@ -8,15 +8,16 @@ from bot.platforms.vk.utilities.keyboards import to_menu
 
 from bot.utilities.constants import REPLIES_TO_UNKNOWN_TEXT_MESSAGE
 from bot.utilities.constants import REPLIES_TO_UNKNOWN_NONTEXT_MESSAGE
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 
 
 @vk_bot.message_handler(
     lambda event:
         len(event.object.object.message.text) == 0
 )
-@increment_command_metrics(command=Commands.UNKNOWN_NONTEXT_MESSAGE)
+@note_metrics(platform=Platform.VK, command=Command.UNKNOWN_NONTEXT_MESSAGE)
 async def unknown_nontext_message(event: SimpleBotEvent):
     await event.answer(
         message=choice(REPLIES_TO_UNKNOWN_NONTEXT_MESSAGE),
@@ -27,7 +28,7 @@ async def unknown_nontext_message(event: SimpleBotEvent):
     lambda event:
         event.object.object.message.attachments is None or len(event.object.object.message.attachments) == 0
 )
-@increment_command_metrics(command=Commands.UNKNOWN_TEXT_MESSAGE)
+@note_metrics(platform=Platform.VK, command=Command.UNKNOWN_TEXT_MESSAGE)
 async def unknown_text_message(event: SimpleBotEvent):
     await event.answer(
         message=choice(REPLIES_TO_UNKNOWN_TEXT_MESSAGE),

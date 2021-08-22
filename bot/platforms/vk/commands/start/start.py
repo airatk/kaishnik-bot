@@ -8,27 +8,27 @@ from bot.platforms.vk.utilities.keyboards import make_login
 from bot.platforms.vk.utilities.keyboards import to_menu
 from bot.platforms.vk.utilities.types import CommandsOfVK
 
-from bot.models.users import Users
+from bot.models.user import User
 from bot.models.settings import Settings
 
-from bot.utilities.helpers import increment_command_metrics
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 from bot.utilities.types import Guard
 from bot.utilities.types import State
-from bot.utilities.types import Commands
 
 
 # Accepting new users on any message
 @vk_bot.message_handler(
     lambda event:
-        not Users.select().where(Users.vk_id == event.object.object.message.peer_id).exists()
+        not User.select().where(User.vk_id == event.object.object.message.peer_id).exists()
 )
-@increment_command_metrics(command=Commands.START)
 async def start(event: SimpleBotEvent):
+    user: User = User.create(vk_id=event.peer_id)
+    Settings.insert(user_id=user.user_id).execute()
+    
     guards[event.peer_id] = Guard()
     states[event.peer_id] = State()
-    
-    user: Users = Users.create(vk_id=event.peer_id)
-    _: Settings = Settings.create(user_id=user.user_id)
 
     await event.answer(message="Йоу!")
     await event.answer(
@@ -41,9 +41,9 @@ async def start(event: SimpleBotEvent):
 @vk_bot.message_handler(
     lambda event:
         event.object.object.message.text.capitalize() == CommandsOfVK.RESTART.value and 
-        Users.get(Users.vk_id == event.object.object.message.peer_id).is_setup
+        User.get(User.vk_id == event.object.object.message.peer_id).is_setup
 )
-@increment_command_metrics(command=Commands.RESTART)
+@note_metrics(platform=Platform.VK, command=Command.RESTART)
 async def restart(event: SimpleBotEvent):
     await event.answer(message="Бот перезапущен, перенастраиваться не нужно.")
     await event.answer(

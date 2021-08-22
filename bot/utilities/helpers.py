@@ -1,51 +1,55 @@
 from typing import List
 from typing import Optional
 
-from datetime import date
+from datetime import datetime
 
 from peewee import ModelSelect
 
-from bot.models.metrics import Metrics
-from bot.models.donations import Donations
+from aiogram.types import Message
+from aiogram.types import CallbackQuery
+from vkwave.bots import SimpleBotEvent
 
-from bot.utilities.constants import POSSIBLE_PLATFORM_CODE_CHARACTERS, USER_ID_MODIFIER
+from bot.models.user import User
+from bot.models.metrics import Metrics
+from bot.models.donation import Donation
+
+from bot.utilities.constants import POSSIBLE_PLATFORM_CODE_CHARACTERS
+from bot.utilities.constants import USER_ID_MODIFIER
 from bot.utilities.constants import DIGIT_MODIFIER
 from bot.utilities.constants import PLATFORM_CODE_SUFFIX
 from bot.utilities.constants import TOP_DONATORS_NUMBER
-from bot.utilities.types import Commands
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 
 
-def increment_command_metrics(command: Commands):
+def note_metrics(platform: Platform, command: Command):
     def outter(func):
         async def inner(arg):
-            (last_metrics, _) = Metrics.get_or_create(date=date.today().strftime("%Y-%m-%d"))
+            user_platform_id: int = 0
+
+            if isinstance(arg, Message):
+                user_platform_id = arg.chat.id
+            elif isinstance(arg, CallbackQuery):
+                user_platform_id = arg.message.chat.id
+            elif isinstance(arg, SimpleBotEvent):
+                user_platform_id = arg.object.object.message.peer_id
             
-            if command is Commands.NO_PERMISSIONS: last_metrics.no_permissions += 1
-            elif command is Commands.CANCEL: last_metrics.cancel += 1
-            elif command is Commands.START: last_metrics.start += 1
-            elif command is Commands.RESTART: last_metrics.restart += 1
-            elif command is Commands.LOGIN: last_metrics.login += 1
-            elif command is Commands.UNLOGIN: last_metrics.unlogin += 1
-            elif command is Commands.MENU: last_metrics.menu += 1
-            elif command is Commands.MORE: last_metrics.more += 1
-            elif command is Commands.CLASSES: last_metrics.classes += 1
-            elif command is Commands.EXAMS: last_metrics.exams += 1
-            elif command is Commands.LECTURERS: last_metrics.lecturers += 1
-            elif command is Commands.SCORE: last_metrics.score += 1
-            elif command is Commands.NOTES: last_metrics.notes += 1
-            elif command is Commands.LOCATIONS: last_metrics.locations += 1
-            elif command is Commands.WEEK: last_metrics.week += 1
-            elif command is Commands.BRS: last_metrics.brs += 1
-            elif command is Commands.HELP: last_metrics.help += 1
-            elif command is Commands.DONATE: last_metrics.donate += 1
-            elif command is Commands.DICE: last_metrics.dice += 1
-            elif command is Commands.SETTINGS: last_metrics.settings += 1
-            elif command is Commands.EDIT: last_metrics.edit += 1
-            elif command is Commands.UNKNOWN_NONTEXT_MESSAGE: last_metrics.unknown_nontext_message += 1
-            elif command is Commands.UNKNOWN_TEXT_MESSAGE: last_metrics.unknown_text_message += 1
-            elif command is Commands.UNKNOWN_CALLBACK: last_metrics.unknown_callback += 1
+            user: Optional[User] = None
             
-            last_metrics.save()
+            if platform is Platform.TELEGRAM:
+                user = User.get(telegram_id=user_platform_id)
+            elif platform is Platform.VK:
+                user = User.get(vk_id=user_platform_id)
+            
+            (last_metrics, is_newly_created) = Metrics.get_or_create(
+                user=user,
+                platform=platform.value, 
+                action=command.value
+            )
+            
+            if not is_newly_created:
+                last_metrics.usage_number += 1
+                last_metrics.save()
             
             await func(arg)
         return inner
@@ -63,7 +67,7 @@ def clarify_markdown(string: str) -> str:
     return "\\".join([ string[:index], string[index:] ]) if is_single else string
 
 def remove_markdown(string: str) -> str:
-    return string.replace("*", "").replace("_", "").replace("`", "")
+    return string.replace("*", "").replace("_", "").replace("`", "").replace("\\", "")
 
 
 def generate_platform_code(user_id: int) -> str:
@@ -89,11 +93,14 @@ def decode_platform_code(platform_code: str) -> Optional[int]:
 
 
 def get_top_donators() -> str:
-    top_donations_list: ModelSelect = Donations.select().order_by(Donations.amount.desc()).limit(value=TOP_DONATORS_NUMBER)
+    top_donations_list: ModelSelect = Donation.select().order_by(Donation.amount.desc()).limit(value=TOP_DONATORS_NUMBER)
     top_donators: str = "\n".join([
         "Большое спасибо всем тем, кто внёс свой донат♥️\n",
         "Особенное спасибо за большую поддержку топу донатеров:",
-        "\n".join([ f"*{index + 1}.* {donation.name} — {donation.amount:.2f} ₽" for (index, donation) in enumerate(top_donations_list) ]),
+        "\n".join([ 
+            f"*{index + 1}.* {donation.name} — {donation.amount:.2f} ₽" 
+            for (index, donation) in enumerate(top_donations_list) 
+        ]),
         "\n"
     ]) if len(top_donations_list) > 0 else ""
 

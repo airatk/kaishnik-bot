@@ -19,24 +19,25 @@ from bot.platforms.telegram.commands.schedule.lecturers.utilities.constants impo
 from bot.platforms.telegram.utilities.keyboards import canceler
 from bot.platforms.telegram.utilities.helpers import top_notification
 
-from bot.utilities.helpers import increment_command_metrics
+from bot.utilities.helpers import note_metrics
 from bot.utilities.constants import BOT_ADDRESSING
-from bot.utilities.types import Commands
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES
 from bot.utilities.api.lecturers import get_lecturers_names
 
 
 @dispatcher.message_handler(
     lambda message: message.chat.type != ChatType.PRIVATE,
-    commands=[ Commands.LECTURERS.value ]
+    commands=[ Command.LECTURERS.value ]
 )
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
         guards[message.chat.id].text is None,
-    commands=[ Commands.LECTURERS.value ]
+    commands=[ Command.LECTURERS.value ]
 )
-@increment_command_metrics(command=Commands.LECTURERS)
+@note_metrics(platform=Platform.TELEGRAM, command=Command.LECTURERS)
 async def lecturers(message: Message):
     guard_message: Message = await message.answer(
         text=choice(LOADING_REPLIES),
@@ -59,7 +60,7 @@ async def lecturers(message: Message):
         reply_markup=canceler()
     )
     
-    guards[message.chat.id].text = Commands.LECTURERS_NAME.value
+    guards[message.chat.id].text = Command.LECTURERS_NAME.value
     guards[message.chat.id].message = guard_message
 
 @dispatcher.message_handler(
@@ -67,12 +68,12 @@ async def lecturers(message: Message):
         message.chat.type != ChatType.PRIVATE and (
             message.text is not None and message.text.startswith(BOT_ADDRESSING) or
             message.reply_to_message is not None and message.reply_to_message.from_user.is_bot
-        ) and guards[message.chat.id].text == Commands.LECTURERS_NAME.value
+        ) and guards[message.chat.id].text == Command.LECTURERS_NAME.value
 )
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
-        guards[message.chat.id].text == Commands.LECTURERS_NAME.value
+        guards[message.chat.id].text == Command.LECTURERS_NAME.value
 )
 async def find_lecturer(message: Message):
     # Getting rid of the bot addressing
@@ -112,12 +113,12 @@ async def find_lecturer(message: Message):
         reply_markup=lecturer_chooser(names=names)
     )
     
-    guards[message.chat.id].text = Commands.LECTURERS.value
+    guards[message.chat.id].text = Command.LECTURERS.value
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        guards[callback.message.chat.id].text == Commands.LECTURERS.value and
-        Commands.LECTURERS.value in callback.data
+        guards[callback.message.chat.id].text == Command.LECTURERS.value and
+        Command.LECTURERS.value in callback.data
 )
 @top_notification
 async def lecturers_schedule_type(callback: CallbackQuery):

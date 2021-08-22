@@ -7,13 +7,13 @@ from bot.platforms.vk import guards
 from bot.platforms.vk.commands.schedule.utilities.keyboards import time_period_chooser
 from bot.platforms.vk.commands.schedule.utilities.classes import common_show_chosen_date
 
-from bot.utilities.types import Commands
+from bot.utilities.types import Command
 from bot.utilities.api.types import ScheduleType
 
 
 @vk_bot.message_handler(
     lambda event:
-        guards[event.object.object.message.peer_id].text == Commands.LECTURERS.value,
+        guards[event.object.object.message.peer_id].text == Command.LECTURERS.value,
     PayloadContainsFilter(key=ScheduleType.CLASSES.value)
 )
 async def lecturer_menu(event: SimpleBotEvent):
@@ -26,8 +26,8 @@ async def lecturer_menu(event: SimpleBotEvent):
 
 @vk_bot.message_handler(
     lambda event:
-        guards[event.object.object.message.peer_id].text == Commands.LECTURERS.value,
-    PayloadContainsFilter(key=Commands.CLASSES_SHOW.value)
+        guards[event.object.object.message.peer_id].text == Command.LECTURERS.value,
+    PayloadContainsFilter(key=Command.CLASSES_SHOW.value)
 )
 async def lecturer_show_chosen_date(event: SimpleBotEvent):
-    await common_show_chosen_date(command=Commands.LECTURERS, event=event)
+    await common_show_chosen_date(command=Command.LECTURERS, event=event)

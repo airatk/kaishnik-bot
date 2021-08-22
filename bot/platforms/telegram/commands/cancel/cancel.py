@@ -6,17 +6,18 @@ from bot.platforms.telegram import guards
 
 from bot.platforms.telegram.utilities.helpers import top_notification
 
-from bot.models.users import Users
+from bot.models.user import User
 
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 
 
 @dispatcher.message_handler(
-    lambda message: Users.select().where(Users.telegram_id == message.chat.id).exists(),
-    commands=[ Commands.CANCEL.value ]
+    lambda message: User.select().where(User.telegram_id == message.chat.id).exists(),
+    commands=[ Command.CANCEL.value ]
 )
-@increment_command_metrics(command=Commands.CANCEL)
+@note_metrics(platform=Platform.TELEGRAM, command=Command.CANCEL)
 async def cancel_on_message(message: Message):
     if guards[message.chat.id].text is None:
         await message.answer(text="Запущенных команд нет. Отправь какую-нибудь☺️")
@@ -28,8 +29,8 @@ async def cancel_on_message(message: Message):
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        Users.select().where(Users.telegram_id == callback.message.chat.id).exists() and
-        callback.data == Commands.CANCEL.value
+        User.select().where(User.telegram_id == callback.message.chat.id).exists() and
+        callback.data == Command.CANCEL.value
 )
 @top_notification
 async def cancel_on_callback(callback: CallbackQuery):

@@ -4,23 +4,6 @@ from enum import Enum
 class Option(Enum):
     EMPTY = ""
     
-    # /metrics
-    DATE = "date"
-    MONTH = "month"
-    
-    # /data
-    NUMBER = "number"
-    STATE = "state"
-    USER_ID = "user-id"
-    
-    USERNAME = "username"
-    FIRSTNAME = "firstname"
-    
-    NAME = "name"
-    GROUP = "group"
-    
-    BB_LOGIN = "bb-login"
-    
     # /broadcast
     USERS = "users"
     MESSAGE = "message"
@@ -32,6 +15,8 @@ class Option(Enum):
 
     # /donated
     AMOUNT = "amount"
+    DONATOR = "donator"
+    DATE = "date"
 
 class Value(Enum):
     ME = "me"

@@ -7,21 +7,22 @@ from bot.platforms.telegram import guards
 
 from bot.platforms.telegram.commands.others.utilities.constants import HELP
 
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 
 
 @dispatcher.message_handler(
     lambda message: message.chat.type != ChatType.PRIVATE,
-    commands=[ Commands.HELP.value ]
+    commands=[ Command.HELP.value ]
 )
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
         guards[message.chat.id].text is None,
-    commands=[ Commands.HELP.value ]
+    commands=[ Command.HELP.value ]
 )
-@increment_command_metrics(command=Commands.HELP)
+@note_metrics(platform=Platform.TELEGRAM, command=Command.HELP)
 async def help(message: Message):
     await message.answer(
         text=HELP,

@@ -45,29 +45,25 @@ PLATFORM_USER_INFO: str = (
     "chat id {chat_id}\n"
 )
 
+USER_BB_CREDENTIALS_INFO: str = (
+    "Логин: {login}\n"
+    "Пароль: {password}\n"
+)
+
 BASE_USER_INFO: str = (
+    "Группа {group}\n"
+    "\n"
     "• Заметок: {notes_number}\n"
 )
 
-GROUP_OF_STUDENTS_INFO: str = "\n".join([
-    PLATFORM_USER_INFO, (
-        "Группа {group}\n"
-    ),
+COMPACT_USER_INFO: str = "\n".join([
+    PLATFORM_USER_INFO,
     BASE_USER_INFO
 ])
 
-COMPACT_STUDENT_INFO: str = "\n".join([
-    PLATFORM_USER_INFO, (
-        "Группа {group}\n"
-    ),
-    BASE_USER_INFO
-])
-
-BB_STUDENT_INFO: str = "\n".join([
-    PLATFORM_USER_INFO, (
-        "Логин: {login}\n"
-        "Пароль: ********\n"
-    ),
+BB_USER_INFO: str = "\n".join([
+    PLATFORM_USER_INFO,
+    USER_BB_CREDENTIALS_INFO,
     BASE_USER_INFO
 ])
 

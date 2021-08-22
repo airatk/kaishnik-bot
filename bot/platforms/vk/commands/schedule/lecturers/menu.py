@@ -18,8 +18,9 @@ from bot.platforms.vk.utilities.keyboards import to_menu
 from bot.platforms.vk.utilities.keyboards import canceler
 from bot.platforms.vk.utilities.types import CommandsOfVK
 
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES
 from bot.utilities.api.types import ScheduleType
 from bot.utilities.api.lecturers import get_lecturers_names
@@ -30,7 +31,7 @@ from bot.utilities.api.lecturers import get_lecturers_names
         guards[event.object.object.message.peer_id].text is None and
         event.object.object.message.text.capitalize() == CommandsOfVK.LECTURERS.value
 )
-@increment_command_metrics(command=Commands.LECTURERS)
+@note_metrics(platform=Platform.VK, command=Command.LECTURERS)
 async def lecturers(event: SimpleBotEvent):
     await event.answer(
         message=choice(LOADING_REPLIES),
@@ -54,11 +55,11 @@ async def lecturers(event: SimpleBotEvent):
         keyboard=canceler()
     )
     
-    guards[event.peer_id].text = Commands.LECTURERS_NAME.value
+    guards[event.peer_id].text = Command.LECTURERS_NAME.value
 
 @vk_bot.message_handler(
     lambda event:
-        guards[event.object.object.message.peer_id].text == Commands.LECTURERS_NAME.value
+        guards[event.object.object.message.peer_id].text == Command.LECTURERS_NAME.value
 )
 async def find_lecturer(event: SimpleBotEvent):
     partial_name_parts: List[str] = event.text.lower().split(" ")
@@ -92,10 +93,10 @@ async def find_lecturer(event: SimpleBotEvent):
         keyboard=lecturer_chooser(names=names)
     )
 
-    guards[event.peer_id].text = Commands.LECTURERS.value
+    guards[event.peer_id].text = Command.LECTURERS.value
 
 @vk_bot.message_handler(
-    PayloadContainsFilter(key=Commands.LECTURERS.value),
+    PayloadContainsFilter(key=Command.LECTURERS.value),
     ~PayloadContainsFilter(key=ScheduleType.CLASSES.value),
     ~PayloadContainsFilter(key=ScheduleType.EXAMS.value)
 )

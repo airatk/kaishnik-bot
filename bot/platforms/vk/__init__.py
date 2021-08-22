@@ -2,7 +2,7 @@ from typing import Dict
 
 from vkwave.bots import SimpleLongPollBot
 
-from bot.models.users import Users
+from bot.models.user import User
 
 from bot.utilities.constants import KEYS
 from bot.utilities.types import Guard
@@ -19,8 +19,8 @@ vk_bot: SimpleLongPollBot = SimpleLongPollBot(
     group_id=KEYS.VK_GROUP
 )
 
-guards: Dict[int, Guard] = { user.vk_id: Guard() for user in Users.select(Users.vk_id) }
-states: Dict[int, State] = { user.vk_id: State() for user in Users.select(Users.vk_id) }
+guards: Dict[int, Guard] = { user.vk_id: Guard() for user in User.select(User.vk_id) }
+states: Dict[int, State] = { user.vk_id: State() for user in User.select(User.vk_id) }
 
 
 from bot.platforms.vk import commands

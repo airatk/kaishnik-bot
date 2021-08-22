@@ -6,7 +6,7 @@ from typing import Tuple
 from typing import Optional
 
 from bot.models.settings import Settings
-from bot.models.days_off import DaysOff
+from bot.models.day_off import DayOff
 
 from bot.utilities.api.helpers.classes import style_raw_student_class
 from bot.utilities.api.helpers.classes import style_raw_lecturer_class
@@ -36,7 +36,7 @@ def beautify_classes(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Se
             (raw_day, raw_month) = raw_date.split(".")
             day_date: Optional[datetime] = datetime(datetime.today().year, int(raw_month), int(raw_day))
             
-            is_day_off: bool = DaysOff.select().where(DaysOff.date == day_date.strftime("%d-%m")).exists()
+            is_day_off: bool = DayOff.select().where(DayOff.day == day_date.strftime("%d-%m")).exists()
             
             weekday: str = str(day_date.isoweekday())
         else:
@@ -54,17 +54,17 @@ def beautify_classes(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Se
             raw_schedule[weekday] = refine_raw_schedule(raw_schedule[weekday])
             
             for raw_class in raw_schedule[weekday]:
-                # No classes - no schedule. For dayoffs
+                # No classes - no schedule. For days off
                 if "День консультаций" in raw_class["disciplName"]: break
                 
                 # Removing extra whitespaces from dates
                 raw_class["dayDate"] = raw_class["dayDate"].replace(" ", "").replace(",", ", ")
                 
                 if not should_show_entire_semester:
-                    # Do not show classes on even weeks when they are supposed to be on odd weeks if that's not asked
+                    # Do not show classes on even weeks when they are supposed to be on odd weeks
                     if (raw_class["dayDate"] == "неч") if is_week_even(day_date) else (raw_class["dayDate"] == "чет"): continue
                     
-                    # Do not show classes with certain dates (21.09) on other dates (28 сентября) if that's not asked
+                    # Do not show classes with certain dates (21.09) on other dates (28 сентября)
                     if "." in raw_class["dayDate"] and (
                         "{day}.{month}".format(day=int(raw_day), month=raw_month) not in raw_class["dayDate"] and
                         raw_date not in raw_class["dayDate"]
@@ -87,7 +87,7 @@ def beautify_classes(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Se
         
         if classes == "":
             if not should_show_entire_semester and is_day_off:
-                classes = DaysOff.get(DaysOff.date == day_date.strftime("%d-%m")).message
+                classes = DayOff.get(DayOff.day == day_date.strftime("%d-%m")).message
             else:
                 classes = "Выходной"
         
@@ -108,10 +108,12 @@ def beautify_exams(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Sett
     
     raw_schedule.sort(key=lambda raw_exam: ".".join(raw_exam["examDate"].split(".")[:2][::-1]))
     
-    exams_list: List[str] = [ style_raw_student_exam(
-        raw_exam=raw_exam,
-        is_schedule_size_full=settings.is_schedule_size_full
-    ) for raw_exam in raw_schedule ]
+    exams_list: List[str] = [ 
+        style_raw_student_exam(
+            raw_exam=raw_exam,
+            is_schedule_size_full=settings.is_schedule_size_full
+        ) for raw_exam in raw_schedule 
+    ]
     
     return "\n\n".join(exams_list)
 
@@ -220,9 +222,11 @@ def beautify_lecturers_exams(raw_schedule: Dict[str, List[Dict[str, str]]], sett
     
     raw_schedule.sort(key=lambda raw_exam: ".".join(raw_exam["examDate"].split(".")[:2][::-1]))
     
-    exams_list: List[str] = [ style_raw_lecturer_exam(
-        raw_exam=raw_exam,
-        is_schedule_size_full=settings.is_schedule_size_full
-    ) for raw_exam in raw_schedule ]
+    exams_list: List[str] = [ 
+        style_raw_lecturer_exam(
+            raw_exam=raw_exam,
+            is_schedule_size_full=settings.is_schedule_size_full
+        ) for raw_exam in raw_schedule 
+    ]
     
     return "\n\n".join(exams_list)

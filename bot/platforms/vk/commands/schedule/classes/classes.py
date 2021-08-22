@@ -14,8 +14,9 @@ from bot.platforms.vk.commands.schedule.utilities.classes import common_show_cho
 from bot.platforms.vk.utilities.keyboards import to_menu
 from bot.platforms.vk.utilities.types import CommandsOfVK
 
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES
 from bot.utilities.api.student import get_group_schedule_id
 
@@ -26,7 +27,7 @@ from bot.utilities.api.student import get_group_schedule_id
         event.object.object.message.payload is None and
         event.object.object.message.text.capitalize().startswith(CommandsOfVK.CLASSES.value)
 )
-@increment_command_metrics(command=Commands.CLASSES)
+@note_metrics(platform=Platform.VK, command=Command.CLASSES)
 async def menu(event: SimpleBotEvent):    
     classes_arguments: List[str] = event.text.split()[1:]
     
@@ -57,6 +58,6 @@ async def menu(event: SimpleBotEvent):
         keyboard=time_period_chooser()
     )
 
-@vk_bot.message_handler(PayloadContainsFilter(key=Commands.CLASSES_SHOW.value))
+@vk_bot.message_handler(PayloadContainsFilter(key=Command.CLASSES_SHOW.value))
 async def show_chosen_date(event: SimpleBotEvent):
-    await common_show_chosen_date(command=Commands.CLASSES, event=event)
+    await common_show_chosen_date(command=Command.CLASSES, event=event)

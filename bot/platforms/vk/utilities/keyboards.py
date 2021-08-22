@@ -5,16 +5,16 @@ from vkwave.bots.utils.keyboards import ButtonColor
 
 from bot.platforms.vk.utilities.types import CommandsOfVK
 
-from bot.utilities.types import Commands
+from bot.utilities.types import Command
 
 
 def make_login() -> str:
     make_login_keyboard: Keyboard = Keyboard(one_time=True, inline=True)
     
-    make_login_keyboard.add_text_button(text=CommandsOfVK.LOGIN_NEW_USER.value, payload={ "callback": Commands.LOGIN.value })
+    make_login_keyboard.add_text_button(text=CommandsOfVK.LOGIN_NEW_USER.value, payload={ "callback": Command.LOGIN.value })
     
     make_login_keyboard.add_row()
-    make_login_keyboard.add_text_button(text=CommandsOfVK.LOGIN_VIA_TELEGRAM.value, payload={ "callback": Commands.LOGIN_PLATFORM.value })
+    make_login_keyboard.add_text_button(text=CommandsOfVK.LOGIN_VIA_TELEGRAM.value, payload={ "callback": Command.LOGIN_PLATFORM.value })
     
     return make_login_keyboard.get_keyboard()
 
@@ -40,7 +40,7 @@ def menu() -> str:
     menu_keyboard: Keyboard = Keyboard(one_time=True, inline=True)
     
     menu_keyboard.add_text_button(text=CommandsOfVK.CLASSES.value)
-    # menu_keyboard.add_text_button(text=CommandsOfVK.SCORE.value)
+    menu_keyboard.add_text_button(text=CommandsOfVK.SCORE.value)
 
     menu_keyboard.add_row()
     menu_keyboard.add_text_button(text=CommandsOfVK.LECTURERS.value)
@@ -79,7 +79,7 @@ def additional_menu() -> str:
 
 
 def cancel_button() -> Dict[str, str]:
-    return dict(text=CommandsOfVK.CANCEL.value, color=ButtonColor.SECONDARY, payload={ "callback": Commands.CANCEL.value })
+    return dict(text=CommandsOfVK.CANCEL.value, color=ButtonColor.SECONDARY, payload={ "callback": Command.CANCEL.value })
 
 def canceler() -> str:
     canceler_keyboard: Keyboard = Keyboard(one_time=True, inline=True)

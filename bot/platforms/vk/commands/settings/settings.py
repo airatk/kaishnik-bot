@@ -11,17 +11,14 @@ from bot.platforms.vk import guards
 from bot.platforms.vk.commands.settings.utilities.keyboards import action_chooser
 from bot.platforms.vk.utilities.types import CommandsOfVK
 
-from bot.models.users import Users
-from bot.models.groups_of_students import GroupsOfStudents
-from bot.models.compact_students import CompactStudents
-from bot.models.bb_students import BBStudents
-from bot.models.notes import Notes
+from bot.models.user import User
+from bot.models.note import Note
 
-from bot.utilities.constants import GROUP_OF_STUDENTS_INFO
-from bot.utilities.constants import COMPACT_STUDENT_INFO
-from bot.utilities.constants import BB_STUDENT_INFO
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.constants import COMPACT_USER_INFO
+from bot.utilities.constants import BB_USER_INFO
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 
 
 @vk_bot.message_handler(
@@ -29,40 +26,25 @@ from bot.utilities.types import Commands
         guards[event.object.object.message.peer_id].text is None and
         event.object.object.message.text.capitalize() == CommandsOfVK.SETTINGS.value
 )
-@increment_command_metrics(command=Commands.SETTINGS)
+@note_metrics(platform=Platform.VK, command=Command.SETTINGS)
 async def settings(event: SimpleBotEvent):
     vk_response: UsersGetResponse = await event.api_ctx.users.get(user_ids=[ event.peer_id ])
     vk_user: UsersUserXtrCounters = vk_response.response[0]
     
-    user_id: int = Users.get(Users.vk_id == event.peer_id).user_id
+    user: User = User.get(User.vk_id == event.peer_id)
+
     account_info: Dict[str, str] = {
         "fullname": " ".join([ vk_user.first_name, vk_user.last_name ]),
-        "username": "" if vk_user.nickname is None else " @{username}".format(username=vk_user.nickname),
+        "username": f" @id{event.peer_id}" if vk_user.nickname is None else f" @{vk_user.nickname}",
         "chat_id": event.peer_id,
-        "notes_number": Notes.select().where(Notes.user_id == user_id).count()
+        "login": user.bb_login,
+        "password": user.bb_password,
+        "group": user.group,
+        "notes_number": Note.select().where(Note.user == user).count()
     }
-    message: str = ""
-    
-    user: Any = (
-        GroupsOfStudents.get_or_none(GroupsOfStudents.user_id == user_id) or
-        CompactStudents.get_or_none(CompactStudents.user_id == user_id) or
-        BBStudents.get(BBStudents.user_id == user_id)
-    )
-    
-    if isinstance(user, GroupsOfStudents):
-        account_info["group"] = user.group
-        
-        message = GROUP_OF_STUDENTS_INFO.format(**account_info)
-    elif isinstance(user, CompactStudents):
-        account_info["group"] = user.group
-        
-        message = COMPACT_STUDENT_INFO.format(**account_info)
-    elif isinstance(user, BBStudents):
-        account_info["login"] = user.login
-        
-        message = BB_STUDENT_INFO.format(**account_info)
-    
+    user_info: str = COMPACT_USER_INFO if user.bb_login is None or user.bb_password is None else BB_USER_INFO
+
     await event.answer(
-        message=message,
+        message=user_info.format(**account_info),
         keyboard=action_chooser()
     )

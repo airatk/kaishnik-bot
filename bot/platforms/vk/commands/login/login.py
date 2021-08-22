@@ -13,38 +13,36 @@ from bot.platforms.vk.commands.login.utilities.keyboards import againer
 
 from bot.platforms.vk.utilities.keyboards import canceler
 
-from bot.models.users import Users
-from bot.models.compact_students import CompactStudents
-from bot.models.bb_students import BBStudents
+from bot.models.user import User
 
-from bot.utilities.types import Commands
+from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES
 from bot.utilities.api.types import ResponseError
 from bot.utilities.api.student import get_group_schedule_id
 
 
-@vk_bot.message_handler(PayloadFilter(payload={ "callback": Commands.LOGIN_COMPACT.value }))
+@vk_bot.message_handler(PayloadFilter(payload={ "callback": Command.LOGIN_COMPACT.value }))
 async def login_compact(event: SimpleBotEvent):
-    user: Users = Users.get(vk_id=event.peer_id)
-    
-    CompactStudents.delete().where(CompactStudents.user_id == user.user_id).execute()
-    BBStudents.delete().where(BBStudents.user_id == user.user_id).execute()
-    
-    user.is_setup = False
-    user.save()
-    
-    CompactStudents.create(user_id=user.user_id).save()
+    User.update(
+        group=None,
+        group_schedule_id=None,
+        bb_login=None,
+        bb_password=None,
+        is_setup=False
+    ).where(
+        User.vk_id == event.peer_id
+    ).execute()
     
     await event.answer(
         message="Отправь номер своей группы.",
         keyboard=canceler()
     )
     
-    guards[event.peer_id].text = Commands.LOGIN_COMPACT.value
+    guards[event.peer_id].text = Command.LOGIN_COMPACT.value
 
 @vk_bot.message_handler(
     lambda event:
-        guards[event.object.object.message.peer_id].text == Commands.LOGIN_COMPACT.value
+        guards[event.object.object.message.peer_id].text == Command.LOGIN_COMPACT.value
 )
 async def set_group(event: SimpleBotEvent):
     guards[event.peer_id].drop()
@@ -69,13 +67,11 @@ async def set_group(event: SimpleBotEvent):
         
         return
     
-    user_id: int = Users.get(Users.vk_id == event.peer_id).user_id
-    
-    CompactStudents.update(
+    User.update(
         group=event.text,
         group_schedule_id=group_schedule_id
     ).where(
-        CompactStudents.user_id == user_id
+        User.vk_id == event.peer_id
     ).execute()
     
     await finish_login(event=event)

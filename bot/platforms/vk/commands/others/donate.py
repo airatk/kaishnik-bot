@@ -7,10 +7,11 @@ from bot.platforms.vk.commands.others.utilities.keyboards import via_vk_pay
 from bot.platforms.vk.utilities.types import CommandsOfVK
 
 from bot.utilities.constants import DONATE
-from bot.utilities.helpers import increment_command_metrics
+from bot.utilities.helpers import note_metrics
 from bot.utilities.helpers import remove_markdown
 from bot.utilities.helpers import get_top_donators
-from bot.utilities.types import Commands
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 
 
 @vk_bot.message_handler(
@@ -18,7 +19,7 @@ from bot.utilities.types import Commands
         guards[event.object.object.message.peer_id].text is None and
         event.object.object.message.text.capitalize() == CommandsOfVK.DONATE.value
 )
-@increment_command_metrics(command=Commands.DONATE)
+@note_metrics(platform=Platform.VK, command=Command.DONATE)
 async def donate(event: SimpleBotEvent):
     await event.answer(
         message=remove_markdown(DONATE.format(top_donators=get_top_donators())),

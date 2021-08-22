@@ -8,10 +8,10 @@ from bot.platforms.vk import guards
 
 from bot.platforms.vk.utilities.keyboards import to_menu
 
-from bot.models.users import Users
+from bot.models.user import User
 
 from bot.utilities.helpers import remove_markdown
-from bot.utilities.types import Commands
+from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES
 from bot.utilities.api.types import ScheduleType
 from bot.utilities.api.lecturers import get_lecturers_schedule
@@ -19,7 +19,7 @@ from bot.utilities.api.lecturers import get_lecturers_schedule
 
 @vk_bot.message_handler(
     lambda event:
-        guards[event.object.object.message.peer_id].text == Commands.LECTURERS.value,
+        guards[event.object.object.message.peer_id].text == Command.LECTURERS.value,
     PayloadContainsFilter(key=ScheduleType.EXAMS.value)
 )
 async def lecturers_exams(event: SimpleBotEvent):
@@ -30,7 +30,7 @@ async def lecturers_exams(event: SimpleBotEvent):
 
     lecturer_id: str = event.payload["lecturer_id"]
     
-    user_id: int = Users.get(Users.vk_id == event.peer_id).user_id
+    user_id: int = User.get(User.vk_id == event.peer_id).user_id
     
     (schedule, response_error) = get_lecturers_schedule(
         lecturer_id=lecturer_id,

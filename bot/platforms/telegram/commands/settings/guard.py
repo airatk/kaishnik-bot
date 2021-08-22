@@ -4,13 +4,13 @@ from aiogram.types import ChatType
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
 
-from bot.utilities.types import Commands
+from bot.utilities.types import Command
 
 
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
-        guards[message.chat.id].text == Commands.SETTINGS.value
+        guards[message.chat.id].text == Command.SETTINGS.value
 )
 async def guard(message: Message):
     await message.delete()

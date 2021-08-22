@@ -8,14 +8,14 @@ from bot.platforms.telegram import guards
 from bot.platforms.telegram.commands.locations.utilities.keyboards import dorms_dialer
 from bot.platforms.telegram.utilities.helpers import top_notification
 
-from bot.utilities.types import Commands
+from bot.utilities.types import Command
 from bot.utilities.api.constants import DORMS
 from bot.utilities.api.types import LocationType
 
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        guards[callback.message.chat.id].text == Commands.LOCATIONS.value and
+        guards[callback.message.chat.id].text == Command.LOCATIONS.value and
         callback.data == LocationType.DORM.value
 )
 @top_notification
@@ -27,7 +27,7 @@ async def dorms(callback: CallbackQuery):
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        guards[callback.message.chat.id].text == Commands.LOCATIONS.value and
+        guards[callback.message.chat.id].text == Command.LOCATIONS.value and
         LocationType.DORM.value in callback.data
 )
 @top_notification
