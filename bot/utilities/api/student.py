@@ -1,6 +1,5 @@
 from typing import Optional
 from typing import Union
-from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
@@ -138,14 +137,12 @@ def authorise_user_via_kai_cas(user: User) -> Tuple[Optional[str], Optional[Resp
     
     return (token_JSESSIONID, None)
 
-def get_score_data(user: User, semester: Optional[int] = None, auth_token: Optional[str] = None) -> Tuple[Optional[Tuple[str, List[str], List[Tuple[str, str]]]], Optional[ResponseError]]:
-    (token_JSESSIONID, response_error) = authorise_user_via_kai_cas(user=user)
-
+def get_score_data(user: User, semester: Optional[int] = None, auth_token: Optional[str] = None, token_JSESSIONID: Optional[str] = None) -> Tuple[Optional[Tuple[str, List[str], List[Tuple[str, str]]]], Optional[ResponseError]]:
     if token_JSESSIONID is None:
-        return (None, response_error)
+        (token_JSESSIONID, response_error) = authorise_user_via_kai_cas(user=user)
 
-    if (auth_token is None) != (semester is None):
-        return (None, ResponseError.INCORRECT_SCORE_DATA)
+        if token_JSESSIONID is None:
+            return (None, response_error)
 
     try:
         score_data_page: str = get(
@@ -154,11 +151,11 @@ def get_score_data(user: User, semester: Optional[int] = None, auth_token: Optio
             params={} if auth_token is None else {
                 "p_auth": auth_token,
                 "p_p_id": "myBRS_WAR_myBRS10",
-                "p_p_lifecycle": "1",
+                "p_p_lifecycle": 1,
                 "p_p_state": "normal",
                 "p_p_mode": "view",
                 "p_p_col_id": "column-2",
-                "p_p_col_count": "1",
+                "p_p_col_count": 1,
                 "_myBRS_WAR_myBRS10_javax.portlet.action": "selectSemester",
                 "semester": semester
             },
@@ -170,10 +167,10 @@ def get_score_data(user: User, semester: Optional[int] = None, auth_token: Optio
         parsed_score_data_page: BeautifulSoup = BeautifulSoup(score_data_page, "html.parser")
         
         semester_selector: Optional[Tag] = parsed_score_data_page.find(name="select", attrs={ "name": "_myBRS_WAR_myBRS10_semester_0" })
-        semesters: List[str] = [ option["value"] for option in semester_selector.find_all("option") ]
+        semesters: List[str] = sorted([ option["value"] for option in semester_selector.find_all("option") ])
 
         score_table: Optional[Tag] = parsed_score_data_page.find(name="table", attrs={ "class": "table table-striped table-bordered" })
-        score_data: List[List[str]] = [ [
+        score_table_data: List[List[str]] = [ [
                 data.text for data in row.find_all("td")
             ] for row in score_table.find_all("tr")
         ][2:]
@@ -183,12 +180,12 @@ def get_score_data(user: User, semester: Optional[int] = None, auth_token: Optio
         return (None, ResponseError.NO_DATA)
 
     # Slightly refining traditional assessment to be written starting with lower case letter
-    for (subject_index, subject_score_data) in enumerate(score_data):
-        score_data[subject_index][16] = subject_score_data[16].lower()
+    for (subject_index, subject_score_data) in enumerate(score_table_data):
+        score_table_data[subject_index][16] = subject_score_data[16].lower()
     
     score: List[Tuple[str, str]] = [
         (subject_score_data[1], SCORE_TEMPLATE.format(*subject_score_data[1:])) 
-        for subject_score_data in score_data
+        for subject_score_data in score_table_data
     ]
 
     auth_token_start_index: int = score_data_page.find(AUTH_TOKEN_SIGN) + len(AUTH_TOKEN_SIGN)
@@ -196,4 +193,4 @@ def get_score_data(user: User, semester: Optional[int] = None, auth_token: Optio
 
     auth_token = score_data_page[auth_token_start_index:auth_token_end_index]
 
-    return ((auth_token, semesters, score), None)
+    return ((auth_token, token_JSESSIONID, semesters, score), None)

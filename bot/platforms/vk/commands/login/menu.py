@@ -5,6 +5,7 @@ from bot.platforms.vk import vk_bot
 
 from bot.platforms.vk.commands.login.utilities.constants import GUIDE_MESSAGE
 from bot.platforms.vk.commands.login.utilities.keyboards import login_way_chooser
+from bot.platforms.vk.utilities.helpers import is_group_chat
 from bot.platforms.vk.utilities.keyboards import to_menu
 
 from bot.models.user import User
@@ -40,7 +41,7 @@ async def finish_login(event: SimpleBotEvent):
 
     User.update(
         is_setup=True,
-        is_group_chat=False
+        is_group_chat=is_group_chat(peer_id=event.peer_id)
     ).where(
         User.vk_id == event.peer_id
     ).execute()

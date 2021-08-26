@@ -57,10 +57,7 @@ class Command(Enum):
     
     SCORE = "score"
     SCORE_SEMESTER = "score-semester"
-    SCORE_ALL = "score-all"
-    SCORE_EXAMS = "score-exams"
-    SCORE_COURSEWORKS = "score-courseworks"
-    SCORE_TESTS = "score-test"
+    SCORE_SUBJECT = "score-subject"
     
     NOTES = "notes"
     NOTES_ADD = "notes-add"
@@ -100,30 +97,23 @@ class Guard:
 
 class State:
     def __init__(self):
-        # /login
-        self.groups: List[Tuple[str, str]] = []
-        self.group_names: Dict[str, str] = {}
-        
         # /classes & /exams
-        self.another_group_schedule_id: str = None
+        self.another_group_schedule_id: Optional[str] = None
         self.chosen_schedule_dates: List[str] = []
-        self.classes_offline: Dict[str, List[Dict[str, str]]] = []
         
         # /lecturers
-        self.lecturers_names: List[Dict[str, str]] = None
+        self.lecturers_names: List[Dict[str, str]] = []
         
         # /score
-        self.scoretable: List[Tuple[str, str]] = None
+        self.auth_token: Optional[str] = None
+        self.token_JSESSIONID: Optional[str] = None
+        self.semesters: List[str] = []
+        self.choosen_semester: Optional[str] = None
+        self.score: List[Tuple[str, str]] = []
     
     def drop(self):
-        self.group_names = {}
-        self.another_group_schedule_id = None
-        self.chosen_schedule_dates = []
-        self.lecturers_names = None
-        self.scoretable = None
-    
-    def drop_all(self):
         self.__init__()
+
 
 class SettingsOption(Enum):
     IS_SCHEDULE_SIZE_FULL = "is_schedule_size_full"

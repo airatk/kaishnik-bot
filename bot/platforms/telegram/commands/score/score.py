@@ -12,9 +12,7 @@ from bot.platforms.telegram import guards
 from bot.platforms.telegram import states
 
 from bot.platforms.telegram.commands.score.utilities.keyboards import semester_chooser
-from bot.platforms.telegram.commands.score.utilities.keyboards import subjects_type_chooser
 from bot.platforms.telegram.commands.score.utilities.keyboards import subject_chooser
-from bot.platforms.telegram.commands.score.utilities.helpers import collect_subjects
 
 from bot.platforms.telegram.utilities.helpers import top_notification
 
@@ -24,8 +22,7 @@ from bot.utilities.helpers import note_metrics
 from bot.utilities.types import Platform
 from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES
-from bot.utilities.api.student import get_last_available_semester
-from bot.utilities.api.student import get_scoretable
+from bot.utilities.api.student import get_score_data
 
 
 @dispatcher.message_handler(
@@ -55,18 +52,23 @@ async def choose_semester(message: Message):
         disable_web_page_preview=True
     )
     
-    (last_available_semester, response_error) = get_last_available_semester(user_id=user.user_id)
+    (score_data, response_error) = get_score_data(user=user)
     
-    if last_available_semester is None:
+    if response_error is not None:
         await loading_message.edit_text(
             text=response_error.value,
             disable_web_page_preview=True
         )
         return
+
+    states[message.chat.id].auth_token = score_data[0]
+    states[message.chat.id].token_JSESSIONID = score_data[1]
+    states[message.chat.id].semesters = score_data[2]
+    states[message.chat.id].score = score_data[3]
     
     await loading_message.edit_text(
         text="Выбери номер семестра:",
-        reply_markup=semester_chooser(last_available_semester)
+        reply_markup=semester_chooser(semesters=states[message.chat.id].semesters)
     )
     
     guards[message.chat.id].text = Command.SCORE.value
@@ -77,99 +79,72 @@ async def choose_semester(message: Message):
         Command.SCORE_SEMESTER.value in callback.data
 )
 @top_notification
-async def choose_subjects_type(callback: CallbackQuery):
-    await callback.message.edit_text(
-        text=choice(LOADING_REPLIES),
-        disable_web_page_preview=True
-    )
-    
-    user: User = User.get(User.telegram_id == callback.message.chat.id)
-    
+async def choose_subject(callback: CallbackQuery):
     semester: str = callback.data.split()[1]
-    (scoretable, response_error) = get_scoretable(semester=semester, user_id=user.user_id)
-    
-    if scoretable is None:
+    last_semester: str = max(states[callback.message.chat.id].semesters)
+
+    if semester != last_semester:
         await callback.message.edit_text(
-            text=response_error.value,
+            text=choice(LOADING_REPLIES),
             disable_web_page_preview=True
         )
-        
-        guards[callback.message.chat.id].drop()
-        return
-    
-    states[callback.message.chat.id].scoretable = scoretable
-    
-    await callback.message.edit_text(
-        text="Выбери тип предметов:",
-        reply_markup=subjects_type_chooser(
-            has_exams=any(map(lambda score: ScoreSubjectType.EXAM.value in score[1], scoretable)),
-            has_courseworks=any(map(lambda score: ScoreSubjectType.COURSEWORK.value in score[1], scoretable)),
-            has_tests=any(map(lambda score: ScoreSubjectType.TEST.value in score[1], scoretable))
-        )
-    )
 
-@dispatcher.callback_query_handler(
-    lambda callback:
-        guards[callback.message.chat.id].text == Command.SCORE.value and any([
-            callback.data == Command.SCORE_ALL.value,
-            callback.data == Command.SCORE_EXAMS.value,
-            callback.data == Command.SCORE_COURSEWORKS.value,
-            callback.data == Command.SCORE_TESTS.value
-        ])
-)
-@top_notification
-async def choose_subject(callback: CallbackQuery):
-    subjects: List[str] = collect_subjects(
-        subject_type=callback.data,
-        scoretable=states[callback.message.chat.id].scoretable,
-        attribute_index=0
-    )
+        (score_data, response_error) = get_score_data(
+            user=User.get(User.telegram_id == callback.message.chat.id),
+            semester=semester,
+            auth_token=states[callback.message.chat.id].auth_token,
+            token_JSESSIONID=states[callback.message.chat.id].token_JSESSIONID
+        )
+
+        if response_error is not None:
+            await callback.message.edit_text(
+                text=response_error.value,
+                disable_web_page_preview=True
+            )
+
+            states[callback.message.chat.id].drop()
+            guards[callback.message.chat.id].drop()
+            return
+        
+        states[callback.message.chat.id].score = score_data[3]
     
+    subjects: List[str] = [ title for (title, _) in states[callback.message.chat.id].score ]
+
     await callback.message.edit_text(
         text="Выбери предмет:",
-        reply_markup=subject_chooser(subjects=subjects, subject_type=callback.data)
+        reply_markup=subject_chooser(subjects=subjects)
     )
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        guards[callback.message.chat.id].text == Command.SCORE.value and any([
-            Command.SCORE_ALL.value in callback.data,
-            Command.SCORE_EXAMS.value in callback.data,
-            Command.SCORE_COURSEWORKS.value in callback.data,
-            Command.SCORE_TESTS.value in callback.data
-        ])
+        guards[callback.message.chat.id].text == Command.SCORE.value and 
+        Command.SCORE_SUBJECT.value in callback.data
 )
 @top_notification
-async def show_subjects(callback: CallbackQuery):
-    (subject_type, string_index) = callback.data.split()
+async def show_score(callback: CallbackQuery):
+    subject_index: str = callback.data.split()[1]
+    subjects: List[str] = [ subject for (_, subject) in states[callback.message.chat.id].score ]
     
-    subjects: List[str] = collect_subjects(
-        subject_type=subject_type,
-        scoretable=states[callback.message.chat.id].scoretable,
-        attribute_index=1
-    )
-    
-    if string_index != "-":
+    if subject_index != "-":
         await callback.message.edit_text(
-            text=subjects[int(string_index)],
+            text=subjects[int(subject_index)],
             parse_mode=ParseMode.MARKDOWN
         )
     else:
         await callback.message.delete()
         
-        for score in subjects:
+        for subject in subjects:
             await callback.message.answer(
-                text=score,
+                text=subject,
                 parse_mode=ParseMode.MARKDOWN
             )
         
-        subjects_number: int = len(subjects)
-        
-        ending: str = "" if subjects_number == 1 else "а" if subjects_number in range(2, 5) else "ов"
+        ending: str = "" if len(subjects) == 1 else "а" if len(subjects) in range(2, 5) else "ов"
         
         await callback.message.answer(
-            text="*{subjects_number}* предмет{ending} всего!".format(subjects_number=subjects_number, ending=ending),
+            text=f"*{len(subjects)}* предмет{ending} всего!",
             parse_mode=ParseMode.MARKDOWN
         )
     
+    states[callback.message.chat.id].drop()
     guards[callback.message.chat.id].drop()

@@ -6,6 +6,7 @@ from bot.platforms.vk.commands import login
 from bot.platforms.vk.commands import menu
 
 from bot.platforms.vk.commands import schedule
+from bot.platforms.vk.commands import score
 from bot.platforms.vk.commands import notes
 from bot.platforms.vk.commands import locations
 from bot.platforms.vk.commands import others

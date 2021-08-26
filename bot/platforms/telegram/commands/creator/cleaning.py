@@ -33,7 +33,7 @@ async def clear(message: Message):
     users_list: List[User] = list(User.select())
     cleared_users_number: int = 0
     
-    loading_message: Message = await message.answer(text="Started clearing...")
+    loading_message: Message = await message.answer(text="Started clearing…")
     progress_bar: str = ""
     
     for (index, user) in enumerate(users_list):

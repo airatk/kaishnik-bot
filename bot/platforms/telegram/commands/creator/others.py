@@ -92,7 +92,7 @@ async def broadcast(message: Message):
         await message.answer(text="The option has no matches!")
         return
     
-    loading_message: Message = await message.answer(text="Started broadcasting...")
+    loading_message: Message = await message.answer(text="Started broadcasting…")
     progress_bar: str = ""
     
     for (index, user_id) in enumerate(users_ids_list):
