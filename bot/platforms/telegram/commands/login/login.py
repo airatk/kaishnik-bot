@@ -25,7 +25,7 @@ from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES
 from bot.utilities.api.types import ResponseError
 from bot.utilities.api.student import get_group_schedule_id
-from bot.utilities.api.student import authorise_via_kai_cas
+from bot.utilities.api.student import authenticate_user_via_kai_cas
 
 
 @dispatcher.callback_query_handler(
@@ -144,7 +144,7 @@ async def set_bb_password(message: Message):
     user.bb_password = message.text
     user.save()
     
-    (_, response_error) = authorise_via_kai_cas(login=user.bb_login, password=user.bb_password)
+    (_, response_error) = authenticate_user_via_kai_cas(user=user)
 
     if response_error is not None:
         if response_error is not ResponseError.INCORRECT_BB_CREDENTIALS:

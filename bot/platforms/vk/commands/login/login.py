@@ -1,7 +1,5 @@
 from random import choice
 
-from re import Match
-
 from vkwave.bots import SimpleBotEvent
 from vkwave.bots import PayloadFilter
 
@@ -20,7 +18,7 @@ from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES
 from bot.utilities.api.types import ResponseError
 from bot.utilities.api.student import get_group_schedule_id
-from bot.utilities.api.student import authorise_via_kai_cas
+from bot.utilities.api.student import authenticate_user_via_kai_cas
 
 
 @vk_bot.message_handler(PayloadFilter(payload={ "callback": Command.LOGIN_BB.value }))
@@ -74,7 +72,7 @@ async def set_bb_password(event: SimpleBotEvent):
     user.bb_password = event.text
     user.save()
     
-    (_, response_error) = authorise_via_kai_cas(login=user.bb_login, password=user.bb_password)
+    (_, response_error) = authenticate_user_via_kai_cas(user=user)
 
     if response_error is not None:
         if response_error is not ResponseError.INCORRECT_BB_CREDENTIALS:

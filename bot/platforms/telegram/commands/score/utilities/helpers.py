@@ -2,7 +2,6 @@ from typing import List
 from typing import Tuple
 
 from bot.utilities.types import Command
-from bot.utilities.api.types import ScoreSubjectType
 
 
 def collect_subjects(subject_type: str, scoretable: List[Tuple[str, str]], attribute_index: int) -> List[str]:

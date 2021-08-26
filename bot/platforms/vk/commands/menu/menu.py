@@ -1,5 +1,4 @@
 from vkwave.bots import SimpleBotEvent
-from vkwave.bots import PayloadFilter
 
 from bot.platforms.vk import vk_bot
 from bot.platforms.vk import states

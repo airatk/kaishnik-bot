@@ -87,7 +87,7 @@ async def finish_login(message: Message):
     
     User.update(
         is_setup=True, 
-        is_group_chat=message.chat.type != ChatType.PRIVATE
+        is_group_chat=(message.chat.type != ChatType.PRIVATE)
     ).where(
         User.telegram_id == message.chat.id
     ).execute()

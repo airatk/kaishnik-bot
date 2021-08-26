@@ -24,7 +24,6 @@ from bot.utilities.helpers import note_metrics
 from bot.utilities.types import Platform
 from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES
-from bot.utilities.api.types import ScoreSubjectType
 from bot.utilities.api.student import get_last_available_semester
 from bot.utilities.api.student import get_scoretable
 

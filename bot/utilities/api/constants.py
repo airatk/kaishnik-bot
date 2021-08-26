@@ -6,12 +6,18 @@ from typing import Union
 # HTTP-request constants
 SCHEDULE_URL: str = "https://kai.ru/raspisanie"
 LECTURERS_SCHEDULE_URL: str = "https://kai.ru/for-staff/raspisanie"
+
 CAS_LOGIN_URL: str = "https://cas.kai.ru:8443/cas/login"
+CAS_SERVICE_LOGIN_URL: str = "https://cas.kai.ru:8443/cas/login?service=https://kai.ru/c/portal/login"
+STUDENT_DATA_URL: str = "https://kai.ru/group/guest/student/{data_type}"
 
 LOADING_REPLIES: List[str] = [
     "Стучусь на сервера kai.ru…",
     "Ожидание ответа от серверов kai.ru…"
 ]
+
+AUTH_TOKEN_SIGN: str = "Liferay.authToken = '"
+AUTH_TOKEN_LENGTH: int = 8
 
 
 # UI constants
@@ -42,6 +48,24 @@ COMPACT_EXAM_ENTITIES: List[str] = [
     "*{date}, {time} • {building}ка, {auditorium}*",
     "{title}"
 ]
+
+SCORE_TEMPLATE: str = (
+    "*{}*\n"
+    "\n"
+    "• 1 аттестация: {} / {}\n"
+    "• 2 аттестация: {} / {}\n"
+    "• 3 аттестация: {} / {}\n"
+    "• 4 аттестация: {} / {}\n"
+    "• 5 аттестация: {} / {}\n"
+    "\n"
+    "• Предварительная оценка: {}\n"
+    "• Дополнительные баллы: {}\n"
+    "\n"
+    "• Долги: {}\n"
+    "\n"
+    "• Окончательная оценка: {}\n"
+    "• Традиционная оценка: *{}*"
+)
 
 
 # Locations data constants
