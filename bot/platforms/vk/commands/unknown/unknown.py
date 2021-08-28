@@ -3,8 +3,10 @@ from random import choice
 from vkwave.bots import SimpleBotEvent
 
 from bot.platforms.vk import vk_bot
+from bot.platforms.vk import guards
 
 from bot.platforms.vk.utilities.keyboards import to_menu
+from bot.platforms.vk.utilities.keyboards import canceler
 
 from bot.utilities.constants import REPLIES_TO_UNKNOWN_TEXT_MESSAGE
 from bot.utilities.constants import REPLIES_TO_UNKNOWN_NONTEXT_MESSAGE
@@ -12,6 +14,16 @@ from bot.utilities.helpers import note_metrics
 from bot.utilities.types import Platform
 from bot.utilities.types import Command
 
+
+@vk_bot.message_handler(
+    lambda event: guards[event.object.object.message.peer_id].text is not None
+)
+@note_metrics(platform=Platform.VK, command=Command.CATCHED_BY_GUARD)
+async def catched_by_guard(event: SimpleBotEvent):
+    await event.answer(
+        message="Чтобы отправить другую команду, отмени текущую.",
+        keyboard=canceler()
+    )
 
 @vk_bot.message_handler(
     lambda event: len(event.object.object.message.text) == 0

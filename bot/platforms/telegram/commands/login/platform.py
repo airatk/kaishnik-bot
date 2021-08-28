@@ -8,12 +8,12 @@ from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
 
 from bot.platforms.telegram.commands.login.menu import finish_login
-from bot.platforms.telegram.utilities.keyboards import canceler
+from bot.platforms.telegram.utilities.constants import BOT_ADDRESSING
 from bot.platforms.telegram.utilities.helpers import top_notification
+from bot.platforms.telegram.utilities.keyboards import canceler
 
 from bot.models.user import User
 
-from bot.utilities.constants import BOT_ADDRESSING
 from bot.utilities.helpers import decode_platform_code
 from bot.utilities.types import Command
 

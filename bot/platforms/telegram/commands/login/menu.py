@@ -8,12 +8,11 @@ from bot.platforms.telegram import guards
 
 from bot.platforms.telegram.commands.login.utilities.constants import GUIDE_MESSAGE
 from bot.platforms.telegram.commands.login.utilities.keyboards import login_way_chooser
-
+from bot.platforms.telegram.utilities.constants import BOT_ADDRESSING
 from bot.platforms.telegram.utilities.helpers import top_notification
 
 from bot.models.user import User
 
-from bot.utilities.constants import BOT_ADDRESSING
 from bot.utilities.helpers import note_metrics
 from bot.utilities.types import Platform
 from bot.utilities.types import Command

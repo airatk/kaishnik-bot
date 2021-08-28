@@ -19,11 +19,13 @@ def time_period_chooser(lecturer_id: str = "-") -> str:
     today_date: date = date.today()
     yesterday_date: date = today_date - timedelta(days=1)
     tomorrow_date: date = today_date + timedelta(days=1)
+
+    command: str = Command.CLASSES_SHOW.value if lecturer_id == "-" else Command.LECTURERS_CLASSES_SHOW.value
     
     time_period_chooser_keyboard.add_text_button(**menu_button())
     time_period_chooser_keyboard.add_text_button(
         text="Сегодня", payload={
-            Command.CLASSES_SHOW.value: "", 
+            command: "", 
             "date_string": today_date.strftime("%d.%m"), 
             "lecturer_id": lecturer_id 
         }
@@ -32,14 +34,14 @@ def time_period_chooser(lecturer_id: str = "-") -> str:
     time_period_chooser_keyboard.add_row()
     time_period_chooser_keyboard.add_text_button(
         text="Вчера", payload={
-            Command.CLASSES_SHOW.value: "", 
+            command: "", 
             "date_string": yesterday_date.strftime("%d.%m"), 
             "lecturer_id": lecturer_id 
         }
     )
     time_period_chooser_keyboard.add_text_button(
         text="Завтра", payload={ 
-            Command.CLASSES_SHOW.value: "", 
+            command: "", 
             "date_string": tomorrow_date.strftime("%d.%m"), 
             "lecturer_id": lecturer_id
         }
@@ -48,7 +50,7 @@ def time_period_chooser(lecturer_id: str = "-") -> str:
     time_period_chooser_keyboard.add_row()
     time_period_chooser_keyboard.add_text_button(
         text="Весь семестр", payload={ 
-            Command.CLASSES_SHOW.value: "", 
+            command: "", 
             "lecturer_id": lecturer_id 
         }
     )
@@ -64,21 +66,23 @@ def dates_scroller(shown_date_string: str, lecturer_id: str = "-") -> str:
     earlier_date: date = shown_date - timedelta(days=(1 if shown_date.isoweekday != 1 else 2))
     later_date: date = shown_date + timedelta(days=(1 if shown_date.isoweekday != 6 else 2))
 
-    # Shifting backwards for 7 days, because of the weirdness of university schedule for 
+    # Shifting backwards for 7 days, because of the weirdness of university schedule for
     if not first_date.month > 7:
         first_date -= timedelta(days=7)
     
+    command: str = Command.CLASSES_SHOW.value if lecturer_id == "-" else Command.LECTURERS_CLASSES_SHOW.value
+
     movement_buttons: List[Dict[str, Union[str, Dict]]] = [ { 
             "text": "Раньше", 
             "payload": { 
-                Command.CLASSES_SHOW.value: "",
+                command: "",
                 "date_string": earlier_date.strftime("%d.%m"),
                 "lecturer_id": lecturer_id
             }
         }, {
             "text": "Позже", 
             "payload": { 
-                Command.CLASSES_SHOW.value: "",
+                command: "",
                 "date_string": later_date.strftime("%d.%m"),
                 "lecturer_id": lecturer_id
             }

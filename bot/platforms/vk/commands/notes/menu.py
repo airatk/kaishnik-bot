@@ -20,7 +20,8 @@ from bot.utilities.types import Command
 @vk_bot.message_handler(
     lambda event:
         guards[event.object.object.message.peer_id].text is None and
-        event.object.object.message.text == CommandOfVK.NOTES.value
+        event.object.object.message.payload is None and
+        event.object.object.message.text.capitalize() == CommandOfVK.NOTES.value
 )
 @note_metrics(platform=Platform.VK, command=Command.NOTES)
 async def notes(event: SimpleBotEvent):

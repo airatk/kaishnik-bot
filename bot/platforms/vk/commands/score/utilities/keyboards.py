@@ -34,14 +34,14 @@ def subject_chooser(subjects: List[str], offset: int = 0) -> str:
     subject_chooser_keyboard.add_text_button(
         text="Показать все",
         color=ButtonColor.SECONDARY,
-        payload={ Command.SCORE_SUBJECT.value: "-" }
+        payload={ Command.SCORE_SUBJECT.value: -1 }
     )
     
     for (index, title) in enumerate(subjects[offset:(offset + SUBJECTS_NUMBER)]):
         subject_chooser_keyboard.add_row()
         subject_chooser_keyboard.add_text_button(
             text=shorten(title),
-            payload={ Command.SCORE_SUBJECT.value: str(index + offset) }
+            payload={ Command.SCORE_SUBJECT.value: index + offset }
         )
     
     if offset + SUBJECTS_NUMBER < len(subjects):

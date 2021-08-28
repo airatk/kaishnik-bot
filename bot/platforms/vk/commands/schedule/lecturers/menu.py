@@ -10,9 +10,9 @@ from bot.platforms.vk import vk_bot
 from bot.platforms.vk import guards
 from bot.platforms.vk import states
 
+from bot.platforms.vk.commands.schedule.lecturers.utilities.constants import MAX_LECTURERS_NUMBER
 from bot.platforms.vk.commands.schedule.lecturers.utilities.keyboards import lecturer_chooser
 from bot.platforms.vk.commands.schedule.lecturers.utilities.keyboards import lecturer_info_type_chooser
-from bot.platforms.vk.commands.schedule.lecturers.utilities.constants import MAX_LECTURERS_NUMBER
 
 from bot.platforms.vk.utilities.keyboards import to_menu
 from bot.platforms.vk.utilities.keyboards import canceler
@@ -29,6 +29,7 @@ from bot.utilities.api.lecturers import get_lecturers_names
 @vk_bot.message_handler(
     lambda event:
         guards[event.object.object.message.peer_id].text is None and
+        event.object.object.message.payload is None and
         event.object.object.message.text.capitalize() == CommandOfVK.LECTURERS.value
 )
 @note_metrics(platform=Platform.VK, command=Command.LECTURERS)
@@ -106,6 +107,16 @@ async def lecturers_schedule_type(event: SimpleBotEvent):
         lambda lecturer: lecturer["id"] == lecturer_id,
         states[event.peer_id].lecturers_names
     ))
+
+    if len(names) != 1:
+        await event.answer(
+            message="Что-то пошло не так🙆🏼‍♀️",
+            keyboard=to_menu()
+        )
+
+        guards[event.peer_id].drop()
+        return
+
     chosen_name: str = names[0]["lecturer"].replace(" ", "\n", 1)
     
     states[event.peer_id].drop()

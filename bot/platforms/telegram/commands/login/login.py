@@ -15,12 +15,12 @@ from bot.platforms.telegram.commands.login.menu import finish_login
 from bot.platforms.telegram.commands.login.utilities.keyboards import againer
 from bot.platforms.telegram.commands.login.utilities.keyboards import guess_approver
 
+from bot.platforms.telegram.utilities.constants import BOT_ADDRESSING
 from bot.platforms.telegram.utilities.keyboards import canceler
 from bot.platforms.telegram.utilities.helpers import top_notification
 
 from bot.models.user import User
 
-from bot.utilities.constants import BOT_ADDRESSING
 from bot.utilities.constants import GROUP_NUMBER_PATTERN
 from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES

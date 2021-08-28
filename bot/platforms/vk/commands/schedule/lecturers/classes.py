@@ -23,9 +23,6 @@ async def lecturer_menu(event: SimpleBotEvent):
         keyboard=time_period_chooser(lecturer_id=lecturer_id)
     )
 
-@vk_bot.message_handler(
-    lambda event: guards[event.object.object.message.peer_id].text == Command.LECTURERS.value,
-    PayloadContainsFilter(key=Command.CLASSES_SHOW.value)
-)
+@vk_bot.message_handler(PayloadContainsFilter(key=Command.LECTURERS_CLASSES_SHOW.value))
 async def lecturer_show_chosen_date(event: SimpleBotEvent):
     await common_show_chosen_date(command=Command.LECTURERS, event=event)

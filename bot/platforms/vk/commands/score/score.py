@@ -12,6 +12,7 @@ from bot.platforms.vk import states
 from bot.platforms.vk.commands.score.utilities.keyboards import semester_chooser
 from bot.platforms.vk.commands.score.utilities.keyboards import subject_chooser
 from bot.platforms.vk.utilities.helpers import is_group_chat
+from bot.platforms.vk.utilities.keyboards import to_settings
 from bot.platforms.vk.utilities.keyboards import to_menu
 from bot.platforms.vk.utilities.types import CommandOfVK
 
@@ -28,7 +29,8 @@ from bot.utilities.api.student import get_score_data
 @vk_bot.message_handler(
     lambda event:
         guards[event.object.object.message.peer_id].text is None and
-        event.object.object.message.text == CommandOfVK.SCORE.value
+        event.object.object.message.payload is None and
+        event.object.object.message.text.capitalize() == CommandOfVK.SCORE.value
 )
 @note_metrics(platform=Platform.VK, command=Command.SCORE)
 async def choose_semester(event: SimpleBotEvent):
@@ -38,7 +40,10 @@ async def choose_semester(event: SimpleBotEvent):
         await event.answer(message="Не доступно :(")
         
         if not is_group_chat(peer_id=event.peer_id):
-            await event.answer(message="Чтобы видеть баллы, нужно отправить /login и войти через ББ.")
+            await event.answer(
+                message="Чтобы видеть баллы, нужно сменить аккаунт в настройках и войти через ББ.",
+                keyboard=to_settings()
+            )
         
         return
     
@@ -69,6 +74,16 @@ async def choose_semester(event: SimpleBotEvent):
 @vk_bot.message_handler(PayloadContainsFilter(key=Command.SCORE_SEMESTER.value))
 async def choose_subject(event: SimpleBotEvent):
     semester: str = event.payload[Command.SCORE_SEMESTER.value]
+
+    if len(states[event.peer_id].semesters) == 0:
+        await event.answer(
+            message="Что-то пошло не так🙆🏼‍♀️",
+            keyboard=to_menu()
+        )
+
+        guards[event.peer_id].drop()
+        return
+    
     last_semester: str = max(states[event.peer_id].semesters)
 
     if semester != last_semester:
@@ -103,8 +118,6 @@ async def choose_subject(event: SimpleBotEvent):
         keyboard=subject_chooser(subjects=subjects)
     )
 
-    guards[event.peer_id].text = Command.SCORE_SUBJECT.value
-
 @vk_bot.message_handler(PayloadContainsFilter(key=Command.SCORE_MORE_SUBJECTS.value))
 async def show_more_subjects(event: SimpleBotEvent):
     next_offset: int = event.payload[Command.SCORE_MORE_SUBJECTS.value]
@@ -117,15 +130,19 @@ async def show_more_subjects(event: SimpleBotEvent):
 
 @vk_bot.message_handler(PayloadContainsFilter(key=Command.SCORE_SUBJECT.value))
 async def show_score(event: SimpleBotEvent):
-    subject_index: str = event.payload[Command.SCORE_SUBJECT.value]
+    subject_index: int = event.payload[Command.SCORE_SUBJECT.value]
     subjects: List[str] = [ subject for (_, subject) in states[event.peer_id].score ]
-    
-    if subject_index != "-":
+
+    if subject_index >= len(subjects) or len(subjects) == 0:
         await event.answer(
-            message=remove_markdown(subjects[int(subject_index)]),
+            message="Что-то пошло не так🙆🏼‍♀️",
             keyboard=to_menu()
         )
-    else:
+
+        guards[event.peer_id].drop()
+        return
+
+    if subject_index == -1:
         for subject in subjects:
             await event.answer(
                 message=remove_markdown(subject),
@@ -134,7 +151,9 @@ async def show_score(event: SimpleBotEvent):
         
         ending: str = "" if len(subjects) == 1 else "а" if len(subjects) in range(2, 5) else "ов"
 
-        await event.answer(text=f"{len(subjects)} предмет{ending} всего!")
-    
-    states[event.peer_id].drop()
-    guards[event.peer_id].drop()
+        await event.answer(message=f"{len(subjects)} предмет{ending} всего!")
+    else:
+        await event.answer(
+            message=remove_markdown(subjects[subject_index]),
+            keyboard=to_menu()
+        )

@@ -5,12 +5,12 @@ from aiogram.types import ChatType
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
 
+from bot.platforms.telegram.utilities.constants import BOT_ADDRESSING
 from bot.platforms.telegram.utilities.helpers import top_notification
 
 from bot.models.user import User
 
 from bot.utilities.helpers import note_metrics
-from bot.utilities.constants import BOT_ADDRESSING
 from bot.utilities.types import Platform
 from bot.utilities.types import Command
 

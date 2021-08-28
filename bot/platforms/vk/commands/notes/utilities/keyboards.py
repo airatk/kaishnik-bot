@@ -7,8 +7,7 @@ from bot.platforms.vk.utilities.keyboards import menu_button
 
 from bot.models.note import Note
 
-from bot.utilities.constants import MAX_SYMBOLS_NUMBER
-from bot.utilities.helpers import remove_markdown
+from bot.utilities.helpers import shorten
 from bot.utilities.types import Command
 
 
@@ -45,10 +44,7 @@ def note_chooser(notes: List[Note], action: Command) -> str:
     for note in notes:
         note_chooser_keyboard.add_row()
         note_chooser_keyboard.add_text_button(
-            text="{note}{ellipsis}".format(
-                note=remove_markdown(note.text[:MAX_SYMBOLS_NUMBER].strip()),
-                ellipsis="…" if len(note.text) > MAX_SYMBOLS_NUMBER else ""
-            ),
+            text=shorten(note.text),
             color=ButtonColor.PRIMARY if action is not Command.NOTES_DELETE else ButtonColor.NEGATIVE,
             payload={
                 action.value: "", 

@@ -17,6 +17,7 @@ from bot.utilities.types import Command
 @vk_bot.message_handler(
     lambda event:
         guards[event.object.object.message.peer_id].text is None and
+        event.object.object.message.payload is None and
         event.object.object.message.text.capitalize() == CommandOfVK.DONATE.value
 )
 @note_metrics(platform=Platform.VK, command=Command.DONATE)

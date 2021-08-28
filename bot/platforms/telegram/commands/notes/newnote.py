@@ -6,13 +6,13 @@ from aiogram.types import ParseMode
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
 
+from bot.platforms.telegram.utilities.constants import BOT_ADDRESSING
 from bot.platforms.telegram.utilities.helpers import top_notification
 from bot.platforms.telegram.utilities.keyboards import canceler
 
 from bot.models.user import User
 from bot.models.note import Note
 
-from bot.utilities.constants import BOT_ADDRESSING
 from bot.utilities.constants import MAX_NOTES_NUMBER
 from bot.utilities.helpers import clarify_markdown
 from bot.utilities.types import Command

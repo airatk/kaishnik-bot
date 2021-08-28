@@ -39,8 +39,9 @@ async def start(event: SimpleBotEvent):
 # Accepting the old users on the `/start` command
 @vk_bot.message_handler(
     lambda event:
-        event.object.object.message.text.capitalize() == CommandOfVK.RESTART.value and 
-        User.get(User.vk_id == event.object.object.message.peer_id).is_setup
+        User.get(User.vk_id == event.object.object.message.peer_id).is_setup and
+        event.object.object.message.payload is None and
+        event.object.object.message.text.capitalize() == CommandOfVK.RESTART.value
 )
 @note_metrics(platform=Platform.VK, command=Command.RESTART)
 async def restart(event: SimpleBotEvent):

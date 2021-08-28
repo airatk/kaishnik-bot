@@ -11,9 +11,9 @@ from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import states
 from bot.platforms.telegram import guards
 
+from bot.platforms.telegram.utilities.constants import BOT_ADDRESSING
 from bot.platforms.telegram.utilities.helpers import top_notification
 
-from bot.utilities.constants import BOT_ADDRESSING
 from bot.utilities.constants import REPLIES_TO_UNKNOWN_COMMAND
 from bot.utilities.constants import REPLIES_TO_UNKNOWN_TEXT_MESSAGE
 from bot.utilities.helpers import note_metrics

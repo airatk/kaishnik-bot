@@ -54,6 +54,7 @@ class Command(Enum):
     
     LECTURERS = "lecturers"
     LECTURERS_NAME = "lecturers-name"
+    LECTURERS_CLASSES_SHOW = "lecturers-classes-show"
     
     SCORE = "score"
     SCORE_SEMESTER = "score-semester"
@@ -83,6 +84,8 @@ class Command(Enum):
     SETTINGS_APPEARANCE_DROP = "settings-appearance-drop"
     SETTINGS_PLATFORM_CODE = "settings-platform-code"
     
+    CATCHED_BY_GUARD = "catched-by-guard"
+
     UNKNOWN_NONTEXT_MESSAGE = "unknown-nontext-message"
     UNKNOWN_TEXT_MESSAGE = "unknown-text-message"
     UNKNOWN_CALLBACK = "unknown-callback"

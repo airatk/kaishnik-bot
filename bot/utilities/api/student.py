@@ -178,7 +178,10 @@ def get_score_data(user: User, semester: Optional[int] = None, auth_token: Optio
         return (None, ResponseError.NO_RESPONSE)
     except AttributeError:
         return (None, ResponseError.NO_DATA)
-
+    
+    if len(semesters) == 0 or len(score_table_data) == 0:
+        return (None, ResponseError.NO_DATA)
+    
     # Slightly refining traditional assessment to be written starting with lower case letter
     for (subject_index, subject_score_data) in enumerate(score_table_data):
         score_table_data[subject_index][16] = subject_score_data[16].lower()

@@ -1,4 +1,4 @@
-from bot.utilities.constants import BOT_ADDRESSING
+from bot.platforms.telegram.utilities.constants import BOT_ADDRESSING
 
 
 HELP: str = (

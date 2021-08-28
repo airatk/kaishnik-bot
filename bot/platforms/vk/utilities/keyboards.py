@@ -8,6 +8,14 @@ from bot.platforms.vk.utilities.types import CommandOfVK
 from bot.utilities.types import Command
 
 
+def to_settings() -> str:
+    to_settings_keyboard: Keyboard = Keyboard(one_time=True, inline=True)
+    
+    to_settings_keyboard.add_text_button(text=CommandOfVK.SETTINGS.value, color=ButtonColor.SECONDARY)
+
+    return to_settings_keyboard.get_keyboard()
+
+
 def menu_button() -> Dict[str, str]:
     return dict(text=CommandOfVK.MENU.value, color=ButtonColor.SECONDARY)
 
@@ -41,7 +49,11 @@ def menu(is_group_chat: bool = False) -> str:
     menu_keyboard.add_text_button(text=CommandOfVK.BRS.value)
 
     menu_keyboard.add_row()
-    menu_keyboard.add_text_button(text=CommandOfVK.MORE.value, color=ButtonColor.SECONDARY)
+    menu_keyboard.add_text_button(
+        text=CommandOfVK.MORE.value, 
+        color=ButtonColor.SECONDARY,
+        payload={ "callback": Command.MORE.value }
+    )
     
     return menu_keyboard.get_keyboard()
 

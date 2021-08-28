@@ -7,9 +7,6 @@ KEYS_FILE: str = "data/keys"
 KEYS: Config = Config(KEYS_FILE)
 
 
-BOT_ADDRESSING: str = "/kaist"" "  # The ending whitespace was added for style purposes
-
-
 GROUP_NUMBER_PATTERN: str = "[0-9][0-9][0-9][0-9][0-9]?[0-9]?"
 
 SUBJECTS_NUMBER: int = 4

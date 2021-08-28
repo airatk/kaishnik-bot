@@ -64,4 +64,3 @@ async def common_show_chosen_date(command: Command, event: SimpleBotEvent):
             )
 
     states[event.peer_id].drop()
-    guards[event.peer_id].drop()
