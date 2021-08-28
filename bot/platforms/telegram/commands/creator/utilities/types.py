@@ -29,7 +29,6 @@ class Value(Enum):
     GROUPS = "groups"
     COMPACTS = "compacts"
     BBS = "bbs"
-    UNDEFINED = "undefined"
     
     GUARDS = "guards"
     

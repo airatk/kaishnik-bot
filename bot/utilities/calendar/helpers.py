@@ -12,7 +12,6 @@ def is_week_even(day_date: date) -> bool:
 
 def get_week_number(day_date: date) -> int:
     semester_first_day: date = get_semester_boundaries(day_date=day_date)[0]
-    
     semester_first_week: int = semester_first_day.isocalendar()[1]
     current_week: int = day_date.isocalendar()[1]
     

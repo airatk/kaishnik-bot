@@ -58,8 +58,7 @@ async def lecturers(event: SimpleBotEvent):
     guards[event.peer_id].text = Command.LECTURERS_NAME.value
 
 @vk_bot.message_handler(
-    lambda event:
-        guards[event.object.object.message.peer_id].text == Command.LECTURERS_NAME.value
+    lambda event: guards[event.object.object.message.peer_id].text == Command.LECTURERS_NAME.value
 )
 async def find_lecturer(event: SimpleBotEvent):
     partial_name_parts: List[str] = event.text.lower().split(" ")
@@ -92,7 +91,7 @@ async def find_lecturer(event: SimpleBotEvent):
         message="Выбери преподавателя:",
         keyboard=lecturer_chooser(names=names)
     )
-
+    
     guards[event.peer_id].text = Command.LECTURERS.value
 
 @vk_bot.message_handler(

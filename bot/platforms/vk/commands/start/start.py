@@ -20,8 +20,7 @@ from bot.utilities.types import State
 
 # Accepting new users on any message
 @vk_bot.message_handler(
-    lambda event:
-        not User.select().where(User.vk_id == event.object.object.message.peer_id).exists()
+    lambda event: not User.select().where(User.vk_id == event.object.object.message.peer_id).exists()
 )
 async def start(event: SimpleBotEvent):
     user: User = User.create(vk_id=event.peer_id)

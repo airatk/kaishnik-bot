@@ -4,7 +4,10 @@ from vkwave.bots.utils.keyboards import Keyboard
 from vkwave.bots.utils.keyboards import ButtonColor
 
 from bot.platforms.vk.utilities.keyboards import menu_button
+from bot.platforms.vk.utilities.types import CommandOfVK
 
+from bot.utilities.constants import SUBJECTS_NUMBER
+from bot.utilities.helpers import shorten
 from bot.utilities.types import Command
 
 
@@ -24,7 +27,7 @@ def semester_chooser(semesters: List[str]) -> str:
     
     return semester_chooser_keyboard.get_keyboard()
 
-def subject_chooser(subjects: List[str]) -> str:
+def subject_chooser(subjects: List[str], offset: int = 0) -> str:
     subject_chooser_keyboard: Keyboard = Keyboard(one_time=True, inline=True)
     
     subject_chooser_keyboard.add_text_button(**menu_button())
@@ -34,11 +37,19 @@ def subject_chooser(subjects: List[str]) -> str:
         payload={ Command.SCORE_SUBJECT.value: "-" }
     )
     
-    for (index, title) in enumerate(subjects):
+    for (index, title) in enumerate(subjects[offset:(offset + SUBJECTS_NUMBER)]):
         subject_chooser_keyboard.add_row()
         subject_chooser_keyboard.add_text_button(
-            text=title if len(title) < 35 else f"{title[:35]}…",
-            payload={ Command.SCORE_SUBJECT.value: str(index) }
+            text=shorten(title),
+            payload={ Command.SCORE_SUBJECT.value: str(index + offset) }
+        )
+    
+    if offset + SUBJECTS_NUMBER < len(subjects):
+        subject_chooser_keyboard.add_row()
+        subject_chooser_keyboard.add_text_button(
+            text=CommandOfVK.MORE.value, 
+            color=ButtonColor.SECONDARY, 
+            payload={ Command.SCORE_MORE_SUBJECTS.value: offset + SUBJECTS_NUMBER }
         )
     
     return subject_chooser_keyboard.get_keyboard()

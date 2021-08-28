@@ -61,33 +61,33 @@ async def broadcast(message: Message):
     
     if "&" in options[Option.USERS.value]:
         for possible_id in options[Option.USERS.value].split("&"):
-            try:
-                asked_id: int = int(possible_id)
-            except ValueError:
+            if not possible_id.isdigit():
                 await message.answer(
                     text="*{non_id}* cannot be user ID!".format(non_id=possible_id),
                     parse_mode=ParseMode.MARKDOWN
                 )
                 continue
-            else:
-                if not User.select().where(User.user_id == asked_id).exists():
-                    await message.answer(
-                        text="*{id}* was not found!".format(id=asked_id),
-                        parse_mode=ParseMode.MARKDOWN
-                    )
-                    continue
-                
-                users_ids_list.append(asked_id)
+            
+            asked_id: int = int(possible_id)
+            
+            if not User.select().where(User.user_id == asked_id).exists():
+                await message.answer(
+                    text="*{id}* was not found!".format(id=asked_id),
+                    parse_mode=ParseMode.MARKDOWN
+                )
+                continue
+            
+            users_ids_list.append(asked_id)
     elif options[Option.USERS.value] == Value.ME.value:
-        users_ids_list.append(User.get(User.telegram_id == message.chat.id))
+        users_ids_list.append(User.get(User.telegram_id == message.chat.id).user_id)
     elif options[Option.USERS.value] == Value.ALL.value:
         users_ids_list = [ user.user_id for user in User.select() ]
     elif options[Option.USERS.value] == Value.GROUPS.value:
         users_ids_list = [ group.user_id for group in User.select().where(User.is_group_chat) ]
     elif options[Option.USERS.value] == Value.COMPACTS.value:
-        users_ids_list = [ compact.user_id for compact in User.select().where(~User.is_group_chat & User.bb_login.is_null(False) & User.bb_password.is_null(False)) ]
+        users_ids_list = [ compact.user_id for compact in User.select().where(~User.is_group_chat & User.bb_login.is_null() & User.bb_password.is_null()) ]
     elif options[Option.USERS.value] == Value.BBS.value:
-        users_ids_list = [ bb.user_id for bb in User.select().where(User.bb_login.is_null() & User.bb_password.is_null()) ]
+        users_ids_list = [ bb.user_id for bb in User.select().where(User.bb_login.is_null(False) & User.bb_password.is_null(False)) ]
     else:
         await message.answer(text="The option has no matches!")
         return
@@ -158,27 +158,26 @@ async def daysoff(message: Message):
     
     if options.get(Option.EMPTY.value) == Value.LIST.value:
         days_off_list: List[DayOff] = list(DayOff.select())
-        
+        days_off_list.sort(key=lambda day_off: day_off.day.split("-")[::-1])
+
         days_off_text: str = "There are no dayoffs!" if len(days_off_list) == 0 else "*Days Off*\n_all kinds of_"
-        
-        days_off_list.sort(key=lambda day_off: day_off.date.split("-")[::-1])
         
         current_month: str = ""
         previous_month: str = ""
         
         for day_off in days_off_list:
-            current_month = MONTHS[day_off.date[3:5]]
+            current_month = MONTHS[day_off.day[3:5]]
             
             days_off_text = "".join([
                 days_off_text,
                 "" if previous_month == current_month else "".join([ "\n\n*выходные ", current_month, "*" ]),
                 "\n• {day}: {day_off_message}".format(
-                    day=int(day_off.date[0:2]),
+                    day=int(day_off.day[0:2]),
                     day_off_message=day_off.message
                 )
             ])
             
-            previous_month = MONTHS[day_off.date[3:5]]
+            previous_month = MONTHS[day_off.day[3:5]]
         
         await message.answer(
             text=days_off_text,

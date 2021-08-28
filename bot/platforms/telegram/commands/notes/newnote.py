@@ -6,8 +6,8 @@ from aiogram.types import ParseMode
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
 
-from bot.platforms.telegram.utilities.keyboards import canceler
 from bot.platforms.telegram.utilities.helpers import top_notification
+from bot.platforms.telegram.utilities.keyboards import canceler
 
 from bot.models.user import User
 from bot.models.note import Note
@@ -29,17 +29,17 @@ async def add_note_hint(callback: CallbackQuery):
     note_number: int = Note.select().where(Note.user == user).count() + 1
     
     if note_number > MAX_NOTES_NUMBER:
-        await callback.message.edit_text(text="{max}-заметковый лимит уже достигнут.".format(max=MAX_NOTES_NUMBER))
+        await callback.message.edit_text(text=f"{MAX_NOTES_NUMBER}-заметковый лимит уже достигнут.")
         
         guards[callback.message.chat.id].drop()
         return
     
     guard_message: Message = await callback.message.edit_text(
         text=(
-            "Добавляемая заметка будет *{note_number}* по счёту.\n\n"
-            "• Используй звёздочки, чтобы выделить \**жирным*\*\n"
-            "• Используй нижнее подчёркивание, чтобы выделить \__курсивом_\_\n\n"
-            "Напиши заметку и отправь решительно.".format(note_number=note_number)
+            f"Добавляемая заметка будет *{note_number}* по счёту.\n\n"
+            f"• Используй звёздочки, чтобы выделить \**жирным*\*\n"
+            f"• Используй нижнее подчёркивание, чтобы выделить \__курсивом_\_\n\n"
+            f"Напиши заметку и отправь решительно."
         ),
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=canceler()

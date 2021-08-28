@@ -32,7 +32,10 @@ async def deny_access_on_message(message: Message):
     
     guards[message.chat.id].drop()
 
-@dispatcher.callback_query_handler(lambda callback: not User.get(User.telegram_id == callback.message.chat.id).is_setup)
+@dispatcher.callback_query_handler(
+    lambda callback: 
+        not User.get(User.telegram_id == callback.message.chat.id).is_setup
+)
 @top_notification
 async def deny_access_on_callback(callback: CallbackQuery):
     await callback.message.delete()

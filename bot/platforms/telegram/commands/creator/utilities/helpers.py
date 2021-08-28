@@ -1,5 +1,4 @@
 from typing import Optional
-from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
@@ -15,13 +14,9 @@ from aiogram.utils.exceptions import BotKicked
 from aiogram.utils.exceptions import ChatNotFound
 from aiogram.utils.exceptions import TelegramAPIError
 
-from bot.platforms.telegram import telegram_bot
-from bot.platforms.telegram import guards
+from bot.platforms.telegram import dispatcher
 
-from bot.platforms.telegram.commands.creator.utilities.types import Value
-
-from bot.models.user import User
-from bot.models.note import Note
+from bot.platforms.telegram.commands.creator.utilities.constants import PROGRESS_BAR_PERIOD
 
 
 def parse_creator_query(query: str) -> Dict[str, str]:
@@ -44,12 +39,11 @@ def parse_creator_query(query: str) -> Dict[str, str]:
     return query_dictionary
 
 async def update_progress_bar(loading_message: Message, current_progress_bar: str, values_number: int, index: int) -> str:
-    PERIOD: int = 20
-    percent: int = int((index + 1)/values_number*PERIOD)
+    percent: int = int((index + 1)/values_number*PROGRESS_BAR_PERIOD)
     
     next_progress_bar: str = "`[ {pluses}{minuses} ]`".format(
         pluses="".join([ "+" for _ in range(percent) ]),
-        minuses="".join([ "-" for _ in range(PERIOD - percent) ])
+        minuses="".join([ "-" for _ in range(PROGRESS_BAR_PERIOD - percent) ])
     )
     
     if current_progress_bar == next_progress_bar: return current_progress_bar
@@ -67,8 +61,8 @@ async def try_get_chat(chat_id: int) -> Tuple[Chat, str]:
     error_text: Optional[str] = None
     
     try:
-        chat = await telegram_bot.get_chat(chat_id=chat_id)
-        is_chat_action_successfully_sent = telegram_bot.send_chat_action(chat_id=chat_id, action="typing")
+        chat = await dispatcher.bot.get_chat(chat_id=chat_id)
+        is_chat_action_successfully_sent = dispatcher.bot.send_chat_action(chat_id=chat_id, action="typing")
     except CantInitiateConversation:
         error_text = "User {chat_id} have never initiated a conversation with the bot."
     except UserDeactivated:

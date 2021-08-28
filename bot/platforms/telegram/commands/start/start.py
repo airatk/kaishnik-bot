@@ -21,8 +21,7 @@ from bot.utilities.types import State
 
 # Accepting new users on any message...
 @dispatcher.message_handler(
-    lambda message:
-        not User.select().where(User.telegram_id == message.chat.id).exists()
+    lambda message: not User.select().where(User.telegram_id == message.chat.id).exists()
 )
 async def start_on_message(message: Message):
     user: User = User.create(telegram_id=message.chat.id)
@@ -42,8 +41,7 @@ async def start_on_message(message: Message):
 
 # ...& on any callback
 @dispatcher.callback_query_handler(
-    lambda callback:
-        not User.select().where(User.telegram_id == callback.message.chat.id).exists()
+    lambda callback: not User.select().where(User.telegram_id == callback.message.chat.id).exists()
 )
 @top_notification
 async def start_on_callback(callback: CallbackQuery):
@@ -54,8 +52,9 @@ async def start_on_callback(callback: CallbackQuery):
 
 # Accepting the old users on the `/start` command
 @dispatcher.message_handler(
-    lambda message:
-        message.text == f"/{Command.RESTART.value}" and User.get(User.telegram_id == message.chat.id).is_setup
+    lambda message: 
+        message.text == f"/{Command.RESTART.value}" and 
+        User.get(User.telegram_id == message.chat.id).is_setup
 )
 @note_metrics(platform=Platform.TELEGRAM, command=Command.RESTART)
 async def start_on_command(message: Message):

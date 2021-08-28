@@ -58,7 +58,7 @@ async def show_all(event: SimpleBotEvent):
 )
 async def show_note(event: SimpleBotEvent):
     note: Note = Note.get(Note.note_id == event.payload["note_id"])
-
+    
     await event.answer(
         message=remove_markdown(note.text),
         keyboard=to_menu()

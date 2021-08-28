@@ -1,5 +1,6 @@
 from aiogram.types import Message
 from aiogram.types import CallbackQuery
+from aiogram.types import ChatMember
 
 from bot.platforms.telegram import dispatcher
 
@@ -20,7 +21,7 @@ from bot.utilities.types import Command
 )
 @note_metrics(platform=Platform.TELEGRAM, command=Command.NO_PERMISSIONS)
 async def permissions_on_command(message: Message):
-    bot_member = await get_bot_member(message=message)
+    bot_member: ChatMember = await get_bot_member(message=message)
     
     text: str = ""
     

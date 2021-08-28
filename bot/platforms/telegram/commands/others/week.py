@@ -28,16 +28,16 @@ from bot.utilities.calendar.helpers import get_week_number
 @note_metrics(platform=Platform.TELEGRAM, command=Command.WEEK)
 async def week(message: Message):
     (weekday, date) = weekday_date()
-    
+
     week_number: int = get_week_number(day_date=datetime.today())
     
     if week_number > 0:
         week_message: str = (
             "Текущая неделя *{type}*,\n"
-            "*#{number}* с начала семестра.".format(
-                type="чётная" if is_week_even(day_date=datetime.today()) else "нечётная",
-                number=week_number
-            )
+            "*#{number}* с начала семестра."
+        ).format(
+            type="чётная" if is_week_even(day_date=datetime.today()) else "нечётная",
+            number=week_number
         )
     else:
         week_number = 1 - week_number
@@ -49,7 +49,7 @@ async def week(message: Message):
     
     await message.answer(
         text="\n\n".join([
-            "*{weekday}, {date}*".format(weekday=weekday, date=date),
+            f"*{weekday}, {date}*",
             week_message
         ]),
         parse_mode=ParseMode.MARKDOWN

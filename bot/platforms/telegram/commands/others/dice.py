@@ -4,7 +4,7 @@ from aiogram.types import ChatType
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
 
-from bot.platforms.telegram.commands.others.utilities.constants import DICE
+from bot.platforms.telegram.commands.others.utilities.constants import DICE_EMOJI
 
 from bot.utilities.helpers import note_metrics
 from bot.utilities.types import Platform
@@ -23,4 +23,4 @@ from bot.utilities.types import Command
 )
 @note_metrics(platform=Platform.TELEGRAM, command=Command.DICE)
 async def dice(message: Message):
-    await message.answer_dice(emoji=DICE)
+    await message.answer_dice(emoji=DICE_EMOJI)

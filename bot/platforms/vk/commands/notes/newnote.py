@@ -43,8 +43,7 @@ async def add_note_hint(event: SimpleBotEvent):
     guards[event.peer_id].text = Command.NOTES_ADD.value
 
 @vk_bot.message_handler(
-    lambda event:
-        guards[event.object.object.message.peer_id].text == Command.NOTES_ADD.value
+    lambda event: guards[event.object.object.message.peer_id].text == Command.NOTES_ADD.value
 )
 async def add_note(event: SimpleBotEvent):
     Note.insert(

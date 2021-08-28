@@ -26,12 +26,12 @@ def time_period_chooser(lecturer_id: str = "-") -> InlineKeyboardMarkup:
     yesterday_date: date = today_date - timedelta(days=1)
     tomorrow_date: date = today_date + timedelta(days=1)
     
-    time_period_chooser_keyboard.add(*[
+    time_period_chooser_keyboard.add(
         cancel_button(),
         InlineKeyboardButton(text="сегодня", callback_data=" ".join([ Command.CLASSES_SHOW.value, today_date.strftime("%d.%m"), lecturer_id ])),
         InlineKeyboardButton(text="вчера", callback_data=" ".join([ Command.CLASSES_SHOW.value, yesterday_date.strftime("%d.%m"), lecturer_id ])),
         InlineKeyboardButton(text="завтра", callback_data=" ".join([ Command.CLASSES_SHOW.value, tomorrow_date.strftime("%d.%m"), lecturer_id ]))
-    ])
+    )
     
     time_period_chooser_keyboard.row(
         InlineKeyboardButton(
@@ -116,12 +116,12 @@ def dates_appender(shift: int, dates: List[str], lecturer_id: str = "-") -> Inli
     if len(dates) == 0:
         dates_appender_keyboard.row(cancel_button())
     else:
-        dates_appender_keyboard.add(*[
+        dates_appender_keyboard.add(
             cancel_button(),
             InlineKeyboardButton(
-                text="показать".format(chosen_dates_number=len(dates)),
+                text="показать",
                 callback_data=" ".join([ Command.CLASSES_SHOW.value, "", lecturer_id ])
             )
-        ])
+        )
     
     return dates_appender_keyboard

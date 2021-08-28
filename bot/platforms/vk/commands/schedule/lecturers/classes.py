@@ -12,8 +12,7 @@ from bot.utilities.api.types import ScheduleType
 
 
 @vk_bot.message_handler(
-    lambda event:
-        guards[event.object.object.message.peer_id].text == Command.LECTURERS.value,
+    lambda event: guards[event.object.object.message.peer_id].text == Command.LECTURERS.value,
     PayloadContainsFilter(key=ScheduleType.CLASSES.value)
 )
 async def lecturer_menu(event: SimpleBotEvent):
@@ -25,8 +24,7 @@ async def lecturer_menu(event: SimpleBotEvent):
     )
 
 @vk_bot.message_handler(
-    lambda event:
-        guards[event.object.object.message.peer_id].text == Command.LECTURERS.value,
+    lambda event: guards[event.object.object.message.peer_id].text == Command.LECTURERS.value,
     PayloadContainsFilter(key=Command.CLASSES_SHOW.value)
 )
 async def lecturer_show_chosen_date(event: SimpleBotEvent):

@@ -1,4 +1,4 @@
-from peewee import AutoField, TextField
+from peewee import TextField
 from peewee import Check
 
 from bot.models.base import Base

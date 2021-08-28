@@ -6,6 +6,7 @@ from bot.platforms.vk import guards
 
 from bot.platforms.vk.utilities.keyboards import menu
 from bot.platforms.vk.utilities.keyboards import additional_menu
+from bot.platforms.vk.utilities.helpers import is_group_chat
 from bot.platforms.vk.utilities.types import CommandOfVK
 
 from bot.utilities.helpers import note_metrics
@@ -25,7 +26,7 @@ async def menu_on_command(event: SimpleBotEvent):
     
     await event.answer(
         message="Список команд:",
-        keyboard=menu()
+        keyboard=menu(is_group_chat=is_group_chat(peer_id=event.peer_id))
     )
 
 @vk_bot.message_handler(

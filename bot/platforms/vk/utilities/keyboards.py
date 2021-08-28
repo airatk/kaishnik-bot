@@ -18,12 +18,14 @@ def to_menu() -> str:
 
     return to_menu_keyboard.get_keyboard()
 
-def menu() -> str:
+def menu(is_group_chat: bool = False) -> str:
     menu_keyboard: Keyboard = Keyboard(one_time=True, inline=True)
     
     menu_keyboard.add_text_button(text=CommandOfVK.CLASSES.value)
-    menu_keyboard.add_text_button(text=CommandOfVK.SCORE.value)
-
+    
+    if not is_group_chat:
+        menu_keyboard.add_text_button(text=CommandOfVK.SCORE.value)
+    
     menu_keyboard.add_row()
     menu_keyboard.add_text_button(text=CommandOfVK.LECTURERS.value)
 
@@ -61,7 +63,11 @@ def additional_menu() -> str:
 
 
 def cancel_button() -> Dict[str, str]:
-    return dict(text=CommandOfVK.CANCEL.value, color=ButtonColor.SECONDARY, payload={ "callback": Command.CANCEL.value })
+    return dict(
+        text=CommandOfVK.CANCEL.value, 
+        color=ButtonColor.SECONDARY, 
+        payload={ "callback": Command.CANCEL.value }
+    )
 
 def canceler() -> str:
     canceler_keyboard: Keyboard = Keyboard(one_time=True, inline=True)

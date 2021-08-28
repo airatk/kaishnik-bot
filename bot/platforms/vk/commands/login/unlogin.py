@@ -13,8 +13,7 @@ from bot.utilities.types import Command
 
 
 @vk_bot.message_handler(
-    lambda event:
-        not User.get(User.vk_id == event.object.object.message.peer_id).is_setup
+    lambda event: not User.get(User.vk_id == event.object.object.message.peer_id).is_setup
 )
 @note_metrics(platform=Platform.VK, command=Command.UNLOGIN)
 async def deny_access_on_message(event: SimpleBotEvent):

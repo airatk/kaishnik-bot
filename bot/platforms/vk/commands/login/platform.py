@@ -25,8 +25,7 @@ async def login_compact(event: SimpleBotEvent):
     guards[event.peer_id].text = Command.LOGIN_PLATFORM.value
 
 @vk_bot.message_handler(
-    lambda event:
-        guards[event.object.object.message.peer_id].text == Command.LOGIN_PLATFORM.value
+    lambda event: guards[event.object.object.message.peer_id].text == Command.LOGIN_PLATFORM.value
 )
 async def set_group(event: SimpleBotEvent):
     user_id: Optional[int] = decode_platform_code(platform_code=event.text)

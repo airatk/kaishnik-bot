@@ -50,7 +50,11 @@ def deletion_confirmer() -> str:
     deletion_confirmer_keyboard.add_text_button(**cancel_button())
 
     deletion_confirmer_keyboard.add_row()
-    deletion_confirmer_keyboard.add_text_button(text="Да, удалить аккаунт", color=ButtonColor.NEGATIVE, payload={ "callback": Command.DELETE_ACCOUNT_CONFIRM.value })
+    deletion_confirmer_keyboard.add_text_button(
+        text="Да, удалить аккаунт", 
+        color=ButtonColor.NEGATIVE, 
+        payload={ "callback": Command.DELETE_ACCOUNT_CONFIRM.value }
+    )
 
     return deletion_confirmer_keyboard.get_keyboard()
 

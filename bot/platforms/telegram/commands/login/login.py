@@ -21,6 +21,7 @@ from bot.platforms.telegram.utilities.helpers import top_notification
 from bot.models.user import User
 
 from bot.utilities.constants import BOT_ADDRESSING
+from bot.utilities.constants import GROUP_NUMBER_PATTERN
 from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES
 from bot.utilities.api.types import ResponseError
@@ -41,9 +42,9 @@ async def login_compact_guess_group(callback: CallbackQuery):
         disable_web_page_preview=True
     )
     
-    guess: Match = search("[0-9][0-9][0-9][0-9][0-9]?[0-9]?", callback.message.chat.title)
+    guess: Match = search(pattern=GROUP_NUMBER_PATTERN, string=callback.message.chat.title)
     
-    # If input is unusual, go the usual login way
+    # If group chat title doesn't match the exact pattern, go the usual login way
     if guess is None:
         await login_compact(callback=callback)
         return
@@ -110,8 +111,7 @@ async def login_bb(callback: CallbackQuery):
     guards[callback.message.chat.id].message = guard_message
 
 @dispatcher.message_handler(
-    lambda message:
-        guards[message.chat.id].text == Command.LOGIN_SET_BB_LOGIN.value
+    lambda message: guards[message.chat.id].text == Command.LOGIN_SET_BB_LOGIN.value
 )
 async def set_bb_login(message: Message):
     await message.delete()
@@ -130,8 +130,7 @@ async def set_bb_login(message: Message):
     guards[message.chat.id].text = Command.LOGIN_SET_BB_PASSWORD.value
 
 @dispatcher.message_handler(
-    lambda message:
-        guards[message.chat.id].text == Command.LOGIN_SET_BB_PASSWORD.value
+    lambda message: guards[message.chat.id].text == Command.LOGIN_SET_BB_PASSWORD.value
 )
 async def set_bb_password(message: Message):
     await message.delete()

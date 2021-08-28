@@ -30,6 +30,7 @@ async def deletion(callback: CallbackQuery):
 )
 async def deletion_confirm(callback: CallbackQuery):
     User.delete().where(User.telegram_id == callback.message.chat.id).execute()
+    
     guards[callback.message.chat.id].drop()
     
     await callback.message.edit_text(text="Аккаунт удалён. Для создания нового отправь /start")

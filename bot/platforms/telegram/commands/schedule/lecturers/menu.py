@@ -12,15 +12,15 @@ from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
 from bot.platforms.telegram import states
 
+from bot.platforms.telegram.commands.schedule.lecturers.utilities.constants import MAX_LECTURERS_NUMBER
 from bot.platforms.telegram.commands.schedule.lecturers.utilities.keyboards import lecturer_chooser
 from bot.platforms.telegram.commands.schedule.lecturers.utilities.keyboards import lecturer_info_type_chooser
-from bot.platforms.telegram.commands.schedule.lecturers.utilities.constants import MAX_LECTURERS_NUMBER
 
-from bot.platforms.telegram.utilities.keyboards import canceler
 from bot.platforms.telegram.utilities.helpers import top_notification
+from bot.platforms.telegram.utilities.keyboards import canceler
 
-from bot.utilities.helpers import note_metrics
 from bot.utilities.constants import BOT_ADDRESSING
+from bot.utilities.helpers import note_metrics
 from bot.utilities.types import Platform
 from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES

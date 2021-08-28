@@ -62,7 +62,7 @@ async def unknown_text_message(message: Message):
         disable_web_page_preview=True
     )
 
-@dispatcher.callback_query_handler(lambda callback: True)
+@dispatcher.callback_query_handler(lambda _: True)
 @note_metrics(platform=Platform.TELEGRAM, command=Command.UNKNOWN_CALLBACK)
 @top_notification
 async def unknown_callback(callback: CallbackQuery):

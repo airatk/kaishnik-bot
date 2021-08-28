@@ -14,8 +14,7 @@ from bot.utilities.types import Command
 
 
 @vk_bot.message_handler(
-    lambda event:
-        len(event.object.object.message.text) == 0
+    lambda event: len(event.object.object.message.text) == 0
 )
 @note_metrics(platform=Platform.VK, command=Command.UNKNOWN_NONTEXT_MESSAGE)
 async def unknown_nontext_message(event: SimpleBotEvent):
@@ -26,7 +25,8 @@ async def unknown_nontext_message(event: SimpleBotEvent):
 
 @vk_bot.message_handler(
     lambda event:
-        event.object.object.message.attachments is None or len(event.object.object.message.attachments) == 0
+        event.object.object.message.attachments is None or 
+        len(event.object.object.message.attachments) == 0
 )
 @note_metrics(platform=Platform.VK, command=Command.UNKNOWN_TEXT_MESSAGE)
 async def unknown_text_message(event: SimpleBotEvent):

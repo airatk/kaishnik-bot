@@ -6,9 +6,12 @@ CREATOR_TELEGRAM_ID: int = int(KEYS.CREATOR_TELEGRAM_ID)
 MAX_TEXT_LENGTH: int = 3900
 MAX_CAPTION_LENGTH: int = 900
 
+PROGRESS_BAR_PERIOD: int = 20
+
+
 CONTROL_PANEL: str = (
     "*Control panel*\n"
-    "_creator access only_\n"
+    "_creator-only access_\n"
     "\n"
     "_{} — required, [] — optional_\n"
     "\n"
@@ -55,7 +58,7 @@ CONTROL_PANEL: str = (
         "\t\t\t\[ add: { dd-mm } ]\n"
         "\t\t\t\[ message: {} ]\n"
         "\t\t\t\[ drop: {\n"
-            "\t\t\t\t\t\t\[ mm-dd ]\n"
+            "\t\t\t\t\t\t\[ dd-mm ]\n"
             "\t\t\t\t\t\t\[ all ]\n"
         "\t\t\t} ]\n"
     "}\n"
@@ -74,6 +77,7 @@ CONTROL_PANEL: str = (
     "# dropped\n"
     "# broadcast\n"
 )
+
 
 USERS_STATS: str = (
     "*Users*\n"

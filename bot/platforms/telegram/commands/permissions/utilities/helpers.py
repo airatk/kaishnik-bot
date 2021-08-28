@@ -13,7 +13,6 @@ async def get_bot_member(message: Message) -> ChatMember:
 
 async def check_permissions_in_group_chat_on_command(message: Message) -> bool:
     if message.chat.type == ChatType.PRIVATE: return False
-    
     if not (message.is_command() or message.reply_to_message is not None and message.reply_to_message.from_user.is_bot): return False
     
     bot_member = await get_bot_member(message=message)

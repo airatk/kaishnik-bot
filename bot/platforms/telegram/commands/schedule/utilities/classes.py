@@ -47,11 +47,7 @@ async def common_add_chosen_date(callback: CallbackQuery):
     try:
         await callback.message.edit_text(
             text="\n".join([
-                "" if chosen_dates_number == 0 else "Выбран{chosen_word_ending} *{chosen_dates_number}* {day_word}.".format(
-                    chosen_word_ending=chosen_word_ending,
-                    chosen_dates_number=chosen_dates_number,
-                    day_word=day_word
-                ),
+                "" if chosen_dates_number == 0 else f"Выбран{chosen_word_ending} *{chosen_dates_number}* {day_word}.",
                 "Выбери нужные дни:"
             ]),
             parse_mode=ParseMode.MARKDOWN,

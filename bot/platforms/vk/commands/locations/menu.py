@@ -11,8 +11,7 @@ from bot.utilities.types import Command
 
 
 @vk_bot.message_handler(
-    lambda event:
-        event.object.object.message.text.capitalize() == CommandOfVK.LOCATIONS.value.capitalize()
+    lambda event: event.object.object.message.text.capitalize() == CommandOfVK.LOCATIONS.value.capitalize()
 )
 @note_metrics(platform=Platform.VK, command=Command.LOCATIONS)
 async def locations(event: SimpleBotEvent):

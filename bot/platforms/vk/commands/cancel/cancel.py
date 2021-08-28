@@ -21,8 +21,7 @@ from bot.utilities.types import Command
         event.object.object.message.text.capitalize() == CommandOfVK.CANCEL.value
 )
 @vk_bot.message_handler(
-    lambda event:
-        User.select().where(User.vk_id == event.object.object.message.peer_id).exists(),
+    lambda event: User.select().where(User.vk_id == event.object.object.message.peer_id).exists(),
     PayloadFilter(payload={ "callback": Command.CANCEL.value })
 )
 @note_metrics(platform=Platform.VK, command=Command.CANCEL)

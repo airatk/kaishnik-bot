@@ -18,8 +18,6 @@ from bs4 import Tag
 from bot.models.user import User
 from bot.models.settings import Settings
 
-from bot.utilities.api.helpers.schedule import beautify_classes
-from bot.utilities.api.helpers.schedule import beautify_exams
 from bot.utilities.api.constants import SCHEDULE_URL
 from bot.utilities.api.constants import CAS_LOGIN_URL
 from bot.utilities.api.constants import CAS_SERVICE_LOGIN_URL
@@ -27,6 +25,8 @@ from bot.utilities.api.constants import STUDENT_DATA_URL
 from bot.utilities.api.constants import AUTH_TOKEN_SIGN
 from bot.utilities.api.constants import AUTH_TOKEN_LENGTH
 from bot.utilities.api.constants import SCORE_TEMPLATE
+from bot.utilities.api.helpers.schedule import beautify_classes
+from bot.utilities.api.helpers.schedule import beautify_exams
 from bot.utilities.api.types import ResponseError
 from bot.utilities.api.types import KaiRuDataType
 from bot.utilities.api.types import ScheduleType

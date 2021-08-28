@@ -18,8 +18,7 @@ from bot.utilities.api.lecturers import get_lecturers_schedule
 
 
 @vk_bot.message_handler(
-    lambda event:
-        guards[event.object.object.message.peer_id].text == Command.LECTURERS.value,
+    lambda event: guards[event.object.object.message.peer_id].text == Command.LECTURERS.value,
     PayloadContainsFilter(key=ScheduleType.EXAMS.value)
 )
 async def lecturers_exams(event: SimpleBotEvent):
@@ -27,13 +26,11 @@ async def lecturers_exams(event: SimpleBotEvent):
         message=choice(LOADING_REPLIES),
         dont_parse_links=True
     )
-
-    lecturer_id: str = event.payload["lecturer_id"]
     
     user_id: int = User.get(User.vk_id == event.peer_id).user_id
     
     (schedule, response_error) = get_lecturers_schedule(
-        lecturer_id=lecturer_id,
+        lecturer_id=event.payload["lecturer_id"],
         schedule_type=ScheduleType.EXAMS,
         user_id=user_id
     )

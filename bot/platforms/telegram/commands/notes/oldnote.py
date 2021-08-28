@@ -33,10 +33,7 @@ async def choose_note(callback: CallbackQuery):
     
     await callback.message.edit_text(
         text="Выбери заметку:",
-        reply_markup=note_chooser(
-            notes=notes,
-            action=action
-        )
+        reply_markup=note_chooser(notes=notes, action=action)
     )
 
 
@@ -108,7 +105,6 @@ async def delete_all(callback: CallbackQuery):
 @top_notification
 async def delete_note(callback: CallbackQuery):
     note_id: int = int(callback.data.split()[1])
-    
     note: Note = Note.get(Note.note_id == note_id)
     
     await callback.message.edit_text(

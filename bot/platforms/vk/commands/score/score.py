@@ -103,6 +103,18 @@ async def choose_subject(event: SimpleBotEvent):
         keyboard=subject_chooser(subjects=subjects)
     )
 
+    guards[event.peer_id].text = Command.SCORE_SUBJECT.value
+
+@vk_bot.message_handler(PayloadContainsFilter(key=Command.SCORE_MORE_SUBJECTS.value))
+async def show_more_subjects(event: SimpleBotEvent):
+    next_offset: int = event.payload[Command.SCORE_MORE_SUBJECTS.value]
+    subjects: List[str] = [ title for (title, _) in states[event.peer_id].score ]
+
+    await event.answer(
+        message="Ещё предметы:",
+        keyboard=subject_chooser(subjects=subjects, offset=next_offset)
+    )
+
 @vk_bot.message_handler(PayloadContainsFilter(key=Command.SCORE_SUBJECT.value))
 async def show_score(event: SimpleBotEvent):
     subject_index: str = event.payload[Command.SCORE_SUBJECT.value]
@@ -121,7 +133,7 @@ async def show_score(event: SimpleBotEvent):
             )
         
         ending: str = "" if len(subjects) == 1 else "а" if len(subjects) in range(2, 5) else "ов"
-        
+
         await event.answer(text=f"{len(subjects)} предмет{ending} всего!")
     
     states[event.peer_id].drop()

@@ -63,7 +63,7 @@ async def clear(message: Message):
 @dispatcher.message_handler(
     lambda message:
         message.from_user.id == CREATOR_TELEGRAM_ID and
-        Command.ERASE.value in message.text,
+        Command.ERASE.value in message.text
 )
 async def erase(message: Message):
     try:

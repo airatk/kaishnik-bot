@@ -21,29 +21,37 @@ def time_period_chooser(lecturer_id: str = "-") -> str:
     tomorrow_date: date = today_date + timedelta(days=1)
     
     time_period_chooser_keyboard.add_text_button(**menu_button())
-    time_period_chooser_keyboard.add_text_button(text="Сегодня", payload={
-        Command.CLASSES_SHOW.value: "", 
-        "date_string": today_date.strftime("%d.%m"), 
-        "lecturer_id": lecturer_id 
-    })
+    time_period_chooser_keyboard.add_text_button(
+        text="Сегодня", payload={
+            Command.CLASSES_SHOW.value: "", 
+            "date_string": today_date.strftime("%d.%m"), 
+            "lecturer_id": lecturer_id 
+        }
+    )
     
     time_period_chooser_keyboard.add_row()
-    time_period_chooser_keyboard.add_text_button(text="Вчера", payload={
-        Command.CLASSES_SHOW.value: "", 
-        "date_string": yesterday_date.strftime("%d.%m"), 
-        "lecturer_id": lecturer_id 
-    })
-    time_period_chooser_keyboard.add_text_button(text="Завтра", payload={ 
-        Command.CLASSES_SHOW.value: "", 
-        "date_string": tomorrow_date.strftime("%d.%m"), 
-        "lecturer_id": lecturer_id
-    })
+    time_period_chooser_keyboard.add_text_button(
+        text="Вчера", payload={
+            Command.CLASSES_SHOW.value: "", 
+            "date_string": yesterday_date.strftime("%d.%m"), 
+            "lecturer_id": lecturer_id 
+        }
+    )
+    time_period_chooser_keyboard.add_text_button(
+        text="Завтра", payload={ 
+            Command.CLASSES_SHOW.value: "", 
+            "date_string": tomorrow_date.strftime("%d.%m"), 
+            "lecturer_id": lecturer_id
+        }
+    )
     
     time_period_chooser_keyboard.add_row()
-    time_period_chooser_keyboard.add_text_button(text="Весь семестр", payload={ 
-        Command.CLASSES_SHOW.value: "", 
-        "lecturer_id": lecturer_id 
-    })
+    time_period_chooser_keyboard.add_text_button(
+        text="Весь семестр", payload={ 
+            Command.CLASSES_SHOW.value: "", 
+            "lecturer_id": lecturer_id 
+        }
+    )
     
     return time_period_chooser_keyboard.get_keyboard()
 

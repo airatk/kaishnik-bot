@@ -45,7 +45,7 @@ async def week(event: SimpleBotEvent):
     
     await event.answer(
         message="\n\n".join([
-            "{weekday}, {date}".format(weekday=weekday, date=date),
+            f"{weekday}, {date}",
             week_message
         ]),
         keyboard=to_menu()

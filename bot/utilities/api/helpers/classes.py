@@ -38,7 +38,9 @@ def style_raw_lecturer_class(raw_class: Dict[str, str], is_schedule_size_full: b
         ) 
     ]
     
-    styled_lecturer_class_entities.append("\n".join([ GROUPS_ENTITY.format(group=group) for group in groups ]))
+    styled_lecturer_class_entities.append(
+        "\n".join([ GROUPS_ENTITY.format(group=group) for group in groups ])
+    )
     
     return "\n".join(styled_lecturer_class_entities)
 

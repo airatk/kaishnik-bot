@@ -38,7 +38,7 @@ async def login(event: SimpleBotEvent):
 async def finish_login(event: SimpleBotEvent):
     await event.answer(message="Запомнено!")
     await event.answer(message=GUIDE_MESSAGE, keyboard=to_menu())
-
+    
     User.update(
         is_setup=True,
         is_group_chat=is_group_chat(peer_id=event.peer_id)

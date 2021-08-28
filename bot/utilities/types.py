@@ -58,6 +58,7 @@ class Command(Enum):
     SCORE = "score"
     SCORE_SEMESTER = "score-semester"
     SCORE_SUBJECT = "score-subject"
+    SCORE_MORE_SUBJECTS = "score-more-subjects"
     
     NOTES = "notes"
     NOTES_ADD = "notes-add"

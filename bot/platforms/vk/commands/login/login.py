@@ -41,8 +41,7 @@ async def login_bb(event: SimpleBotEvent):
     guards[event.peer_id].text = Command.LOGIN_SET_BB_LOGIN.value
 
 @vk_bot.message_handler(
-    lambda event:
-        guards[event.object.object.message.peer_id].text == Command.LOGIN_SET_BB_LOGIN.value
+    lambda event: guards[event.object.object.message.peer_id].text == Command.LOGIN_SET_BB_LOGIN.value
 )
 async def set_bb_login(event: SimpleBotEvent):
     User.update(
@@ -59,8 +58,7 @@ async def set_bb_login(event: SimpleBotEvent):
     guards[event.peer_id].text = Command.LOGIN_SET_BB_PASSWORD.value
 
 @vk_bot.message_handler(
-    lambda event:
-        guards[event.object.object.message.peer_id].text == Command.LOGIN_SET_BB_PASSWORD.value
+    lambda event: guards[event.object.object.message.peer_id].text == Command.LOGIN_SET_BB_PASSWORD.value
 )
 async def set_bb_password(event: SimpleBotEvent):
     await event.answer(
@@ -120,8 +118,7 @@ async def login_compact(event: SimpleBotEvent):
     guards[event.peer_id].text = Command.LOGIN_SET_GROUP.value
 
 @vk_bot.message_handler(
-    lambda event:
-        guards[event.object.object.message.peer_id].text == Command.LOGIN_SET_GROUP.value
+    lambda event: guards[event.object.object.message.peer_id].text == Command.LOGIN_SET_GROUP.value
 )
 async def set_group(event: SimpleBotEvent):
     guards[event.peer_id].drop()
