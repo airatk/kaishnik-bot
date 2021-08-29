@@ -1,6 +1,6 @@
-# Каист
+[<kbd><img src="https://github.com/airatk/kaishnik-bot/blob/main/design/logo/logo.png" alt="kaishnik-bot logo" align="right" width="50" /></kbd>][3]
 
-[<img src="https://github.com/airatk/kaishnik-bot/blob/main/design/logo/logo.png" alt="kaishnik-bot logo" align="right" width="175" />][3]
+# Каист
 
 _telegram bot for students of KNRTU-KAI to make their daily routine more pleasant_
 
@@ -22,21 +22,6 @@ There should be `data/` folder in the root directory of the bot. It should conta
 ### Launch setup
 The `requirements.txt` file is included to the repository. So, use `pip3 install -r requirements.txt` to get all the necessities.
 Use `python3 ./` to launch.
-
-## Commands
-* **classes** - занятия
-* **score** - баллы
-* **lecturers** - преподаватели
-* **notes** - заметки
-* **week** - чётность недели
-* **exams** - экзамены
-* **dice** - бросок на удачу
-* **locations** - здания КАИ
-* **brs** - что за БРС?
-* **edit** - изменить расписание
-* **settings** - настройки
-* **help** - подсказки
-* **donate** - сказать спасибо
 
 ## Architecture
 The bot is stored in project root directory folder called `bot/`. The `bot/` contains 3 subdirectories: 
