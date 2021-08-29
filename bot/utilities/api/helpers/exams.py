@@ -8,10 +8,7 @@ from bot.utilities.api.constants import GROUPS_ENTITY
 
 
 def style_raw_student_exam(raw_exam: Dict[str, str], is_schedule_size_full: bool) -> str:
-    styled_student_exam_entities: List[str] = [ style_raw_exam(
-        raw_exam=raw_exam,
-        is_schedule_size_full=is_schedule_size_full
-    ) ]
+    styled_student_exam_entities: List[str] = [ style_raw_exam(raw_exam=raw_exam, is_schedule_size_full=is_schedule_size_full) ]
     
     if raw_exam["prepodName"] != "" and is_schedule_size_full:
         styled_student_exam_entities.append(LECTURER_ENTITY.format(lecturer=raw_exam["prepodName"].title()))
@@ -19,10 +16,7 @@ def style_raw_student_exam(raw_exam: Dict[str, str], is_schedule_size_full: bool
     return "\n".join(styled_student_exam_entities)
 
 def style_raw_lecturer_exam(raw_exam: Dict[str, str], is_schedule_size_full: bool) -> str:
-    styled_lecturer_exam_entities: List[str] = [ style_raw_exam(
-        raw_exam=raw_exam,
-        is_schedule_size_full=is_schedule_size_full
-    ) ]
+    styled_lecturer_exam_entities: List[str] = [ style_raw_exam(raw_exam=raw_exam, is_schedule_size_full=is_schedule_size_full) ]
     
     styled_lecturer_exam_entities.append(GROUPS_ENTITY.format(group=raw_exam["group"]))
     

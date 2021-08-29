@@ -10,13 +10,13 @@ from bot.platforms.telegram.commands.schedule.utilities.classes import common_sh
 
 from bot.platforms.telegram.utilities.helpers import top_notification
 
-from bot.utilities.types import Commands
+from bot.utilities.types import Command
 from bot.utilities.api.types import ScheduleType
 
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        guards[callback.message.chat.id].text == Commands.LECTURERS.value and
+        guards[callback.message.chat.id].text == Command.LECTURERS.value and
         ScheduleType.CLASSES.value in callback.data
 )
 @top_notification
@@ -30,8 +30,8 @@ async def lecturer_menu(callback: CallbackQuery):
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        guards[callback.message.chat.id].text == Commands.LECTURERS.value and
-        Commands.CLASSES_CHOOSE.value in callback.data
+        guards[callback.message.chat.id].text == Command.LECTURERS.value and
+        Command.CLASSES_CHOOSE.value in callback.data
 )
 @top_notification
 async def lecturer_add_chosen_date(callback: CallbackQuery):
@@ -39,9 +39,9 @@ async def lecturer_add_chosen_date(callback: CallbackQuery):
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        guards[callback.message.chat.id].text == Commands.LECTURERS.value and
-        Commands.CLASSES_SHOW.value in callback.data
+        guards[callback.message.chat.id].text == Command.LECTURERS.value and
+        Command.CLASSES_SHOW.value in callback.data
 )
 @top_notification
 async def lecturer_show_chosen_dates(callback: CallbackQuery):
-    await common_show_chosen_dates(command=Commands.LECTURERS, callback=callback)
+    await common_show_chosen_dates(command=Command.LECTURERS, callback=callback)

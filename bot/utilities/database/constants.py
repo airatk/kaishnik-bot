@@ -1,5 +1,6 @@
 from peewee import PostgresqlDatabase
 
+from bot.utilities.constants import KEYS
 
-POSTGRESQL_DATABASE_NAME: str = "kaist_db"
-DATABASE: PostgresqlDatabase = PostgresqlDatabase(POSTGRESQL_DATABASE_NAME)
+
+DATABASE: PostgresqlDatabase = PostgresqlDatabase(database=KEYS.POSTGRESQL_DATABASE_NAME)

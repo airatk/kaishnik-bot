@@ -2,39 +2,35 @@ from enum import Enum
 
 
 class ResponseError(Enum):
-    NO_RESPONSE: str = "kai.ru не отвечает🤷🏼‍♀️"
-    NO_DATA: str = "Нет данных."
-    NO_GROUP: str = (
-        "Такой группы нет.\n"
-        "Возможно, она появится позже, когда её внесут в каёвскую базу."
-    )
-    INCORRECT_CARD: str = "Неверный номер зачётки. Исправляйся."
-    INCORRECT_SCHEDULE_TYPE: str = (
+    NO_RESPONSE = "kai.ru не отвечает🤷🏼‍♀️"
+    NO_DATA = "Нет данных."
+
+    INCORRECT_BB_CREDENTIALS = "Неверный логин или пароль. Исправляйся."
+    
+    INCORRECT_SCHEDULE_TYPE = (
         "Ошибка передачи типа расписания.\n"
         "Напиши, пожалуйста, об этом разработчику."
     )
 
 
-class ExtendedLoginDataType(Enum):
-    YEARS: str = "p_kurs"
-    GROUPS: str = "p_group"
-    NAMES: str = "p_stud"
-
+class KaiRuDataType(Enum):
+    SCORE = "attestacia"
+    SCHEDULE = "raspisanie"
 
 class ScheduleType(Enum):
-    CLASSES: str = "schedule"
-    EXAMS: str = "examSchedule"
+    CLASSES = "schedule"
+    EXAMS = "examSchedule"
 
 class ClassType(Enum):
-    LECTURE: str = "лек"
-    PRACTICE: str = "пр"
-    LAB: str = "л.р."
-    CONSULTATION: str = "конс"
-    MILITARY_TRAINING: str = "в.п."
+    LECTURE = "лек"
+    PRACTICE = "пр"
+    LAB = "л.р."
+    CONSULTATION = "конс"
+    MILITARY_TRAINING = "в.п."
 
 
-class ScoreSubjectType(Enum):
-    EXAM: str = "экзамен"
-    COURSEWORK: str = "курсовая работа"
-    TEST: str = "зачёт"
-    OTHER: str = "другое"
+class LocationType(Enum):
+    BUILDING = "building"
+    LIBRARY = "library"
+    SPORTSCOMPLEX = "sportscomplex"
+    DORM = "dorm"

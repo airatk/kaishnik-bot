@@ -1,8 +1,7 @@
-# System
+# System files
 **/.DS_Store
 **/__pycache__/
 /env/
 
-# Project
-META.md
+# Project files
 /data/

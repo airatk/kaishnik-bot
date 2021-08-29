@@ -1,25 +1,16 @@
-from bot.models.users import Users
-from bot.models.groups_of_students import GroupsOfStudents
-from bot.models.compact_students import CompactStudents
-from bot.models.extended_students import ExtendedStudents
-from bot.models.bb_students import BBStudents
+from bot.models.user import User
 from bot.models.settings import Settings
-from bot.models.notes import Notes
+from bot.models.note import Note
 from bot.models.metrics import Metrics
-from bot.models.days_off import DaysOff
+from bot.models.day_off import DayOff
+from bot.models.donation import Donation
 
 
 def setup_database_tables():
-    Users.create_table()
-    
-    GroupsOfStudents.create_table()
-    CompactStudents.create_table()
-    ExtendedStudents.create_table()
-    BBStudents.create_table()
-    
+    User.create_table()
     Settings.create_table()
-    
-    Notes.create_table()
+    Note.create_table()
     
     Metrics.create_table()
-    DaysOff.create_table()
+    DayOff.create_table()
+    Donation.create_table()

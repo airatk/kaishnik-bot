@@ -1,32 +1,25 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton
 
-from bot.platforms.telegram.commands.locations.utilities.constants import BUILDINGS
-from bot.platforms.telegram.commands.locations.utilities.constants import LIBRARIES
-from bot.platforms.telegram.commands.locations.utilities.constants import SPORTSCOMPLEX
-from bot.platforms.telegram.commands.locations.utilities.constants import DORMS
-from bot.platforms.telegram.commands.locations.utilities.types import LocationType
-
 from bot.platforms.telegram.utilities.keyboards import cancel_button
+
+from bot.utilities.api.constants import BUILDINGS
+from bot.utilities.api.constants import LIBRARIES
+from bot.utilities.api.constants import SPORTSCOMPLEX
+from bot.utilities.api.constants import DORMS
+from bot.utilities.api.types import LocationType
 
 
 def location_type_chooser() -> InlineKeyboardMarkup:
     location_type_chooser_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(row_width=1)
     
-    location_type_chooser_keyboard.row(cancel_button())
-    
-    location_type_chooser_keyboard.row(InlineKeyboardButton(
-        text="Учебные здания", callback_data=LocationType.BUILDING.value
-    ))
-    location_type_chooser_keyboard.row(InlineKeyboardButton(
-        text="Библиотеки", callback_data=LocationType.LIBRARY.value
-    ))
-    location_type_chooser_keyboard.row(InlineKeyboardButton(
-        text="СК Олимп", callback_data=LocationType.SPORTSCOMPLEX.value
-    ))
-    location_type_chooser_keyboard.row(InlineKeyboardButton(
-        text="Общежития", callback_data=LocationType.DORM.value
-    ))
+    location_type_chooser_keyboard.add(
+        cancel_button(),
+        InlineKeyboardButton(text="Учебные здания", callback_data=LocationType.BUILDING.value),
+        InlineKeyboardButton(text="Библиотеки", callback_data=LocationType.LIBRARY.value),
+        InlineKeyboardButton(text="СК Олимп", callback_data=LocationType.SPORTSCOMPLEX.value),
+        InlineKeyboardButton(text="Общежития", callback_data=LocationType.DORM.value)
+    )
     
     return location_type_chooser_keyboard
 
@@ -38,7 +31,8 @@ def buildings_dialer() -> InlineKeyboardMarkup:
     
     buildings_dialer_keyboard.add(*[
         InlineKeyboardButton(
-            text=building["button"], callback_data=" ".join([ LocationType.BUILDING.value, str(number) ])
+            text=building["button"], 
+            callback_data=" ".join([ LocationType.BUILDING.value, str(number) ])
         ) for (number, building) in enumerate(BUILDINGS)
     ])
     
@@ -58,7 +52,8 @@ def libraries_dialer() -> InlineKeyboardMarkup:
     
     libraries_dialer_keyboard.add(*[
         InlineKeyboardButton(
-            text=library["button"], callback_data=" ".join([ LocationType.LIBRARY.value, str(number) ])
+            text=library["button"], 
+            callback_data=" ".join([ LocationType.LIBRARY.value, str(number) ])
         ) for (number, library) in enumerate(LIBRARIES)
     ])
     
@@ -78,7 +73,8 @@ def sportscomplex_dialer() -> InlineKeyboardMarkup:
     
     sportscomplex_dialer_keyboard.add(*[
         InlineKeyboardButton(
-            text=sportscomplex["button"], callback_data=" ".join([ LocationType.SPORTSCOMPLEX.value, str(number) ])
+            text=sportscomplex["button"], 
+            callback_data=" ".join([ LocationType.SPORTSCOMPLEX.value, str(number) ])
         ) for (number, sportscomplex) in enumerate(SPORTSCOMPLEX)
     ])
     
@@ -98,7 +94,8 @@ def dorms_dialer() -> InlineKeyboardMarkup:
     
     dorms_dialer_keyboard.add(*[
         InlineKeyboardButton(
-            text=dorm["button"], callback_data=" ".join([ LocationType.DORM.value, str(number) ])
+            text=dorm["button"], 
+            callback_data=" ".join([ LocationType.DORM.value, str(number) ])
         ) for (number, dorm) in enumerate(DORMS)
     ])
     

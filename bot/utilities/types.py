@@ -3,137 +3,121 @@ from enum import Enum
 from typing import List
 from typing import Dict
 from typing import Tuple
+from typing import Optional
+from typing import Any
 
-from aiogram.types import Message
+
+class Platform(Enum):
+    TELEGRAM = "telegram"
+    VK = "vk"
+
+class Command(Enum):
+    CREATOR = "creator"
+    USERS = "users"
+    METRICS = "metrics"
+    CLEAR = "clear"
+    ERASE = "erase_"
+    DROP = "drop"
+    BROADCAST = "broadcast"
+    DAYSOFF = "daysoff"
+    DONATED = "donated"
+    
+    NO_PERMISSIONS = "no-permissions"
+    
+    CANCEL = "cancel"
+    
+    START = "start"
+    RESTART = "start"
+    
+    LOGIN = "login"
+    LOGIN_PLATFORM = "login-platform"
+    LOGIN_BB = "login-bb"
+    LOGIN_COMPACT = "login-сompact"
+    LOGIN_WRONG_GROUP_GUESS = "login-wrong-group-guess"
+    LOGIN_CORRECT_GROUP_GUESS = "login-correct-group-guess"
+    LOGIN_SET_BB_LOGIN = "login-set-bb-login"
+    LOGIN_SET_BB_PASSWORD = "login-set-bb-password"
+    LOGIN_SET_GROUP = "login-set-group-"
+    UNLOGIN = "un-login"
+    
+    DELETE_ACCOUNT = "delete-account"
+    DELETE_ACCOUNT_CONFIRM = "delete-account-confirm"
+
+    MENU = "menu"
+    MORE = "more"
+
+    CLASSES = "classes"
+    CLASSES_SHOW = "classes-show"
+    CLASSES_CHOOSE = "classes-choose"
+    
+    EXAMS = "exams"
+    
+    LECTURERS = "lecturers"
+    LECTURERS_NAME = "lecturers-name"
+    LECTURERS_CLASSES_SHOW = "lecturers-classes-show"
+    
+    SCORE = "score"
+    SCORE_SEMESTER = "score-semester"
+    SCORE_SUBJECT = "score-subject"
+    SCORE_MORE_SUBJECTS = "score-more-subjects"
+    
+    NOTES = "notes"
+    NOTES_ADD = "notes-add"
+    NOTES_SHOW = "notes-show"
+    NOTES_SHOW_ALL = "notes-show-all"
+    NOTES_DELETE = "notes-delete"
+    NOTES_DELETE_ALL = "notes-delete-all"
+    
+    EDIT = "edit"
+    
+    LOCATIONS = "locations"
+    
+    WEEK = "week"
+    BRS = "brs"
+    HELP = "help"
+    DONATE = "donate"
+    DICE = "dice"
+    
+    SETTINGS = "settings"
+    SETTINGS_APPEARANCE = "settings-appearance"
+    SETTINGS_APPEARANCE_DONE = "settings-appearance-done"
+    SETTINGS_APPEARANCE_DROP = "settings-appearance-drop"
+    SETTINGS_PLATFORM_CODE = "settings-platform-code"
+    
+    CATCHED_BY_GUARD = "catched-by-guard"
+
+    UNKNOWN_NONTEXT_MESSAGE = "unknown-nontext-message"
+    UNKNOWN_TEXT_MESSAGE = "unknown-text-message"
+    UNKNOWN_CALLBACK = "unknown-callback"
 
 
 class Guard:
     def __init__(self):
-        self.text: str = None
-        self.message: Message = None
+        self.text: Optional[str] = None
+        self.message: Optional[Any] = None
     
     def drop(self):
         self.__init__()
 
 class State:
     def __init__(self):
-        # /login
-        self.groups: List[Tuple[str, str]] = []
-        self.group_names: Dict[str, str] = {}
-        
         # /classes & /exams
-        self.another_group_schedule_id: str = None
+        self.another_group_schedule_id: Optional[str] = None
         self.chosen_schedule_dates: List[str] = []
-        self.classes_offline: Dict[str, List[Dict[str, str]]] = []
         
         # /lecturers
-        self.lecturers_names: List[Dict[str, str]] = None
+        self.lecturers_names: List[Dict[str, str]] = []
         
         # /score
-        self.scoretable: List[Tuple[str, str]] = None
+        self.auth_token: Optional[str] = None
+        self.token_JSESSIONID: Optional[str] = None
+        self.semesters: List[str] = []
+        self.choosen_semester: Optional[str] = None
+        self.score: List[Tuple[str, str]] = []
     
     def drop(self):
-        self.group_names = {}
-        self.another_group_schedule_id = None
-        self.chosen_schedule_dates = []
-        self.lecturers_names = None
-        self.scoretable = None
-    
-    def drop_all(self):
         self.__init__()
 
 
-class Commands(Enum):
-    CREATOR: str = "creator"
-    USERS: str = "users"
-    METRICS: str = "metrics"
-    CLEAR: str = "clear"
-    ERASE: str = "erase_"
-    DROP: str = "drop"
-    BROADCAST: str = "broadcast"
-    DAYSOFF: str = "daysoff"
-    
-    NO_PERMISSIONS: str = "no-permissions"
-    
-    CANCEL: str = "cancel"
-    
-    START: str = "start"
-    
-    LOGIN: str = "login"
-    LOGIN_COMPACT: str = "login-сompact"
-    LOGIN_EXTENDED: str = "login-extended"
-    LOGIN_WRONG_GROUP_GUESS: str = "login-wrong-group-guess"
-    LOGIN_CORRECT_GROUP_GUESS: str = "login-correct-group-guess"
-    LOGIN_SET_INSTITUTE: str = "login-set-institute-"
-    LOGIN_SET_YEAR: str = "login-set-year-"
-    LOGIN_GROUPS_NEXT_PAGE: str = "login-groups-next-page-"
-    LOGIN_GROUPS_PREVIOUS_PAGE: str = "login-groups-previous-page-"
-    LOGIN_SET_GROUP: str = "login-set-group-"
-    LOGIN_NAMES_NEXT_PAGE: str = "login-names-next-page-"
-    LOGIN_NAMES_PREVIOUS_PAGE: str = "login-names-previous-page-"
-    LOGIN_SET_NAME: str = "login-set-name-"
-    LOGIN_SET_CARD: str = "login-set-card"
-    UNLOGIN: str = "un-login"
-    
-    CLASSES: str = "classes"
-    CLASSES_SHOW: str = "classes-show"
-    CLASSES_CHOOSE: str = "classes-choose"
-    
-    EXAMS: str = "exams"
-    
-    LECTURERS: str = "lecturers"
-    LECTURERS_NAME: str = "lecturers-name"
-    
-    SCORE: str = "score"
-    SCORE_SEMESTER: str = "score-semester"
-    SCORE_ALL: str = "score-all"
-    SCORE_EXAMS: str = "score-exams"
-    SCORE_COURSEWORKS: str = "score-courseworks"
-    SCORE_TESTS: str = "score-test"
-    
-    NOTES: str = "notes"
-    NOTES_ADD: str = "notes-add"
-    NOTES_SHOW: str = "notes-show"
-    NOTES_SHOW_ALL: str = "notes-show-all"
-    NOTES_DELETE: str = "notes-delete"
-    NOTES_DELETE_ALL: str = "notes-delete-all"
-    
-    EDIT: str = "edit"
-    EDIT_ADD: str = "edit-add"
-    EDIT_WEEKTYPE: str = "edit-weektype"
-    EDIT_WEEKDAY: str = "edit-weekday"
-    EDIT_HOUR: str = "edit-hour"
-    EDIT_TIME: str = "edit-time"
-    EDIT_BUILDING: str = "edit-building"
-    EDIT_AUDITORIUM: str = "edit-auditorium"
-    EDIT_SUBJECT_TITLE: str = "edit-subject-title"
-    EDIT_SUBJECT_TYPE: str = "edit-subject-title"
-    EDIT_LECTURER: str = "edit-lecturer-name"
-    EDIT_DEPARTMENT: str = "edit-department"
-    EDIT_SHOW: str = "edit-show"
-    EDIT_SHOW_ALL: str = "edit-show-all"
-    EDIT_SHOW_WEEKTYPE: str = "edit-show-weektype"
-    EDIT_SHOW_WEEKDAY: str = "edit-show-weekday"
-    EDIT_SHOW_EDIT: str = "edit-show-edit"
-    EDIT_DELETE: str = "edit-delete"
-    EDIT_DELETE_ALL: str = "edit-delete-all"
-    EDIT_DELETE_WEEKTYPE: str = "edit-delete-weektype"
-    EDIT_DELETE_WEEKDAY: str = "edit-delete-weekday"
-    EDIT_DELETE_EDIT: str = "edit-delete-edit"
-    
-    LOCATIONS: str = "locations"
-    
-    WEEK: str = "week"
-    BRS: str = "brs"
-    HELP: str = "help"
-    DONATE: str = "donate"
-    DICE: str = "dice"
-    
-    SETTINGS: str = "settings"
-    SETTINGS_APPEARANCE: str = "settings-appearance"
-    SETTINGS_APPEARANCE_DONE: str = "settings-appearance-done"
-    SETTINGS_APPEARANCE_DROP: str = "settings-appearance-drop"
-    
-    UNKNOWN_NONTEXT_MESSAGE: str = "unknown-nontext-message"
-    UNKNOWN_TEXT_MESSAGE: str = "unknown-text-message"
-    UNKNOWN_CALLBACK: str = "unknown-callback"
+class SettingsOption(Enum):
+    IS_SCHEDULE_SIZE_FULL = "is_schedule_size_full"

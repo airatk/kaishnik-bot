@@ -3,6 +3,7 @@ from random import choice
 from typing import List
 
 from aiogram.types import CallbackQuery
+from aiogram.types import ParseMode
 from aiogram.utils.exceptions import MessageNotModified
 
 from bot.platforms.telegram import guards
@@ -10,9 +11,9 @@ from bot.platforms.telegram import states
 
 from bot.platforms.telegram.commands.schedule.utilities.keyboards import dates_appender
 
-from bot.models.users import Users
+from bot.models.user import User
 
-from bot.utilities.types import Commands
+from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES
 from bot.utilities.api.types import ResponseError
 from bot.utilities.api.types import ScheduleType
@@ -46,14 +47,10 @@ async def common_add_chosen_date(callback: CallbackQuery):
     try:
         await callback.message.edit_text(
             text="\n".join([
-                "" if chosen_dates_number == 0 else "Выбран{chosen_word_ending} *{chosen_dates_number}* {day_word}.".format(
-                    chosen_word_ending=chosen_word_ending,
-                    chosen_dates_number=chosen_dates_number,
-                    day_word=day_word
-                ),
+                "" if chosen_dates_number == 0 else f"Выбран{chosen_word_ending} *{chosen_dates_number}* {day_word}.",
                 "Выбери нужные дни:"
             ]),
-            parse_mode="markdown",
+            parse_mode=ParseMode.MARKDOWN,
             reply_markup=dates_appender(
                 shift=int(callback_data[1]),
                 dates=states[callback.message.chat.id].chosen_schedule_dates,
@@ -63,7 +60,7 @@ async def common_add_chosen_date(callback: CallbackQuery):
     except MessageNotModified:
         pass
 
-async def common_show_chosen_dates(command: Commands, callback: CallbackQuery):
+async def common_show_chosen_dates(command: Command, callback: CallbackQuery):
     await callback.message.edit_text(
         text=choice(LOADING_REPLIES),
         disable_web_page_preview=True
@@ -74,16 +71,16 @@ async def common_show_chosen_dates(command: Commands, callback: CallbackQuery):
     if callback_data[1] != "":
         states[callback.message.chat.id].chosen_schedule_dates.append(callback_data[1])
     
-    user_id: int = Users.get(Users.telegram_id == callback.message.chat.id).user_id
+    user_id: int = User.get(User.telegram_id == callback.message.chat.id).user_id
     
-    if command is Commands.CLASSES:
+    if command is Command.CLASSES:
         (schedule, response_error) = get_schedule_by_group_schedule_id(
             schedule_type=ScheduleType.CLASSES,
             user_id=user_id,
             another_group_schedule_id=states[callback.message.chat.id].another_group_schedule_id,
             dates=states[callback.message.chat.id].chosen_schedule_dates
         )
-    elif command is Commands.LECTURERS:
+    elif command is Command.LECTURERS:
         (schedule, response_error) = get_lecturers_schedule(
             lecturer_id=callback_data[2],
             schedule_type=ScheduleType.CLASSES,
@@ -98,7 +95,7 @@ async def common_show_chosen_dates(command: Commands, callback: CallbackQuery):
     if response_error is not None:
         await callback.message.answer(
             text=response_error.value,
-            parse_mode="markdown",
+            parse_mode=ParseMode.MARKDOWN,
             disable_web_page_preview=True
         )
     
@@ -106,7 +103,7 @@ async def common_show_chosen_dates(command: Commands, callback: CallbackQuery):
         for day in schedule:
             await callback.message.answer(
                 text=day,
-                parse_mode="markdown"
+                parse_mode=ParseMode.MARKDOWN
             )
     
     states[callback.message.chat.id].drop()

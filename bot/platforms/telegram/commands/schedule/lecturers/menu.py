@@ -3,45 +3,46 @@ from typing import List
 
 from random import choice
 
-from re import match
-
-from itertools import permutations
-
 from aiogram.types import Message
 from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
+from aiogram.types import ParseMode
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import guards
 from bot.platforms.telegram import states
 
+from bot.platforms.telegram.commands.schedule.lecturers.utilities.constants import MAX_LECTURERS_NUMBER
 from bot.platforms.telegram.commands.schedule.lecturers.utilities.keyboards import lecturer_chooser
 from bot.platforms.telegram.commands.schedule.lecturers.utilities.keyboards import lecturer_info_type_chooser
-from bot.platforms.telegram.commands.schedule.lecturers.utilities.constants import MAX_LECTURERS_NUMBER
 
-from bot.platforms.telegram.utilities.keyboards import canceler
+from bot.platforms.telegram.utilities.constants import BOT_ADDRESSING
 from bot.platforms.telegram.utilities.helpers import top_notification
+from bot.platforms.telegram.utilities.keyboards import canceler
 
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.constants import BOT_ADDRESSING
-from bot.utilities.types import Commands
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 from bot.utilities.api.constants import LOADING_REPLIES
 from bot.utilities.api.lecturers import get_lecturers_names
 
 
 @dispatcher.message_handler(
     lambda message: message.chat.type != ChatType.PRIVATE,
-    commands=[ Commands.LECTURERS.value ]
+    commands=[ Command.LECTURERS.value ]
 )
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
         guards[message.chat.id].text is None,
-    commands=[ Commands.LECTURERS.value ]
+    commands=[ Command.LECTURERS.value ]
 )
-@increment_command_metrics(command=Commands.LECTURERS)
+@note_metrics(platform=Platform.TELEGRAM, command=Command.LECTURERS)
 async def lecturers(message: Message):
-    guard_message: Message = await message.answer(text=choice(LOADING_REPLIES))
+    guard_message: Message = await message.answer(
+        text=choice(LOADING_REPLIES),
+        disable_web_page_preview=True
+    )
     
     (lecturers_names, response_error) = get_lecturers_names()
     
@@ -59,7 +60,7 @@ async def lecturers(message: Message):
         reply_markup=canceler()
     )
     
-    guards[message.chat.id].text = Commands.LECTURERS_NAME.value
+    guards[message.chat.id].text = Command.LECTURERS_NAME.value
     guards[message.chat.id].message = guard_message
 
 @dispatcher.message_handler(
@@ -67,12 +68,12 @@ async def lecturers(message: Message):
         message.chat.type != ChatType.PRIVATE and (
             message.text is not None and message.text.startswith(BOT_ADDRESSING) or
             message.reply_to_message is not None and message.reply_to_message.from_user.is_bot
-        ) and guards[message.chat.id].text == Commands.LECTURERS_NAME.value
+        ) and guards[message.chat.id].text == Command.LECTURERS_NAME.value
 )
 @dispatcher.message_handler(
     lambda message:
         message.chat.type == ChatType.PRIVATE and
-        guards[message.chat.id].text == Commands.LECTURERS_NAME.value
+        guards[message.chat.id].text == Command.LECTURERS_NAME.value
 )
 async def find_lecturer(message: Message):
     # Getting rid of the bot addressing
@@ -82,25 +83,29 @@ async def find_lecturer(message: Message):
     await message.delete()
     
     partial_name_parts: List[str] = message.text.lower().split(" ")
-    names: List[Dict[str, str]] = [ 
-        name for name in states[message.chat.id].lecturers_names if any([ 
-            match(
-                pattern=f"^.*{'.*'.join(partial_name_permutation)}.*$", 
-                string=name["lecturer"].lower()
-            ) is not None for partial_name_permutation in permutations(partial_name_parts) 
-        ])
-    ]
+    names: List[Dict[str, str]] = list(filter(
+        lambda name: all(partial_name_part in name["lecturer"].lower() for partial_name_part in partial_name_parts),
+        states[message.chat.id].lecturers_names
+    ))
     
     if len(names) == 0:
-        await guards[message.chat.id].message.edit_text(text="Ничего не найдено :(")
-        
-        guards[message.chat.id].drop()
+        await guards[message.chat.id].message.edit_text(
+            text=(
+                "Ничего не найдено :(\n\n"
+                "Попробуешь ещё раз?"
+            ),
+            reply_markup=canceler()
+        )
         return
     
     if len(names) > MAX_LECTURERS_NUMBER:
-        await guards[message.chat.id].message.edit_text(text="Слишком мало букв, слишком много преподавателей…")
-        
-        guards[message.chat.id].drop()
+        await guards[message.chat.id].message.edit_text(
+            text=(
+                "Слишком мало букв, слишком много преподавателей…\n\n"
+                "Попробуешь ещё раз?"
+            ),
+            reply_markup=canceler()
+        )
         return
     
     await guards[message.chat.id].message.edit_text(
@@ -108,12 +113,12 @@ async def find_lecturer(message: Message):
         reply_markup=lecturer_chooser(names=names)
     )
     
-    guards[message.chat.id].text = Commands.LECTURERS.value
+    guards[message.chat.id].text = Command.LECTURERS.value
 
 @dispatcher.callback_query_handler(
     lambda callback:
-        guards[callback.message.chat.id].text == Commands.LECTURERS.value and
-        Commands.LECTURERS.value in callback.data
+        guards[callback.message.chat.id].text == Command.LECTURERS.value and
+        Command.LECTURERS.value in callback.data
 )
 @top_notification
 async def lecturers_schedule_type(callback: CallbackQuery):
@@ -127,7 +132,7 @@ async def lecturers_schedule_type(callback: CallbackQuery):
     
     await callback.message.edit_text(
         text=chosen_name,
-        parse_mode="markdown"
+        parse_mode=ParseMode.MARKDOWN
     )
     
     await callback.message.answer(

@@ -6,7 +6,7 @@ from typing import Tuple
 from typing import Optional
 
 from bot.models.settings import Settings
-from bot.models.days_off import DaysOff
+from bot.models.day_off import DayOff
 
 from bot.utilities.api.helpers.classes import style_raw_student_class
 from bot.utilities.api.helpers.classes import style_raw_lecturer_class
@@ -25,9 +25,7 @@ def refine_raw_schedule(raw_schedule: Dict[str, List[Dict[str, str]]]) -> List[D
 def beautify_classes(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Settings, dates: List[str] = []) -> List[str]:
     should_show_entire_semester: bool = (len(dates) == 0)
     
-    dates = list(WEEKDAYS.keys()) if should_show_entire_semester else sorted(
-        dates, key=lambda raw_date: datetime(datetime.today().year, int(raw_date[3:5]), int(raw_date[0:2]))
-    )
+    dates = list(WEEKDAYS.keys()) if should_show_entire_semester else sorted(dates, key=lambda raw_date: datetime(year=datetime.today().year, month=int(raw_date[3:5]), day=int(raw_date[0:2])))
     
     beautified_classes: List[str] = []
     
@@ -36,7 +34,7 @@ def beautify_classes(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Se
             (raw_day, raw_month) = raw_date.split(".")
             day_date: Optional[datetime] = datetime(datetime.today().year, int(raw_month), int(raw_day))
             
-            is_day_off: bool = DaysOff.select().where(DaysOff.date == day_date.strftime("%d-%m")).exists()
+            is_day_off: bool = DayOff.select().where(DayOff.day == day_date.strftime("%d-%m")).exists()
             
             weekday: str = str(day_date.isoweekday())
         else:
@@ -54,17 +52,17 @@ def beautify_classes(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Se
             raw_schedule[weekday] = refine_raw_schedule(raw_schedule[weekday])
             
             for raw_class in raw_schedule[weekday]:
-                # No classes - no schedule. For dayoffs
+                # No classes - no schedule. For days off
                 if "День консультаций" in raw_class["disciplName"]: break
                 
                 # Removing extra whitespaces from dates
                 raw_class["dayDate"] = raw_class["dayDate"].replace(" ", "").replace(",", ", ")
                 
                 if not should_show_entire_semester:
-                    # Do not show classes on even weeks when they are supposed to be on odd weeks if that's not asked
+                    # Do not show classes on even weeks when they are supposed to be on odd weeks
                     if (raw_class["dayDate"] == "неч") if is_week_even(day_date) else (raw_class["dayDate"] == "чет"): continue
                     
-                    # Do not show classes with certain dates (21.09) on other dates (28 сентября) if that's not asked
+                    # Do not show classes with certain dates (21.09) on other dates (28 сентября)
                     if "." in raw_class["dayDate"] and (
                         "{day}.{month}".format(day=int(raw_day), month=raw_month) not in raw_class["dayDate"] and
                         raw_date not in raw_class["dayDate"]
@@ -87,17 +85,17 @@ def beautify_classes(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Se
         
         if classes == "":
             if not should_show_entire_semester and is_day_off:
-                classes = DaysOff.get(DaysOff.date == day_date.strftime("%d-%m")).message
+                classes = DayOff.get(DayOff.day == day_date.strftime("%d-%m")).message
             else:
                 classes = "Выходной"
-        
-        if should_show_entire_semester:
-            classes_day: str = "*{weekday}*".format(weekday=WEEKDAYS[int(weekday)])
-        else:
+                
+        if not should_show_entire_semester:
             classes_day: str = "*{weekday}, {day} {month}*".format(
                 weekday=WEEKDAYS.get(int(weekday), "Воскресенье"),
                 day=int(raw_day), month=MONTHS[raw_month]
             )
+        else:
+            classes_day = "*{weekday}*".format(weekday=WEEKDAYS[int(weekday)])
         
         beautified_classes.append("\n\n".join([ classes_day, classes ]))
     
@@ -105,13 +103,15 @@ def beautify_classes(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Se
 
 def beautify_exams(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Settings) -> str:
     raw_schedule: List[Dict[str, str]] = refine_raw_schedule(raw_schedule=raw_schedule)
-    
+
     raw_schedule.sort(key=lambda raw_exam: ".".join(raw_exam["examDate"].split(".")[:2][::-1]))
     
-    exams_list: List[str] = [ style_raw_student_exam(
-        raw_exam=raw_exam,
-        is_schedule_size_full=settings.is_schedule_size_full
-    ) for raw_exam in raw_schedule ]
+    exams_list: List[str] = [ 
+        style_raw_student_exam(
+            raw_exam=raw_exam,
+            is_schedule_size_full=settings.is_schedule_size_full
+        ) for raw_exam in raw_schedule 
+    ]
     
     return "\n\n".join(exams_list)
 
@@ -119,26 +119,22 @@ def beautify_exams(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Sett
 def beautify_lecturers_classes(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Settings, dates: List[str] = []) -> List[str]:
     should_show_entire_semester: bool = (len(dates) == 0)
 
-    dates = list(WEEKDAYS.keys()) if should_show_entire_semester else sorted(
-        dates, key=lambda raw_date: datetime(datetime.today().year, int(raw_date[3:5]), int(raw_date[0:2]))
-    )
+    dates = list(WEEKDAYS.keys()) if should_show_entire_semester else sorted(dates, key=lambda raw_date: datetime(datetime.today().year, int(raw_date[3:5]), int(raw_date[0:2])))
     
     initial_raw_schedule: Dict[str, List[Dict[str, str]]] = raw_schedule
     beautified_classes: List[str] = []
     
     for raw_date in dates:
         raw_schedule = dict(initial_raw_schedule)
-        
+
         if not should_show_entire_semester:
             (raw_day, raw_month) = raw_date.split(".")
             day_date: datetime = datetime(datetime.today().year, int(raw_month), int(raw_day))
-            
             weekday: str = str(day_date.isoweekday())
         else:
             (raw_day, raw_month) = (None, None)
-            day_date: datetime = None
-            
-            weekday: str = str(raw_date)
+            day_date = None
+            weekday = str(raw_date)
         
         classes_list: List[Tuple[str, str]] = []
         
@@ -220,9 +216,11 @@ def beautify_lecturers_exams(raw_schedule: Dict[str, List[Dict[str, str]]], sett
     
     raw_schedule.sort(key=lambda raw_exam: ".".join(raw_exam["examDate"].split(".")[:2][::-1]))
     
-    exams_list: List[str] = [ style_raw_lecturer_exam(
-        raw_exam=raw_exam,
-        is_schedule_size_full=settings.is_schedule_size_full
-    ) for raw_exam in raw_schedule ]
+    exams_list: List[str] = [ 
+        style_raw_lecturer_exam(
+            raw_exam=raw_exam,
+            is_schedule_size_full=settings.is_schedule_size_full
+        ) for raw_exam in raw_schedule 
+    ]
     
     return "\n\n".join(exams_list)

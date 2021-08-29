@@ -4,19 +4,21 @@ from aiogram.types import Message
 from aiogram.types import ContentType
 from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
+from aiogram.types import ParseMode
 from aiogram.utils.exceptions import MessageError
 
 from bot.platforms.telegram import dispatcher
+from bot.platforms.telegram import states
 from bot.platforms.telegram import guards
 
-from bot.platforms.telegram.commands.unknown.utilities.constants import REPLIES_TO_UNKNOWN_COMMAND
-from bot.platforms.telegram.commands.unknown.utilities.constants import REPLIES_TO_UNKNOWN_MESSAGE
-
+from bot.platforms.telegram.utilities.constants import BOT_ADDRESSING
 from bot.platforms.telegram.utilities.helpers import top_notification
 
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.constants import BOT_ADDRESSING
-from bot.utilities.types import Commands
+from bot.utilities.constants import REPLIES_TO_UNKNOWN_COMMAND
+from bot.utilities.constants import REPLIES_TO_UNKNOWN_TEXT_MESSAGE
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 
 
 @dispatcher.message_handler(
@@ -25,7 +27,7 @@ from bot.utilities.types import Commands
         message.content_type != ContentType.TEXT,
     content_types=[ ContentType.ANY ]
 )
-@increment_command_metrics(command=Commands.UNKNOWN_NONTEXT_MESSAGE)
+@note_metrics(platform=Platform.TELEGRAM, command=Command.UNKNOWN_NONTEXT_MESSAGE)
 async def unknown_nontext_message(message: Message):
     await message.delete()
 
@@ -41,7 +43,7 @@ async def unknown_nontext_message(message: Message):
     lambda message: message.chat.type == ChatType.PRIVATE,
     content_types=[ ContentType.TEXT ]
 )
-@increment_command_metrics(command=Commands.UNKNOWN_TEXT_MESSAGE)
+@note_metrics(platform=Platform.TELEGRAM, command=Command.UNKNOWN_TEXT_MESSAGE)
 async def unknown_text_message(message: Message):
     # Getting rid of the bot addressing
     if message.chat.type != ChatType.PRIVATE:
@@ -52,19 +54,22 @@ async def unknown_text_message(message: Message):
     elif message.is_command():
         text: str = choice(REPLIES_TO_UNKNOWN_COMMAND)
     else:
-        text: str = choice(REPLIES_TO_UNKNOWN_MESSAGE)
+        text: str = choice(REPLIES_TO_UNKNOWN_TEXT_MESSAGE)
     
     await message.answer(
         text=text,
-        parse_mode="markdown",
+        parse_mode=ParseMode.MARKDOWN,
         disable_web_page_preview=True
     )
 
-@dispatcher.callback_query_handler(lambda callback: True)
-@increment_command_metrics(command=Commands.UNKNOWN_CALLBACK)
+@dispatcher.callback_query_handler(lambda _: True)
+@note_metrics(platform=Platform.TELEGRAM, command=Command.UNKNOWN_CALLBACK)
 @top_notification
 async def unknown_callback(callback: CallbackQuery):
     try:
         await callback.message.edit_text(text="Ой-ой!🙆🏼‍♀️")
     except MessageError:
         await callback.message.edit_text(text="Ой!🙆🏼‍♀️")
+    
+    states[callback.message.chat.id].drop()
+    guards[callback.message.chat.id].drop()

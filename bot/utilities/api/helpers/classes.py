@@ -13,11 +13,13 @@ from bot.utilities.api.types import ClassType
 
 
 def style_raw_student_class(raw_class: Dict[str, str], is_schedule_size_full: bool, should_show_entire_semester: bool) -> str:
-    styled_student_class_entities: List[str] = [ style_raw_class(
-        raw_class=raw_class,
-        is_schedule_size_full=is_schedule_size_full,
-        should_show_entire_semester=should_show_entire_semester
-    ) ]
+    styled_student_class_entities: List[str] = [ 
+        style_raw_class(
+            raw_class=raw_class,
+            is_schedule_size_full=is_schedule_size_full,
+            should_show_entire_semester=should_show_entire_semester
+        ) 
+    ]
     
     if raw_class["prepodName"] != "" and is_schedule_size_full:
         styled_student_class_entities.append(LECTURER_ENTITY.format(lecturer=raw_class["prepodName"].title()))
@@ -28,13 +30,17 @@ def style_raw_student_class(raw_class: Dict[str, str], is_schedule_size_full: bo
     return "\n".join(styled_student_class_entities)
 
 def style_raw_lecturer_class(raw_class: Dict[str, str], is_schedule_size_full: bool, should_show_entire_semester: bool, groups: List[str]) -> str:
-    styled_lecturer_class_entities: List[str] = [ style_raw_class(
-        raw_class=raw_class,
-        is_schedule_size_full=is_schedule_size_full,
-        should_show_entire_semester=should_show_entire_semester
-    ) ]
+    styled_lecturer_class_entities: List[str] = [ 
+        style_raw_class(
+            raw_class=raw_class,
+            is_schedule_size_full=is_schedule_size_full,
+            should_show_entire_semester=should_show_entire_semester
+        ) 
+    ]
     
-    styled_lecturer_class_entities.append("\n".join([ GROUPS_ENTITY.format(group=group) for group in groups ]))
+    styled_lecturer_class_entities.append(
+        "\n".join([ GROUPS_ENTITY.format(group=group) for group in groups ])
+    )
     
     return "\n".join(styled_lecturer_class_entities)
 
@@ -76,14 +82,10 @@ def refine_class_time(raw_time: str, raw_type: str) -> str:
     duration: timedelta = timedelta(hours=1, minutes=30)  # Class duration is 1.5h
     
     if raw_type == ClassType.MILITARY_TRAINING.value:
-        start_time = datetime(1, 1, 1, 7, 50)
-        # Military training classes start 10 minutes earlier than the usual ones
-
-        duration = timedelta(hours=9, minutes=10)
-        # Military training classes last all day
+        start_time = datetime(1, 1, 1, 7, 50)  # Military training classes start 10 minutes earlier than the usual ones
+        duration = timedelta(hours=9, minutes=10)  # Military training classes last all day
     elif raw_type == ClassType.LAB.value:
-        duration = timedelta(hours=3, minutes=40 if start_time.hour == 11 else 10)
-        # Lab duration is 3h with a 40/10m long break
+        duration = timedelta(hours=3, minutes=40 if start_time.hour == 11 else 10)  # Lab duration is 3h with a 40/10m long break
     
     end_time: datetime = start_time + duration
     
@@ -113,7 +115,7 @@ def refine_class_type(raw_type: str, is_multigroup: bool, is_schedule_size_full:
     elif raw_type == ClassType.CONSULTATION.value:
         class_type = "консультация" if is_schedule_size_full else "К"
     elif raw_type == ClassType.MILITARY_TRAINING.value:
-        class_type = "согласно расписанию ВУЦ" if is_schedule_size_full else "С"
+        class_type = "согласно расписанию ВУЦ" if is_schedule_size_full else "ВУЦ"
         is_multigroup = False
     else:
         class_type = raw_type

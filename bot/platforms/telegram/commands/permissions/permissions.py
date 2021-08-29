@@ -1,5 +1,6 @@
 from aiogram.types import Message
 from aiogram.types import CallbackQuery
+from aiogram.types import ChatMember
 
 from bot.platforms.telegram import dispatcher
 
@@ -9,17 +10,18 @@ from bot.platforms.telegram.commands.permissions.utilities.helpers import check_
 
 from bot.platforms.telegram.utilities.helpers import top_notification
 
-from bot.utilities.helpers import increment_command_metrics
-from bot.utilities.types import Commands
+from bot.utilities.helpers import note_metrics
+from bot.utilities.types import Platform
+from bot.utilities.types import Command
 
 
 @dispatcher.message_handler(
     check_permissions_in_group_chat_on_command,
     content_types=[ "text" ]
 )
-@increment_command_metrics(command=Commands.NO_PERMISSIONS)
+@note_metrics(platform=Platform.TELEGRAM, command=Command.NO_PERMISSIONS)
 async def permissions_on_command(message: Message):
-    bot_member = await get_bot_member(message=message)
+    bot_member: ChatMember = await get_bot_member(message=message)
     
     text: str = ""
     

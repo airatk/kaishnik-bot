@@ -1,40 +1,40 @@
-from json.decoder import JSONDecodeError
-
 from typing import Optional
 from typing import Union
-from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
 
+from json.decoder import JSONDecodeError
+
 from requests import get
 from requests import post
+from requests import Response
 from requests.exceptions import ConnectionError
 from requests.exceptions import Timeout
 
 from bs4 import BeautifulSoup
-from bs4.element import Tag
+from bs4 import Tag
 
-from bot.models.groups_of_students import GroupsOfStudents
-from bot.models.compact_students import CompactStudents
-from bot.models.extended_students import ExtendedStudents
-from bot.models.bb_students import BBStudents
+from bot.models.user import User
 from bot.models.settings import Settings
 
+from bot.utilities.api.constants import SCHEDULE_URL
+from bot.utilities.api.constants import CAS_LOGIN_URL
+from bot.utilities.api.constants import CAS_SERVICE_LOGIN_URL
+from bot.utilities.api.constants import STUDENT_DATA_URL
+from bot.utilities.api.constants import AUTH_TOKEN_SIGN
+from bot.utilities.api.constants import AUTH_TOKEN_LENGTH
+from bot.utilities.api.constants import SCORE_TEMPLATE
 from bot.utilities.api.helpers.schedule import beautify_classes
 from bot.utilities.api.helpers.schedule import beautify_exams
-from bot.utilities.api.helpers.scoretable import beautify_scoretable
-from bot.utilities.api.constants import SCHEDULE_URL
-from bot.utilities.api.constants import SCORE_URL
-from bot.utilities.api.constants import P_SUB
-from bot.utilities.api.types import ScheduleType
-from bot.utilities.api.types import ExtendedLoginDataType
 from bot.utilities.api.types import ResponseError
+from bot.utilities.api.types import KaiRuDataType
+from bot.utilities.api.types import ScheduleType
 
 
 def get_group_schedule_id(group: str) -> Tuple[Optional[str], Optional[ResponseError]]:
     try:
-        groups: List[Dict[str, str]] = get(url=SCHEDULE_URL, timeout=12, params={
+        groups_json_list: List[Dict[str, str]] = get(url=SCHEDULE_URL, timeout=12, params={
             "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
             "p_p_lifecycle": "2",
             "p_p_resource_id": "getGroupsURL",
@@ -43,28 +43,17 @@ def get_group_schedule_id(group: str) -> Tuple[Optional[str], Optional[ResponseE
     except (ConnectionError, Timeout, JSONDecodeError):
         return (None, ResponseError.NO_RESPONSE)
     
-    if len(groups) == 0 or "id" not in groups[0]:
+    if len(groups_json_list) != 1 or "id" not in groups_json_list[0]:
         return (None, ResponseError.NO_DATA)
     
-    return (groups[0]["id"], None)
+    return (groups_json_list[0]["id"], None)
 
 def get_schedule_by_group_schedule_id(schedule_type: ScheduleType, user_id: int, another_group_schedule_id: Optional[int] = None, dates: Optional[List[str]] = None) -> Tuple[Optional[Union[List[str], str]], Optional[str]]:
     is_own_group_asked: bool = another_group_schedule_id is None
-    
-    if is_own_group_asked:
-        user: Any = GroupsOfStudents.get_or_none(GroupsOfStudents.user_id == user_id)
-
-        if user is None:
-            user = CompactStudents.get_or_none(CompactStudents.user_id == user_id)
-        if user is None:
-            user = ExtendedStudents.get_or_none(ExtendedStudents.user_id == user_id)
-        
-        group_schedule_id: int = user.group_schedule_id
-    else:
-        group_schedule_id: int = another_group_schedule_id
+    group_schedule_id: int = User.get_or_none(User.user_id == user_id).group_schedule_id if is_own_group_asked else another_group_schedule_id
     
     try:
-        response: Dict[str, List[Dict[str, str]]] = get(url=SCHEDULE_URL, timeout=12, params={
+        schedule_json_list: Dict[str, List[Dict[str, str]]] = get(url=SCHEDULE_URL, timeout=12, params={
             "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
             "p_p_lifecycle": "2",
             "p_p_resource_id": schedule_type.value,
@@ -73,96 +62,138 @@ def get_schedule_by_group_schedule_id(schedule_type: ScheduleType, user_id: int,
     except (ConnectionError, Timeout, JSONDecodeError):
         return (None, ResponseError.NO_RESPONSE)
     
-    if not response:
+    if len(schedule_json_list) == 0:
         return (None, ResponseError.NO_DATA)
     
     settings: Settings = Settings.get(Settings.user_id == user_id)
     
     if schedule_type is ScheduleType.CLASSES:
-        return (beautify_classes(raw_schedule=response, dates=dates, settings=settings), None)
-    
+        return (beautify_classes(raw_schedule=schedule_json_list, dates=dates, settings=settings), None)
     if schedule_type is ScheduleType.EXAMS:
-        return (beautify_exams(raw_schedule=response, settings=settings), None)
+        return (beautify_exams(raw_schedule=schedule_json_list, settings=settings), None)
     
     return(None, ResponseError.INCORRECT_SCHEDULE_TYPE)
 
 
-def get_extended_login_data(extended_login_data_type: ExtendedLoginDataType, user_id: int) -> Tuple[Optional[List[Tuple[str, str]]], Optional[ResponseError]]:
-    student: ExtendedStudents = ExtendedStudents.get(ExtendedStudents.user_id == user_id)
-    
+def authenticate_user_via_kai_cas(user: User) -> Tuple[Optional[str], Optional[ResponseError]]:
     try:
-        page: str = get(url=SCORE_URL, timeout=12, params={
-            "p_fac": student.institute_id,
-            "p_kurs": student.year,
-            "p_group": student.group_score_id
-        }).content.decode("CP1251")
-        
-        parsed_page: BeautifulSoup = BeautifulSoup(page, "html.parser")
-        selector: Tag = parsed_page.find(name="select", attrs={ "name": extended_login_data_type.value })
-        
-        keys: List[str] = list(map(lambda option: option.text, selector.find_all("option")))[1:]
-        values: List[str] = list(map(lambda option: option["value"], selector.find_all("option")))[1:]
-        
-        # Fixing bad quality response
-        for i in range(1, len(keys)): keys[i - 1] = keys[i - 1].replace(keys[i], "")
-        keys = list(map(lambda key: key[:-1] if key.endswith(" ") else key, keys))
+        login_page_response: Response = get(url=CAS_LOGIN_URL, timeout=12)
+
+        cas_login_page: str = login_page_response.text
+        parsed_cas_login_page: BeautifulSoup = BeautifulSoup(cas_login_page, features="html.parser")
+        input_for_token_LT: Tag = parsed_cas_login_page.find(name="input", attrs={ "name": "lt" })
+
+        token_LT: str = input_for_token_LT["value"]
+        token_JSESSIONID: str = login_page_response.cookies["JSESSIONID"]
     except (ConnectionError, Timeout):
         return (None, ResponseError.NO_RESPONSE)
-    except (AttributeError, ValueError, KeyError):
+    except KeyError:
         return (None, ResponseError.NO_DATA)
-    else:
-        return (list(zip(keys, values)), None)
 
-def get_last_available_semester(user_id: int, is_card_check: bool = False) -> Tuple[Optional[int], Optional[ResponseError]]:
-    student: ExtendedStudents = ExtendedStudents.get(ExtendedStudents.user_id == user_id)
-    
     try:
-        page: str = post(SCORE_URL, timeout=12, data={
-            "p_sub": P_SUB,
-            "p_fac": student.institute_id,
-            "p_kurs": student.year,
-            "p_group": student.group_score_id,
-            "p_stud": student.name_id,
-            "p_zach": student.card.encode("CP1251")
-        }).content.decode("CP1251")
-        
-        parsed_page: BeautifulSoup = BeautifulSoup(page, "html.parser")
-        selector: Optional[Tag] = parsed_page.find(name="select", attrs={ "name": "semestr" })
-        
-        semesters: List[int] = map(lambda option: int(option["value"]), selector.find_all("option"))
+        cas_authentication_data_response: Response = post(
+            url=CAS_LOGIN_URL,
+            timeout=12,
+            data={
+                "username": user.bb_login,
+                "password": user.bb_password,
+                "execution": "e1s1",
+                "_eventId": "submit",
+                "lt": token_LT
+            },
+            headers={
+                "Cookie": f"JSESSIONID={token_JSESSIONID}"
+            }
+        )
+
+        token_CASTGC: str = cas_authentication_data_response.cookies["CASTGC"]
     except (ConnectionError, Timeout):
         return (None, ResponseError.NO_RESPONSE)
-    except (ValueError, KeyError):
-        return (None, ResponseError.NO_DATA)
-    except AttributeError:
-        return (None, ResponseError.INCORRECT_CARD if is_card_check else ResponseError.NO_DATA)
-    else:
-        return (max(semesters), None)
+    except KeyError:
+        return (None, ResponseError.INCORRECT_BB_CREDENTIALS)
+    
+    return (token_CASTGC, None)
 
-def get_scoretable(semester: str, user_id: int) -> Tuple[Optional[List[Tuple[str, str]]], Optional[ResponseError]]:
-    student: ExtendedStudents = ExtendedStudents.get(ExtendedStudents.user_id == user_id)
+def authorise_user_via_kai_cas(user: User) -> Tuple[Optional[str], Optional[ResponseError]]:
+    (token_CASTGC, response_error) = authenticate_user_via_kai_cas(user=user)
+
+    if token_CASTGC is None:
+        return (None, response_error)
+    
+    try:
+        cas_authorisation_data_response: Response = get(
+            url=CAS_SERVICE_LOGIN_URL,
+            timeout=12,
+            headers={
+                "Cookie": f"CASTGC={token_CASTGC}"
+            }
+        )
+        
+        token_JSESSIONID: str = cas_authorisation_data_response.history[1].cookies["JSESSIONID"]
+    except (ConnectionError, Timeout):
+        return (None, ResponseError.NO_RESPONSE)
+    except (IndexError, KeyError):
+        return (None, ResponseError.NO_DATA)
+    
+    return (token_JSESSIONID, None)
+
+def get_score_data(user: User, semester: Optional[int] = None, auth_token: Optional[str] = None, token_JSESSIONID: Optional[str] = None) -> Tuple[Optional[Tuple[str, List[str], List[Tuple[str, str]]]], Optional[ResponseError]]:
+    if token_JSESSIONID is None:
+        (token_JSESSIONID, response_error) = authorise_user_via_kai_cas(user=user)
+
+        if token_JSESSIONID is None:
+            return (None, response_error)
 
     try:
-        page: str = post(SCORE_URL, timeout=12, data={
-            "p_sub": P_SUB,
-            "p_fac": student.institute_id,
-            "p_kurs": student.year,
-            "p_group": student.group_score_id,
-            "p_stud": student.name_id,
-            "p_zach": student.card.encode("CP1251"),
-            "semestr": semester
-        }).content.decode("CP1251")
+        score_data_page: str = get(
+            url=STUDENT_DATA_URL.format(data_type=KaiRuDataType.SCORE.value),
+            timeout=12,
+            params={} if auth_token is None else {
+                "p_auth": auth_token,
+                "p_p_id": "myBRS_WAR_myBRS10",
+                "p_p_lifecycle": 1,
+                "p_p_state": "normal",
+                "p_p_mode": "view",
+                "p_p_col_id": "column-2",
+                "p_p_col_count": 1,
+                "_myBRS_WAR_myBRS10_javax.portlet.action": "selectSemester",
+                "semester": semester
+            },
+            headers={
+                "Cookie": f"JSESSIONID={token_JSESSIONID}"
+            }
+        ).content.decode("utf-8")
+
+        parsed_score_data_page: BeautifulSoup = BeautifulSoup(score_data_page, "html.parser")
         
-        parsed_page: BeautifulSoup = BeautifulSoup(page, features="html.parser")
-        table: Tag = parsed_page.find(name="table", attrs={ "id": "reyt" })
-        
-        raw_scoretable: List[List[str]] = [ [
-                (data.text if data.text else "-") for data in row.find_all("td")
-            ] for row in table.find_all("tr")
+        semester_selector: Optional[Tag] = parsed_score_data_page.find(name="select", attrs={ "name": "_myBRS_WAR_myBRS10_semester_0" })
+        semesters: List[str] = sorted([ option["value"] for option in semester_selector.find_all("option") ])
+
+        score_table: Optional[Tag] = parsed_score_data_page.find(name="table", attrs={ "class": "table table-striped table-bordered" })
+        score_table_data: List[List[str]] = [ [
+                data.text for data in row.find_all("td")
+            ] for row in score_table.find_all("tr")
         ][2:]
     except (ConnectionError, Timeout):
         return (None, ResponseError.NO_RESPONSE)
-    except (AttributeError, ValueError, KeyError):
+    except AttributeError:
         return (None, ResponseError.NO_DATA)
-    else:
-        return (beautify_scoretable(raw_scoretable=raw_scoretable), None)
+    
+    if len(semesters) == 0 or len(score_table_data) == 0:
+        return (None, ResponseError.NO_DATA)
+    
+    # Slightly refining traditional assessment to be written starting with lower case letter
+    for (subject_index, subject_score_data) in enumerate(score_table_data):
+        score_table_data[subject_index][16] = subject_score_data[16].lower()
+    
+    score: List[Tuple[str, str]] = [
+        (subject_score_data[1], SCORE_TEMPLATE.format(*subject_score_data[1:])) 
+        for subject_score_data in score_table_data
+    ]
+
+    auth_token_start_index: int = score_data_page.find(AUTH_TOKEN_SIGN) + len(AUTH_TOKEN_SIGN)
+    auth_token_end_index: int = auth_token_start_index + AUTH_TOKEN_LENGTH
+
+    auth_token = score_data_page[auth_token_start_index:auth_token_end_index]
+
+    return ((auth_token, token_JSESSIONID, semesters, score), None)

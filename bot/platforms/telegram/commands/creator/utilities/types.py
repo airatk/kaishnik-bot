@@ -2,48 +2,34 @@ from enum import Enum
 
 
 class Option(Enum):
-    EMPTY: str = ""
-    
-    # /metrics
-    DATE: str = "date"
-    MONTH: str = "month"
-    
-    # /data
-    NUMBER: str = "number"
-    STATE: str = "state"
-    USER_ID: str = "user-id"
-    
-    USERNAME: str = "username"
-    FIRSTNAME: str = "firstname"
-    
-    NAME: str = "name"
-    GROUP: str = "group"
-    
-    BB_LOGIN: str = "bb-login"
+    EMPTY = ""
     
     # /broadcast
-    USERS: str = "users"
-    MESSAGE: str = "message"
-    SIGNED: str = "signed"
+    USERS = "users"
+    MESSAGE = "message"
+    SIGNED = "signed"
     
     # /daysoff
-    ADD: str = "add"
-    DROP: str = "drop"
+    ADD = "add"
+    DROP = "drop"
+
+    # /donated
+    AMOUNT = "amount"
+    DONATOR = "donator"
+    DATE = "date"
 
 class Value(Enum):
-    ME: str = "me"
+    ME = "me"
     
-    ALL: str = "all"
+    ALL = "all"
     
-    SETUP: str = "setup"
-    UNSETUP: str = "unsetup"
+    SETUP = "setup"
+    UNSETUP = "unsetup"
     
-    GROUPS: str = "groups"
-    COMPACTS: str = "compacts"
-    EXTENDEDS: str = "extendeds"
-    BBS: str = "bbs"
-    UNDEFINED: str = "undefined"
+    GROUPS = "groups"
+    COMPACTS = "compacts"
+    BBS = "bbs"
     
-    GUARDS: str = "guards"
+    GUARDS = "guards"
     
-    LIST: str = "list"
+    LIST = "list"
