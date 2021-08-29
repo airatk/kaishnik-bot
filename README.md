@@ -23,21 +23,6 @@ There should be `data/` folder in the root directory of the bot. It should conta
 The `requirements.txt` file is included to the repository. So, use `pip3 install -r requirements.txt` to get all the necessities.
 Use `python3 ./` to launch.
 
-## Commands
-* **classes** - занятия
-* **score** - баллы
-* **lecturers** - преподаватели
-* **notes** - заметки
-* **week** - чётность недели
-* **exams** - экзамены
-* **dice** - бросок на удачу
-* **locations** - здания КАИ
-* **brs** - что за БРС?
-* **edit** - изменить расписание
-* **settings** - настройки
-* **help** - подсказки
-* **donate** - сказать спасибо
-
 ## Architecture
 The bot is stored in project root directory folder called `bot/`. The `bot/` contains 3 subdirectories: 
 * `platforms/` - implementation of bot on a variety of social networks.

@@ -134,7 +134,7 @@ async def set_group(event: SimpleBotEvent):
         if response_error is ResponseError.NO_RESPONSE:
             (message, keyboard) = (response_error.value, None)
         else:
-            (message, keyboard) = ("\n\n".join([ response_error.value, "Попробуй снова?" ]), againer())
+            (message, keyboard) = ("\n\n".join([ response_error.value, "Попробуешь снова?" ]), againer())
         
         await event.answer(
             message=message, 

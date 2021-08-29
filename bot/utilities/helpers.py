@@ -82,7 +82,7 @@ def get_top_donators() -> str:
         "Большое спасибо всем тем, кто внёс свой донат♥️\n",
         "Особенное спасибо за большую поддержку топу донатеров:",
         "\n".join([ 
-            f"*{index + 1}.* {donation.name} — {donation.amount:.2f} ₽" 
+            f"*{index + 1}.* {donation.donator} — {donation.amount:.2f} ₽" 
             for (index, donation) in enumerate(top_donations_list) 
         ]),
         "\n"
