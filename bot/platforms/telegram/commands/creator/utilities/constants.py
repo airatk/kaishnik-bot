@@ -53,7 +53,7 @@ CONTROL_PANEL: str = (
         f"\t\t\t• document — up to 50 MB in size, with caption up to {MAX_CAPTION_LENGTH} characters in length.\n"
         "\n"
     "}\n"
-    "/dayoff {\n"
+    "/daysoff {\n"
         "\t\t\t\[ list ]\n"
         "\t\t\t\[ add: { dd-mm } ]\n"
         "\t\t\t\[ message: {} ]\n"

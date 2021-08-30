@@ -217,7 +217,7 @@ async def daysoff(message: Message):
     
     if Option.ADD.value in options:
         if asked_day_off is None:
-            DayOff.insert(date=asked_day, message=options[Option.MESSAGE.value] if Option.MESSAGE.value in options else "Выходной").execute()
+            DayOff.insert(day=asked_day, message=options[Option.MESSAGE.value] if Option.MESSAGE.value in options else "Выходной").execute()
         else:
             text = "{day_off_date} day off have been added already!".format(day_off_date=asked_day)
     elif Option.DROP.value in options:
