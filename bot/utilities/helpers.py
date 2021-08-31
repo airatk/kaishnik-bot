@@ -1,6 +1,8 @@
 from typing import List
 from typing import Optional
 
+from datetime import datetime
+
 from peewee import ModelSelect
 
 from aiogram.types import Message
@@ -43,7 +45,8 @@ def note_metrics(platform: Platform, command: Command):
             (last_metrics, is_newly_created) = Metrics.get_or_create(
                 user=user,
                 platform=platform.value, 
-                action=command.value
+                action=command.value,
+                perform_datetime=datetime.now().strftime("%Y-%m-%d %H:%M")
             )
             
             if not is_newly_created:
