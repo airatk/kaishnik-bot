@@ -57,7 +57,8 @@ async def choose_semester(event: SimpleBotEvent):
     if response_error is not None:
         await event.answer(
             message=response_error.value,
-            dont_parse_links=True
+            dont_parse_links=True,
+            keyboard=to_menu()
         )
         return
 
@@ -102,7 +103,8 @@ async def choose_subject(event: SimpleBotEvent):
         if response_error is not None:
             await event.answer(
                 message=response_error.value,
-                dont_parse_links=True
+                dont_parse_links=True,
+                keyboard=to_menu()
             )
 
             states[event.peer_id].drop()

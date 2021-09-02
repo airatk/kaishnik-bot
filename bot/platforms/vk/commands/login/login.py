@@ -76,6 +76,7 @@ async def set_bb_password(event: SimpleBotEvent):
         if response_error is not ResponseError.INCORRECT_BB_CREDENTIALS:
             await event.answer(
                 message=response_error.value,
+                dont_parse_links=True,
                 keyboard=to_menu()
             )
 

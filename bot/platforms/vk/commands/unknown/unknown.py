@@ -11,6 +11,7 @@ from bot.platforms.vk.utilities.keyboards import canceler
 from bot.utilities.constants import REPLIES_TO_UNKNOWN_TEXT_MESSAGE
 from bot.utilities.constants import REPLIES_TO_UNKNOWN_NONTEXT_MESSAGE
 from bot.utilities.helpers import note_metrics
+from bot.utilities.helpers import remove_markdown
 from bot.utilities.types import Platform
 from bot.utilities.types import Command
 
@@ -31,7 +32,8 @@ async def catched_by_guard(event: SimpleBotEvent):
 @note_metrics(platform=Platform.VK, command=Command.UNKNOWN_NONTEXT_MESSAGE)
 async def unknown_nontext_message(event: SimpleBotEvent):
     await event.answer(
-        message=choice(REPLIES_TO_UNKNOWN_NONTEXT_MESSAGE),
+        message=remove_markdown(choice(REPLIES_TO_UNKNOWN_NONTEXT_MESSAGE)),
+        dont_parse_links=True,
         keyboard=to_menu()
     )
 
@@ -43,7 +45,7 @@ async def unknown_nontext_message(event: SimpleBotEvent):
 @note_metrics(platform=Platform.VK, command=Command.UNKNOWN_TEXT_MESSAGE)
 async def unknown_text_message(event: SimpleBotEvent):
     await event.answer(
-        message=choice(REPLIES_TO_UNKNOWN_TEXT_MESSAGE),
+        message=remove_markdown(choice(REPLIES_TO_UNKNOWN_TEXT_MESSAGE)),
         dont_parse_links=True,
         keyboard=to_menu()
     )

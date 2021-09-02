@@ -93,13 +93,15 @@ def dates_scroller(shown_date_string: str, lecturer_id: str = "-") -> str:
         del movement_buttons[0]
     elif later_date > last_date:
         del movement_buttons[1]
-    
-    days_scroller_keyboard.add_text_button(**menu_button())
 
-    if len(movement_buttons) > 1:
-        days_scroller_keyboard.add_row()
+    if len(movement_buttons) == 1:
+        days_scroller_keyboard.add_text_button(**menu_button())
 
     for movement_button in movement_buttons:
         days_scroller_keyboard.add_text_button(**movement_button)
+    
+    if len(movement_buttons) > 1:
+        days_scroller_keyboard.add_row()
+        days_scroller_keyboard.add_text_button(**menu_button())
     
     return days_scroller_keyboard.get_keyboard()
