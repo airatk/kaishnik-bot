@@ -56,11 +56,11 @@ def beautify_classes(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Se
                 if "День консультаций" in raw_class["disciplName"]: break
                 
                 # Removing extra whitespaces from dates
-                raw_class["dayDate"] = raw_class["dayDate"].replace(" ", "").replace(",", ", ")
+                raw_class["dayDate"] = " ".join(raw_class["dayDate"].replace(",", ", ").split())
                 
                 if not should_show_entire_semester:
                     # Do not show classes on even weeks when they are supposed to be on odd weeks
-                    if (raw_class["dayDate"] == "неч") if is_week_even(day_date) else (raw_class["dayDate"] == "чет"): continue
+                    if (raw_class["dayDate"] in [ "неч", "нечет" ]) if is_week_even(day_date) else (raw_class["dayDate"] == "чет"): continue
                     
                     # Do not show classes with certain dates (21.09) on other dates (28 сентября)
                     if "." in raw_class["dayDate"] and (

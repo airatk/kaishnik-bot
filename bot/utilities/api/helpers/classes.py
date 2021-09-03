@@ -49,11 +49,9 @@ def style_raw_class(raw_class: Dict[str, str], is_schedule_size_full: bool, shou
     styled_class_entities: List[str] = list(FULL_CLASS_ENTITIES if is_schedule_size_full else COMPACT_CLASS_ENTITIES)
     
     # Removing 'dates' from template if there is no dates
-    if raw_class["dayDate"] == "" or not any([
-        should_show_entire_semester,
-        "." in raw_class["dayDate"],
-        "/" in raw_class["dayDate"],
-        "(" in raw_class["dayDate"]
+    if raw_class["dayDate"] == "" or all([
+        not should_show_entire_semester,
+        raw_class["dayDate"] in [ "чет", "неч", "нечет" ]
     ]): del styled_class_entities[1]
     
     styled_class_template: str = "\n".join(styled_class_entities)
@@ -98,8 +96,8 @@ def refine_class_place(raw_building: str, raw_auditorium: str) -> str:
     return "".join([ raw_building, "ка", "".join([ ", ", raw_auditorium ]) if raw_auditorium != "" else "" ])
 
 def refine_class_dates(raw_dates: str) -> str:
+    raw_dates = raw_dates.replace("нечет" if "нечет" in raw_dates else "неч", "нечётная")
     raw_dates = raw_dates.replace("чет", "чётная")
-    raw_dates = raw_dates.replace("неч", "нечётная")
     
     return raw_dates
 
