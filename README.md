@@ -1,23 +1,21 @@
 # Каист
 
-[<img src="https://github.com/airatk/kaishnik-bot/blob/main/design/logo/logo.png" alt="kaishnik-bot logo" align="right" width="175" />][3]
+[<img src="https://github.com/airatk/kaishnik-bot/blob/main/design/logo/logo.png" alt="kaishnik-bot logo" align="right" width="150" />][1]
 
-_telegram bot for students of KNRTU-KAI to make their daily routine more pleasant_
+_telegram & vk bot for students of KNRTU-KAI to make their daily routine more pleasant_
 
 ### Stack
-* Python
-* [aiogram][1]
-* PostgreSQL, [peewee][2]
+* Python, [aiogram][3], [vkwave][4]
+* PostgreSQL, [peewee][5]
 
 ## Reason
-The bot might be considered as `kai.ru` & `old.kai.ru` wrapper. Official mobile-unfriendly ugly inconvenient website had to be replaced by something usable. Here the [@kaishnik_bot][3] comes in.
+The bot might be considered as `kai.ru` wrapper. Official mobile-unfriendly ugly inconvenient website had to be replaced by something usable. Here the [@kaishnik_bot][1] comes in.
 
 ## Setup
 Since the university is located in Kazan which is the Moscow time zone, the time zone should be set to `Europe/Moscow`.
 
 ### Data
-There should be `data/` folder in the root directory of the bot. It should contain the following non-extension files with needed data:
-* `keys` file is used to store tokens & keys accessed using `config` module.
+There should be `data/` folder in the root directory of the bot. It should contain `keys` non-extension file with tokens & keys accessed using `config` module.
 
 ### Launch setup
 The `requirements.txt` file is included to the repository. So, use `pip3 install -r requirements.txt` to get all the necessities.
@@ -26,8 +24,8 @@ Use `python3 ./` to launch.
 ## Architecture
 The bot is stored in project root directory folder called `bot/`. The `bot/` contains 3 subdirectories: 
 * `platforms/` - implementation of bot on a variety of social networks.
-* `models/` - classes of `peewee` models of data stored in `PostgreSQL` database.
-* `utilities/` - additional code that takes student data from the university servers, connects the bot to the database, and so on.
+* `models/` - classes of [`peewee`][5] models of data stored in `PostgreSQL` database.
+* `utilities/` - additional code that takes student data from the servers of the university, connects the bot to the database, and so on. 
 
 Each command has its own directory:
 
@@ -46,16 +44,17 @@ The structure is essential meanwhile all the noted files are optional. One-file 
 
 ## Other stuff
 * `update-logs/` folder contains notes which were sent to users as update announcements.
-* `cas-external-login/` folder contains some information about logging in CAS & simple login implementation.
+* `design/` folder contains [`.pxd`][6] & `.png` files with all the bot associatied design.
 
 ## Design
-All the stuff was drawn using [Pixelmator Pro][5]. 
+All the stuff was drawn using [Pixelmator Pro][6]. 
 
-[![kaishnik_bot poster][4]][3]
+[![kaishnik_bot poster][2]][1]
 
 
-[1]: https://github.com/aiogram/aiogram "Repository of aiogram"
-[2]: https://github.com/coleifer/peewee "Repository of peewee"
-[3]: https://telegram.me/kaishnik_bot "Open the bot in Telegram"
-[4]: https://github.com/airatk/kaishnik-bot/blob/main/design/poster/poster.png "kaishnik-bot poster"
-[5]: https://www.pixelmator.com/pro "Pixelmator Pro"
+[1]: https://telegram.me/kaishnik_bot "Open the bot in Telegram"
+[2]: https://github.com/airatk/kaishnik-bot/blob/main/design/poster/poster.png "kaishnik-bot poster"
+[3]: https://github.com/aiogram/aiogram "Repository of aiogram"
+[4]: https://github.com/fscdev/vkwave "Repository of vkwave"
+[5]: https://github.com/coleifer/peewee "Repository of peewee"
+[6]: https://www.pixelmator.com/pro "Pixelmator Pro"
