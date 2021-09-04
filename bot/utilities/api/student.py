@@ -43,14 +43,21 @@ def get_group_schedule_id(group: str) -> Tuple[Optional[str], Optional[ResponseE
     except (ConnectionError, Timeout, JSONDecodeError):
         return (None, ResponseError.NO_RESPONSE)
     
-    if len(groups_json_list) != 1 or "id" not in groups_json_list[0]:
+    asked_group_data: Dict[str, Union[str, int]] = {}
+
+    for group_data in groups_json_list:
+        if group_data.get("id") is not None and group_data.get("group") == group: 
+            asked_group_data = group_data
+            break
+    
+    if len(asked_group_data) == 0:
         return (None, ResponseError.NO_DATA)
     
-    return (groups_json_list[0]["id"], None)
+    return (asked_group_data["id"], None)
 
-def get_schedule_by_group_schedule_id(schedule_type: ScheduleType, user_id: int, another_group_schedule_id: Optional[int] = None, dates: Optional[List[str]] = None) -> Tuple[Optional[Union[List[str], str]], Optional[str]]:
+def get_schedule_by_group_schedule_id(schedule_type: ScheduleType, user: User, another_group_schedule_id: Optional[int] = None, dates: Optional[List[str]] = None) -> Tuple[Optional[Union[List[str], str]], Optional[str]]:
     is_own_group_asked: bool = another_group_schedule_id is None
-    group_schedule_id: int = User.get_or_none(User.user_id == user_id).group_schedule_id if is_own_group_asked else another_group_schedule_id
+    group_schedule_id: int = user.group_schedule_id if is_own_group_asked else another_group_schedule_id
     
     try:
         schedule_json_list: Dict[str, List[Dict[str, str]]] = get(url=SCHEDULE_URL, timeout=12, params={
@@ -65,7 +72,7 @@ def get_schedule_by_group_schedule_id(schedule_type: ScheduleType, user_id: int,
     if len(schedule_json_list) == 0:
         return (None, ResponseError.NO_DATA)
     
-    settings: Settings = Settings.get(Settings.user_id == user_id)
+    settings: Settings = Settings.get(Settings.user == user)
     
     if schedule_type is ScheduleType.CLASSES:
         return (beautify_classes(raw_schedule=schedule_json_list, dates=dates, settings=settings), None)

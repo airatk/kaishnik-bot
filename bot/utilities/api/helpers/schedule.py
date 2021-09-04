@@ -56,7 +56,7 @@ def beautify_classes(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Se
                 if "День консультаций" in raw_class["disciplName"]: break
                 
                 # Removing extra whitespaces from dates
-                raw_class["dayDate"] = " ".join(raw_class["dayDate"].replace(",", ", ").split())
+                raw_class["dayDate"] = " ".join(raw_class["dayDate"].replace(",", ", ").replace("/", " / ").split()).replace(" ,", ",").replace(" .", ".").replace(". ", ".")
                 
                 if not should_show_entire_semester:
                     # Do not show classes on even weeks when they are supposed to be on odd weeks

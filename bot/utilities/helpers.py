@@ -38,9 +38,9 @@ def note_metrics(platform: Platform, command: Command):
             user: Optional[User] = None
             
             if platform is Platform.TELEGRAM:
-                user = User.get(telegram_id=user_platform_id)
+                user = User.get(User.telegram_id == user_platform_id)
             elif platform is Platform.VK:
-                user = User.get(vk_id=user_platform_id)
+                user = User.get(User.vk_id == user_platform_id)
             
             (last_metrics, is_newly_created) = Metrics.get_or_create(
                 user=user,

@@ -10,6 +10,7 @@ from requests import get
 from requests.exceptions import ConnectionError
 from requests.exceptions import Timeout
 
+from bot.models.user import User
 from bot.models.settings import Settings
 
 from bot.utilities.api.constants import LECTURERS_SCHEDULE_URL
@@ -35,7 +36,7 @@ def get_lecturers_names() -> Tuple[Optional[List[Dict[str, str]]], Optional[Resp
     else:
         return (lecturers_names, None)
 
-def get_lecturers_schedule(lecturer_id: str, schedule_type: ScheduleType, user_id: int, dates: Optional[List[str]] = None) -> Tuple[Optional[Union[List[str], str]], Optional[str]]:
+def get_lecturers_schedule(lecturer_id: str, schedule_type: ScheduleType, user: User, dates: Optional[List[str]] = None) -> Tuple[Optional[Union[List[str], str]], Optional[str]]:
     try:
         schedule_json_list: List[Dict[str, str]] = get(
             url=LECTURERS_SCHEDULE_URL, timeout=12, 
@@ -52,7 +53,7 @@ def get_lecturers_schedule(lecturer_id: str, schedule_type: ScheduleType, user_i
     if len(schedule_json_list) == 0:
         return (None, ResponseError.NO_DATA)
     
-    settings: Settings = Settings.get(Settings.user_id == user_id)
+    settings: Settings = Settings.get(Settings.user == user)
     
     if schedule_type is ScheduleType.CLASSES:
         return (beautify_lecturers_classes(raw_schedule=schedule_json_list, dates=dates, settings=settings), None)

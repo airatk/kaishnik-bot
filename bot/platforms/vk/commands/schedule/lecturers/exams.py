@@ -27,12 +27,12 @@ async def lecturers_exams(event: SimpleBotEvent):
         dont_parse_links=True
     )
     
-    user_id: int = User.get(User.vk_id == event.peer_id).user_id
+    user: int = User.get(User.vk_id == event.peer_id)
     
     (schedule, response_error) = get_lecturers_schedule(
         lecturer_id=event.payload["lecturer_id"],
         schedule_type=ScheduleType.EXAMS,
-        user_id=user_id
+        user=user
     )
     
     await event.answer(

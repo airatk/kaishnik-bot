@@ -71,12 +71,12 @@ async def common_show_chosen_dates(command: Command, callback: CallbackQuery):
     if callback_data[1] != "":
         states[callback.message.chat.id].chosen_schedule_dates.append(callback_data[1])
     
-    user_id: int = User.get(User.telegram_id == callback.message.chat.id).user_id
+    user: User = User.get(User.telegram_id == callback.message.chat.id)
     
     if command is Command.CLASSES:
         (schedule, response_error) = get_schedule_by_group_schedule_id(
             schedule_type=ScheduleType.CLASSES,
-            user_id=user_id,
+            user=user,
             another_group_schedule_id=states[callback.message.chat.id].another_group_schedule_id,
             dates=states[callback.message.chat.id].chosen_schedule_dates
         )
@@ -84,7 +84,7 @@ async def common_show_chosen_dates(command: Command, callback: CallbackQuery):
         (schedule, response_error) = get_lecturers_schedule(
             lecturer_id=callback_data[2],
             schedule_type=ScheduleType.CLASSES,
-            user_id=user_id,
+            user=user,
             dates=states[callback.message.chat.id].chosen_schedule_dates,
         )
     else:

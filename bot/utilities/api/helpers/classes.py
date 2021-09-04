@@ -93,7 +93,7 @@ def refine_class_place(raw_building: str, raw_auditorium: str) -> str:
     if "ОЛИМП" in raw_building.upper(): return "СК Олимп"
     if "-----" in raw_building.upper(): return "ВУЦ"
     
-    return "".join([ raw_building, "ка", "".join([ ", ", raw_auditorium ]) if raw_auditorium != "" else "" ])
+    return "".join([ raw_building, "ка", "".join([ ", ", raw_auditorium ]) if raw_auditorium != "" and "-----" not in raw_auditorium else "" ])
 
 def refine_class_dates(raw_dates: str) -> str:
     raw_dates = raw_dates.replace("нечет" if "нечет" in raw_dates else "неч", "нечётная")

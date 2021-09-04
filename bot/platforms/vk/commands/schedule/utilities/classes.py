@@ -30,12 +30,12 @@ async def common_show_chosen_date(command: Command, event: SimpleBotEvent):
     date_string: Optional[str] = event.payload.get("date_string")
     lecturer_id: str = event.payload["lecturer_id"]
 
-    user_id: int = User.get(User.vk_id == event.peer_id).user_id
+    user: User = User.get(User.vk_id == event.peer_id)
     
     if command is Command.CLASSES:
         (schedule, response_error) = get_schedule_by_group_schedule_id(
             schedule_type=ScheduleType.CLASSES,
-            user_id=user_id,
+            user=user,
             another_group_schedule_id=states[event.peer_id].another_group_schedule_id,
             dates=[ date_string ] if date_string is not None else []
         )
@@ -43,7 +43,7 @@ async def common_show_chosen_date(command: Command, event: SimpleBotEvent):
         (schedule, response_error) = get_lecturers_schedule(
             lecturer_id=lecturer_id,
             schedule_type=ScheduleType.CLASSES,
-            user_id=user_id,
+            user=user,
             dates=[ date_string ] if date_string is not None else []
         )
     else:

@@ -52,9 +52,11 @@ async def exams(event: SimpleBotEvent):
             )
             return
     
+    user: User = User.get(User.vk_id == event.peer_id)
+    
     (schedule, response_error) = get_schedule_by_group_schedule_id(
         schedule_type=ScheduleType.EXAMS,
-        user_id=User.get(User.vk_id == event.peer_id).user_id,
+        user=user,
         another_group_schedule_id=another_group_schedule_id
     )
     

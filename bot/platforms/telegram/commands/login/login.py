@@ -139,7 +139,7 @@ async def set_bb_password(message: Message):
         disable_web_page_preview=True
     )
 
-    user: User = User.get(telegram_id=message.chat.id)
+    user: User = User.get(User.telegram_id == message.chat.id)
     user.bb_password = message.text
     user.save()
     

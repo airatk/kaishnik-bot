@@ -28,12 +28,12 @@ async def lecturers_exams(callback: CallbackQuery):
         disable_web_page_preview=True
     )
     
-    user_id: int = User.get(User.telegram_id == callback.message.chat.id).user_id
+    user: User = User.get(User.telegram_id == callback.message.chat.id)
     
     (schedule, response_error) = get_lecturers_schedule(
         lecturer_id=callback.data.split()[1],
         schedule_type=ScheduleType.EXAMS,
-        user_id=user_id
+        user=user
     )
     
     await callback.message.edit_text(

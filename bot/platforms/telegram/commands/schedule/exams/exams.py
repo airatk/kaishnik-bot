@@ -54,9 +54,11 @@ async def exams(message: Message):
             )
             return
     
+    user: User = User.get(User.telegram_id == message.chat.id)
+
     (schedule, response_error) = get_schedule_by_group_schedule_id(
         schedule_type=ScheduleType.EXAMS,
-        user_id=User.get(User.telegram_id == message.chat.id).user_id,
+        user=user,
         another_group_schedule_id=another_group_schedule_id
     )
     

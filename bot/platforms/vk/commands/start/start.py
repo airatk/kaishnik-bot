@@ -24,7 +24,7 @@ from bot.utilities.types import State
 )
 async def start(event: SimpleBotEvent):
     user: User = User.create(vk_id=event.peer_id)
-    Settings.insert(user_id=user.user_id).execute()
+    Settings.insert(user=user).execute()
     
     guards[event.peer_id] = Guard()
     states[event.peer_id] = State()

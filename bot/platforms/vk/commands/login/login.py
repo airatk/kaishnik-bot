@@ -66,7 +66,7 @@ async def set_bb_password(event: SimpleBotEvent):
         dont_parse_links=True
     )
 
-    user: User = User.get(vk_id=event.peer_id)
+    user: User = User.get(User.vk_id == event.peer_id)
     user.bb_password = event.text
     user.save()
     
