@@ -6,11 +6,15 @@ from datetime import date
 from datetime import timedelta
 
 from vkwave.bots.utils.keyboards import Keyboard
+from vkwave.bots.utils.keyboards import ButtonColor
 
 from bot.platforms.vk.utilities.keyboards import menu_button
 
 from bot.utilities.types import Command
+from bot.utilities.calendar.constants import WEEKDAYS
+from bot.utilities.calendar.constants import MONTHS
 from bot.utilities.calendar.helpers import get_semester_boundaries
+from bot.utilities.calendar.helpers import is_week_even
 
 
 def time_period_chooser(lecturer_id: str = "-") -> str:
@@ -46,10 +50,31 @@ def time_period_chooser(lecturer_id: str = "-") -> str:
             "lecturer_id": lecturer_id
         }
     )
+
+    later_dates: List[date] = [ 
+        tomorrow_date + timedelta(days=days_number + (1 if tomorrow_date.isoweekday() == 6 else 0)) 
+        for days_number in range(1, 4) 
+    ]
+    later_date_text: str = ""
+
+    for later_date in later_dates:
+        if later_date.isoweekday() == 1:
+            later_date_text = f"{WEEKDAYS[later_date.isoweekday()]}, {'чётная' if is_week_even(day_date=later_date) else 'нечётная'}"
+        else:
+            later_date_text = f"{WEEKDAYS[later_date.isoweekday()]}, {later_date.day} {MONTHS[later_date.strftime('%m')]}"
+        
+        time_period_chooser_keyboard.add_row()
+        time_period_chooser_keyboard.add_text_button(
+            text=later_date_text, payload={ 
+                command: "", 
+                "date_string": later_date.strftime("%d.%m"), 
+                "lecturer_id": lecturer_id
+            }
+        )
     
     time_period_chooser_keyboard.add_row()
     time_period_chooser_keyboard.add_text_button(
-        text="Весь семестр", payload={ 
+        text="Весь семестр", color=ButtonColor.SECONDARY, payload={ 
             command: "", 
             "lecturer_id": lecturer_id 
         }
