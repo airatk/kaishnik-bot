@@ -25,7 +25,7 @@ Use `python3 ./` to launch.
 The bot is stored in project root directory folder called `bot/`. The `bot/` contains 3 subdirectories: 
 * `platforms/` - implementation of bot on a variety of social networks.
 * `models/` - classes of [`peewee`][5] models of data stored in `PostgreSQL` database.
-* `utilities/` - additional code that takes student data from the servers of the university, connects the bot to the database, and so on. 
+* `utilities/` - additional code that takes student data from the servers of the university, connects the bot to the database, and so on.
 
 Each command has its own directory:
 
@@ -40,14 +40,15 @@ Each command has its own directory:
         ├── constants.py
         └── types.py
 
-The structure is essential meanwhile all the noted files are optional. One-file commands are exceptions, and are located at `bot/platforms/<platform>/commands/others/` directory. `bot/platforms/<platform>/commands/schedule/` directory is also an exception, and may be considered as a super-command which consists of 3 similar, but separate commands. 
+The structure is essential meanwhile all the noted files are optional. One-file commands are exceptions, and are located at `bot/platforms/<platform>/commands/others/` directory. `bot/platforms/<platform>/commands/schedule/` directory is also an exception, and may be considered as a super-command which consists of 3 similar, but separate commands.
 
 ## Other stuff
+* `statistics-queries.sql` file contains some quries of statictics data extraction from `PostgreSQL` database.
 * `update-logs/` folder contains notes which were sent to users as update announcements.
 * `design/` folder contains [`.pxd`][6] & `.png` files with all the bot associatied design.
 
 ## Design
-All the stuff was drawn using [Pixelmator Pro][6]. 
+All the stuff was drawn using [Pixelmator Pro][6].
 
 [![kaishnik_bot poster][2]][1]
 
