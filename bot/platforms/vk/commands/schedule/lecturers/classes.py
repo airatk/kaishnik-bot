@@ -19,7 +19,7 @@ async def lecturer_menu(event: SimpleBotEvent):
     lecturer_id: str = event.payload["lecturer_id"]
 
     await event.answer(
-        message="Преподавателево расписание занятий на:",
+        message="Можешь выбрать нужный день, либо весь семестр целиком:",
         keyboard=time_period_chooser(lecturer_id=lecturer_id)
     )
 

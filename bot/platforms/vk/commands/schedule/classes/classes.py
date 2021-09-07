@@ -52,9 +52,7 @@ async def menu(event: SimpleBotEvent):
         states[event.peer_id].another_group_schedule_id = another_group_schedule_id
     
     await event.answer(
-        message="Тебе нужно расписание{for_another_group} на:".format(
-            for_another_group=" группы {group}".format(group=classes_arguments[0]) if len(classes_arguments) != 0 else ""
-        ),
+        message="Можешь выбрать нужный день, либо весь семестр целиком:",
         keyboard=time_period_chooser()
     )
 
