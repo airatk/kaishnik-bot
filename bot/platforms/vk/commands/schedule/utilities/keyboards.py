@@ -51,12 +51,16 @@ def time_period_chooser(lecturer_id: str = "-") -> str:
         }
     )
 
+    later_date_text: str = ""
     later_dates: List[date] = [ 
-        tomorrow_date + timedelta(days=days_number + (1 if tomorrow_date.isoweekday() == 6 else 0)) 
+        tomorrow_date + timedelta(days=days_number) 
         for days_number in range(1, 4) 
     ]
-    later_date_text: str = ""
-
+    later_dates = [ 
+        later_date + timedelta(days=1 if later_date.isoweekday() == 7 else 0)
+        for later_date in later_dates
+    ]
+    
     for later_date in later_dates:
         if later_date.isoweekday() == 1:
             later_date_text = f"{WEEKDAYS[later_date.isoweekday()]}, {'чётная' if is_week_even(day_date=later_date) else 'нечётная'}"
