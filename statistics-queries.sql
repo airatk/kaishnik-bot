@@ -92,8 +92,8 @@ SELECT
     donations_basic_statistics."donations number" AS "donations number",
     donations_basic_statistics."average donation amount" AS "average donation amount",
     donations_basic_statistics."sum of donations" AS "sum of donations",
-    SUM(donations_basic_statistics."sum of donations") OVER (ROWS UNBOUNDED PRECEDING) AS "total sum of donations",
-    SUM(donations_basic_statistics."donations number") OVER (ROWS UNBOUNDED PRECEDING) AS "total donations number"
+    SUM(donations_basic_statistics."sum of donations") OVER (ROWS UNBOUNDED PRECEDING) AS "donations sum growth",
+    SUM(donations_basic_statistics."donations number") OVER (ROWS UNBOUNDED PRECEDING) AS "donations number growth"
 FROM (
     SELECT
         TO_CHAR(donation.date, 'YYYY-MM') AS "month",

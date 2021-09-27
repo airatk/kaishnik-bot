@@ -1,7 +1,12 @@
 # System files
 **/.DS_Store
+
+# Python generated files
 **/__pycache__/
+
+# Virtual environments
 /env/
+/venv/
 
 # Project files
 /data/
