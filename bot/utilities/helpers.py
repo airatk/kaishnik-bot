@@ -80,7 +80,12 @@ def shorten(string: str) -> str:
 
 
 def get_top_donators() -> str:
-    top_donations_list: ModelSelect = Donation.select().order_by(Donation.amount.desc()).limit(value=TOP_DONATORS_NUMBER)
+    top_donations_list: ModelSelect = Donation.select().order_by(
+        Donation.amount.desc(),
+        Donation.date.desc(),
+        Donation.donation_id.desc()
+    ).limit(value=TOP_DONATORS_NUMBER)
+    
     top_donators: str = "\n".join([
         "Большое спасибо всем тем, кто внёс свой донат♥️\n",
         "Особенное спасибо за большую поддержку топу донатеров:",
