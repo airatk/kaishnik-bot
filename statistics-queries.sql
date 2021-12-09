@@ -1,5 +1,17 @@
 -- METRICS
 
+-- Querying each platform usage number on the current date
+SELECT
+    metrics.platform AS "platform",
+    SUM(metrics.usage_number) AS "usage number"
+FROM metrics                                   
+WHERE
+    CAST(metrics.perform_datetime AS DATE) = CURRENT_DATE
+GROUP BY metrics.platform
+ORDER BY                 
+    SUM(metrics.usage_number) DESC
+;
+
 -- Querying each command usage number on the current date
 SELECT
     metrics.platform AS "platform",
@@ -103,4 +115,23 @@ FROM (
     FROM donation
     GROUP BY "month"
     ORDER BY "month"
+) AS donations_basic_statistics;
+
+-- Querying yearly donations statistics
+SELECT
+    donations_basic_statistics."year" AS "year",
+    donations_basic_statistics."donations number" AS "donations number",
+    donations_basic_statistics."average donation amount" AS "average donation amount",
+    donations_basic_statistics."sum of donations" AS "sum of donations",
+    SUM(donations_basic_statistics."sum of donations") OVER (ROWS UNBOUNDED PRECEDING) AS "donations sum growth",
+    SUM(donations_basic_statistics."donations number") OVER (ROWS UNBOUNDED PRECEDING) AS "donations number growth"
+FROM (
+    SELECT
+        TO_CHAR(donation.date, 'YYYY') AS "year",
+        COUNT(donation.donation_id) AS "donations number",
+        ROUND(AVG(donation.amount)::NUMERIC, 2) AS "average donation amount",
+        ROUND(SUM(donation.amount)::NUMERIC, 2) AS "sum of donations"
+    FROM donation
+    GROUP BY "year"
+    ORDER BY "year"
 ) AS donations_basic_statistics;

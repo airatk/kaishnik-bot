@@ -48,11 +48,23 @@ def style_raw_lecturer_class(raw_class: Dict[str, str], is_schedule_size_full: b
 def style_raw_class(raw_class: Dict[str, str], is_schedule_size_full: bool, should_show_entire_semester: bool) -> str:
     styled_class_entities: List[str] = list(FULL_CLASS_ENTITIES if is_schedule_size_full else COMPACT_CLASS_ENTITIES)
     
-    # Removing 'dates' from template if there is no dates
-    if raw_class["dayDate"] == "" or all([
-        not should_show_entire_semester,
+    # Removing 'dates' from template if there are no dates
+    if len(raw_class["dayDate"]) == 0 or (
+        not should_show_entire_semester and 
         raw_class["dayDate"] in [ "чет", "неч", "нечет" ]
-    ]): del styled_class_entities[1]
+    ): 
+        del styled_class_entities[1]
+    elif (
+        not should_show_entire_semester and 
+        raw_class["dayDate"].replace(" ", "").startswith(("чет(", "неч(", "нечет(", "еженедельно("))
+    ):
+        starting_index: int = raw_class["dayDate"].index("(") + 1
+        ending_index: int = raw_class["dayDate"].index(")")
+
+        classes_number: str = raw_class["dayDate"][starting_index:ending_index]
+        classes_word_ending: str = "е" if classes_number == 1 else ("я" if classes_number in range(2, 5) else "й")
+
+        raw_class["dayDate"] = f"всего {classes_number} заняти{classes_word_ending}"
     
     styled_class_template: str = "\n".join(styled_class_entities)
     

@@ -60,8 +60,10 @@ def beautify_classes(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Se
                 
                 if not should_show_entire_semester:
                     # Do not show classes on even weeks when they are supposed to be on odd weeks
-                    if (raw_class["dayDate"] in [ "неч", "нечет" ]) if is_week_even(day_date) else (raw_class["dayDate"] == "чет"): continue
+                    classes_number_info_starting_index: int = raw_class["dayDate"].index("(") if "(" in raw_class["dayDate"] else len(raw_class["dayDate"])
                     
+                    if raw_class["dayDate"][:classes_number_info_starting_index].strip() in ([ "неч", "нечет" ] if is_week_even(day_date) else [ "чет" ]): continue
+
                     # Do not show classes with certain dates (21.09) on other dates (28 сентября)
                     if "." in raw_class["dayDate"] and (
                         "{day}.{month}".format(day=int(raw_day), month=raw_month) not in raw_class["dayDate"] and
@@ -71,7 +73,7 @@ def beautify_classes(raw_schedule: Dict[str, List[Dict[str, str]]], settings: Se
                 class_start_hour: str = raw_class["dayTime"].split(":")[0]
                 
                 styled_class: str = style_raw_student_class(
-                    raw_class=raw_class,
+                    raw_class=raw_class.copy(),  # Copy is sent to prevent unexpected data mutation inside of the `style_raw_student_class` function
                     is_schedule_size_full=settings.is_schedule_size_full,
                     should_show_entire_semester=should_show_entire_semester
                 )
