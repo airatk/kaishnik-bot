@@ -6,6 +6,7 @@ from aiogram.types import CallbackQuery
 from aiogram.types import ChatType
 from aiogram.types import ParseMode
 from aiogram.utils.exceptions import MessageError
+from aiogram.utils.exceptions import MessageCantBeDeleted
 
 from bot.platforms.telegram import dispatcher
 from bot.platforms.telegram import states
@@ -29,7 +30,10 @@ from bot.utilities.types import Command
 )
 @note_metrics(platform=Platform.TELEGRAM, command=Command.UNKNOWN_NONTEXT_MESSAGE)
 async def unknown_nontext_message(message: Message):
-    await message.delete()
+    try:
+        await message.delete()
+    except MessageCantBeDeleted:
+        pass
 
 @dispatcher.message_handler(
     lambda message:
