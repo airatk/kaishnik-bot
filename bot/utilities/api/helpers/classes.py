@@ -95,7 +95,7 @@ def refine_class_time(raw_time: str, raw_type: str) -> str:
         start_time = datetime(1, 1, 1, 7, 50)  # Military training classes start 10 minutes earlier than the usual ones
         duration = timedelta(hours=9, minutes=10)  # Military training classes last all day
     elif raw_type == ClassType.LAB.value:
-        duration = timedelta(hours=3, minutes=40 if start_time.hour == 11 else 10)  # Lab duration is 3h with a 40/10m long break
+        return start_time.strftime("%H:%M")  # Lab duration is uncertain, so do not show end time for any lab classes
     
     end_time: datetime = start_time + duration
     
