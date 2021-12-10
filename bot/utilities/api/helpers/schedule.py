@@ -161,7 +161,9 @@ def beautify_lecturers_classes(raw_schedule: Dict[str, List[Dict[str, str]]], se
         if not should_show_entire_semester:
             for raw_class in list(raw_schedule[weekday]):
                 # Do not show classes on even weeks when they are supposed to be on odd weeks if that's not asked
-                if (raw_class["dayDate"] == "неч") if is_week_even(day_date) else (raw_class["dayDate"] == "чет"):
+                classes_number_info_starting_index: int = raw_class["dayDate"].index("(") if "(" in raw_class["dayDate"] else len(raw_class["dayDate"])
+                
+                if raw_class["dayDate"][:classes_number_info_starting_index].strip() in ([ "неч", "нечет" ] if is_week_even(day_date) else [ "чет" ]):
                     raw_schedule[weekday].remove(raw_class)
                 
                 if "." in raw_class["dayDate"] and (
@@ -186,7 +188,7 @@ def beautify_lecturers_classes(raw_schedule: Dict[str, List[Dict[str, str]]], se
             class_start_hour: str = raw_class["dayTime"].split(":")[0]
             
             styled_class: str = style_raw_lecturer_class(
-                raw_class=raw_class,
+                raw_class=raw_class.copy(),
                 is_schedule_size_full=settings.is_schedule_size_full,
                 should_show_entire_semester=should_show_entire_semester,
                 groups=class_groups
