@@ -15,7 +15,7 @@ def get_week_number(day_date: date) -> int:
     semester_first_week: int = semester_first_day.isocalendar()[1]
     current_week: int = day_date.isocalendar()[1]
     
-    return (current_week if day_date.month == 1 and current_week < 52 else 0) - semester_first_week + (0 if semester_first_day.isoweekday() == 7 else 1)
+    return (current_week if day_date.month != 1 or current_week < 52 else 0) - semester_first_week + (0 if semester_first_day.isoweekday() == 7 else 1)
 
 
 def get_semester_boundaries(day_date: date) -> Tuple[date, date]:
