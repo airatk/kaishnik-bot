@@ -128,7 +128,7 @@ async def show_score(callback: CallbackQuery):
     if subject_index != "-":
         await callback.message.edit_text(
             text=subjects[int(subject_index)],
-            parse_mode=ParseMode.MARKDOWN
+            parse_mode=ParseMode.MARKDOWN_V2
         )
     else:
         await callback.message.delete()
@@ -136,7 +136,7 @@ async def show_score(callback: CallbackQuery):
         for subject in subjects:
             await callback.message.answer(
                 text=subject,
-                parse_mode=ParseMode.MARKDOWN
+                parse_mode=ParseMode.MARKDOWN_V2
             )
         
         ending: str = "" if len(subjects) == 1 else "а" if len(subjects) in range(2, 5) else "ов"
