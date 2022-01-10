@@ -194,7 +194,7 @@ def get_score_data(user: User, semester: Optional[int] = None, auth_token: Optio
         # Making traditional grade to be viewed in the lower case
         subject_score_data[16] = subject_score_data[16].lower()
         
-        # Putting the strikethrough text decoration on non-grade value
+        # Putting strikethrough text decoration on non-grade value
         if subject_score_data[16] == "ведомость не закрыта":
             subject_score_data[16] = f"~{subject_score_data[16]}~"
 
@@ -207,9 +207,11 @@ def get_score_data(user: User, semester: Optional[int] = None, auth_token: Optio
         formatted_subject_score_data: str = SCORE_TEMPLATE.format(*subject_score_data[1:])
 
         # Preparing for parsing by Markdown Parser of Version 2
-        formatted_subject_score_data = formatted_subject_score_data.replace("-", "\-")
-        formatted_subject_score_data = formatted_subject_score_data.replace("(", "\(")
-        formatted_subject_score_data = formatted_subject_score_data.replace(")", "\)")
+        for reserved_character in [ "-", "(", ")", "." ]:
+            formatted_subject_score_data = formatted_subject_score_data.replace(reserved_character, f"\{reserved_character}")
+
+        # Enhancing some words' appearance
+        formatted_subject_score_data = formatted_subject_score_data.replace("н/я", "неявка")
 
         score.append((subject_score_data[1], formatted_subject_score_data))
     
