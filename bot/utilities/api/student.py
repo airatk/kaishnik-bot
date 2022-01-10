@@ -194,18 +194,27 @@ def get_score_data(user: User, semester: Optional[int] = None, auth_token: Optio
         # Making traditional grade to be viewed in the lower case
         subject_score_data[16] = subject_score_data[16].lower()
         
-        # Putting the strikethrough text decoration on non-grade value
+        # Putting strikethrough text decoration on non-grade value
         if subject_score_data[16] == "ведомость не закрыта":
             subject_score_data[16] = f"~{subject_score_data[16]}~"
 
         # Finishing traditional grade processing
         score_table_data[subject_index][16] = subject_score_data[16]
     
-    score: List[Tuple[str, str]] = [
-        (subject_score_data[1], SCORE_TEMPLATE.format(*subject_score_data[1:]))
-        for subject_score_data in score_table_data
-    ]
+    score: List[Tuple[str, str]] = []
 
+    for subject_score_data in score_table_data:
+        formatted_subject_score_data: str = SCORE_TEMPLATE.format(*subject_score_data[1:])
+
+        # Preparing for parsing by Markdown Parser of Version 2
+        for reserved_character in [ "-", "(", ")", "." ]:
+            formatted_subject_score_data = formatted_subject_score_data.replace(reserved_character, f"\{reserved_character}")
+
+        # Enhancing some words' appearance
+        formatted_subject_score_data = formatted_subject_score_data.replace("н/я", "неявка")
+
+        score.append((subject_score_data[1], formatted_subject_score_data))
+    
     auth_token_start_index: int = score_data_page.find(AUTH_TOKEN_SIGN) + len(AUTH_TOKEN_SIGN)
     auth_token_end_index: int = auth_token_start_index + AUTH_TOKEN_LENGTH
 

@@ -69,7 +69,7 @@ def clarify_markdown(string: str) -> str:
     return "\\".join([ string[:index], string[index:] ]) if is_single else string
 
 def remove_markdown(string: str) -> str:
-    return string.replace("*", "").replace("_", "").replace("`", "").replace("\\", "")
+    return string.replace("*", "").replace("_", "").replace("`", "").replace("~", "").replace("\\", "")
 
 
 def shorten(string: str) -> str:
