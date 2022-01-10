@@ -24,9 +24,9 @@ from bot.utilities.api.constants import CAS_SERVICE_LOGIN_URL
 from bot.utilities.api.constants import STUDENT_DATA_URL
 from bot.utilities.api.constants import AUTH_TOKEN_SIGN
 from bot.utilities.api.constants import AUTH_TOKEN_LENGTH
-from bot.utilities.api.constants import SCORE_TEMPLATE
 from bot.utilities.api.helpers.schedule import beautify_classes
 from bot.utilities.api.helpers.schedule import beautify_exams
+from bot.utilities.api.helpers.score import beautify_score
 from bot.utilities.api.types import ResponseError
 from bot.utilities.api.types import KaiRuDataType
 from bot.utilities.api.types import ScheduleType
@@ -189,31 +189,7 @@ def get_score_data(user: User, semester: Optional[int] = None, auth_token: Optio
     if len(semesters) == 0 or len(score_table_data) == 0:
         return (None, ResponseError.NO_DATA)
     
-    # Slightly refining traditional assessment to be written starting with lower case letter
-    for (subject_index, subject_score_data) in enumerate(score_table_data):
-        # Making traditional grade to be viewed in the lower case
-        subject_score_data[16] = subject_score_data[16].lower()
-        
-        # Putting strikethrough text decoration on non-grade value
-        if subject_score_data[16] == "ведомость не закрыта":
-            subject_score_data[16] = f"~{subject_score_data[16]}~"
-
-        # Finishing traditional grade processing
-        score_table_data[subject_index][16] = subject_score_data[16]
-    
-    score: List[Tuple[str, str]] = []
-
-    for subject_score_data in score_table_data:
-        formatted_subject_score_data: str = SCORE_TEMPLATE.format(*subject_score_data[1:])
-
-        # Preparing for parsing by Markdown Parser of Version 2
-        for reserved_character in [ "-", "(", ")", "." ]:
-            formatted_subject_score_data = formatted_subject_score_data.replace(reserved_character, f"\{reserved_character}")
-
-        # Enhancing some words' appearance
-        formatted_subject_score_data = formatted_subject_score_data.replace("н/я", "неявка")
-
-        score.append((subject_score_data[1], formatted_subject_score_data))
+    score: List[Tuple[str, str]] = beautify_score(raw_score_table_data=score_table_data)
     
     auth_token_start_index: int = score_data_page.find(AUTH_TOKEN_SIGN) + len(AUTH_TOKEN_SIGN)
     auth_token_end_index: int = auth_token_start_index + AUTH_TOKEN_LENGTH
