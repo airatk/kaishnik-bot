@@ -208,6 +208,8 @@ def get_score_data(user: User, semester: Optional[int] = None, auth_token: Optio
 
         # Preparing for parsing by Markdown Parser of Version 2
         formatted_subject_score_data = formatted_subject_score_data.replace("-", "\-")
+        formatted_subject_score_data = formatted_subject_score_data.replace("(", "\(")
+        formatted_subject_score_data = formatted_subject_score_data.replace(")", "\)")
 
         score.append((subject_score_data[1], formatted_subject_score_data))
     
