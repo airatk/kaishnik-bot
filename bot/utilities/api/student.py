@@ -1,8 +1,8 @@
 from typing import Optional
-from typing import Union
 from typing import Dict
 from typing import List
 from typing import Tuple
+from typing import Union
 
 from json.decoder import JSONDecodeError
 
@@ -55,7 +55,7 @@ def get_group_schedule_id(group: str) -> Tuple[Optional[str], Optional[ResponseE
     
     return (asked_group_data["id"], None)
 
-def get_schedule_by_group_schedule_id(schedule_type: ScheduleType, user: User, another_group_schedule_id: Optional[int] = None, dates: Optional[List[str]] = None) -> Tuple[Optional[Union[List[str], str]], Optional[str]]:
+def get_schedule_by_group_schedule_id(schedule_type: ScheduleType, user: User, another_group_schedule_id: Optional[int] = None, dates: Optional[List[str]] = None) -> Tuple[Optional[Union[List[str], str]], Optional[ResponseError]]:
     is_own_group_asked: bool = another_group_schedule_id is None
     group_schedule_id: int = user.group_schedule_id if is_own_group_asked else another_group_schedule_id
     
