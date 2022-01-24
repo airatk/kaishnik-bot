@@ -69,7 +69,7 @@ SCORE_TEMPLATE: str = (
 
 
 # Locations data constants
-BUILDINGS: List[Dict[str, Union[str, int]]] = [
+BUILDINGS: List[Dict[str, Union[str, float]]] = [
     {
         "button": "1",
         "title": "Первое учебное здание",
@@ -182,7 +182,7 @@ LIBRARIES: List[Dict[str, Union[str, int]]] = [
     }
 ]
 
-SPORTSCOMPLEX: List[Dict[str, Union[str, int]]] = [
+SPORTSCOMPLEX: List[Dict[str, Union[str, float]]] = [
     {
         "button": "Главное здание",
         "title": "Главное здание",
@@ -207,7 +207,7 @@ SPORTSCOMPLEX: List[Dict[str, Union[str, int]]] = [
     }
 ]
 
-DORMS: List[Dict[str, Union[str, int]]] = [
+DORMS: List[Dict[str, Union[str, float]]] = [
     {
         "button": "1",
         "title": "Первое общежитие",

@@ -1,8 +1,8 @@
 from typing import Optional
-from typing import Union
 from typing import Dict
 from typing import List
 from typing import Tuple
+from typing import Union
 
 from json.decoder import JSONDecodeError
 
@@ -36,9 +36,9 @@ def get_lecturers_names() -> Tuple[Optional[List[Dict[str, str]]], Optional[Resp
     else:
         return (lecturers_names, None)
 
-def get_lecturers_schedule(lecturer_id: str, schedule_type: ScheduleType, user: User, dates: Optional[List[str]] = None) -> Tuple[Optional[Union[List[str], str]], Optional[str]]:
+def get_lecturers_schedule(lecturer_id: str, schedule_type: ScheduleType, user: User, dates: Optional[List[str]] = None) -> Tuple[Optional[Union[List[str], str]], Optional[ResponseError]]:
     try:
-        schedule_json_list: List[Dict[str, str]] = get(
+        schedule_json_list: Dict[str, List[Dict[str, str]]] = get(
             url=LECTURERS_SCHEDULE_URL, timeout=12, 
             params={
                 "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",

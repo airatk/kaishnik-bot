@@ -2,7 +2,7 @@
 from logging import basicConfig
 from logging import NOTSET
 
-basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=NOTSET)
+basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=NOTSET, encoding="utf-8")
 
 
 # Database setup
