@@ -23,7 +23,7 @@ def get_semester_boundaries(day_date: date) -> Tuple[date, date]:
         first_date: date = date(day_date.year, 9, 1)
         last_date: date = date(day_date.year, 12, 31)
     else:
-        first_date: date = date(day_date.year, 2, 9)
+        first_date: date = date(day_date.year, 2, 2)
         last_date: date = date(day_date.year, 6, 30)
         
         if first_date.isoweekday() > 4:
