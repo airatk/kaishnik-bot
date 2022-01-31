@@ -96,8 +96,8 @@ def dates_scroller(shown_date_string: str, lecturer_id: str = "-") -> str:
     later_date: date = shown_date + timedelta(days=(1 if shown_date.isoweekday != 6 else 2))
 
     # Shifting backwards for 7 days, because of the weirdness of university schedule for
-    if not first_date.month > 7:
-        first_date -= timedelta(days=7)
+    # if not first_date.month > 7:
+    #     first_date -= timedelta(days=7)
     
     command: str = Command.CLASSES_SHOW.value if lecturer_id == "-" else Command.LECTURERS_CLASSES_SHOW.value
 
