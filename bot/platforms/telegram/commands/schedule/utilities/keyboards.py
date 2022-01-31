@@ -53,9 +53,10 @@ def dates_appender(shift: int, dates: List[str], lecturer_id: str = "-") -> Inli
     
     (first_date, last_date) = get_semester_boundaries(day_date=date.today())
 
-    # Shifting backwards for 7 days, because of the weirdness of university schedule
-    if not first_date.month > 7:
-        first_date -= timedelta(days=7)
+    # Shifting backwards for 7 days, because of the weirdness of university's schedule
+    # P.S. Oh, now university fixed this to the normal way. Or did it? Who knows!
+    # if not first_date.month > 7:
+    #     first_date -= timedelta(days=7)
     
     if (date.today() - first_date).days < 0 and shift < (first_date - date.today()).days:
         shift = (first_date - date.today()).days
