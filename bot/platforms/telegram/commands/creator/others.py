@@ -6,6 +6,8 @@ from datetime import datetime
 
 from re import match
 
+from peewee import ModelSelect
+
 from aiogram.types import Message
 from aiogram.types import ContentType
 from aiogram.types import ParseMode
@@ -58,6 +60,7 @@ async def broadcast(message: Message):
         return
     
     users_ids_list: List[int] = []
+    telegram_users: ModelSelect = User.select().where(~User.telegram_id.is_null())
     
     if "&" in options[Option.USERS.value]:
         for possible_id in options[Option.USERS.value].split("&"):
@@ -70,7 +73,7 @@ async def broadcast(message: Message):
             
             asked_id: int = int(possible_id)
             
-            if not User.select().where(User.user_id == asked_id).exists():
+            if not telegram_users.where(User.user_id == asked_id).exists():
                 await message.answer(
                     text="*{id}* was not found!".format(id=asked_id),
                     parse_mode=ParseMode.MARKDOWN
@@ -81,19 +84,22 @@ async def broadcast(message: Message):
     elif options[Option.USERS.value] == Value.ME.value:
         users_ids_list.append(User.get(User.telegram_id == message.chat.id).user_id)
     elif options[Option.USERS.value] == Value.ALL.value:
-        users_ids_list = [ user.user_id for user in User.select() ]
+        users_ids_list = [ user.user_id for user in telegram_users ]
     elif options[Option.USERS.value] == Value.GROUPS.value:
-        users_ids_list = [ group.user_id for group in User.select().where(User.is_group_chat) ]
+        users_ids_list = [ group.user_id for group in telegram_users.where(User.is_group_chat) ]
     elif options[Option.USERS.value] == Value.COMPACTS.value:
-        users_ids_list = [ compact.user_id for compact in User.select().where(~User.is_group_chat & User.bb_login.is_null() & User.bb_password.is_null()) ]
+        users_ids_list = [ compact.user_id for compact in telegram_users.where(~User.is_group_chat & User.bb_login.is_null() & User.bb_password.is_null()) ]
     elif options[Option.USERS.value] == Value.BBS.value:
-        users_ids_list = [ bb.user_id for bb in User.select().where(User.bb_login.is_null(False) & User.bb_password.is_null(False)) ]
+        users_ids_list = [ bb.user_id for bb in telegram_users.where(User.bb_login.is_null(False) & User.bb_password.is_null(False)) ]
     else:
         await message.answer(text="The option has no matches!")
         return
     
     loading_message: Message = await message.answer(text="Started broadcasting…")
     progress_bar: str = ""
+
+    total_users_number: int = len(users_ids_list)
+    unreachable_users_number: int = 0
     
     for (index, user_id) in enumerate(users_ids_list):
         progress_bar = await update_progress_bar(
@@ -140,12 +146,12 @@ async def broadcast(message: Message):
                     parse_mode=ParseMode.MARKDOWN
                 )
         except TelegramAPIError:
-            user.delete_instance()
+            unreachable_users_number += 1
     
     await loading_message.delete()
     
     await message.answer(
-        text="Broadcasted to *{users_number}* users!".format(users_number=len(users_ids_list)),
+        text=f"Broadcasted to *{total_users_number - unreachable_users_number}* users out of {total_users_number}!",
         parse_mode=ParseMode.MARKDOWN
     )
 
