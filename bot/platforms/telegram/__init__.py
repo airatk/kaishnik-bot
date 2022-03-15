@@ -12,7 +12,7 @@ from bot.utilities.types import Guard
 from bot.utilities.types import State
 
 
-telegram_bot: Bot = Bot(token=KEYS.TELEGRAM_TOKEN)
+telegram_bot: Bot = Bot(token=KEYS["TELEGRAM_TOKEN"])
 dispatcher: Dispatcher = Dispatcher(bot=telegram_bot, loop=get_event_loop())
 
 guards: Dict[int, Guard] = { user.telegram_id: Guard() for user in User.select(User.telegram_id) }
