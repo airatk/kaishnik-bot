@@ -1,7 +1,7 @@
 from bot.utilities.constants import KEYS
 
 
-CREATOR_TELEGRAM_ID: int = int(KEYS.CREATOR_TELEGRAM_ID)
+CREATOR_TELEGRAM_ID: int = int(KEYS["CREATOR_TELEGRAM_ID"])
 
 MAX_TEXT_LENGTH: int = 3900
 MAX_CAPTION_LENGTH: int = 900

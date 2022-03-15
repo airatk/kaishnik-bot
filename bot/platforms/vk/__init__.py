@@ -11,12 +11,12 @@ from bot.utilities.types import State
 
 vk_bot: SimpleLongPollBot = SimpleLongPollBot(
     tokens=[ 
-        KEYS.VK_TOKEN_1,
-        KEYS.VK_TOKEN_2,
-        KEYS.VK_TOKEN_3,
-        KEYS.VK_TOKEN_4
+        KEYS["VK_TOKEN_1"],
+        KEYS["VK_TOKEN_2"],
+        KEYS["VK_TOKEN_3"],
+        KEYS["VK_TOKEN_4"]
     ], 
-    group_id=KEYS.VK_GROUP
+    group_id=KEYS["VK_GROUP"]
 )
 
 guards: Dict[int, Guard] = { user.vk_id: Guard() for user in User.select(User.vk_id) }
