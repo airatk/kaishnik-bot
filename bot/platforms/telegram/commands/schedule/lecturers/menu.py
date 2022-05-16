@@ -108,12 +108,16 @@ async def find_lecturer(message: Message):
         )
         return
     
+    guards[message.chat.id].text = Command.LECTURERS.value
+    
+    if len(names) == 1:
+        await ask_for_lecturer_schedule_type_by_id(lecturer_id=names[0]["id"], message=guards[message.chat.id].message)
+        return
+    
     await guards[message.chat.id].message.edit_text(
         text="Выбери преподавателя:",
         reply_markup=lecturer_chooser(names=names)
     )
-    
-    guards[message.chat.id].text = Command.LECTURERS.value
 
 @dispatcher.callback_query_handler(
     lambda callback:
@@ -121,21 +125,24 @@ async def find_lecturer(message: Message):
         Command.LECTURERS.value in callback.data
 )
 @top_notification
-async def lecturers_schedule_type(callback: CallbackQuery):
+async def ask_for_lecturer_schedule_type(callback: CallbackQuery):
     lecturer_id: str = callback.data.split()[1]
-    
+
+    await ask_for_lecturer_schedule_type_by_id(lecturer_id=lecturer_id, message=callback.message)
+
+
+async def ask_for_lecturer_schedule_type_by_id(lecturer_id: str, message: Message):
     names: List[str] = list(filter(
         lambda lecturer: lecturer["id"] == lecturer_id,
-        states[callback.message.chat.id].lecturers_names
+        states[message.chat.id].lecturers_names
     ))
     chosen_name: str = "".join([ "*", names[0]["lecturer"].replace(" ", "\n", 1), "*" ])
     
-    await callback.message.edit_text(
+    await message.edit_text(
         text=chosen_name,
         parse_mode=ParseMode.MARKDOWN
     )
-    
-    await callback.message.answer(
+    await message.answer(
         text="Тебе нужны преподавателевы:",
         reply_markup=lecturer_info_type_chooser(lecturer_id=lecturer_id)
     )

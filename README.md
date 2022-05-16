@@ -23,9 +23,9 @@ Use `python3 ./` to launch.
 
 ## Architecture
 The bot is stored in project root directory folder called `bot/`. The `bot/` contains 3 subdirectories: 
-* `platforms/` - implementation of bot on a variety of social networks.
+* `platforms/` - implementation of the bot on a variety of social networks.
 * `models/` - classes of [`peewee`][5] models of data stored in `PostgreSQL` database.
-* `utilities/` - additional code that takes student data from the servers of the university, connects the bot to the database, and so on.
+* `utilities/` - additional code that takes student data from the university servers, connects the bot to the database, and so on.
 
 Each command has its own directory:
 
@@ -40,7 +40,7 @@ Each command has its own directory:
         ├── constants.py
         └── types.py
 
-The structure is essential meanwhile all the noted files are optional. One-file commands are exceptions, and are located at `bot/platforms/<platform>/commands/others/` directory. `bot/platforms/<platform>/commands/schedule/` directory is also an exception, and may be considered as a super-command which consists of 3 similar, but separate commands.
+The structure is essential meanwhile all the noted files are optional. One-file commands are exceptions, and are located in `bot/platforms/<platform>/commands/others/` directory. `bot/platforms/<platform>/commands/schedule/` directory is also an exception, and may be considered as a super-command which consists of 3 similar, but separate commands.
 
 ## Other stuff
 * `update-logs/` folder contains notes which were sent to users as update announcements.

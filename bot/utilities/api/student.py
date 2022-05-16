@@ -4,8 +4,6 @@ from typing import List
 from typing import Tuple
 from typing import Union
 
-from json.decoder import JSONDecodeError
-
 from requests import get
 from requests import post
 from requests import Response
@@ -40,8 +38,10 @@ def get_group_schedule_id(group: str) -> Tuple[Optional[str], Optional[ResponseE
             "p_p_resource_id": "getGroupsURL",
             "query": group
         }).json()
-    except (ConnectionError, Timeout, JSONDecodeError):
+    except (ConnectionError, Timeout):
         return (None, ResponseError.NO_RESPONSE)
+    except (ValueError, IndexError):
+        return (None, ResponseError.NO_DATA)
     
     asked_group_data: Dict[str, Union[str, int]] = {}
 
@@ -66,8 +66,10 @@ def get_schedule_by_group_schedule_id(schedule_type: ScheduleType, user: User, a
             "p_p_resource_id": schedule_type.value,
             "groupId": group_schedule_id
         }).json()
-    except (ConnectionError, Timeout, JSONDecodeError):
+    except (ConnectionError, Timeout):
         return (None, ResponseError.NO_RESPONSE)
+    except (ValueError, IndexError):
+        return (None, ResponseError.NO_DATA)
     
     if len(schedule_json_list) == 0:
         return (None, ResponseError.NO_DATA)
@@ -176,17 +178,18 @@ def get_score_data(user: User, semester: Optional[int] = None, auth_token: Optio
         semester_selector: Optional[Tag] = parsed_score_data_page.find(name="select", attrs={ "name": "_myBRS_WAR_myBRS10_semester_0" })
         semesters: List[str] = sorted([ option["value"] for option in semester_selector.find_all("option") ])
 
+        if len(semesters) == 0: return (None, ResponseError.NO_DATA)
+
         score_table: Optional[Tag] = parsed_score_data_page.find(name="table", attrs={ "class": "table table-striped table-bordered" })
         score_table_data: List[List[str]] = [ [
                 data.text for data in row.find_all("td")
             ] for row in score_table.find_all("tr")
         ][2:]
+
+        if len(score_table_data) == 0: return (None, ResponseError.NO_DATA)
     except (ConnectionError, Timeout):
         return (None, ResponseError.NO_RESPONSE)
     except AttributeError:
-        return (None, ResponseError.NO_DATA)
-    
-    if len(semesters) == 0 or len(score_table_data) == 0:
         return (None, ResponseError.NO_DATA)
     
     score: List[Tuple[str, str]] = beautify_score(raw_score_table_data=score_table_data)
