@@ -4,8 +4,6 @@ from typing import List
 from typing import Tuple
 from typing import Union
 
-from json.decoder import JSONDecodeError
-
 from requests import get
 from requests.exceptions import ConnectionError
 from requests.exceptions import Timeout
@@ -31,8 +29,10 @@ def get_lecturers_names() -> Tuple[Optional[List[Dict[str, str]]], Optional[Resp
                 "query": "_"  # Underscore symbol is sent to get all the names
             }
         ).json()
-    except (ConnectionError, Timeout, JSONDecodeError):
+    except (ConnectionError, Timeout):
         return (None, ResponseError.NO_RESPONSE)
+    except (ValueError, IndexError):
+        return (None, ResponseError.NO_DATA)
     else:
         return (lecturers_names, None)
 
@@ -47,8 +47,10 @@ def get_lecturers_schedule(lecturer_id: str, schedule_type: ScheduleType, user: 
                 "prepodLogin": lecturer_id
             }
         ).json()
-    except (ConnectionError, Timeout, JSONDecodeError):
+    except (ConnectionError, Timeout):
         return (None, ResponseError.NO_RESPONSE)
+    except (ValueError, IndexError):
+        return (None, ResponseError.NO_DATA)
     
     if len(schedule_json_list) == 0:
         return (None, ResponseError.NO_DATA)

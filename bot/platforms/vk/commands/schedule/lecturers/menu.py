@@ -88,35 +88,33 @@ async def find_lecturer(event: SimpleBotEvent):
         )
         return
     
+    guards[event.peer_id].text = Command.LECTURERS.value
+    
+    if len(names) == 1:
+        await ask_for_lecturer_schedule_type_by_id(lecturer_id=names[0]["id"], event=event)
+        return
+    
     await event.answer(
         message="Выбери преподавателя:",
         keyboard=lecturer_chooser(names=names)
     )
-    
-    guards[event.peer_id].text = Command.LECTURERS.value
 
 @vk_bot.message_handler(
     PayloadContainsFilter(key=Command.LECTURERS.value),
     ~PayloadContainsFilter(key=ScheduleType.CLASSES.value),
     ~PayloadContainsFilter(key=ScheduleType.EXAMS.value)
 )
-async def lecturers_schedule_type(event: SimpleBotEvent):
+async def ask_for_lecturer_schedule_type(event: SimpleBotEvent):
     lecturer_id: str = event.payload["lecturer_id"]
 
+    await ask_for_lecturer_schedule_type_by_id(lecturer_id=lecturer_id, event=event)
+
+
+async def ask_for_lecturer_schedule_type_by_id(lecturer_id: str, event: SimpleBotEvent):
     names: List[str] = list(filter(
         lambda lecturer: lecturer["id"] == lecturer_id,
         states[event.peer_id].lecturers_names
     ))
-
-    if len(names) != 1:
-        await event.answer(
-            message="Что-то пошло не так🙆🏼‍♀️",
-            keyboard=to_menu()
-        )
-
-        guards[event.peer_id].drop()
-        return
-
     chosen_name: str = names[0]["lecturer"].replace(" ", "\n", 1)
     
     states[event.peer_id].drop()

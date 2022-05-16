@@ -45,7 +45,7 @@ async def handle_errors(update: Update, exception: Exception):
 				f"*user*\n"
 				f"• bot DB ID: `{user.user_id}`\n"
 				f"• join date: `{user.start_datetime.strftime('%-d %B %Y')}`\n"
-				f"• join time: `{user.start_datetime.strftime('%-I:%M% %p')}`\n"
+				f"• join time: `{user.start_datetime.strftime('%-I:%M %p')}`\n"
 				f"• Telegram ID: `{user.telegram_id if user.telegram_id is not None else '-'}`\n"
 				f"• VK ID: `{user.vk_id if user.vk_id is not None else '-'}`\n"
 				f"• BB login: `{user.bb_login if user.bb_login is not None else '-'}`\n"
