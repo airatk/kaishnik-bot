@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+    "launch": {
+        "version": "9.0.0",
+        "configurations": [
+            {
+                "name": "Launch",
+                "type": "python",
+                "request": "launch",
+                "program": "${workspaceRoot}/__main__.py"
+            }
+        ]
+    }
+}

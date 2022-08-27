@@ -1,0 +1,210 @@
+{
+	"info": {
+		"_postman_id": "82afde7a-8ca6-4650-8688-c136968f6116",
+		"name": "Lecturer's Schedules",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "IDs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://kai.ru/for-staff/raspisanie?p_p_id=pubLecturerSchedule_WAR_publicLecturerSchedule10&p_p_lifecycle=2&p_p_resource_id=getLecturersURL&query=Аристова",
+					"protocol": "https",
+					"host": [
+						"kai",
+						"ru"
+					],
+					"path": [
+						"for-staff",
+						"raspisanie"
+					],
+					"query": [
+						{
+							"key": "p_p_id",
+							"value": "pubLecturerSchedule_WAR_publicLecturerSchedule10"
+						},
+						{
+							"key": "p_p_lifecycle",
+							"value": "2"
+						},
+						{
+							"key": "p_p_resource_id",
+							"value": "getLecturersURL"
+						},
+						{
+							"key": "query",
+							"value": "Аристова"
+						},
+						{
+							"key": "p_p_state",
+							"value": "normal",
+							"disabled": true
+						},
+						{
+							"key": "p_p_mode",
+							"value": "view",
+							"disabled": true
+						},
+						{
+							"key": "p_p_cacheability",
+							"value": "cacheLevelPage",
+							"disabled": true
+						},
+						{
+							"key": "p_p_col_id",
+							"value": "column-1",
+							"disabled": true
+						},
+						{
+							"key": "p_p_col_count",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Classes Schedule",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "prepodLogin",
+							"value": "NaSAristova",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://kai.ru/for-staff/raspisanie?p_p_id=pubLecturerSchedule_WAR_publicLecturerSchedule10&p_p_lifecycle=2&p_p_resource_id=schedule",
+					"protocol": "https",
+					"host": [
+						"kai",
+						"ru"
+					],
+					"path": [
+						"for-staff",
+						"raspisanie"
+					],
+					"query": [
+						{
+							"key": "p_p_id",
+							"value": "pubLecturerSchedule_WAR_publicLecturerSchedule10"
+						},
+						{
+							"key": "p_p_lifecycle",
+							"value": "2"
+						},
+						{
+							"key": "p_p_resource_id",
+							"value": "schedule"
+						},
+						{
+							"key": "p_p_state",
+							"value": "normal",
+							"disabled": true
+						},
+						{
+							"key": "p_p_mode",
+							"value": "view",
+							"disabled": true
+						},
+						{
+							"key": "p_p_cacheability",
+							"value": "cacheLevelPage",
+							"disabled": true
+						},
+						{
+							"key": "p_p_col_id",
+							"value": "column-1",
+							"disabled": true
+						},
+						{
+							"key": "p_p_col_count",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Exams Schedule",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "prepodLogin",
+							"value": "rshminyazev",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://kai.ru/for-staff/raspisanie?p_p_id=pubLecturerSchedule_WAR_publicLecturerSchedule10&p_p_lifecycle=2&p_p_resource_id=examSchedule",
+					"protocol": "https",
+					"host": [
+						"kai",
+						"ru"
+					],
+					"path": [
+						"for-staff",
+						"raspisanie"
+					],
+					"query": [
+						{
+							"key": "p_p_id",
+							"value": "pubLecturerSchedule_WAR_publicLecturerSchedule10"
+						},
+						{
+							"key": "p_p_lifecycle",
+							"value": "2"
+						},
+						{
+							"key": "p_p_resource_id",
+							"value": "examSchedule"
+						},
+						{
+							"key": "p_p_state",
+							"value": "normal",
+							"disabled": true
+						},
+						{
+							"key": "p_p_mode",
+							"value": "view",
+							"disabled": true
+						},
+						{
+							"key": "p_p_cacheability",
+							"value": "cacheLevelPage",
+							"disabled": true
+						},
+						{
+							"key": "p_p_col_id",
+							"value": "column-1",
+							"disabled": true
+						},
+						{
+							"key": "p_p_col_count",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,207 @@
+{
+	"info": {
+		"_postman_id": "1eed82ca-9172-4971-bf27-10f03dc0edb2",
+		"name": "Group's Schedules",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "IDs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://kai.ru/raspisanie?p_p_id=pubStudentSchedule_WAR_publicStudentSchedule10&p_p_lifecycle=2&p_p_resource_id=getGroupsURL&query=4",
+					"protocol": "https",
+					"host": [
+						"kai",
+						"ru"
+					],
+					"path": [
+						"raspisanie"
+					],
+					"query": [
+						{
+							"key": "p_p_id",
+							"value": "pubStudentSchedule_WAR_publicStudentSchedule10"
+						},
+						{
+							"key": "p_p_lifecycle",
+							"value": "2"
+						},
+						{
+							"key": "p_p_resource_id",
+							"value": "getGroupsURL"
+						},
+						{
+							"key": "query",
+							"value": "4"
+						},
+						{
+							"key": "p_p_state",
+							"value": "normal",
+							"disabled": true
+						},
+						{
+							"key": "p_p_mode",
+							"value": "view",
+							"disabled": true
+						},
+						{
+							"key": "p_p_cacheability",
+							"value": "cacheLevelPage",
+							"disabled": true
+						},
+						{
+							"key": "p_p_col_id",
+							"value": "column-1",
+							"disabled": true
+						},
+						{
+							"key": "p_p_col_count",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Classes Schedule",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "groupId",
+							"value": "22541",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://kai.ru/raspisanie?p_p_id=pubStudentSchedule_WAR_publicStudentSchedule10&p_p_lifecycle=2&p_p_resource_id=schedule",
+					"protocol": "https",
+					"host": [
+						"kai",
+						"ru"
+					],
+					"path": [
+						"raspisanie"
+					],
+					"query": [
+						{
+							"key": "p_p_id",
+							"value": "pubStudentSchedule_WAR_publicStudentSchedule10"
+						},
+						{
+							"key": "p_p_lifecycle",
+							"value": "2"
+						},
+						{
+							"key": "p_p_resource_id",
+							"value": "schedule"
+						},
+						{
+							"key": "p_p_state",
+							"value": "normal",
+							"disabled": true
+						},
+						{
+							"key": "p_p_mode",
+							"value": "view",
+							"disabled": true
+						},
+						{
+							"key": "p_p_cacheability",
+							"value": "cacheLevelPage",
+							"disabled": true
+						},
+						{
+							"key": "p_p_col_id",
+							"value": "column-1",
+							"disabled": true
+						},
+						{
+							"key": "p_p_col_count",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Exams Schedule",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "groupId",
+							"value": "22541",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://kai.ru/raspisanie?p_p_id=pubStudentSchedule_WAR_publicStudentSchedule10&p_p_lifecycle=2&p_p_resource_id=examSchedule",
+					"protocol": "https",
+					"host": [
+						"kai",
+						"ru"
+					],
+					"path": [
+						"raspisanie"
+					],
+					"query": [
+						{
+							"key": "p_p_id",
+							"value": "pubStudentSchedule_WAR_publicStudentSchedule10"
+						},
+						{
+							"key": "p_p_lifecycle",
+							"value": "2"
+						},
+						{
+							"key": "p_p_resource_id",
+							"value": "examSchedule"
+						},
+						{
+							"key": "p_p_state",
+							"value": "normal",
+							"disabled": true
+						},
+						{
+							"key": "p_p_mode",
+							"value": "view",
+							"disabled": true
+						},
+						{
+							"key": "p_p_cacheability",
+							"value": "cacheLevelPage",
+							"disabled": true
+						},
+						{
+							"key": "p_p_col_id",
+							"value": "column-1",
+							"disabled": true
+						},
+						{
+							"key": "p_p_col_count",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
