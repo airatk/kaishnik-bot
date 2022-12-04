@@ -1,13 +1,18 @@
 # Каист Бот
 
-[<img src="https://github.com/airatk/kaishnik-bot/blob/main/design/logo/logo.png" alt="kaishnik-bot logo" align="right" width="150" />][1]
-
 _telegram & vk bot for students of KNRTU-KAI to make their daily routine more pleasant_
 
 ### Stack
 * Python
-* [AIOGram][3], [VKWave][4], [Peewee ORM][5]
+* [AIOGram][4], [VKWave][5], [Peewee ORM][6]
 * PostgreSQL
+
+#### On Telegram
+
+[![On Telegram](https://raw.githubusercontent.com/airatk/kaishnik-bot/main/design/screenshots/telegram-screenshots.png)][1]
+
+#### On VK
+[![On VK](https://raw.githubusercontent.com/airatk/kaishnik-bot/main/design/screenshots/vk-screenshots.png)][2]
 
 
 ## Reason
@@ -31,7 +36,7 @@ Use `python3 ./` to launch.
 
 The bot is stored in project root directory folder called `bot/`. The `bot/` contains 3 subdirectories: 
 * `platforms/` - implementation of the bot on a variety of social networks.
-* `models/` - classes of [`peewee`][5] models of data stored in `PostgreSQL` database.
+* `models/` - classes of [`peewee`][6] models of data stored in `PostgreSQL` database.
 * `utilities/` - additional code that takes student data from the university servers, connects the bot to the database, and so on.
 
 Each command has its own directory:
@@ -53,19 +58,20 @@ The structure is essential meanwhile all the noted files are optional. One-file 
 ## Other stuff
 
 * `update-logs/` folder contains notes which were sent to users as update announcements.
-* `design/` folder contains [`.pxd`][6] & `.png` files with all the bot associatied design.
+* `design/` folder contains [`.pxd`][7] & `.png` files with all the bot associatied design.
 
 
 ## Design
 
-All the stuff was drawn using [Pixelmator Pro][6].
+All the stuff was drawn using [Pixelmator Pro][7].
 
-[![kaishnik_bot poster][2]][1]
+[![kaishnik_bot poster][3]][1]
 
 
-[1]: https://telegram.me/kaishnik_bot "Open the bot in Telegram"
-[2]: https://github.com/airatk/kaishnik-bot/blob/main/design/poster/poster.png "kaishnik-bot poster"
-[3]: https://github.com/aiogram/aiogram "Repository of aiogram"
-[4]: https://github.com/fscdev/vkwave "Repository of vkwave"
-[5]: https://github.com/coleifer/peewee "Repository of peewee"
-[6]: https://www.pixelmator.com/pro "Pixelmator Pro"
+[1]: https://telegram.me/kaishnik_bot "Open the bot on Telegram"
+[2]: https://vk.com/kaishnik_bot "Open the bot on VK"
+[3]: https://github.com/airatk/kaishnik-bot/blob/main/design/poster/poster.png "kaishnik-bot poster"
+[4]: https://github.com/aiogram/aiogram "Repository of aiogram"
+[5]: https://github.com/fscdev/vkwave "Repository of vkwave"
+[6]: https://github.com/coleifer/peewee "Repository of peewee"
+[7]: https://www.pixelmator.com/pro "Pixelmator Pro"
