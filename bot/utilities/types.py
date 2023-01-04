@@ -84,7 +84,7 @@ class Command(Enum):
     SETTINGS_APPEARANCE_DROP = "settings-appearance-drop"
     SETTINGS_PLATFORM_CODE = "settings-platform-code"
     
-    CATCHED_BY_GUARD = "catched-by-guard"
+    CAUGHT_BY_GUARD = "caught-by-guard"
 
     UNKNOWN_NONTEXT_MESSAGE = "unknown-nontext-message"
     UNKNOWN_TEXT_MESSAGE = "unknown-text-message"
@@ -112,7 +112,7 @@ class State:
         self.auth_token: Optional[str] = None
         self.token_JSESSIONID: Optional[str] = None
         self.semesters: List[str] = []
-        self.choosen_semester: Optional[str] = None
+        self.chosen_semester: Optional[str] = None
         self.score: List[Tuple[str, str]] = []
     
     def drop(self):

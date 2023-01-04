@@ -88,7 +88,7 @@ def style_raw_class(raw_class: Dict[str, str], is_schedule_size_full: bool, shou
 
 def refine_class_time(raw_time: str, raw_type: str) -> str:
     (hours, minutes) = map(int, raw_time.split(":"))
-    start_time: datetime = datetime(1, 1, 1, hours, minutes)  # Year, month, day are filled with nonsence
+    start_time: datetime = datetime(1, 1, 1, hours, minutes)  # Year, month, day are filled with nonsense
     duration: timedelta = timedelta(hours=1, minutes=30)  # Class duration is 1.5h
     
     if raw_type == ClassType.MILITARY_TRAINING.value:

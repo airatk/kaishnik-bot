@@ -19,8 +19,8 @@ from bot.utilities.types import Command
 @vk_bot.message_handler(
     lambda event: guards[event.object.object.message.peer_id].text is not None
 )
-@note_metrics(platform=Platform.VK, command=Command.CATCHED_BY_GUARD)
-async def catched_by_guard(event: SimpleBotEvent):
+@note_metrics(platform=Platform.VK, command=Command.CAUGHT_BY_GUARD)
+async def caught_by_guard(event: SimpleBotEvent):
     await event.answer(
         message="Чтобы отправить другую команду, отмени текущую.",
         keyboard=canceler()

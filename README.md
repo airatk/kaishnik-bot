@@ -58,7 +58,7 @@ The structure is essential meanwhile all the noted files are optional. One-file 
 ## Other stuff
 
 * `update-logs/` folder contains notes which were sent to users as update announcements.
-* `design/` folder contains [`.pxd`][7] & `.png` files with all the bot associatied design.
+* `design/` folder contains [`.pxd`][7] & `.png` files with all the bot associated design.
 
 
 ## Design
